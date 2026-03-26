@@ -3,4 +3,5 @@
 Progetto a sostenimento esame di Programmazione Web e Mobile.
 Membri: 
 Mattia Ragusa;
-Luca Molinelli.
+Luca Molinelli;
+Dennis Secco.
