@@ -1,0 +1,60 @@
+<!-- data-bs-theme="dark" imposta i colori del testo automaticamente per sfondi scuri in Bootstrap 5.3+ -->
+<nav class="navbar navbar-expand-lg bg-dark border-bottom border-info sticky-top shadow-sm" data-bs-theme="dark">
+  <div class="container-fluid px-4">
+    
+    <!-- Logo -->
+    <a class="navbar-brand fw-bold text-uppercase fs-4" routerLink="/">
+      PAwer<span class="text-info">UP</span>
+    </a>
+
+    <!-- Tasto "Hamburger" per i dispositivi mobili -->
+    <button class="navbar-toggler" type="button" (click)="isMenuCollapsed = !isMenuCollapsed" [attr.aria-expanded]="!isMenuCollapsed" aria-controls="navbarContent" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Voci di Menu (spariscono su mobile finché non si clicca l'hamburger) -->
+    <div class="collapse navbar-collapse" id="navbarContent" [ngbCollapse]="isMenuCollapsed">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-semibold">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/console" (click)="isMenuCollapsed = true">Console</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/videogiochi" (click)="isMenuCollapsed = true">Videogiochi</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/elettronica" (click)="isMenuCollapsed = true">Elettronica</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/accessori" (click)="isMenuCollapsed = true">Accessori</a>
+        </li>
+      </ul>
+
+      <!-- Barra di Ricerca -->
+      <form class="d-flex me-4 mb-3 mb-lg-0" role="search">
+        <input class="form-control me-2 bg-dark text-white border-secondary" type="search" placeholder="Cerca giochi..." aria-label="Cerca">
+        <button class="btn btn-outline-info" type="submit">Cerca</button>
+      </form>
+
+      <!-- Azioni Utente (Profilo e Carrello) -->
+      <div class="d-flex align-items-center gap-4">
+        <a routerLink="/profilo" class="nav-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+          </svg>
+        </a>
+        
+        <!-- Icona Carrello con "Badge" posizionato in alto a destra -->
+        <a routerLink="/carrello" class="nav-link position-relative">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+          </svg>
+          <!-- Questo badge Bootstrap gestisce da solo la dimensione e l'allineamento rotondo -->
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            3
+          </span>
+        </a>
+      </div>
+    </div>
+    
+  </div>
+</nav>
