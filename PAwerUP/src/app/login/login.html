@@ -1,1 +1,27 @@
-<p>login works!</p>
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-5">
+    <div class="card shadow-lg border-0 mt-4 mb-5" style="border-radius: 1.5rem;">
+      <div class="card-body p-5">
+        <h3 class="text-center mb-4 font-weight-bold">Accedi al tuo Account</h3>
+        
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          
+          <div class="form-group">
+            <label for="email" class="font-weight-bold text-muted">Email</label>
+            <input type="email" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && loginForm.get('email')?.invalid" id="email" formControlName="email" placeholder="Inserisci email">
+          </div>
+          
+          <div class="form-group">
+            <label for="password" class="font-weight-bold text-muted">Password</label>
+            <input type="password" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && loginForm.get('password')?.invalid" id="password" formControlName="password" placeholder="Inserisci password">
+          </div>
+
+          <button type="submit" class="btn btn-info btn-block rounded-pill mt-5 py-2 font-weight-bold text-dark shadow">Accedi</button>
+        <div class="text-center mt-3">
+            <small class="text-muted">Non hai un account? <a routerLink="/register" routerLinkActive="active" class="text-info font-weight-bold">Registrati</a></small>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
