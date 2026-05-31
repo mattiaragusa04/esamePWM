@@ -13,20 +13,38 @@
       </button>
 
       <!-- Voci di menu principali -->
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCategorie" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Categorie
-            </a>
-            <div class="dropdown-menu shadow border-0 mt-2" aria-labelledby="navbarDropdownCategorie" style="border-radius: 1rem;">
-              <a class="dropdown-item py-2" [routerLink]="['categoria', 'console']" routerLinkActive="active">Console</a>
-              <a class="dropdown-item py-2" [routerLink]="['categoria', 'videogiochi']" routerLinkActive="active">Videogiochi</a>
-              <a class="dropdown-item py-2" [routerLink]="['categoria', 'accessori']" routerLinkActive="active">Accessori</a>
-              <a class="dropdown-item py-2" [routerLink]="['categoria', 'elettronica']" routerLinkActive="active">Elettronica</a>
-            </div>
-          </li>
-        </ul>
+<div class="collapse navbar-collapse" id="navbarNav">
+  <ul class="navbar-nav mr-auto">
+    
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['categoria', 'console']" routerLinkActive="active">
+        Console
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['categoria', 'videogiochi']" routerLinkActive="active">
+        Videogiochi
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['categoria', 'accessori']" routerLinkActive="active">
+        Accessori
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['categoria', 'elettronica']" routerLinkActive="active">
+        Elettronica
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['contattaci']" routerLinkActive="active">
+        Contattaci
+      </a>
+    </li>
+    
+
+  </ul>
 
         <!-- Icone Azioni / Account sulla destra -->
         <ul class="navbar-nav ml-auto align-items-center">

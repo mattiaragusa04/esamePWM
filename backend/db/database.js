@@ -100,6 +100,13 @@ CREATE TABLE IF NOT EXISTS coupon (
     data_scadenza DATE NOT NULL,
     PRIMARY KEY (codice)
 );
+CREATE TABLE IF NOT EXISTS messaggio_contatto (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    email TEXT NOT NULL,
+    messaggio TEXT NOT NULL,
+    data TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 `);
 
 module.exports = db;

@@ -1,0 +1,29 @@
+<div class="container mt-5">
+  <div class="card shadow p-4 mx-auto" style="max-width: 600px; border-radius: 1rem;">
+    <h2 class="text-center mb-4 text-info">Inviaci un messaggio</h2>
+    
+    <div *ngIf="successMessage" class="alert alert-success text-center">
+      {{ successMessage }}
+    </div>
+
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+      <div class="form-group mb-3">
+        <label>Nome</label>
+        <input type="text" formControlName="nome" class="form-control" [class.is-invalid]="submitted && contactForm.get('nome')?.errors">
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Email</label>
+        <input type="email" formControlName="email" class="form-control" [class.is-invalid]="submitted && contactForm.get('email')?.errors">
+      </div>
+
+      <div class="form-group mb-4">
+        <label>Messaggio</label>
+        <textarea formControlName="messaggio" class="form-control" rows="5" [class.is-invalid]="submitted && contactForm.get('messaggio')?.errors"></textarea>
+        <small class="text-muted" *ngIf="contactForm.get('messaggio')?.errors?.['minlength']">Il messaggio deve essere di almeno 10 caratteri.</small>
+      </div>
+
+      <button type="submit" class="btn btn-info btn-block font-weight-bold py-2">Invia Messaggio</button>
+    </form>
+  </div>
+</div>
