@@ -4,6 +4,7 @@ import {Prodotti} from "./prodotti/prodotti";
 import {Login} from "./login/login";
 import {Register} from "./register/register";
 import {Carrello} from "./carrello/carrello";
+import {Contattaci} from "./contattaci/contattaci";
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -11,5 +12,6 @@ export const routes: Routes = [
     { path: 'categoria/:nome', component: Prodotti},
     { path: 'login', component: Login},
     { path: 'register', component: Register},
-    { path: 'carrello', component: Carrello}
+    { path: 'carrello', component: Carrello},
+    { path: 'contattaci', component: Contattaci}
 ];

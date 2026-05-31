@@ -1,10 +1,10 @@
 import { Component, signal, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, RouterLink, Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CommonModule],
+  imports: [RouterOutlet, RouterModule, RouterLink, CommonModule,],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

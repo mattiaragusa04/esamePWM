@@ -22,6 +22,19 @@ app.get('/api/utenti', (req, res) => {
     });
 });
 
+//Rotta API per il form dei contatti
+app.post('/api/contatto',(req, res) => {
+    const {nome, email, messaggio } = req.body;
+    const sql = 'INSERT INTO messaggio_contatto (nome, email, messaggio) VALUES (?,?,?)';
+    db.run(sql, [nome, email, messaggio], function(err) {
+        if(err){
+            console.error(err.message);
+            return res.status(500).json({error: "Errore nel salvataggio del messaggio."});
+        }
+        res.status(201).json({ message: "Messaggio Ricevuto! Ti risponderemo al più presto"});
+    });
+});
+
 // Rotta API per la registrazione
 app.post('/api/register', (req, res) => {
     // Estraiamo i dati dal corpo della richiesta
