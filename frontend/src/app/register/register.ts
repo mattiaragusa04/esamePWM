@@ -60,6 +60,10 @@ export class Register {
           
           // Reindirizza l'utente alla home page con la sessione attiva
           this.router.navigate(['/']);
+        } else if (response.status === 400) {
+          const errorData = await response.json();
+          alert(errorData.error);
+          this.errorMessage = errorData.error;
         } else {
           alert('Errore durante la registrazione. Riprova.');
         }

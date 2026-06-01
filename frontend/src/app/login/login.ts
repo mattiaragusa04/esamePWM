@@ -49,6 +49,7 @@ export class Login {
         alert('Login effettuato con successo!');
         this.router.navigate(['/']); // Reindirizza alla home
       } else {
+        alert(this.errorMessage);
         this.errorMessage = 'Credenziali non valide. Riprova.';
       }
     }catch(error){
