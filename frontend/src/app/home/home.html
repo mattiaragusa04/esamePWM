@@ -1,19 +1,103 @@
 <style>
-  /* Assicura che il testo diventi bianco quando la card viene "hoverata" e il bottone si oscura */
-  .card:hover .btn-outline-dark {
-    background-color: #343a40 !important;
-    color: #ffffff !important;
+  .hero-box {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f172a , #2d1b4e  , #1e2d4a);
+    border-radius: 1rem;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
   }
 </style>
 
-<div class="p-5 mb-4 bg-dark text-white rounded shadow position-relative overflow-hidden text-center mt-3">
-  <div class="container-fluid py-5 position-relative" style="z-index: 2;">
-    <h1 class="display-4 font-weight-bold mb-3">Benvenuto su <span class="text-info">PA</span>werUP</h1>
-    <p class="lead mb-4">Il tuo portale di fiducia per console, videogiochi, accessori ed elettronica.</p>
-    <a routerLink="/videogiochi" class="btn btn-info btn-lg rounded-pill px-5 shadow font-weight-bold text-dark">Esplora il Catalogo</a>
+<div class="hero-box" #heroBox>
+  <canvas #particleCanvas class="particle-canvas"></canvas>
+  <div class="hero-content">
+    <h1>Benvenuto su <span class="text-info">PA</span>werUP</h1>
+    <p>Il tuo portale di fiducia per console, videogiochi, accessori ed elettronica.</p>
+    <a class="btn btn-info btn-lg rounded-pill px-5">Esplora il Catalogo</a>
   </div>
-  <!-- Sfondo decorativo con gradiente -->
-  <div class="position-absolute w-100 h-100" style="top: 0; left: 0; background: linear-gradient(135deg, #1f1c2c 0%, #302b63 100%); opacity: 0.9; z-index: 1;"></div>
+</div>
+
+<!-- Sezione Prodotti in Evidenza -->
+<div class="mt-5 container">
+  <h2 class="text-center mb-5 text-uppercase font-weight-bold text-white">Prodotti in <span class="text-info">Evidenza</span></h2>
+  
+  <!-- Messaggio di Debug temporaneo per capire se i dati ci sono -->
+  <p class="text-center text-muted" *ngIf="featuredProducts.length === 0">Nessun prodotto trovato.</p>
+
+  <div class="row">
+    <div class="col-md-3 mb-4" *ngFor="let prodotto of featuredProducts">
+      <div class="card h-100 shadow-lg border-info" style="background: rgba(30, 41, 59, 0.5) !important;">
+        <img [src]="prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
+        <div class="card-body text-center d-flex flex-column justify-content-between">
+          <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
+          <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzo }}</p>
+          <a class="btn btn-info rounded-pill px-4">Dettagli</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sezione Giochi in Arrivo -->
+<div class="mt-5 container">
+  <h2 class="text-center mb-5 text-uppercase font-weight-bold text-white">Giochi in <span class="text-info">Arrivo</span></h2>
+  
+  <!-- Debug: Messaggio se l'array dei giochi è vuoto -->
+  <p class="text-center text-muted" *ngIf="upcomingGames.length === 0">Nessun gioco in arrivo trovato.</p>
+
+  <div class="row">
+    <div class="col-md-3 mb-4" *ngFor="let gioco of upcomingGames">
+      <div class="card h-100 shadow-lg border-info" style="background: rgba(30, 41, 59, 0.5) !important;">
+        <img [src]="gioco.immagine" class="card-img-top p-3" [alt]="gioco.nome" style="height: 200px; object-fit: contain;">
+        <div class="card-body text-center d-flex flex-column justify-content-between">
+          <h5 class="card-title font-weight-bold">{{ gioco.nome }}</h5>
+          <p class="text-info font-weight-bold mb-3">{{ gioco.prezzo }}</p>
+          <a class="btn btn-info rounded-pill px-4">Preordina</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sezione I migliori Accessori -->
+<div class="mt-5 container">
+  <h2 class="text-center mb-5 text-uppercase font-weight-bold text-white">I migliori <span class="text-info">Accessori</span></h2>
+  
+  <!-- Debug: Messaggio se l'array degli accessori è vuoto -->
+  <p class="text-center text-muted" *ngIf="bestAccessories.length === 0">Nessun accessorio trovato.</p>
+
+  <div class="row">
+    <div class="col-md-3 mb-4" *ngFor="let accessorio of bestAccessories">
+      <div class="card h-100 shadow-lg border-info" style="background: rgba(30, 41, 59, 0.5) !important;">
+        <img [src]="accessorio.immagine" class="card-img-top p-3" [alt]="accessorio.nome" style="height: 200px; object-fit: contain;">
+        <div class="card-body text-center d-flex flex-column justify-content-between">
+          <h5 class="card-title font-weight-bold">{{ accessorio.nome }}</h5>
+          <p class="text-info font-weight-bold mb-3">{{ accessorio.prezzo }}</p>
+          <a class="btn btn-info rounded-pill px-4">Dettagli</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Card Categorie -->
@@ -24,7 +108,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-controller text-info mb-3" viewBox="0 0 16 16"><path d="M11.5 6.027a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1m2.5-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1M1 5.271c0-1.294 1.048-2.342 2.342-2.342h9.316C13.952 2.929 15 3.977 15 5.271v5.458c0 1.294-1.048 2.342-2.342 2.342H2.342C1.048 13.071 1 11.986 1 10.692zM2.342 3.929c-.74 0-1.342.602-1.342 1.342v5.458c0 .74.602 1.342 1.342 1.342h9.316c.74 0 1.342-.602 1.342-1.342V5.271c0-.74-.602-1.342-1.342-1.342z"/><path d="M7.625 7.927h-1.5v1.5a.5.5 0 0 1-1 0v-1.5h-1.5a.5.5 0 1 1 0-1h1.5v-1.5a.5.5 0 1 1 1 0v1.5h1.5a.5.5 0 1 1 0 1"/></svg>
         <h4 class="card-title font-weight-bold">Console</h4>
         <p class="card-text text-muted">Scopri le ultime novità next-gen e retro console per ogni tipo di videogiocatore.</p>
-        <a routerLink="/categoria/console" class="btn btn-outline-dark mt-auto stretched-link rounded-pill">Vedi Console</a>
+        <a routerLink="/categoria/console" class="btn btn-info rounded-pill px-4">Vedi Console</a>
       </div>
     </div>
   </div>
@@ -35,7 +119,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-disc text-info mb-3" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 4a4 4 0 0 0-4 4 .5.5 0 0 1-1 0 5 5 0 0 1 5-5 .5.5 0 0 1 0 1m4.5 3.5a.5.5 0 0 1 .5.5 5 5 0 0 1-5 5 .5.5 0 0 1 0-1 4 4 0 0 0 4-4 .5.5 0 0 1 .5-.5"/></svg>
         <h4 class="card-title font-weight-bold">Videogiochi</h4>
         <p class="card-text text-muted">Migliaia di titoli per tutte le piattaforme. Dai grandi classici alle nuove uscite.</p>
-        <a routerLink="/categoria/videogiochi" class="btn btn-outline-dark mt-auto stretched-link rounded-pill">Sfoglia Giochi</a>
+        <a routerLink="/categoria/videogiochi" class="btn btn-info rounded-pill px-4">Sfoglia Giochi</a>
       </div>
     </div>
   </div>
@@ -46,7 +130,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-headset text-info mb-3" viewBox="0 0 16 16"><path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5"/></svg>
         <h4 class="card-title font-weight-bold">Accessori</h4>
         <p class="card-text text-muted">Potenzia il tuo setup con i migliori accessori gaming e periferiche sul mercato.</p>
-        <a routerLink="/categoria/accessori" class="btn btn-outline-dark mt-auto stretched-link rounded-pill">Scopri Accessori</a>
+        <a routerLink="/categoria/accessori" class="btn btn-info rounded-pill px-4">Scopri Accessori</a>
       </div>
     </div>
   </div>
@@ -57,7 +141,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-cpu text-info mb-3" viewBox="0 0 16 16"><path d="M5 0h2v1h2V0h2v1h1a2 2 0 0 1 2 2v1h1v2h-1v2h1v2h-1v1a2 2 0 0 1-2 2h-1v1h-2v-1h-2v1H5v-1H4a2 2 0 0 1-2-2v-1H1V9h1V7H1V5h1V4a2 2 0 0 1 2-2h1zM4 2a1 1 0 0 0-1 1v1h1v2H3v2h1v2H3v1a1 1 0 0 0 1 1h1v-1h2v1h2v-1h2v1h1a1 1 0 0 0 1-1v-1h-1v-2h1V7h-1V5h1V4a1 1 0 0 0-1-1h-1v1H9V2H7v1H5V2z"/><path d="M5.5 5.5h5v5h-5zM6 6v4h4V6z"/></svg>
         <h4 class="card-title font-weight-bold">Elettronica</h4>
         <p class="card-text text-muted">Hardware, componenti e dispositivi tech per portare le tue performance al top.</p>
-        <a routerLink="/categoria/elettronica" class="btn btn-outline-dark mt-auto stretched-link rounded-pill">Esplora Tech</a>
+        <a routerLink="/categoria/elettronica" class="btn btn-info rounded-pill px-4">Esplora Tech</a>
       </div>
     </div>
   </div>

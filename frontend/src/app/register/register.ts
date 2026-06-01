@@ -10,6 +10,8 @@ import { Router, RouterLink } from '@angular/router';
 export class Register {
   tipoSelezionato: string = '';
   submitted: boolean = false;
+  isLoading: boolean = false;
+  errorMessage: string = '';
   registerForm: FormGroup;
 
   constructor(private fb: FormBuilder, private router: Router) {
@@ -19,31 +21,21 @@ export class Register {
       cognome: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{6,}$/)]],
-      confermaPassword: ['', Validators.required],
-      tipoIndirizzo: ['', Validators.required],
-      via: ['', Validators.required],
-      numeroCivico: ['', Validators.required],
-      paese: ['', Validators.required],
-      provincia: ['', Validators.required]
+      confermaPassword: ['', Validators.required]
     });
-  }
-
-  impostaTipoIndirizzo(tipo: string) {
-    this.tipoSelezionato = tipo;
-    // Aggiorniamo il valore del tipo di indirizzo all'interno del form
-    this.registerForm.patchValue({ tipoIndirizzo: tipo });
   }
 
   async onSubmit() {
     this.submitted = true;
+    this.errorMessage = '';
     
     if (this.registerForm.get('password')?.value !== this.registerForm.get('confermaPassword')?.value) {
-      alert('Le password non coincidono. Riprova.');
+      this.errorMessage = 'Le password non coincidono.';
       return; // Interrompe l'invio se le password non coincidono
     }
 
     if (this.registerForm.valid) {
-      console.log('Dati pronti per essere inviati al server:', this.registerForm.value);
+      this.isLoading = true;
       
       try {
         // Chiamata al backend con fetch

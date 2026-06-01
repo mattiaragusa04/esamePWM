@@ -9,6 +9,8 @@ import { Router, RouterLink } from '@angular/router';
 })
 export class Login {
   submitted: boolean = false;
+  isLoading: boolean = false;
+  errorMessage: string = '';
   email: string = '';
   password: string = '';
   loginForm: FormGroup;
@@ -21,12 +23,13 @@ export class Login {
   }
   async onSubmit() {
     this.submitted = true;
-    if (this.loginForm.valid) {
-      console.log('Tentativo di login con:', this.loginForm.value);
-    } else {
-      console.log('Attenzione: il form contiene errori di validazione.');
+    this.errorMessage = '';
+
+    if (!this.loginForm.valid) {
+      return;
     }
 
+    this.isLoading = true;
     try{
       const response = await fetch('http://localhost:3000/api/login', {
         method: 'POST',
@@ -46,15 +49,13 @@ export class Login {
         alert('Login effettuato con successo!');
         this.router.navigate(['/']); // Reindirizza alla home
       } else {
-        alert('Login non riuscito. Riprova.');
+        this.errorMessage = 'Credenziali non valide. Riprova.';
       }
-      
     }catch(error){
       console.error('Errore durante il login:', error);
-      alert('Si è verificato un errore. Riprova.');
+      this.errorMessage = 'Errore di connessione al server.';
+    } finally {
+      this.isLoading = false;
     }
-    
   }
-
-
 }

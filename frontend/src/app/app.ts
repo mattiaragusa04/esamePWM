@@ -10,6 +10,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 })
 export class App implements OnInit {
   protected readonly title = signal('PAwerUP');
+  //Per provare con utente loggato = {nome: 'Prova'}
   utenteLoggato: any = null;
 
   constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {

@@ -1,7 +1,19 @@
 :root {
   /* Definizione dei colori globali */
   --main-color: #f86ded;       /* Rosa principale */
-  --main-color-hover: #e6005c; /* Rosa più scuro per l'hover */
+  --main-color-hover: #ff9ef8; /* Rosa più luminoso e acceso */
+  --bg-dark: #0f172a;          /* Blu scuro profondo*/
+  --card-bg: #0f172a           /* Blu scuro profondo - Colore "Carta" Login*/
+; /* Sfondo card semi-trasparente */
+  --text-secondary: #ffffff;   /* Colore testo attenuato */
+}
+
+/* Applichiamo lo sfondo scuro globale al body */
+body {
+  background-color: var(--bg-dark);
+  color: #f8fafc; /* Testo quasi bianco */
+  min-height: 100vh;
+  margin: 0;
 }
 
 /* Sovrascrizione classi Bootstrap per riflettere il nuovo brand */
@@ -9,15 +21,25 @@
   color: var(--main-color) !important;
 }
 
-.btn-info {
-  background-color: var(--main-color) !important;
-  border-color: var(--main-color) !important;
-  color: white !important;
+/* Stile base per tutti i bottoni per renderli fluidi */
+.btn {
+  transition: all 0.3s ease-in-out !important;
 }
 
-.btn-info:hover, .btn-info:focus {
+/* Applichiamo lo stile PAwerUP a btn-info e a una nuova classe .btn-home */
+.btn-info, .btn-home {
+  background-color: var(--main-color) !important;
+  border-color: var(--main-color) !important;
+  color: rgb(255, 255, 255) !important;
+}
+
+.btn-info:hover, .btn-info:focus,
+.btn-home:hover, .btn-home:focus {
   background-color: var(--main-color-hover) !important;
   border-color: var(--main-color-hover) !important;
+  box-shadow: 0 0 20px rgba(248, 109, 237, 0.6); /* Effetto neon/glow rosa */
+  transform: translateY(-2px); /* Leggero sollevamento per feedback visivo */
+  color: white !important;
 }
 
   .dropdown .dropdown-menu {
@@ -41,11 +63,16 @@
   }
 
   /* Hover e active delle voci navbar */
+.navbar-brand {
+  font-size: 1.6rem !important;
+}
+
 .navbar-nav .nav-link {
   position: relative;
   color: rgba(255, 255, 255, 0.8) !important;
   transition: color 0.5s ease;
   padding-bottom: 7px;
+  font-size: 1.3rem;
 }
 
 .navbar-nav .nav-link::after {
@@ -68,3 +95,86 @@
 .navbar-nav .nav-link.active::after {
   width: 100%;
 }
+
+.auth-card {
+  background: rgba(110, 110, 110, 0.103); /* Effetto vetro */
+  backdrop-filter: blur(10px); /* Sfocatura sfondo */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+}
+
+/* Adattiamo tutte le card per il tema scuro */
+.card {
+  background-color: var(--card-bg) !important;
+  border: 4px solid #f86ded !important;
+  color: white !important;
+  backdrop-filter: blur(10px); /* Effetto vetro sfocato */
+}
+
+/* Sistemiamo i testi muti di Bootstrap che sul bianco erano grigi, qui devono essere più chiari */
+.text-muted {
+  color: var(--text-secondary) !important;
+}
+
+/* Rendi gli input dei form meno "sparati" */
+.bg-light {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: white !important;
+}
+
+/* Stili per l'Hero Box e l'effetto particelle */
+.hero-box {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a1a2e, #f86ded , #06b6d4);
+  border-radius: 1rem;
+  min-height: 380px; /* Assicurati che ci sia un'altezza minima */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.particle-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1; /* Sopra al canvas */
+  text-align: center;
+  color: white;
+}
+
+/* Footer Glassmorphism */
+.footer {
+  background: #0f1729;
+  backdrop-filter: blur(10px);
+}
+
+.social-icon {
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  padding: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  text-decoration: none;
+}
+
+.social-icon:hover {
+  transform: translateY(-5px);
+  background: rgba(248, 109, 237, 0.1);
+  box-shadow: 0 0 15px rgba(248, 109, 237, 0.4);
+}
+
+/* Colori specifici al passaggio del mouse per i social */
+.social-icon.instagram:hover { color: #E1306C; }
+.social-icon.tiktok:hover { color: #00f2ea; }
+.social-icon.facebook:hover { color: #1877F2; }
+
+.gap-3 { gap: 1rem; }
