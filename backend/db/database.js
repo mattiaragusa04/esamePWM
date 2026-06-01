@@ -103,8 +103,12 @@ CREATE TABLE IF NOT EXISTS coupon (
 CREATE TABLE IF NOT EXISTS messaggio_contatto (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
+    indirizzo TEXT,
     email TEXT NOT NULL,
-    messaggio TEXT NOT NULL,
+    tipoRichiesta TEXT,
+    oggetto TEXT,
+    descrizione TEXT NOT NULL,
+    allegato TEXT,
     data TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `);

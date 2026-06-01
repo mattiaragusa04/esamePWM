@@ -1,29 +1,86 @@
-<div class="container mt-5">
-  <div class="card shadow p-4 mx-auto" style="max-width: 600px; border-radius: 1rem;">
-    <h2 class="text-center mb-4 text-info">Inviaci un messaggio</h2>
+<div class="container mt-5 mb-5">
+  <div class="card shadow p-5 mx-auto" style="max-width: 800px; border-radius: 1rem; border: 2px solid #17a2b8;">
+    <h2 class="text-center mb-5 text-info font-weight-bold">Inviaci un messaggio</h2>
     
-    <div *ngIf="successMessage" class="alert alert-success text-center">
-      {{ successMessage }}
+    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show text-center" role="alert">
+      <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
     </div>
 
     <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
-      <div class="form-group mb-3">
-        <label>Nome</label>
-        <input type="text" formControlName="nome" class="form-control" [class.is-invalid]="submitted && contactForm.get('nome')?.errors">
-      </div>
-
-      <div class="form-group mb-3">
-        <label>Email</label>
-        <input type="email" formControlName="email" class="form-control" [class.is-invalid]="submitted && contactForm.get('email')?.errors">
-      </div>
-
+      <!-- Nome -->
       <div class="form-group mb-4">
-        <label>Messaggio</label>
-        <textarea formControlName="messaggio" class="form-control" rows="5" [class.is-invalid]="submitted && contactForm.get('messaggio')?.errors"></textarea>
-        <small class="text-muted" *ngIf="contactForm.get('messaggio')?.errors?.['minlength']">Il messaggio deve essere di almeno 10 caratteri.</small>
+        <label class="font-weight-bold mb-2" style="color: white;">Il tuo nome <span class="text-danger">*</span></label>
+        <input type="text" formControlName="nome" class="form-control" placeholder="Es. Mario Rossi" [class.is-invalid]="submitted && contactForm.get('nome')?.errors">
+        <small class="text-danger" *ngIf="submitted && contactForm.get('nome')?.errors?.['required']">Il nome è obbligatorio.</small>
+        <small class="text-danger" *ngIf="submitted && contactForm.get('nome')?.errors?.['minlength']">Il nome deve avere almeno 2 caratteri.</small>
       </div>
 
-      <button type="submit" class="btn btn-info btn-block font-weight-bold py-2">Invia Messaggio</button>
+      <!-- Indirizzo -->
+      <div class="form-group mb-4">
+        <label class="font-weight-bold mb-2" style="color: white;">Il tuo indirizzo <span class="text-danger">*</span></label>
+        <input type="text" formControlName="indirizzo" class="form-control" placeholder="Es. Via Roma 123, 20100 Milano" [class.is-invalid]="submitted && contactForm.get('indirizzo')?.errors">
+        <small class="text-danger" *ngIf="submitted && contactForm.get('indirizzo')?.errors?.['required']">L'indirizzo è obbligatorio.</small>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group mb-4">
+        <label class="font-weight-bold mb-2" style="color: white;">Email <span class="text-danger">*</span></label>
+        <input type="email" formControlName="email" class="form-control" placeholder="Es. mario@example.com" [class.is-invalid]="submitted && contactForm.get('email')?.errors">
+        <small class="text-danger" *ngIf="submitted && contactForm.get('email')?.errors?.['required']">L'email è obbligatoria.</small>
+        <small class="text-danger" *ngIf="submitted && contactForm.get('email')?.errors?.['email']">Inserisci un'email valida.</small>
+      </div>
+
+      <!-- Tipo di Richiesta -->
+      <div class="form-group mb-4">
+        <label class="font-weight-bold mb-2" style="color: white;">Tipo di Richiesta <span class="text-danger">*</span></label>
+        <select formControlName="tipoRichiesta" class="form-control" [class.is-invalid]="submitted && contactForm.get('tipoRichiesta')?.errors">
+          <option value="">-- Seleziona un tipo di richiesta --</option>
+          <option *ngFor="let tipo of tipiRichiesta" [value]="tipo.id">{{ tipo.label }}</option>
+        </select>
+        <small class="text-danger" *ngIf="submitted && contactForm.get('tipoRichiesta')?.errors?.['required']">Seleziona un tipo di richiesta.</small>
+      </div>
+
+      <!-- Oggetto -->
+      <div class="form-group mb-4">
+        <label class="font-weight-bold mb-2" style="color: white;">Oggetto <span class="text-danger">*</span></label>
+        <input type="text" formControlName="oggetto" class="form-control" placeholder="Riassumi il motivo della tua richiesta" [class.is-invalid]="submitted && contactForm.get('oggetto')?.errors">
+        <small class="text-danger" *ngIf="submitted && contactForm.get('oggetto')?.errors?.['required']">L'oggetto è obbligatorio.</small>
+        <small class="text-danger" *ngIf="submitted && contactForm.get('oggetto')?.errors?.['minlength']">L'oggetto deve avere almeno 5 caratteri.</small>
+      </div>
+
+      <!-- Descrizione -->
+      <div class="form-group mb-4">
+        <label class="font-weight-bold mb-2" style="color: white;">Descrizione <span class="text-danger">*</span></label>
+        <textarea formControlName="descrizione" class="form-control" rows="6" placeholder="Descrivi nel dettaglio il motivo della tua richiesta..." [class.is-invalid]="submitted && contactForm.get('descrizione')?.errors"></textarea>
+        <small class="text-muted">Minimo 10 caratteri</small>
+        <small class="text-danger" *ngIf="submitted && contactForm.get('descrizione')?.errors?.['required']">La descrizione è obbligatoria.</small>
+        <small class="text-danger" *ngIf="submitted && contactForm.get('descrizione')?.errors?.['minlength']">La descrizione deve avere almeno 10 caratteri.</small>
+      </div>
+
+      <!-- File Upload -->
+      <div class="form-group mb-4">
+        <label class="font-weight-bold mb-2" style="color: white;">
+          <i class="bi bi-paperclip me-2"></i>Allego un file (facoltativo)
+        </label>
+        <input type="file" class="form-control" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx">
+        <small class="text-muted">Formati accettati: PDF, JPG, PNG, DOC, DOCX, XLSX (Max 5MB)</small>
+        <div *ngIf="selectedFile" class="alert alert-info mt-2 mb-0">
+          <i class="bi bi-check-circle me-2"></i>File selezionato: {{ selectedFile.name }}
+        </div>
+        <div *ngIf="fileError" class="alert alert-danger mt-2 mb-0">
+          <i class="bi bi-exclamation-circle me-2"></i>{{ fileError }}
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-info btn-block font-weight-bold py-3 w-100" [disabled]="submitted && contactForm.invalid">
+        <i class="bi bi-send me-2"></i>Invia Messaggio
+      </button>
     </form>
+
+    <hr class="my-4">
+    <p class="text-center text-muted small">
+      <i class="bi bi-info-circle me-2"></i>Riceverai una risposta entro 2 giorni lavorativi.
+    </p>
   </div>
 </div>
