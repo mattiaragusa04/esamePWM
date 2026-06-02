@@ -122,7 +122,7 @@
 }
 
 .search-container-animated.open {
-  width: 180px;
+  width: 280px;
 }
 
 .search-icon-btn {
@@ -148,7 +148,7 @@
 .search-input-wrapper {
   position: absolute;
   left: 0;
-  width: 180px; /* Larghezza fissa per non far saltare gli elementi interni */
+  width: 280px; /* Larghezza fissa per non far saltare gli elementi interni */
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;

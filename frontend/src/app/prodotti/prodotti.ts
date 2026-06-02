@@ -1,14 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-// Interfaccia di base per il prodotto (adattala al tuo modello reale)
+// Interfaccia allineata al database SQLite
 export interface Prodotto {
   id: number;
+  categoria_id: number;
   nome: string;
-  prezzo: number;
   descrizione: string;
+  giacenza: number;
+  immagine: string;
+  prezzoUnitarioAcquisto: number;
+  prezzoUnitarioVendita: number;
+  pubblicatoAcquisto: boolean;
+  pubblicatoVetrina: boolean;
+  condizione: string;
 }
 
 @Component({
@@ -19,15 +26,59 @@ export interface Prodotto {
 })
 export class Prodotti implements OnInit {
   categoriaDenominazione: string | null = null;
+  prodotti: Prodotto[] = new Array<Prodotto>();
+  isLoading: boolean = false;
+  errorMessage: string = '';
 
-  constructor(private route: ActivatedRoute) {}
+  // Mappatura tra il nome nella URL e l'ID della categoria nel DB
+  private categoriaMap: { [key: string]: number } = {
+    'console': 1,
+    'videogiochi': 2,
+    'accessori': 3,
+    'elettronica': 4
+  };
+
+  constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      // In app.routes.ts abbiamo "{ path: 'categoria/:nome', ... }" quindi leggiamo 'nome'
       this.categoriaDenominazione = params.get('nome');
       console.log('Categoria selezionata:', this.categoriaDenominazione);
       
+      if (this.categoriaDenominazione) {
+        this.caricaProdotti(this.categoriaDenominazione);
+      }
     });
+  }
+
+  async caricaProdotti(nomeCategoria: string) {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.prodotti = [];
+
+    const categoriaId = this.categoriaMap[nomeCategoria.toLowerCase()];
+
+    if (!categoriaId) {
+      this.errorMessage = 'Categoria non trovata.';
+      this.isLoading = false;
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/prodotti/categoria/${categoriaId}`);
+      if (response.ok) {
+        this.prodotti = await response.json();
+        console.log('Prodotti caricati con successo:', this.prodotti);
+        this.cdr.detectChanges(); // Forza l'aggiornamento dell'HTML
+      } else {
+        this.errorMessage = 'Errore nel recupero dei prodotti.';
+      }
+    } catch (error) {
+      console.error('Errore di connessione al server:', error);
+      this.errorMessage = 'Impossibile contattare il server.';
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
   }
 }

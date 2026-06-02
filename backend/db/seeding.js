@@ -15,11 +15,11 @@ function seedDatabase() {
     });
     db.get ("SELECT COUNT(*) AS count from prodotto", (err, row) => {
         if (row && row.count === 0) {
-            const stmt = db.prepare("INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, prezzoUnitarioAcquisto, prezzoUnitarioVendita, pubblicatoAcquisto, pubblicatoVetrina, condizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            stmt.run(1, 'PlayStation 5', 'Console di ultima generazione', 10, 400, 500, true, true, 'Nuovo');
-            stmt.run(2, 'The Legend of Zelda: Breath of the Wild', 'Videogioco per Nintendo Switch', 20, 30, 50, true, true, 'Nuovo');
-            stmt.run(3, 'Controller Xbox Series X', 'Controller wireless per Xbox Series X', 15, 50, 70, true, true, 'Nuovo');
-            stmt.run(4, 'Smartphone Samsung Galaxy S21', 'Smartphone di fascia alta', 5, 600, 800, true, true, 'Nuovo');
+            const stmt = db.prepare("INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioAcquisto, prezzoUnitarioVendita, pubblicatoAcquisto, pubblicatoVetrina, condizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            stmt.run(1, 'PlayStation 5', 'Console di ultima generazione', 10, 'ps5.jpg', 400, 500, true, true, 'Nuovo');
+            stmt.run(2, 'The Legend of Zelda: Breath of the Wild', 'Videogioco per Nintendo Switch', 20, 'zelda.jpg', 30, 50, true, true, 'Nuovo');
+            stmt.run(3, 'Controller Xbox Series X', 'Controller wireless per Xbox Series X', 15, 'controller_xbox.jpg', 50, 70, true, true, 'Nuovo');
+            stmt.run(4, 'Smartphone Samsung Galaxy S21', 'Smartphone di fascia alta', 5, 's21.jpg', 600, 800, true, true, 'Nuovo');
             stmt.finalize((err) => {
                 if (err) {
                     console.error('Errore durante il popolamento del database:', err);

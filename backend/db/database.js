@@ -36,6 +36,7 @@ CREATE TABLE if not exists prodotto (
     nome TEXT NOT NULL,
     descrizione TEXT NOT NULL,
     giacenza INTEGER NOT NULL,
+    immagine TEXT NOT NULL,
     prezzoUnitarioAcquisto double NOT NULL,
     prezzoUnitarioVendita double NOT NULL,
     pubblicatoAcquisto boolean NOT NULL,
