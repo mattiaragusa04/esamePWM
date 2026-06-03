@@ -69,6 +69,20 @@ body {
   backdrop-filter: blur(10px); /* Effetto vetro sfocato */
 }
 
+/* Stile specifico per le card dei prodotti, con effetto hover */
+.product-card {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important; 
+  border-radius: 1rem !important; /* Aggiunge i bordi arrotondati */
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  overflow: hidden !important;
+}
+
+.product-card:hover {
+  transform: scale(1.05) !important; /* Ingrandisce la card al passaggio del mouse */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(248, 109, 237, 0.2) !important;
+  z-index: 10 !important; /* Evita che la card finisca sotto le altre quando si ingrandisce */
+}
+
 /* Sistemiamo i testi muti di Bootstrap */
 .text-muted {
   color: var(--text-secondary) !important;

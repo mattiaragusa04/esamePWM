@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ViewChild, ElementRef, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ElementRef, AfterViewInit, Inject, PLATFORM_ID, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 
@@ -11,19 +11,13 @@ interface Particle {
   color: string;
 }
 
-interface FeaturedProduct {
-  nome: string;
-  immagine: string;
-  prezzo: string;
-}
-
 @Component({
   selector: 'app-home',
   imports: [RouterLink, CommonModule],
   templateUrl: './home.html',
   styleUrls: ['./home.css'],
 })
-export class Home implements AfterViewInit, OnDestroy {
+export class Home implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('particleCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('heroBox') heroBoxRef!: ElementRef<HTMLDivElement>;
@@ -37,28 +31,37 @@ export class Home implements AfterViewInit, OnDestroy {
 
   private COLORS = ['#f86ded', '#a78bfa'];
 
-  public featuredProducts: FeaturedProduct[] = [
-    { nome: 'PlayStation 5', immagine: 'https://gmedia.playstation.com/is/image/SIEPDC/ps5-product-thumbnail-01-en-14sep21?$facebook$', prezzo: '499,99€' },
-    { nome: 'Xbox Series X', immagine: 'https://www.businessinsider.com/microsoft-xbox-series-x-photos-2019-12', prezzo: '499,99€' },
-    { nome: 'Nintendo Switch', immagine: 'https://assets.nintendo.com/image/upload/f_auto/q_auto/dpr_2.0/c_scale,w_400/ncom/en_US/switch/system/nintendo-switch-oled-model-white-set', prezzo: '349,99€' },
-    { nome: 'DualSense Edge', immagine: 'https://gmedia.playstation.com/is/image/SIEPDC/dualsense-edge-image-block-01-en-24aug22?$native$', prezzo: '239,99€' }
-  ];
+  public featuredProducts: any[] = [];
+  public upcomingGames: any[] = [];
+  public bestAccessories: any[] = [];
 
-  public upcomingGames: FeaturedProduct[] = [
-    { nome: 'GTA VI', immagine: 'https://media-rockstargames-com.akamaized.net/rockstargames-newsite/img/global/games/fob/640/GTAVI.jpg', prezzo: '2025' },
-    { nome: 'Death Stranding 2', immagine: 'https://image.api.playstation.com/vulcan/ap/rnd/202401/3011/5069a531f9872e420211367098e94e77699d63f044738596.png', prezzo: 'TBA' },
-    { nome: 'Monster Hunter Wilds', immagine: 'https://image.api.playstation.com/vulcan/ap/rnd/202405/2203/c02f066b57956976839b20b69101d2d0f507b51f041496a8.png', prezzo: '2025' },
-    { nome: 'Indiana Jones', immagine: 'https://gaming-cdn.com/images/products/15729/orig/indiana-jones-and-the-great-circle-pc-gioco-steam-cover.jpg', prezzo: 'Dic 2024' }
-  ];
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef) {}
 
-  public bestAccessories: FeaturedProduct[] = [
-    { nome: 'Pulse Elite Wireless', immagine: 'https://gmedia.playstation.com/is/image/SIEPDC/pulse-elite-image-block-01-en-24aug23?$native$', prezzo: '149,99€' },
-    { nome: 'Xbox Elite Series 2', immagine: 'https://m.media-amazon.com/images/I/71m6pS6S-pL._AC_SL1500_.jpg', prezzo: '179,99€' },
-    { nome: 'Razer Kishi V2', immagine: 'https://m.media-amazon.com/images/I/61N+U9+l04L._AC_SL1500_.jpg', prezzo: '119,99€' },
-    { nome: 'Logitech G Cloud', immagine: 'https://m.media-amazon.com/images/I/51-mF27xZpL._AC_SL1500_.jpg', prezzo: '359,00€' }
-  ];
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.caricaDatiCatalogo();
+    }
+  }
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  async caricaDatiCatalogo() {
+    try {
+      // Console (Categoria 1) -> Prodotti in evidenza
+      const resConsole = await fetch('http://localhost:3000/api/prodotti/categoria/1');
+      if (resConsole.ok) this.featuredProducts = (await resConsole.json()).slice(0, 4);
+
+      // Videogiochi (Categoria 2) -> Giochi in arrivo
+      const resGiochi = await fetch('http://localhost:3000/api/prodotti/categoria/2');
+      if (resGiochi.ok) this.upcomingGames = (await resGiochi.json()).slice(0, 4);
+
+      // Accessori (Categoria 3) -> I migliori accessori
+      const resAccessori = await fetch('http://localhost:3000/api/prodotti/categoria/3');
+      if (resAccessori.ok) this.bestAccessories = (await resAccessori.json()).slice(0, 4);
+
+      this.cdr.detectChanges(); // Aggiorna la vista
+    } catch (error) {
+      console.error('Errore nel caricamento del catalogo dalla Home:', error);
+    }
+  }
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {

@@ -46,11 +46,11 @@
 
   <div class="row">
     <div class="col-md-3 mb-4" *ngFor="let prodotto of featuredProducts">
-      <div class="card h-100 shadow-lg border-info" style="background: rgba(30, 41, 59, 0.5) !important;">
-        <img [src]="prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
+      <div class="card h-100 shadow-lg product-card">
+        <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : '/assets/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
         <div class="card-body text-center d-flex flex-column justify-content-between">
           <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
-          <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzo }}</p>
+          <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
           <a class="btn btn-info rounded-pill px-4">Dettagli</a>
         </div>
       </div>
@@ -67,11 +67,11 @@
 
   <div class="row">
     <div class="col-md-3 mb-4" *ngFor="let gioco of upcomingGames">
-      <div class="card h-100 shadow-lg border-info" style="background: rgba(30, 41, 59, 0.5) !important;">
-        <img [src]="gioco.immagine" class="card-img-top p-3" [alt]="gioco.nome" style="height: 200px; object-fit: contain;">
+      <div class="card h-100 shadow-lg product-card">
+        <img [src]="gioco.immagine.includes('http') ? gioco.immagine : '/assets/' + gioco.immagine" class="card-img-top p-3" [alt]="gioco.nome" style="height: 200px; object-fit: contain;">
         <div class="card-body text-center d-flex flex-column justify-content-between">
           <h5 class="card-title font-weight-bold">{{ gioco.nome }}</h5>
-          <p class="text-info font-weight-bold mb-3">{{ gioco.prezzo }}</p>
+          <p class="text-info font-weight-bold mb-3">{{ gioco.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
           <a class="btn btn-info rounded-pill px-4">Preordina</a>
         </div>
       </div>
@@ -88,11 +88,11 @@
 
   <div class="row">
     <div class="col-md-3 mb-4" *ngFor="let accessorio of bestAccessories">
-      <div class="card h-100 shadow-lg border-info" style="background: rgba(30, 41, 59, 0.5) !important;">
-        <img [src]="accessorio.immagine" class="card-img-top p-3" [alt]="accessorio.nome" style="height: 200px; object-fit: contain;">
+      <div class="card h-100 shadow-lg product-card">
+        <img [src]="accessorio.immagine.includes('http') ? accessorio.immagine : '/assets/' + accessorio.immagine" class="card-img-top p-3" [alt]="accessorio.nome" style="height: 200px; object-fit: contain;">
         <div class="card-body text-center d-flex flex-column justify-content-between">
           <h5 class="card-title font-weight-bold">{{ accessorio.nome }}</h5>
-          <p class="text-info font-weight-bold mb-3">{{ accessorio.prezzo }}</p>
+          <p class="text-info font-weight-bold mb-3">{{ accessorio.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
           <a class="btn btn-info rounded-pill px-4">Dettagli</a>
         </div>
       </div>
