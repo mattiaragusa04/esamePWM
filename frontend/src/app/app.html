@@ -8,12 +8,12 @@
         <span class="text-info">PA</span><span class="text-white">werUP</span>
       </a>
       
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" (click)="toggleMenu()" [attr.aria-expanded]="!isMenuCollapsed" aria-controls="navbarNav" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <!-- Voci di menu principali -->
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed" id="navbarNav">
         <ul class="navbar-nav mr-auto align-items-center">
           
           <li class="nav-item">

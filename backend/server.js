@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db/database');
 const seedDatabase = require('./db/seeding'); // 1. Importa il file di seeding
+const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
 const prodottiRoutes = require('./routes/prodottiRoutes');
@@ -18,6 +19,9 @@ app.use(cors({
 }));
 
 app.use(express.json()); // Permette al server di leggere dati in formato JSON
+
+// Rende pubblica la cartella "public" del backend per servire le immagini statiche
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/api/auth', authRoutes);

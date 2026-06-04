@@ -31,9 +31,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
 
   private COLORS = ['#f86ded', '#a78bfa'];
 
-  public featuredProducts: any[] = [];
-  public upcomingGames: any[] = [];
-  public bestAccessories: any[] = [];
+  public prodottiConsigliati: any[] = [];
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef) {}
 
@@ -45,17 +43,13 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
 
   async caricaDatiCatalogo() {
     try {
-      // Console (Categoria 1) -> Prodotti in evidenza
-      const resConsole = await fetch('http://localhost:3000/api/prodotti/categoria/1');
-      if (resConsole.ok) this.featuredProducts = (await resConsole.json()).slice(0, 4);
-
-      // Videogiochi (Categoria 2) -> Giochi in arrivo
-      const resGiochi = await fetch('http://localhost:3000/api/prodotti/categoria/2');
-      if (resGiochi.ok) this.upcomingGames = (await resGiochi.json()).slice(0, 4);
-
-      // Accessori (Categoria 3) -> I migliori accessori
-      const resAccessori = await fetch('http://localhost:3000/api/prodotti/categoria/3');
-      if (resAccessori.ok) this.bestAccessories = (await resAccessori.json()).slice(0, 4);
+      // Carica tutti i prodotti e mescolali per un effetto "consigliato"
+      const response = await fetch('http://localhost:3000/api/prodotti');
+      if (response.ok) {
+        const tuttiIProdotti = await response.json();
+        // Mescola l'array per un effetto casuale e ne prende 12
+        this.prodottiConsigliati = tuttiIProdotti.sort(() => 0.5 - Math.random()).slice(0, 12);
+      }
 
       this.cdr.detectChanges(); // Aggiorna la vista
     } catch (error) {

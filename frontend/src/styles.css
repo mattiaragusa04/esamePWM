@@ -83,6 +83,16 @@ body {
   z-index: 10 !important; /* Evita che la card finisca sotto le altre quando si ingrandisce */
 }
 
+/* Tronca i titoli dei prodotti troppo lunghi e uniforma l'altezza delle card */
+.product-card .card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Mostra al massimo 2 righe di testo */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 3rem; /* Forza lo spazio per 2 righe anche se il titolo è corto */
+}
+
 /* Sistemiamo i testi muti di Bootstrap */
 .text-muted {
   color: var(--text-secondary) !important;

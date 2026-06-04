@@ -14,6 +14,7 @@ export class App implements OnInit {
   utenteLoggato: any = null;
   termineRicerca: string = '';
   mostraRicerca: boolean = false;
+  isMenuCollapsed: boolean = true;
 
   @ViewChild('searchContainer') searchContainer!: ElementRef;
   @ViewChild('searchInput') searchInput!: ElementRef;
@@ -72,6 +73,10 @@ export class App implements OnInit {
         setTimeout(() => this.searchInput?.nativeElement.focus(), 0);
       }
     }
+  }
+
+  toggleMenu(): void {
+    this.isMenuCollapsed = !this.isMenuCollapsed;
   }
 
   cerca(){
