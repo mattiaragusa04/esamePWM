@@ -6,15 +6,17 @@ import {Register} from "./register/register";
 import {Carrello} from "./carrello/carrello";
 import {Profilo} from "./profilo/profilo";
 import {Contattaci} from "./contattaci/contattaci";
-
+import { DettagliProdotto } from './dettagli-prodotto/dettagli-prodotto';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home', component: Home},
     { path: 'categoria/:nome', component: Prodotti},
+    { path: 'dettagli-prodotto/:id', component: DettagliProdotto},
     { path: 'login', component: Login},
     { path: 'register', component: Register},
     { path: 'carrello', component: Carrello},
     { path: 'contattaci', component: Contattaci},
     { path: 'profilo', component: Profilo}
+
 ];

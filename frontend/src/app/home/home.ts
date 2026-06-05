@@ -56,7 +56,6 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       console.error('Errore nel caricamento del catalogo dalla Home:', error);
     }
   }
-
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       const canvas = this.canvasRef.nativeElement;
@@ -166,4 +165,5 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+
 }

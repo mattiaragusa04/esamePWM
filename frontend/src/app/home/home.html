@@ -41,7 +41,7 @@
 
   .horizontal-scroll-item {
     display: inline-block;
-    width: 280px; /* Larghezza fissa per ogni card */
+    width: 200px; /* Larghezza fissa per ogni card */
     margin-right: 1.5rem;
     vertical-align: top;
     white-space: normal; /* Ripristina il wrapping del testo dentro la card */
@@ -87,7 +87,7 @@
           <div class="card-body text-center d-flex flex-column justify-content-between">
             <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
             <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
-            <a class="btn btn-info rounded-pill px-4">Dettagli</a>
+            <a class="btn btn-info rounded-pill px-4 " [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
           </div>
         </div>
       </div>

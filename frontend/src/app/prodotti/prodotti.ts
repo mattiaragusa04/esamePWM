@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -20,13 +20,15 @@ export interface Prodotto {
 
 @Component({
   selector: 'app-prodotti',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './prodotti.html',
   styleUrl: './prodotti.css',
 })
 export class Prodotti implements OnInit {
   categoriaDenominazione: string | null = null;
   prodotti: Prodotto[] = new Array<Prodotto>();
+  prodottiFiltrati: Prodotto[] = new Array<Prodotto>();
+  filtroAttivo: string = 'Tutti';
   isLoading: boolean = false;
   errorMessage: string = '';
 
@@ -55,6 +57,8 @@ export class Prodotti implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     this.prodotti = [];
+    this.prodottiFiltrati = [];
+    this.filtroAttivo = 'Tutti';
 
     const categoriaId = this.categoriaMap[nomeCategoria.toLowerCase()];
 
@@ -68,6 +72,7 @@ export class Prodotti implements OnInit {
       const response = await fetch(`http://localhost:3000/api/prodotti/categoria/${categoriaId}`);
       if (response.ok) {
         this.prodotti = await response.json();
+        this.prodottiFiltrati = [...this.prodotti];
         console.log('Prodotti caricati con successo:', this.prodotti);
         this.cdr.detectChanges(); // Forza l'aggiornamento dell'HTML
       } else {
@@ -79,6 +84,18 @@ export class Prodotti implements OnInit {
     } finally {
       this.isLoading = false;
       this.cdr.detectChanges();
+    }
+  }
+
+  impostaFiltro(filtro: string) {
+    this.filtroAttivo = filtro;
+    if (filtro === 'Tutti') {
+      this.prodottiFiltrati = [...this.prodotti];
+    } else {
+      const f = filtro.toLowerCase();
+      this.prodottiFiltrati = this.prodotti.filter(p => 
+        p.nome.toLowerCase().includes(f) || p.descrizione.toLowerCase().includes(f)
+      );
     }
   }
 }

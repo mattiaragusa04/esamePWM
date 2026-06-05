@@ -15,15 +15,60 @@
     Nessun prodotto trovato in questa categoria.
   </div>
 
+  <!-- Container per i filtri per Console -->
+  
+  <div class="d-flex justify-content-center flex-wrap mb-5" *ngIf="!isLoading && !errorMessage && prodotti.length > 0">
+    
+    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('Tutti')">
+      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'Tutti'">
+        <div class="font-weight-bold text-muted" style="font-size: 1.2rem;">Tutte</div>
+      </div>
+      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'Tutti'">Tutte</h6>
+    </div>
+
+    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('PS5')">
+      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'PS5'">
+        <img src="http://localhost:3000/public/immagini/console/ps5.png" class="p-2" alt="PS5" style="max-height: 80px; max-width: 80px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/3/38/PlayStation_5_logo.svg'">
+      </div>
+      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'PS5'">PS5</h6>
+    </div>
+
+    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('PS4')">
+      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'PS4'">
+        <img src="http://localhost:3000/public/immagini/console/ps4_pro.png" class="p-2" alt="PS4" style="max-height: 80px; max-width: 80px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/8/87/PlayStation_4_logo_and_wordmark.svg'">
+      </div>
+      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'PS4'">PS4</h6>
+    </div>
+
+    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('Nintendo Switch')">
+      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'Nintendo Switch'">
+        <img src="http://localhost:3000/public/immagini/console/nintendo_switch.png" class="p-2" alt="Nintendo Switch" style="max-height: 80px; max-width: 80px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/5/5d/Nintendo_Switch_Logo.svg'">
+      </div>
+      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'Nintendo Switch'">Nintendo Switch</h6>
+    </div>
+
+    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('Xbox')">
+      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'Xbox'">
+        <img src="http://localhost:3000/public/immagini/console/xbox_one_x.png" class="p-2" alt="Xbox" style="max-height: 80px; max-width: 80px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/8/8c/XBOX_logo_2012.svg'">
+      </div>
+      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'Xbox'">Xbox</h6>
+    </div>
+
+  </div>
+
+  <div *ngIf="prodottiFiltrati.length === 0 && !isLoading && !errorMessage && prodotti.length > 0" class="text-center text-muted mt-5">
+    Nessun prodotto corrisponde al filtro selezionato.
+  </div>
+
   <div class="row">
-    <div class="col-md-3 mb-4" *ngFor="let prodotto of prodotti">
+    <div class="col-md-3 mb-4" *ngFor="let prodotto of prodottiFiltrati">
       <div class="card h-100 shadow-lg product-card">
         <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
         <div class="card-body text-center d-flex flex-column justify-content-between">
           <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
           <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
-          <a class="btn btn-info rounded-pill px-4">Dettagli</a>
-        </div>
+          <a class="btn btn-info rounded-pill px-4" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
+        </div>  
       </div>
     </div>
   </div>

@@ -35,6 +35,17 @@ body {
   color: white !important;
 }
 
+.btn-outline-info {
+  color: var(--main-color) !important;
+  border-color: var(--main-color) !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-info:hover, .btn-outline-info:focus {
+  background-color: var(--main-color) !important;
+  color: white !important;
+}
+
 .btn-info:hover, .btn-info:focus,
 .btn-home:hover, .btn-home:focus {
   background-color: var(--main-color-hover) !important;
@@ -91,6 +102,30 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   min-height: 3rem; /* Forza lo spazio per 2 righe anche se il titolo è corto */
+}
+
+/* Stile per i filtri a card nella pagina prodotti */
+.category-filter-card {
+  cursor: pointer;
+  border-radius: 1rem !important;
+  transition: all 0.3s ease !important;
+  width: 170px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent !important;
+  margin: 0 auto;
+}
+
+.category-filter-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--main-color-hover) !important;
+}
+
+.category-filter-card.active-filter {
+  border-color: var(--main-color) !important;
+  background-color: rgba(248, 109, 237, 0.05) !important; /* Sfondo rosa molto trasparente */
 }
 
 /* Sistemiamo i testi muti di Bootstrap */
