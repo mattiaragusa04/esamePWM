@@ -45,9 +45,21 @@
     margin-right: 1.5rem;
     vertical-align: top;
     white-space: normal; /* Ripristina il wrapping del testo dentro la card */
+    margin-bottom: 1rem; /* Spazio sotto le card per evitare che siano troppo vicine alla scrollbar */
+    margin-top: 1rem; /* Spazio sopra le card per un aspetto più equilibrato */
   }
   .horizontal-scroll-item:last-child {
     margin-right: 0;
+  }
+
+  .category-card {
+    border-radius: 1.5rem !important; /* Arrotondamento più morbido */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .category-card:hover {
+    transform: translateY(-5px); /* Solleva leggermente la card */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
   }
 </style>
 
@@ -86,7 +98,7 @@
 <!-- Card Categorie -->
 <div class="row text-center mt-5">
   <div class="col-md-3 mb-4">
-    <div class="card h-100 shadow-sm border-0">
+    <div class="card h-100 shadow-sm border-0 category-card">
       <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-controller text-info mb-3" viewBox="0 0 16 16"><path d="M11.5 6.027a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1m2.5-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1M1 5.271c0-1.294 1.048-2.342 2.342-2.342h9.316C13.952 2.929 15 3.977 15 5.271v5.458c0 1.294-1.048 2.342-2.342 2.342H2.342C1.048 13.071 1 11.986 1 10.692zM2.342 3.929c-.74 0-1.342.602-1.342 1.342v5.458c0 .74.602 1.342 1.342 1.342h9.316c.74 0 1.342-.602 1.342-1.342V5.271c0-.74-.602-1.342-1.342-1.342z"/><path d="M7.625 7.927h-1.5v1.5a.5.5 0 0 1-1 0v-1.5h-1.5a.5.5 0 1 1 0-1h1.5v-1.5a.5.5 0 1 1 1 0v1.5h1.5a.5.5 0 1 1 0 1"/></svg>
         <h4 class="card-title font-weight-bold">Console</h4>
@@ -97,7 +109,7 @@
   </div>
   
   <div class="col-md-3 mb-4">
-    <div class="card h-100 shadow-sm border-0">
+    <div class="card h-100 shadow-sm border-0 category-card">
       <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-disc text-info mb-3" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 4a4 4 0 0 0-4 4 .5.5 0 0 1-1 0 5 5 0 0 1 5-5 .5.5 0 0 1 0 1m4.5 3.5a.5.5 0 0 1 .5.5 5 5 0 0 1-5 5 .5.5 0 0 1 0-1 4 4 0 0 0 4-4 .5.5 0 0 1 .5-.5"/></svg>
         <h4 class="card-title font-weight-bold">Videogiochi</h4>
@@ -108,7 +120,7 @@
   </div>
 
   <div class="col-md-3 mb-4">
-    <div class="card h-100 shadow-sm border-0">
+    <div class="card h-100 shadow-sm border-0 category-card">
       <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-headset text-info mb-3" viewBox="0 0 16 16"><path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5"/></svg>
         <h4 class="card-title font-weight-bold">Accessori</h4>
@@ -119,7 +131,7 @@
   </div>
 
   <div class="col-md-3 mb-4">
-    <div class="card h-100 shadow-sm border-0">
+    <div class="card h-100 shadow-sm border-0 category-card">
       <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-cpu text-info mb-3" viewBox="0 0 16 16"><path d="M5 0h2v1h2V0h2v1h1a2 2 0 0 1 2 2v1h1v2h-1v2h1v2h-1v1a2 2 0 0 1-2 2h-1v1h-2v-1h-2v1H5v-1H4a2 2 0 0 1-2-2v-1H1V9h1V7H1V5h1V4a2 2 0 0 1 2-2h1zM4 2a1 1 0 0 0-1 1v1h1v2H3v2h1v2H3v1a1 1 0 0 0 1 1h1v-1h2v1h2v-1h2v1h1a1 1 0 0 0 1-1v-1h-1v-2h1V7h-1V5h1V4a1 1 0 0 0-1-1h-1v1H9V2H7v1H5V2z"/><path d="M5.5 5.5h5v5h-5zM6 6v4h4V6z"/></svg>
         <h4 class="card-title font-weight-bold">Elettronica</h4>

@@ -4,16 +4,16 @@
   /* Definizione dei colori globali */
   --main-color: #f86ded;       /* Rosa principale */
   --main-color-hover: #ff9ef8; /* Rosa più luminoso e acceso */
-  --bg-dark: #0f172a;          /* Blu scuro profondo*/
-  --card-bg: #0f172a           /* Blu scuro profondo - Colore "Carta" Login*/
-; /* Sfondo card semi-trasparente */
-  --text-secondary: #ffffff;   /* Colore testo attenuato */
+  --bg-light: #f8fafc;         /* Grigio chiarissimo per lo sfondo */
+  --card-bg: #ffffff;          /* Bianco puro per le card */
+  --text-main: #0f172a;        /* Testo scuro principale */
+  --text-secondary: #64748b;   /* Colore testo attenuato scuro (grigio ardesia) */
 }
 
-/* Applichiamo lo sfondo scuro globale al body */
+/* Applichiamo lo sfondo chiaro globale al body */
 body {
-  background-color: var(--bg-dark);
-  color: #f8fafc; /* Testo quasi bianco */
+  background-color: var(--bg-light);
+  color: var(--text-main);
   min-height: 100vh;
   margin: 0;
 }
@@ -32,7 +32,7 @@ body {
 .btn-info, .btn-home {
   background-color: var(--main-color) !important;
   border-color: var(--main-color) !important;
-  color: rgb(255, 255, 255) !important;
+  color: white !important;
 }
 
 .btn-info:hover, .btn-info:focus,
@@ -41,7 +41,6 @@ body {
   border-color: var(--main-color-hover) !important;
   box-shadow: 0 0 20px rgba(248, 109, 237, 0.6); /* Effetto neon/glow rosa */
   transform: translateY(-2px); /* Leggero sollevamento per feedback visivo */
-  color: white !important;
 }
 
 /* Stile per far sembrare il bottone un input (es. nel form di registrazione) */
@@ -54,24 +53,25 @@ body {
 
 /* Stili per le card di autenticazione (Login/Register) */
 .auth-card {
-  background: rgba(110, 110, 110, 0.103); /* Effetto vetro */
+  background: rgba(255, 255, 255, 0.7); /* Effetto vetro chiaro */
   backdrop-filter: blur(10px); /* Sfocatura sfondo */
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* Stili generici per tutte le card dell'applicazione */
 .card {
   background-color: var(--card-bg) !important;
-  border: 4px solid #f86ded !important;
-  color: white !important;
+  border: none !important; /* Rimuoviamo il bordo colorato da tutte le card */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Aggiungiamo un'ombra leggera per farle risaltare */
+  color: var(--text-main) !important;
   backdrop-filter: blur(10px); /* Effetto vetro sfocato */
 }
 
 /* Stile specifico per le card dei prodotti, con effetto hover */
 .product-card {
-  border: 1px solid rgba(255, 255, 255, 0.1) !important; 
+  border: 1px solid rgba(0, 0, 0, 0.1) !important; 
   border-radius: 1rem !important; /* Aggiunge i bordi arrotondati */
   transition: transform 0.3s ease, box-shadow 0.3s ease !important;
   overflow: hidden !important;
@@ -79,7 +79,7 @@ body {
 
 .product-card:hover {
   transform: scale(1.05) !important; /* Ingrandisce la card al passaggio del mouse */
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(248, 109, 237, 0.2) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 0 20px rgba(248, 109, 237, 0.4) !important;
   z-index: 10 !important; /* Evita che la card finisca sotto le altre quando si ingrandisce */
 }
 
@@ -100,15 +100,24 @@ body {
 
 /* Rendi gli input dei form meno "sparati" */
 .bg-light {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: white !important;
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  color: var(--text-main) !important;
+}
+
+/* === FIX TEMA CHIARO: Sovrascrive i testi rimasti bianchi dal tema precedente === */
+.text-white:not(.btn):not(.hero-content):not(.hero-content *) {
+  color: var(--text-main) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-main);
 }
 
 /* Stili per l'Hero Box e l'effetto particelle (Pagina Home) */
 .hero-box {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #1a1a2e, #f86ded , #06b6d4);
+  background: linear-gradient(135deg, #f8fafc, #f86ded , #06b6d4);
   border-radius: 1rem;
   min-height: 380px; /* Assicurati che ci sia un'altezza minima */
   display: flex;
@@ -121,12 +130,17 @@ body {
   top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none;
-  z-index: 0;
 }
 
 .hero-content {
   position: relative;
   z-index: 1; /* Sopra al canvas */
   text-align: center;
-  color: white;
+  color: white; /* Manteniamo il bianco sul gradiente colorato */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Aggiunge un po' di ombra per leggibilità */
+}
+
+/* Proteggiamo esplicitamente i testi dentro l'hero box (che ha sfondo fucsia/blu) */
+.hero-content h1, .hero-content h2, .hero-content h3, .hero-content p, .hero-content .text-white {
+  color: white !important;
 }

@@ -3,11 +3,12 @@
   /* Hover e active delle voci navbar */
 .navbar-brand {
   font-size: 1.25rem !important;
+  color: var(--text-main) !important; /* Colore scuro per il logo/testo principale */
 }
 
 .navbar-nav .nav-link {
   position: relative;
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: var(--text-main) !important; /* Testo scuro invece che bianco per la navbar */
   transition: color 0.5s ease;
   padding-bottom: 7px;
   font-size: 0.95rem;
@@ -37,17 +38,19 @@
 
 /* Footer Glassmorphism */
 .footer {
-  background: #0f1729;
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--text-main);
 }
 
 .social-icon {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
   transition: all 0.3s ease;
   display: inline-flex;
   padding: 10px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   text-decoration: none;
 }
 
@@ -61,8 +64,6 @@
 .social-icon.instagram:hover { color: #E1306C; }
 .social-icon.tiktok:hover { color: #00f2ea; }
 .social-icon.facebook:hover { color: #1877F2; }
-
-.gap-3 { gap: 1rem; }
 
 /* Animazione bidirezionale per la barra di ricerca */
 .search-container-animated {
@@ -98,7 +99,6 @@
 }
 
 .navbar-nav.w-100 {
-  width: 100% !important;
   justify-content: space-between !important;
   gap: 1rem;
 }
@@ -109,7 +109,6 @@
 
 .login-button-outside {
   position: relative;
-  margin-top: 0;
   align-self: center;
   flex-shrink: 0;
 }
