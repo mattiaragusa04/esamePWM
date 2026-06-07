@@ -38,4 +38,11 @@ app.listen(PORT, () => {
     console.log(`Server avviato sulla porta ${PORT}`);
     // 3. Avvia il popolamento del DB se le tabelle sono vuote
     seedDatabase(); 
+
+    // Aggiorna automaticamente le quantità fisse (20) con valori casuali nel database
+    db.run("UPDATE prodotto SET giacenza = ABS(RANDOM() % 100) + 1 WHERE giacenza = 20", function(err) {
+        if (!err && this.changes > 0) {
+            console.log(`Aggiornate le giacenze di ${this.changes} prodotti a valori casuali!`);
+        }
+    });
 });

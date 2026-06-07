@@ -3,7 +3,11 @@ const db = require("../db/database");
 const Prodotto = {
   findAll: () => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM prodotto`;
+      const query = `
+        SELECT p.*, c.denominazione AS categoria
+        FROM prodotto p
+        LEFT JOIN categoria c ON p.categoria_id = c.id
+      `;
       db.all(query, [], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
@@ -13,7 +17,12 @@ const Prodotto = {
 
   findById: (id) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM prodotto WHERE id = ?`;
+      const query = `
+        SELECT p.*, c.denominazione AS categoria
+        FROM prodotto p
+        LEFT JOIN categoria c ON p.categoria_id = c.id
+        WHERE p.id = ?
+      `;
       db.get(query, [id], (err, row) => {
         if (err) reject(err);
         else resolve(row);
@@ -23,7 +32,12 @@ const Prodotto = {
 
   findByCategoria: (categoriaId) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM prodotto WHERE categoria_id = ?`;
+      const query = `
+        SELECT p.*, c.denominazione AS categoria
+        FROM prodotto p
+        LEFT JOIN categoria c ON p.categoria_id = c.id
+        WHERE p.categoria_id = ?
+      `;
       db.all(query, [categoriaId], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
