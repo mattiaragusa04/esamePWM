@@ -1,50 +1,5 @@
 <main class="d-flex flex-nowrap" style="min-height: 100vh;">
-  <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-white shadow-lg" style="width: 280px; border-radius: 1.5rem; z-index: 1;">
-    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-      <i class="bi bi-person-circle fs-2 pe-none me-2"></i>
-      <span class="fs-4">Il mio Profilo</span>
-    </a>
-    <hr />
-    <ul class="nav nav-pills flex-column mb-auto">
-      <li class="nav-item">
-        <a routerLink="/profilo" class="nav-link active" aria-current="page">
-          <i class="bi bi-house pe-none me-2"></i>
-          Dati Personali
-        </a>
-      </li>
-      <li>
-        <a routerLink="/profilo/ordini" class="nav-link text-dark">
-          <i class="bi bi-table pe-none me-2"></i>
-          I miei Ordini
-        </a>
-      </li>
-      <li>
-        <a routerLink="/profilo/desideri" class="nav-link text-dark">
-          <i class="bi bi-grid pe-none me-2"></i>
-          Lista Desideri
-        </a>
-      </li>
-      <li>
-        <a routerLink="/profilo/impostazioni" class="nav-link text-dark">
-          <i class="bi bi-speedometer2 pe-none me-2"></i>
-          Impostazioni
-        </a>
-      </li>
-    </ul>
-    <hr />
-    <div class="dropdown">
-      <a href="javascript:void(0)" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-       <i class="bi bi-person-circle mr-1" style="font-size: 1.1rem; margin-right: 5px;"></i>
-        <strong>{{ utente?.nome || 'Utente' }}</strong>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-        <li><a class="dropdown-item" routerLink="/profilo/impostazioni">Impostazioni</a></li>
-        <li><a class="dropdown-item" routerLink="/profilo">Profilo</a></li>
-        <li><hr class="dropdown-divider" /></li>
-        <li><a class="dropdown-item" href="javascript:void(0)" (click)="logout()">Esci</a></li>
-      </ul>
-    </div>
-  </div>
+  <app-sidebar></app-sidebar>
 
   <!-- Area del contenuto principale (Aggiunta per gestire i contenuti del profilo) -->
   <div class="d-flex flex-column flex-grow-1 p-4 bg-light overflow-auto">

@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Router, RouterLink, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Sidebar } from '../sidebar/sidebar';
 
 @Component({
   selector: 'app-profilo',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, Sidebar],
   templateUrl: './profilo.html',
   styleUrl: './profilo.css',
 })
@@ -43,17 +44,6 @@ export class Profilo implements OnInit, OnDestroy {
     }
   }
 
-  logout() {
-    if (isPlatformBrowser(this.platformId)) {
-      // pulisce la sessione in modo sicuro sul browser
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
-    // Aggiorna lo stato locale e reindirizza alla home
-    this.utente = null;
-    alert('Logout effettuato con successo!');
-    this.router.navigate(['/']);
-  }
 
   async caricaDatiProfilo(){
     if (isPlatformBrowser(this.platformId)) {
