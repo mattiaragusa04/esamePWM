@@ -66,7 +66,13 @@
         <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
         <div class="card-body text-center d-flex flex-column justify-content-between">
           <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
-          <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
+          <div class="mb-2">
+            <div class="condition-toggle btn-group btn-group-sm" role="group" aria-label="Condizione prodotto">
+              <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione[prodotto.id] === 'Nuovo'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
+              <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione[prodotto.id] === 'Usato'" (click)="setCondizione(prodotto.id, 'Usato')">Usato</button>
+            </div>
+          </div>
+          <p class="text-info font-weight-bold mb-3">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
           <a class="btn btn-info rounded-pill px-4" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
           <a class ="btn btn-outline-info rounded-pill px-4 mt-3" (click)="aggiungiAlCarrello(prodotto)">Aggiungi al Carrello</a>
         </div>  

@@ -179,3 +179,16 @@ h1, h2, h3, h4, h5, h6 {
 .hero-content h1, .hero-content h2, .hero-content h3, .hero-content p, .hero-content .text-white {
   color: white !important;
 }
+
+/* Global styles for condition toggle buttons */
+.condition-toggle .btn {
+  border-radius: 999px;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.85rem;
+}
+.condition-toggle .active-condition,
+.condition-toggle .btn.active-condition {
+  background: var(--main-color);
+  color: white;
+  border-color: var(--main-color);
+}

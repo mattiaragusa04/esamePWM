@@ -1,10 +1,107 @@
-<div class="card p-4">
-    <p>dettagli-prodotto works!</p>
-    <p>{{ prodotto?.nome }}</p>
+<div class="product-detail-page container py-4">
+  <div *ngIf="isLoading" class="loading-panel card p-5 text-center">
+    <h3>Caricamento dettagli prodotto...</h3>
+    <p class="text-secondary">Attendi qualche secondo mentre recuperiamo le informazioni.</p>
+  </div>
 
-    <p>{{ prodotto?.descrizione }}</p>
-    <p>{{ prodotto?.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
-    <img [src]="prodotto?.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" alt="{{ prodotto?.nome }}" style="max-width: 300px; max-height: 300px; object-fit: contain;">
+  <div *ngIf="!isLoading && errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
 
-    <button class="btn btn-info rounded-pill px-4 mt-3" (click)="aggiungiAlCarrello()">Aggiungi al Carrello</button>
+  <div *ngIf="!isLoading && prodotto" class="product-hero card p-4 p-lg-5">
+    <span class="hero-tag">Dettaglio prodotto</span>
+    <div class="row align-items-center g-4">
+      <div class="col-lg-5">
+        <div class="image-frame">
+          <img
+            [src]="prodotto?.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine"
+            [alt]="prodotto?.nome"
+            class="product-image"
+          />
+        </div>
+      </div>
+
+      <div class="col-lg-7">
+        <div class="product-meta">
+          <h1>{{ prodottoDisplayName || prodotto?.nome }}</h1>
+          <p class="description">{{ prodottoDescrizioneCombined || prodotto?.descrizione }}</p>
+
+          <div class="price-row">
+            <span class="price">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</span>
+            <span class="stock" [class.in-stock]="(prodotto?.giacenza ?? prodotto?.quantitaDisponibile) > 0" [class.out-of-stock]="(prodotto?.giacenza ?? prodotto?.quantitaDisponibile) === 0">
+              {{ (prodotto?.giacenza ?? prodotto?.quantitaDisponibile) > 0 ? 'Disponibilità immediata' : 'Esaurito' }}
+            </span>
+          </div>
+
+          <div class="details-grid">
+            <div class="detail-item">
+              <strong>Categoria</strong>
+              <span>{{ prodotto?.categoria || 'N/A' }}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Prezzo</strong>
+              <span>{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Quantità</strong>
+              <span>{{ prodotto?.giacenza ?? prodotto?.quantitaDisponibile ?? 'Non disponibile' }}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Condizione</strong>
+              <div class="condition-toggle">
+                <div class="btn-group btn-group-sm" role="group">
+                  <button type="button" class="btn btn-outline-secondary" [class.active-condition]="selectedCondition === 'Nuovo'" (click)="setCondizione('Nuovo')">Nuovo</button>
+                  <button type="button" class="btn btn-outline-secondary" [class.active-condition]="selectedCondition === 'Usato'" (click)="setCondizione('Usato')">Usato</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions mt-4">
+            <button class="btn btn-info rounded-pill btn-lg" (click)="aggiungiAlCarrello()">
+              Aggiungi al Carrello
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="related-info row mt-4 gx-4 gy-4">
+      <div class="col-12">
+        <div class="info-card card p-4 h-100">
+          <h5 class="section-title">Informazioni</h5>
+          <ul class="quick-list">
+            <li>
+              <span class="quick-label">Codice prodotto</span>
+              <span>{{ prodotto?.id || '—' }}</span>
+            </li>
+            <li>
+              <span class="quick-label">Categoria</span>
+              <span>{{ prodotto?.categoria || 'N/A' }}</span>
+            </li>
+            <li>
+              <span class="quick-label">Brand</span>
+              <span>{{ prodotto?.marca || 'Standard' }}</span>
+            </li>
+            <li>
+              <span class="quick-label">Spedizione</span>
+              <span>Gratis oltre 49€</span>
+            </li>
+            <li>
+              <span class="quick-label">Garanzia</span>
+              <span>4 anni</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="text-center mt-4">
+    <a class="btn btn-outline-info rounded-pill btn-lg" [routerLink]="prodotto?.categoria ? ['/categoria', prodotto.categoria.toLowerCase()] : ['/home']">
+      Torna ai prodotti
+    </a>
+  </div>
 </div>

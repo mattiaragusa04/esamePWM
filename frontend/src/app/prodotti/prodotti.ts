@@ -32,6 +32,9 @@ export class Prodotti implements OnInit {
   isLoading: boolean = false;
   errorMessage: string = '';
 
+  // Stato di selezione condizione per ogni prodotto (nuovo | usato)
+  prezzoCondizione: { [id: number]: 'Nuovo' | 'Usato' } = {};
+
   // Mappatura tra il nome nella URL e l'ID della categoria nel DB
   private categoriaMap: { [key: string]: number } = {
     'console': 1,
@@ -73,6 +76,8 @@ export class Prodotti implements OnInit {
       if (response.ok) {
         this.prodotti = await response.json();
         this.prodottiFiltrati = [...this.prodotti];
+        // impostazione default: tutti Nuovo
+        this.prodotti.forEach(p => this.prezzoCondizione[p.id] = 'Nuovo');
         console.log('Prodotti caricati con successo:', this.prodotti);
         this.cdr.detectChanges(); // Forza l'aggiornamento dell'HTML
       } else {
@@ -99,6 +104,18 @@ export class Prodotti implements OnInit {
     }
   }
 
+  setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
+    this.prezzoCondizione[prodId] = cond;
+  }
+
+  getPrezzoVisualizzato(p: Prodotto): number {
+    const cond = this.prezzoCondizione[p.id] || 'Nuovo';
+    if (cond === 'Usato') {
+      // Applichiamo uno sconto del 25% sul prezzo di vendita per l'usato
+      return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
+    }
+    return p.prezzoUnitarioVendita;
+  }
   async aggiungiAlCarrello(prodotto: Prodotto) {
     const token = localStorage.getItem('token');
 

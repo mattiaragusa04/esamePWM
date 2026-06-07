@@ -32,6 +32,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   private COLORS = ['#f86ded', '#a78bfa'];
 
   public prodottiConsigliati: any[] = [];
+  public prezzoCondizione: { [id: number]: 'Nuovo' | 'Usato' } = {};
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef) {}
 
@@ -49,12 +50,49 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
         const tuttiIProdotti = await response.json();
         // Mescola l'array per un effetto casuale e ne prende 12
         this.prodottiConsigliati = tuttiIProdotti.sort(() => 0.5 - Math.random()).slice(0, 12);
+        this.prodottiConsigliati.forEach((p: any) => this.prezzoCondizione[p.id] = 'Nuovo');
+        // Sostituisci alcune card consigliate con prodotti reali cercati nel catalogo
+        this.injectCustomReplacements(tuttiIProdotti);
       }
 
       this.cdr.detectChanges(); // Aggiorna la vista
     } catch (error) {
       console.error('Errore nel caricamento del catalogo dalla Home:', error);
     }
+  }
+
+  private injectCustomReplacements(tuttiIProdotti: any[]) {
+    // Cerca i prodotti reali dal database per parole chiave
+    const ps5 = tuttiIProdotti.find(p => p.nome.toLowerCase().includes('ps5') && !p.nome.toLowerCase().includes('ps4'));
+    const xbox = tuttiIProdotti.find(p => p.nome.toLowerCase().includes('xbox series'));
+    const gta = tuttiIProdotti.find(p => p.nome.toLowerCase().includes('gta') || p.nome.toLowerCase().includes('grand theft'));
+    const spiderman = tuttiIProdotti.find(p => p.nome.toLowerCase().includes('spider'));
+
+    const custom = [];
+    if (ps5) custom.push(ps5);
+    if (xbox) custom.push(xbox);
+    if (gta) custom.push(gta);
+    if (spiderman) custom.push(spiderman);
+
+    // Sostituisci i primi elementi delle card consigliate con i prodotti trovati
+    for (let i = 0; i < custom.length && i < this.prodottiConsigliati.length; i++) {
+      this.prodottiConsigliati[i] = custom[i];
+      this.prezzoCondizione[custom[i].id] = 'Nuovo';
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
+    this.prezzoCondizione[prodId] = cond;
+  }
+
+  getPrezzoVisualizzato(p: any): number {
+    const cond = this.prezzoCondizione[p.id] || 'Nuovo';
+    if (cond === 'Usato') {
+      return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
+    }
+    return p.prezzoUnitarioVendita;
   }
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
