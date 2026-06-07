@@ -103,8 +103,6 @@ export class Prodotti implements OnInit {
       );
     }
   }
-
-<<<<<<< HEAD
   setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
     this.prezzoCondizione[prodId] = cond;
   }
@@ -116,7 +114,9 @@ export class Prodotti implements OnInit {
       return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
     }
     return p.prezzoUnitarioVendita;
-=======
+
+  }
+
   async aggiungiAlCarrello(prodotto: Prodotto) {
     const token = localStorage.getItem('token');
 
@@ -153,6 +153,5 @@ export class Prodotti implements OnInit {
       localStorage.setItem('carrello', JSON.stringify(carrello));
       alert(`${prodotto.nome} aggiunto al carrello!`);
     }
->>>>>>> 175430933b540f21db7a2c5d2065700502c3f901
   }
 }

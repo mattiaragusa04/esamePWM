@@ -69,7 +69,7 @@
   }
 
   .scroll-btn {
-    z-index: 100;
+    z-index: 10;
     width: 45px;
     height: 45px;
     display: flex !important;
@@ -85,8 +85,8 @@
 <div class="hero-box" #heroBox>
   <canvas #particleCanvas class="particle-canvas"></canvas>
   <div class="hero-content">
-    <h1><span class="text-info">Benvenuto</span></h1>
-    <p>sul tuo portale di fiducia per console, videogiochi, accessori ed elettronica!</p>
+    <h1>Benvenuto su <span class="text-info">PA</span>werUP</h1>
+    <p>Il tuo portale di fiducia per console, videogiochi, accessori ed elettronica.</p>
     <a class="btn btn-info btn-lg rounded-pill px-5">Esplora il Catalogo</a>
   </div>
 </div>
@@ -97,11 +97,6 @@
   
   <p class="text-center text-muted" *ngIf="prodottiConsigliati.length === 0">Nessun prodotto consigliato trovato.</p>
 
-<<<<<<< HEAD
-  <div class="recommended-grid">
-    <div class="row g-4">
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let prodotto of prodottiConsigliati">
-=======
   <!-- Contenitore relativo per posizionare i pulsanti ai lati -->
   <div class="scroll-wrapper-container" *ngIf="prodottiConsigliati.length > 0">
     <!-- Bottone Scorrimento Sinistra -->
@@ -114,18 +109,11 @@
       <!-- La card ora è un elemento inline-block dentro il contenitore scrollabile -->
 
       <div class="horizontal-scroll-item" *ngFor="let prodotto of prodottiConsigliati">
->>>>>>> 175430933b540f21db7a2c5d2065700502c3f901
         <div class="card h-100 shadow-lg product-card">
           <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
           <div class="card-body text-center d-flex flex-column justify-content-between">
             <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
-            <div class="mb-2">
-              <div class="condition-toggle btn-group btn-group-sm" role="group" aria-label="Condizione prodotto">
-                <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione[prodotto.id] === 'Nuovo'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
-                <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione[prodotto.id] === 'Usato'" (click)="setCondizione(prodotto.id, 'Usato')">Usato</button>
-              </div>
-            </div>
-            <p class="text-info font-weight-bold mb-2">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
+            <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
             <a class="btn btn-info rounded-pill px-4 " [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
 
           </div>
