@@ -128,7 +128,7 @@ export class Carrello implements OnInit {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/ordini/create', {
+      const response = await fetch('http://localhost:3000/api/ordine/create', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -140,7 +140,13 @@ export class Carrello implements OnInit {
         await this.caricaCarrello(); // Ricarica il carrello (che ora sarà vuoto)
         this.router.navigate(['/profilo/ordini']); // Spostiamo l'utente alla lista dei suoi ordini
       } else {
-        alert('Si è verificato un errore durante la creazione dell\'ordine.');
+        try {
+          const errorData = await response.json();
+          console.error("Dettagli errore backend (Ordine):", errorData);
+          alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+        } catch (parseError) {
+          alert(`Errore dal Backend (Status ${response.status}). Controlla il terminale di NodeJS!`);
+        }
       }
     } catch (error) {
       console.error('Errore checkout:', error);
