@@ -103,6 +103,8 @@ export class Prodotti implements OnInit {
       );
     }
   }
+
+
   setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
     this.prezzoCondizione[prodId] = cond;
   }
