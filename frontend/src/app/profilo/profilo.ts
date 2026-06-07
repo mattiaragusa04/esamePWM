@@ -23,6 +23,7 @@ export class Profilo implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.caricaUtente();
+    this.caricaDatiProfilo();
   }
 
   ngOnDestroy() {
@@ -52,5 +53,30 @@ export class Profilo implements OnInit, OnDestroy {
     this.utente = null;
     alert('Logout effettuato con successo!');
     this.router.navigate(['/']);
+  }
+
+  async caricaDatiProfilo(){
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      if (!token) return; // Se non c'è il token, non facciamo la chiamata
+
+      try {
+        const response = await fetch('http://localhost:3000/api/utente', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          this.utente = await response.json();
+          // Aggiorna anche il localStorage per mantenere la sessione sincronizzata ovunque
+          localStorage.setItem('user', JSON.stringify(this.utente));
+        } else {
+          console.error('Errore nel caricamento del profilo');
+        }
+      } catch (error) {
+        console.error('Errore di rete:', error);
+      }
+    }
   }
 }

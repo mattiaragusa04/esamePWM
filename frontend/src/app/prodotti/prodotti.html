@@ -68,6 +68,7 @@
           <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
           <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
           <a class="btn btn-info rounded-pill px-4" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
+          <a class ="btn btn-outline-info rounded-pill px-4 mt-3" (click)="aggiungiAlCarrello(prodotto)">Aggiungi al Carrello</a>
         </div>  
       </div>
     </div>

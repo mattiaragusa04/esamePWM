@@ -28,6 +28,9 @@ app.use('/api/auth', authRoutes);
 // Collega le rotte dei prodotti
 app.use('/api/prodotti', prodottiRoutes); 
 
+app.use('/api/ordine', require('./routes/ordineRoutes'));
+
+app.use('/api/carrello', require('./routes/carrelloRoutes'));
 // Rotta di prova
 app.get('/', (req, res) => {
     res.send('Il server è attivo e funzionante!');

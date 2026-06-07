@@ -56,7 +56,7 @@ export class Register {
           // Assumiamo che il backend restituisca un token o i dati dell'utente
           if (data.token) localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.utente || data));
-
+          
           alert('Registrazione completata con successo!');
           
           // Reindirizza l'utente alla home page con la sessione attiva
@@ -77,6 +77,8 @@ export class Register {
       console.log('Attenzione: il form contiene errori di validazione.');
     }
   }
+
+
 
 
 }

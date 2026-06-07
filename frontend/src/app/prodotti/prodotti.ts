@@ -98,4 +98,42 @@ export class Prodotti implements OnInit {
       );
     }
   }
+
+  async aggiungiAlCarrello(prodotto: Prodotto) {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      // Utente loggato: invia al database
+      try {
+        const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1 })
+        });
+        if (response.ok) {
+          alert(`${prodotto.nome} aggiunto al carrello!`);
+        } else {
+          const errorData = await response.json();
+          console.error("Dettagli errore backend:", errorData);
+          alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+        }
+      } catch (error) {
+        console.error('Errore di connessione:', error);
+      }
+    } else {
+      // Utente ospite: salva in localStorage
+      let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
+      const index = carrello.findIndex((item: any) => (item.id || item.prodotto_id) === prodotto.id);
+      if (index > -1) {
+        carrello[index].quantita += 1;
+      } else {
+        carrello.push({ ...prodotto, quantita: 1 });
+      }
+      localStorage.setItem('carrello', JSON.stringify(carrello));
+      alert(`${prodotto.nome} aggiunto al carrello!`);
+    }
+  }
 }
