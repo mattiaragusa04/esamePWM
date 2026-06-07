@@ -1,0 +1,19 @@
+(/* Styles for condition toggle */)
+.condition-toggle .btn {
+	border-radius: 999px;
+	padding: 0.25rem 0.9rem;
+	font-size: 0.85rem;
+}
+
+.condition-toggle .active-condition,
+.condition-toggle .btn.active-condition {
+	background: var(--main-color);
+	color: white;
+	border-color: var(--main-color);
+	box-shadow: 0 4px 12px rgba(248, 109, 237, 0.15);
+}
+
+.condition-toggle .btn:not(.active-condition) {
+	background: transparent;
+}
+
