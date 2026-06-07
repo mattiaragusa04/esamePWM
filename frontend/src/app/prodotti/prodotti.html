@@ -74,6 +74,7 @@
           </div>
           <p class="text-info font-weight-bold mb-3">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
           <a class="btn btn-info rounded-pill px-4" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
+          <a class ="btn btn-outline-info rounded-pill px-4 mt-3" (click)="aggiungiAlCarrello(prodotto)">Aggiungi al Carrello</a>
         </div>  
       </div>
     </div>

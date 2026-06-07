@@ -41,7 +41,7 @@
 
   .horizontal-scroll-item {
     display: inline-block;
-    width: 200px; /* Larghezza fissa per ogni card */
+    width: 250px; /* Larghezza fissa per ogni card */
     margin-right: 1.5rem;
     vertical-align: top;
     white-space: normal; /* Ripristina il wrapping del testo dentro la card */
@@ -61,6 +61,25 @@
     transform: translateY(-5px); /* Solleva leggermente la card */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
   }
+
+  .scroll-wrapper-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .scroll-btn {
+    z-index: 100;
+    width: 45px;
+    height: 45px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+  .left-btn { left: -15px; }
+  .right-btn { right: -15px; }
 </style>
 
 <div class="hero-box" #heroBox>
@@ -78,9 +97,24 @@
   
   <p class="text-center text-muted" *ngIf="prodottiConsigliati.length === 0">Nessun prodotto consigliato trovato.</p>
 
+<<<<<<< HEAD
   <div class="recommended-grid">
     <div class="row g-4">
       <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let prodotto of prodottiConsigliati">
+=======
+  <!-- Contenitore relativo per posizionare i pulsanti ai lati -->
+  <div class="scroll-wrapper-container" *ngIf="prodottiConsigliati.length > 0">
+    <!-- Bottone Scorrimento Sinistra -->
+    <button class="btn btn-info rounded-circle position-absolute scroll-btn left-btn" (click)="scrollContainer.scrollBy({ left: -300, behavior: 'smooth' })">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
+    </button>
+
+    <div class="horizontal-scroll-wrapper w-100" #scrollContainer>
+      <div class="horizontal-scroll-content">
+      <!-- La card ora è un elemento inline-block dentro il contenitore scrollabile -->
+
+      <div class="horizontal-scroll-item" *ngFor="let prodotto of prodottiConsigliati">
+>>>>>>> 175430933b540f21db7a2c5d2065700502c3f901
         <div class="card h-100 shadow-lg product-card">
           <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
           <div class="card-body text-center d-flex flex-column justify-content-between">
@@ -93,10 +127,17 @@
             </div>
             <p class="text-info font-weight-bold mb-2">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
             <a class="btn btn-info rounded-pill px-4 " [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
+
           </div>
         </div>
       </div>
+      </div>
     </div>
+
+    <!-- Bottone Scorrimento Destra -->
+    <button class="btn btn-info rounded-circle position-absolute scroll-btn right-btn" (click)="scrollContainer.scrollBy({ left: 300, behavior: 'smooth' })">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+    </button>
   </div>
 </div>
 
@@ -145,4 +186,7 @@
       </div>
     </div>
   </div>
+  <!-- Pulsante per andare avanti e indietro nel horizontal scroll item-->
+
+
 </div>

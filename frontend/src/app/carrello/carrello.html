@@ -1,7 +1,66 @@
-<div class = "container mt-4">
+<div class="container mt-4 mb-5">
   <h2 class="text-center mb-4 font-weight-bold">Il tuo Carrello</h2>
-  <p class="text-center text-muted">Il tuo carrello è attualmente vuoto. Inizia a esplorare i nostri prodotti e aggiungi i tuoi preferiti!</p>
-  <div class="text-center mt-4">
-    <a routerLink="/" class="btn btn-info rounded-pill px-4 font-weight-bold text-dark">Torna alla Home</a>
+
+  <!-- Loader visuale in fase di pre-caricamento -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-info" role="status">
+      <span class="visually-hidden">Caricamento...</span>
+    </div>
+  </div>
+
+  <!-- Schermata carrello vuoto -->
+  <div *ngIf="!isLoading && carrello.length === 0">
+    <p class="text-center text-muted fs-5">Il tuo carrello è attualmente vuoto. Inizia a esplorare i nostri prodotti e aggiungi i tuoi preferiti!</p>
+    <div class="text-center mt-4">
+      <a routerLink="/" class="btn btn-info rounded-pill px-4 py-2 font-weight-bold text-dark">Torna alla Home</a>
+    </div>
+  </div>
+
+  <!-- Griglia prodotti e riepilogo se ci sono elementi -->
+  <div *ngIf="!isLoading && carrello.length > 0" class="row">
+    <div class="col-lg-8">
+      <div class="card mb-3 shadow-sm" *ngFor="let item of carrello">
+        <div class="row g-0 align-items-center p-3">
+          <div class="col-md-2 text-center">
+            <img [src]="item.immagine || 'assets/placeholder.png'" class="img-fluid rounded" alt="{{item.nome}}" style="max-height: 80px; object-fit: contain;">
+          </div>
+          <div class="col-md-4">
+            <h5 class="card-title text-truncate mb-1" title="{{item.nome}}">{{ item.nome }}</h5>
+            <p class="text-muted mb-0 small">Prezzo unitario: {{ item.prezzoUnitarioVendita | currency:'EUR':'symbol':'1.2-2' }}</p>
+          </div>
+          <!-- Pulsanti Qtà -->
+          <div class="col-md-3 d-flex justify-content-center align-items-center mt-3 mt-md-0">
+            <button class="btn btn-sm btn-outline-secondary rounded-circle fw-bold" (click)="aggiornaQuantita(item, -1)" [disabled]="item.quantita <= 1">-</button>
+            <span class="mx-3 fw-bold fs-5">{{ item.quantita }}</span>
+            <button class="btn btn-sm btn-outline-secondary rounded-circle fw-bold" (click)="aggiornaQuantita(item, 1)">+</button>
+          </div>
+          <!-- Totale Parziale -->
+          <div class="col-md-2 text-center text-md-end mt-3 mt-md-0 fw-bold text-info fs-5">
+            {{ (item.prezzoUnitarioVendita * item.quantita) | currency:'EUR':'symbol':'1.2-2' }}
+          </div>
+          <!-- Tasto Rimozione -->
+          <div class="col-md-1 text-center text-md-end mt-3 mt-md-0">
+            <button class="btn btn-sm btn-danger rounded-circle shadow-sm" (click)="rimuoviOggetto(item)" title="Rimuovi dal carrello">X</button>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between mt-4">
+        <a routerLink="/" class="btn btn-outline-info rounded-pill px-4">Continua lo Shopping</a>
+        <button class="btn btn-outline-danger rounded-pill px-4" (click)="svuotaCarrello()">Svuota Carrello</button>
+      </div>
+    </div>
+
+    <!-- Modulo Riepilogo (Fisso a destra) -->
+    <div class="col-lg-4 mt-4 mt-lg-0">
+      <div class="card shadow-sm p-4 sticky-top" style="top: 20px;">
+        <h4 class="mb-4 text-center">Riepilogo Ordine</h4>
+        <hr>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <strong class="fs-5">Totale:</strong>
+          <strong class="fs-4 text-info">{{ totale | currency:'EUR':'symbol':'1.2-2' }}</strong>
+        </div>
+        <button class="btn btn-info w-100 rounded-pill font-weight-bold text-dark fs-5 py-2 shadow-sm" (click)="creaOrdine()">Procedi all'Ordine</button>
+      </div>
+    </div>
   </div>
 </div>
