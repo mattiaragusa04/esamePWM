@@ -38,10 +38,15 @@ export class App implements OnInit {
     // Controlla se il codice è in esecuzione nel browser prima di usare localStorage
     if (isPlatformBrowser(this.platformId)) {
       const userString = localStorage.getItem('user');
-      if (userString) {
+      const token = localStorage.getItem('token');
+      
+      // La sessione è valida solo se esistono ENTRAMBI (utente e token)
+      if (userString && token) {
         this.utenteLoggato = JSON.parse(userString);
       } else {
         this.utenteLoggato = null;
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
       }
     }
   }
