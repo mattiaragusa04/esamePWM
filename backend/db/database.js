@@ -46,12 +46,16 @@ CREATE TABLE if not exists prodotto (
 );
 CREATE TABLE if not exists ordine (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    carta_id INTEGER,
+    indirizzo_id INTEGER,
     utente_id INTEGER,
     data DATE NOT NULL,
     totale double NOT NULL,
     statoOrdine TEXT NOT NULL,
     acquisto_vendita boolean NOT NULL,
-    FOREIGN KEY (utente_id) REFERENCES utente(id)
+    FOREIGN KEY (utente_id) REFERENCES utente(id),
+    FOREIGN KEY (carta_id) REFERENCES carta_di_credito(id),
+    FOREIGN KEY (indirizzo_id) REFERENCES indirizzo(id)
 );
 CREATE TABLE if not exists composto (
     ordine_id INTEGER,
@@ -90,6 +94,7 @@ CREATE TABLE IF NOT EXISTS carta_di_credito (
     numero_carta TEXT NOT NULL,
     nome_titolare TEXT NOT NULL,
     data_scadenza TEXT NOT NULL,
+    cvv TEXT,
     FOREIGN KEY (utente_id) REFERENCES utente(id)
 );
 CREATE TABLE IF NOT EXISTS categoria (

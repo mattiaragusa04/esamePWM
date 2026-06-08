@@ -10,6 +10,6 @@ router.post("/login", authController.login);
 router.get("/users", authController.getAllUsers);
 
 // esempio route protetta
-router.get("/profile", authMiddleware, authController.getProfile);
+router.get("/profilo", authMiddleware, authController.getProfile);
 
 module.exports = router;

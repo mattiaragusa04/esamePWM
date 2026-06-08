@@ -37,7 +37,11 @@ exports.getOrdiniByUserId = async (req, res) => {
 exports.createOrdine = async (req, res) => {
     try {
         const userId = req.user.id;
-        
+        const { carta_id, indirizzo_id } = req.body;
+        if (!carta_id || !indirizzo_id) {
+            return res.status(400).json({ message: "carta_id e indirizzo_id sono obbligatori" });
+        }
+
         // 1. Recuperiamo i prodotti attualmente nel carrello
         const cartItems = await carrelloModel.findByUserId(userId);
         if (!cartItems || cartItems.length === 0) {
@@ -47,11 +51,15 @@ exports.createOrdine = async (req, res) => {
         // 2. Calcoliamo il totale e prepariamo l'oggetto ordine
         const totale = cartItems.reduce((acc, item) => acc + (item.prezzoUnitarioVendita * item.quantita), 0);
         const ordine = {
+            carta_id: carta_id,
+            indirizzo_id: indirizzo_id,
             utente_id: userId,
             data: new Date().toISOString().slice(0, 10), // Data corrente (es: 2024-05-18)
             totale: totale,
             statoOrdine: 'In elaborazione',
             acquisto_vendita: false // false = vendita all'utente finale
+
+
         };
 
         // 3. Creiamo l'ordine e spostiamo gli elementi nella tabella 'composto'

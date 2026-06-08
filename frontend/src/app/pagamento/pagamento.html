@@ -1,0 +1,141 @@
+<div class="container my-5" style="min-height: 80vh;">
+  <form [formGroup]="checkoutForm" (ngSubmit)="confermaEPaga()" class="row g-5 needs-validation" novalidate>
+    
+    <!-- Colonna Sinistra: Form Spedizione e Pagamento -->
+    <div class="col-md-7 col-lg-8">
+      <h3 class="mb-4">Indirizzo di Spedizione</h3>
+        
+        <div class="mb-4" *ngIf="indirizziSalvati.length > 0">
+          <label class="form-label text-muted font-weight-bold">Seleziona un indirizzo salvato</label>
+          <select class="form-select rounded-3 border-info shadow-sm" [(ngModel)]="selectedIndirizzoId" (ngModelChange)="onIndirizzoChange()" [ngModelOptions]="{standalone: true}">
+            <option [value]="0">+ Inserisci un nuovo indirizzo</option>
+            <option *ngFor="let ind of indirizziSalvati" [value]="ind.id">
+              {{ ind.tipo }}: {{ ind.via }} {{ ind.numero_civico }}, {{ ind.provincia }} ({{ ind.cap }})
+            </option>
+          </select>
+        </div>
+
+        <div formGroupName="spedizione" class="row g-3" *ngIf="selectedIndirizzoId == 0">
+          <div class="col-sm-6">
+            <label for="addressType" class="form-label text-muted">Tipo di Indirizzo</label>
+            <select formControlName="tipo" class="form-select rounded-3" id="addressType">
+              <option value="Casa">Casa</option>
+              <option value="Lavoro">Lavoro</option>
+              <option value="Altro">Altro</option>
+            </select>
+          </div>
+
+          <div class="col-sm-6">
+            <label for="address" class="form-label text-muted">Via/Piazza</label>
+            <input type="text" formControlName="via" class="form-control rounded-3" id="address" placeholder="Via Roma">
+          </div>
+
+          <div class="col-md-4">
+            <label for="civico" class="form-label text-muted">Numero Civico</label>
+            <input type="text" formControlName="numero_civico" class="form-control rounded-3" id="civico" placeholder="123">
+          </div>
+
+          <div class="col-md-4">
+            <label for="provincia" class="form-label text-muted">Provincia</label>
+            <input type="text" formControlName="provincia" class="form-control rounded-3" id="provincia" placeholder="RM">
+          </div>
+
+          <div class="col-md-4">
+            <label for="country" class="form-label text-muted">Paese</label>
+            <select formControlName="paese" class="form-select rounded-3" id="country">
+              <option value="">Scegli...</option>
+              <option value="Italia">Italia</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mt-3">
+            <label for="zip" class="form-label text-muted">CAP</label>
+            <input type="text" formControlName="cap" class="form-control rounded-3" id="zip">
+          </div>
+
+          <div class="col-12 mt-2">
+            <div class="form-check">
+              <input type="checkbox" formControlName="salvaIndirizzo" class="form-check-input" id="salvaIndirizzo">
+              <label class="form-check-label" for="salvaIndirizzo">Vuoi salvare questo indirizzo per acquisti futuri?</label>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-5">
+
+        <h3 class="mb-4">Metodo di Pagamento</h3>
+        
+        <div class="mb-4" *ngIf="carteSalvate.length > 0">
+          <label class="form-label text-muted font-weight-bold">Seleziona una carta salvata</label>
+          <select class="form-select rounded-3 border-info shadow-sm" [(ngModel)]="selectedCartaId" (ngModelChange)="onCartaChange()" [ngModelOptions]="{standalone: true}">
+            <option [value]="0">+ Inserisci una nuova carta</option>
+            <option *ngFor="let carta of carteSalvate" [value]="carta.id">
+              {{ carta.nome_titolare }} - **** **** **** {{ carta.numero_carta | slice:-4 }} (Scad. {{ carta.data_scadenza }})
+            </option>
+          </select>
+        </div>
+
+        <!-- Metodi Salvati o Nuova Carta -->
+        <div formGroupName="pagamento" class="row gy-3" *ngIf="selectedCartaId == 0">
+          <div class="col-md-6">
+            <label for="cc-name" class="form-label text-muted">Nome sulla carta</label>
+            <input type="text" formControlName="nomeCarta" class="form-control rounded-3" id="cc-name" placeholder="Mario Rossi">
+            <small class="text-muted d-block mt-1">Nome completo come mostrato sulla carta</small>
+          </div>
+
+          <div class="col-md-6">
+            <label for="cc-number" class="form-label text-muted">Numero della carta</label>
+            <input type="text" formControlName="numeroCarta" class="form-control rounded-3" id="cc-number" placeholder="**** **** **** ****" (input)="formatNumeroCarta($event)" maxlength="19">
+            <small *ngIf="checkoutForm.get('pagamento.numeroCarta')?.invalid && checkoutForm.get('pagamento.numeroCarta')?.touched" class="text-danger mt-1 d-block">Inserisci tutte le 16 cifre.</small>
+          </div>
+
+          <div class="col-md-3">
+            <label for="cc-expiration" class="form-label text-muted">Scadenza</label>
+            <input type="text" formControlName="scadenza" class="form-control rounded-3" id="cc-expiration" placeholder="MM/YY" (input)="formatScadenza($event)" maxlength="5">
+            <small *ngIf="checkoutForm.get('pagamento.scadenza')?.hasError('cartaScaduta') && checkoutForm.get('pagamento.scadenza')?.touched" class="text-danger mt-1 d-block">Carta scaduta.</small>
+            <small *ngIf="checkoutForm.get('pagamento.scadenza')?.hasError('meseNonValido') && checkoutForm.get('pagamento.scadenza')?.touched" class="text-danger mt-1 d-block">Mese errato.</small>
+          </div>
+
+          <div class="col-md-3">
+            <label for="cc-cvv" class="form-label text-muted">CVV</label>
+            <input type="text" formControlName="cvv" class="form-control rounded-3" id="cc-cvv" placeholder="123">
+          </div>
+
+          <div class="col-12 mt-2">
+            <div class="form-check">
+              <input type="checkbox" formControlName="salvaCarta" class="form-check-input" id="salvaCarta">
+              <label class="form-check-label" for="salvaCarta">Vuoi salvare questo metodo di pagamento?</label>
+            </div>
+          </div>
+
+        </div>
+        
+    </div>
+
+    <!-- Colonna Destra: Riepilogo Ordine -->
+    <div class="col-md-5 col-lg-4 order-md-last">
+      <div class="card shadow-sm border-0 rounded-4 sticky-top" style="top: 2rem;">
+        <div class="card-body p-4">
+          <h4 class="d-flex justify-content-between align-items-center mb-4 text-info font-weight-bold">
+            Riepilogo Ordine
+          </h4>
+          <p class="text-muted mb-4">Completa l'inserimento dell'indirizzo e dei dati di pagamento per completare l'ordine.</p>
+          
+          <div class="d-flex justify-content-between mb-3 fs-5">
+            <span>Totale da pagare:</span>
+            <span *ngIf="!isLoading" class="font-weight-bold text-info">{{ totale | currency:'EUR':'symbol' }}</span>
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm text-info"></span>
+          </div>
+          
+          <button class="btn btn-info w-100 rounded-pill py-3 font-weight-bold fs-5 shadow-sm mt-3" 
+                  type="submit" 
+                  [disabled]="isProcessing || isLoading || checkoutForm.invalid">
+            <span *ngIf="!isProcessing">Conferma e Paga <i class="bi bi-lock-fill ms-1"></i></span>
+            <span *ngIf="isProcessing"><span class="spinner-border spinner-border-sm me-2"></span>Elaborazione...</span>
+          </button>
+          <div class="text-center mt-3 text-muted small"><i class="bi bi-shield-check text-success me-1"></i> Pagamento sicuro crittografato</div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

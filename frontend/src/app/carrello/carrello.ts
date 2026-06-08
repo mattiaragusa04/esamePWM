@@ -114,7 +114,7 @@ export class Carrello implements OnInit {
     this.totale = this.carrello.reduce((acc, item) => acc + (item.prezzoUnitarioVendita * item.quantita), 0);
   }
 
-  async creaOrdine() {
+  procediAlPagamento() {
     const token = localStorage.getItem('token');
     if (!token) {
       alert('Devi effettuare l\'accesso per completare l\'ordine.');
@@ -127,29 +127,6 @@ export class Carrello implements OnInit {
       return;
     }
 
-    try {
-      const response = await fetch('http://localhost:3000/api/ordine/create', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        } // Non c'è bisogno di un body, il backend calcola tutto da sé!
-      });
-
-      if (response.ok) {
-        alert('Ordine creato con successo! Grazie per aver acquistato su PAwerUP!');
-        await this.caricaCarrello(); // Ricarica il carrello (che ora sarà vuoto)
-        this.router.navigate(['/profilo/ordini']); // Spostiamo l'utente alla lista dei suoi ordini
-      } else {
-        try {
-          const errorData = await response.json();
-          console.error("Dettagli errore backend (Ordine):", errorData);
-          alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
-        } catch (parseError) {
-          alert(`Errore dal Backend (Status ${response.status}). Controlla il terminale di NodeJS!`);
-        }
-      }
-    } catch (error) {
-      console.error('Errore checkout:', error);
-    }
+    this.router.navigate(['/pagamento']);
   }
 }

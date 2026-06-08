@@ -1,11 +1,11 @@
 import { Component, signal, OnInit, Inject, PLATFORM_ID, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule],
+  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -38,15 +38,10 @@ export class App implements OnInit {
     // Controlla se il codice è in esecuzione nel browser prima di usare localStorage
     if (isPlatformBrowser(this.platformId)) {
       const userString = localStorage.getItem('user');
-      const token = localStorage.getItem('token');
-      
-      // La sessione è valida solo se esistono ENTRAMBI (utente e token)
-      if (userString && token) {
+      if (userString) {
         this.utenteLoggato = JSON.parse(userString);
       } else {
         this.utenteLoggato = null;
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
       }
     }
   }
@@ -90,4 +85,6 @@ export class App implements OnInit {
     }
     this.mostraRicerca = false;
   }
+
+  
 }

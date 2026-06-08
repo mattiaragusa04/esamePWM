@@ -49,18 +49,27 @@ export class Register {
         });
 
         if (response.ok) {
-          const data = await response.json();
-          console.log('Successo:', data);
-          
-          // Salva i dati della sessione nel localStorage
-          // Assumiamo che il backend restituisca un token o i dati dell'utente
-          if (data.token) localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.utente || data));
-          
-          alert('Registrazione completata con successo!');
-          
-          // Reindirizza l'utente alla home page con la sessione attiva
-          this.router.navigate(['/']);
+          // Dopo la registrazione con successo, facciamo subito il login per attivare la sessione
+          const loginResponse = await fetch('http://localhost:3000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: this.registerForm.value.email,
+              password: this.registerForm.value.password
+            })
+          });
+
+          if (loginResponse.ok) {
+            const loginData = await loginResponse.json();
+            // Salva il token e i dati dell'utente (sessione attiva)
+            localStorage.setItem('token', loginData.token);
+            localStorage.setItem('user', JSON.stringify(loginData.utente || loginData));
+            alert('Benvenuto in PAwerUP! Registrazione completata.');
+            this.router.navigate(['/']);
+          } else {
+            alert('Registrazione completata. Effettua il login.');
+            this.router.navigate(['/login']);
+          }
         } else if (response.status === 400) {
           const errorData = await response.json();
           // Legge 'message' inviato per gli errori 400, o 'error' inviato per gli errori 500

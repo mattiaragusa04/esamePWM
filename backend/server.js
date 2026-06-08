@@ -31,6 +31,10 @@ app.use('/api/prodotti', prodottiRoutes);
 app.use('/api/ordine', require('./routes/ordineRoutes'));
 
 app.use('/api/carrello', require('./routes/carrelloRoutes'));
+
+app.use('/api/carta', require('./routes/cartaDiCreditoRoutes'));
+
+app.use('/api/indirizzo', require('./routes/indirizzoRoutes'));
 // Rotta di prova
 app.get('/', (req, res) => {
     res.send('Il server è attivo e funzionante!');

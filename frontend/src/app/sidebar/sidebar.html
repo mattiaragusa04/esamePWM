@@ -1,39 +1,3 @@
-<style>
-  .sidebar-container {
-    width: 280px;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-x: hidden;
-  }
-  
-  .sidebar-container.no-transition {
-    transition: none !important;
-  }
-  
-  .sidebar-container.collapsed {
-    width: 80px; /* Larghezza ridotta quando chiusa */
-  }
-
-  /* Nasconde il testo, il nome dell'app e la freccina del dropdown */
-  .sidebar-container.collapsed .nav-text,
-  .sidebar-container.collapsed .brand-text,
-  .sidebar-container.collapsed .dropdown-toggle::after {
-    display: none !important;
-  }
-
-  /* Centra le icone quando il menu è chiuso */
-  .sidebar-container.collapsed .nav-link,
-  .sidebar-container.collapsed .dropdown-toggle {
-    justify-content: center !important;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  
-  /* Rimuove il margine dalle icone per farle stare al centro */
-  .sidebar-container.collapsed .bi {
-    margin-right: 0 !important;
-  }
-</style>
-
 <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-white shadow-lg sidebar-container" [class.collapsed]="isMenuCollapsed" [class.no-transition]="!isAnimationEnabled" style="border-radius: 1.5rem; z-index: 1; min-height: 100vh;">
     <div class="d-flex align-items-center justify-content-between mb-3 mb-md-0 w-100">
       <a href="/" class="d-flex align-items-center text-dark text-decoration-none brand-text">
@@ -41,8 +5,8 @@
         <span class="fs-4 text-nowrap">Il mio Profilo</span>
       </a>
       <!-- Bottone per il toggle dell'animazione -->
-      <button class="btn btn-sm btn-outline-secondary border-0" (click)="toggleMenu()">
-        <i class="bi bi-list fs-3"></i>
+    <button class="btn btn-sm btn-outline-secondary border-0 menu-toggler-btn" (click)="toggleMenu()">
+      <i class="bi bi-list fs-3 menu-toggler-icon"></i>
       </button>
     </div>
     <hr />
@@ -60,9 +24,15 @@
         </a>
       </li>
       <li>
-        <a routerLink="/profilo/desideri" class="nav-link text-dark d-flex align-items-center" routerLinkActive="active" title="Lista Desideri">
-          <i class="bi bi-grid pe-none me-2 bi"></i>
-          <span class="nav-text text-nowrap">Lista Desideri</span>
+        <a routerLink="/profilo/carte-di-credito" class="nav-link text-dark d-flex align-items-center" routerLinkActive="active" title="Lista Desideri">
+          <i class="bi bi-credit-card pe-none me-2 bi"></i>
+          <span class="nav-text text-nowrap">Metodi di Pagamento</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/profilo/indirizzi" class="nav-link text-dark d-flex align-items-center" routerLinkActive="active" title="Lista Desideri">
+          <i class="bi bi-pin-map pe-none me-2 bi"></i>
+          <span class="nav-text text-nowrap">Indirizzi Salvati</span>
         </a>
       </li>
       <li>

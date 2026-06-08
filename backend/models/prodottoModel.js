@@ -43,6 +43,21 @@ const Prodotto = {
         else resolve(rows);
       });
     });
+  },
+
+  search: (q) => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT p.*, c.denominazione AS categoria
+        FROM prodotto p
+        LEFT JOIN categoria c ON p.categoria_id = c.id
+        WHERE p.nome LIKE ? OR p.descrizione LIKE ?
+      `;
+      db.all(query, [`%${q}%`, `%${q}%`], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
   }
 };
 

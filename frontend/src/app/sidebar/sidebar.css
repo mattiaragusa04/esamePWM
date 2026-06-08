@@ -1,0 +1,47 @@
+  .sidebar-container {
+    width: 280px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-x: hidden;
+  }
+  
+  .sidebar-container.no-transition {
+    transition: none !important;
+  }
+  
+  .sidebar-container.collapsed {
+    width: 80px; /* Larghezza ridotta quando chiusa */
+  }
+
+  /* Nasconde il testo, il nome dell'app e la freccina del dropdown */
+  .sidebar-container.collapsed .nav-text,
+  .sidebar-container.collapsed .brand-text,
+  .sidebar-container.collapsed .dropdown-toggle::after {
+    display: none !important;
+  }
+
+  /* Centra le icone quando il menu è chiuso */
+  .sidebar-container.collapsed .nav-link,
+  .sidebar-container.collapsed .dropdown-toggle {
+    justify-content: center !important;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  /* Rimuove il margine dalle icone per farle stare al centro */
+  .sidebar-container.collapsed .bi {
+    margin-right: 0 !important;
+  }
+
+  /* Animazione per l'icona del menu toggler */
+  .menu-toggler-btn {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .menu-toggler-icon {
+    display: inline-block;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .sidebar-container.collapsed .menu-toggler-icon {
+    transform: rotate(-180deg);
+  }

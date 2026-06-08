@@ -34,3 +34,19 @@ exports.getProdottobyCategoria = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 }
+
+exports.cercaProdotti = async (req, res) => {
+    try {
+        const q = req.query.q;
+        console.log("Ricerca ricevuta dal frontend per il termine:", q);
+        if (!q) {
+            return res.json([]);
+        }
+        const prodotti = await prodotto.search(q);
+        console.log(`Trovati ${prodotti.length} risultati per "${q}"`);
+        res.json(prodotti);
+    } catch (err) {
+        console.error("Errore durante la ricerca nel DB:", err);
+        res.status(500).json({ error: err.message });
+    }
+}

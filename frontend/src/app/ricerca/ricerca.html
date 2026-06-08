@@ -1,0 +1,30 @@
+<div class="mt-4">
+  <h2 class="mb-4 text-center">Risultati della ricerca per: <span class="text-info">"{{ termineRicerca }}"</span></h2>
+
+  <!-- Stato di caricamento -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-info" role="status">
+      <span class="visually-hidden">Caricamento...</span>
+    </div>
+  </div>
+
+  <!-- Nessun risultato trovato -->
+  <div *ngIf="!isLoading && prodottiTrovati.length === 0" class="alert alert-light text-center py-5 shadow-sm rounded-4 border-0">
+    <h4 class="text-muted">Nessun prodotto trovato.</h4>
+    <p class="text-muted mb-0">Prova a cercare con parole chiave diverse o controlla l'ortografia.</p>
+  </div>
+
+  <!-- Griglia dei risultati -->
+  <div class="row" *ngIf="!isLoading && prodottiTrovati.length > 0">
+    <div class="col-md-3 mb-4" *ngFor="let prodotto of prodottiTrovati">
+      <div class="card h-100 shadow-sm product-card">
+        <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
+        <div class="card-body text-center d-flex flex-column justify-content-between">
+          <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
+          <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
+          <a class="btn btn-info rounded-pill px-4" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

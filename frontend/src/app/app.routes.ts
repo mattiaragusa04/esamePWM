@@ -8,6 +8,9 @@ import {Profilo} from "./profilo/profilo";
 import {Contattaci} from "./contattaci/contattaci";
 import { DettagliProdotto } from './dettagli-prodotto/dettagli-prodotto';
 import { Ordini } from './ordini/ordini';
+import { Ricerca } from './ricerca/ricerca';
+import { CarteDiCredito } from './carte-di-credito/carte-di-credito';
+import { Pagamento } from './pagamento/pagamento';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -19,5 +22,8 @@ export const routes: Routes = [
     { path: 'carrello', component: Carrello},
     { path: 'contattaci', component: Contattaci},
     { path: 'profilo', component: Profilo},
-    { path: 'profilo/ordini', component: Ordini }
+    { path: 'profilo/ordini', component: Ordini },
+    { path: 'ricerca', component: Ricerca },
+    { path: 'profilo/carte-di-credito', component: CarteDiCredito },
+    { path: 'pagamento', component: Pagamento },
 ];

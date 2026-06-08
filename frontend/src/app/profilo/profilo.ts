@@ -51,7 +51,7 @@ export class Profilo implements OnInit, OnDestroy {
       if (!token) return; // Se non c'è il token, non facciamo la chiamata
 
       try {
-        const response = await fetch('http://localhost:3000/api/utente', {
+        const response = await fetch('http://localhost:3000/api/auth/profilo', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`

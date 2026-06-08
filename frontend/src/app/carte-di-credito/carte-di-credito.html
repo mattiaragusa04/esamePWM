@@ -1,0 +1,68 @@
+<main class="d-flex flex-nowrap" style="min-height: 100vh;">
+
+  <app-sidebar></app-sidebar>
+
+  <!-- Area del contenuto principale: Carte di Credito -->
+  <div class="d-flex flex-column flex-grow-1 p-4 bg-light overflow-auto">
+    
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2>I Miei Metodi di Pagamento</h2>
+      <!-- Questo bottone sarà utile in futuro per aprire il form di aggiunta carta -->
+      <button class="btn btn-info rounded-pill font-weight-bold px-4">
+        <i class="bi bi-plus-circle me-2"></i>Aggiungi Carta
+      </button>
+    </div>
+    <p class="lead mb-4 text-muted">Gestisci le tue carte di credito salvate per acquisti più veloci su PAwerUP.</p>
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="text-center my-5">
+      <div class="spinner-border text-info" role="status"></div>
+    </div>
+
+    <!-- Nessuna carta salvata -->
+    <div *ngIf="!isLoading && carte.length === 0" class="card shadow-sm p-5 text-center border-0 mt-2">
+      <h4 class="text-muted">Nessuna carta di credito salvata.</h4>
+      <p class="mb-4">Non hai ancora aggiunto alcun metodo di pagamento al tuo account.</p>
+      <div>
+        <button class="btn btn-info rounded-pill px-4 font-weight-bold text-dark">
+          Aggiungi una nuova carta
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista Carte -->
+    <div class="row" *ngIf="!isLoading && carte.length > 0">
+      <div class="col-md-6 col-lg-4 mb-4" *ngFor="let carta of carte">
+        <div class="card shadow-sm border text-dark bg-white" style="border-radius: 1rem;">
+          <div class="card-body p-4 position-relative">
+            
+            <!-- Bottone Elimina in alto a destra -->
+            <button class="btn btn-outline-dark btn-sm position-absolute top-0 end-0 m-3 border-0" (click)="eliminaCarta(carta.id)" title="Rimuovi carta">
+              <i class="bi bi-trash fs-5 text-danger"></i>
+            </button>
+
+            <div class="mb-4">
+              <i class="bi bi-credit-card-2-front fs-1 text-info"></i>
+            </div>
+
+            <!-- Numero Carta Mascherato (mostra solo ultime 4 cifre) -->
+            <h4 class="card-title text-center mb-4" style="letter-spacing: 3px; font-family: monospace;">
+              **** **** **** {{ carta.numero_carta | slice:-4 }}
+            </h4>
+
+            <div class="d-flex justify-content-between">
+              <div>
+                <small class="text-uppercase text-info d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Titolare</small>
+                <span class="font-weight-bold text-uppercase">{{ carta.nome_titolare }}</span>
+              </div>
+              <div>
+                <small class="text-uppercase text-info d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Scadenza</small>
+                <span class="font-weight-bold">{{ carta.data_scadenza }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
