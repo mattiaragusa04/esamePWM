@@ -240,8 +240,8 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
 
     this.estimatedPrice = basePrice * (1 + totalAdjustment);
 
-    // Assicurati che il prezzo non sia negativo e arrotonda a due cifre decimali
-    this.estimatedPrice = Math.max(0, Math.round(this.estimatedPrice * 100) / 100);
+    // Arrotondamento al 0.50 più vicino (es. 28.42 -> 28.50, 28.04 -> 28.00)
+    this.estimatedPrice = Math.max(0, Math.round(this.estimatedPrice * 2) / 2);
   }
 
   onFileSelected(event: any) {

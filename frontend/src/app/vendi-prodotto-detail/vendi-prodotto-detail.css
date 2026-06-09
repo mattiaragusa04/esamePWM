@@ -1,64 +1,79 @@
-.card {
-  border-radius: 1rem;
-}
-
-.card-img-top {
-  max-height: 300px;
-  object-fit: contain;
-  padding: 15px;
-  background-color: var(--bg-light);
-}
-
 .condition-option input[type="radio"] {
   display: none;
 }
 
 .condition-label {
   cursor: pointer;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease-in-out;
+  padding: 1rem 1.25rem;
+  border-radius: 1.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.95rem;
-  white-space: normal; /* Permette al testo di andare a capo */
+  white-space: normal;
   text-align: center;
-  display: block; /* Rende le label a larghezza piena per una migliore area di click */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: var(--text-secondary);
+  font-weight: 500;
+  height: 100%;
 }
 
 .condition-label:hover {
-  background-color: var(--main-color-hover);
-  color: white;
-  border-color: var(--main-color-hover);
-  box-shadow: 0 0 10px rgba(248, 109, 237, 0.3);
+  border-color: var(--main-color);
+  background-color: rgba(248, 109, 237, 0.03);
+  transform: translateY(-3px);
 }
 
 .condition-option input[type="radio"]:checked + .condition-label {
   background-color: var(--main-color);
   border-color: var(--main-color);
   color: white;
-  box-shadow: 0 0 15px rgba(248, 109, 237, 0.5);
+  box-shadow: 0 8px 20px rgba(248, 109, 237, 0.3);
+  font-weight: 600;
 }
 
-.btn-info {
-  background-color: var(--main-color) !important;
-  border-color: var(--main-color) !important;
-  color: white !important;
+/* Photo Upload Area */
+.upload-area {
+  border: 2px dashed #cbd5e1;
+  background: #f8fafc;
+  padding: 40px 20px;
+  border-radius: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.btn-info:hover, .btn-info:focus {
-  background-color: var(--main-color-hover) !important;
-  border-color: var(--main-color-hover) !important;
-  box-shadow: 0 0 15px rgba(248, 109, 237, 0.5);
-  transform: translateY(-1px);
+.upload-area:hover {
+  border-color: var(--main-color);
+  background: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
-.btn-outline-secondary {
-  color: var(--text-secondary);
-  border-color: var(--text-secondary);
+.upload-area i {
+  font-size: 3rem;
+  color: var(--main-color);
+  margin-bottom: 15px;
+  display: block;
 }
 
-.btn-outline-secondary:hover {
-  background-color: var(--text-secondary);
-  color: white;
+/* Valuation Box */
+.valuation-summary {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.price-display {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #10b981; /* emerald-500 */
+  line-height: 1;
+}
+
+.ls-1 {
+  letter-spacing: 0.5px;
 }
 
 /* Responsive adjustments for condition labels */
@@ -66,5 +81,9 @@
   .condition-option {
     min-width: 100%; /* Full width on small screens */
     max-width: 100%;
+  }
+
+  .price-display {
+    font-size: 2.2rem;
   }
 }
