@@ -99,7 +99,7 @@ export class CarteDiCredito implements OnInit {
   // --- Funzioni per la formattazione live dell'input ---
   formatNumeroCarta(event: any) {
     // Limitiamo l'input a esattamente 12 cifre
-    let input = event.target.value.replace(/\D/g, '').substring(0, 12);
+    let input = event.target.value.replace(/\D/g, '').substring(0, 16);
 
     let formatted = '';
     const matches = input.match(/.{1,4}/g);

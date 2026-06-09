@@ -13,6 +13,8 @@ export class Sidebar implements OnInit {
   menuItems = [
     { label: 'Il mio Profilo', link: '/profilo', icon: 'bi-person-circle' },
     { label: 'I miei Ordini', link: '/profilo/ordini', icon: 'bi-box-seam' },
+    { label: 'I miei Indirizzi', link: '/profilo/indirizzi', icon: 'bi-geo-alt'},
+    { label: 'I miei metodi di pagamento', link: '/profilo/carte-di-credito', icon: 'bi-credit-card'},
     { label: 'Impostazioni', link: '/profilo/impostazioni', icon: 'bi-gear' },
     { label: 'Assistenza', link: '/contattaci', icon: 'bi-headset' }
   ];

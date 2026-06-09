@@ -50,3 +50,17 @@ exports.createIndirizzo = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+exports.deleteIndirizzo = async (req, res) => {
+    try {
+        const indirizzoId = req.params.id;
+        const deletedIndirizzo = await indirizzo.delete(indirizzoId);
+        res.json(deletedIndirizzo);
+    }catch (err) {
+        // Controlla se l'errore è dovuto al fatto che l'indirizzo è presente in un ordine
+        if (err.message && err.message.includes("FOREIGN KEY constraint failed")) {
+            return res.status(400).json({ error: "Impossibile eliminare questo indirizzo perché è associato a uno o più ordini passati." });
+        }
+        res.status(500).json({ error: err.message });
+    }
+}

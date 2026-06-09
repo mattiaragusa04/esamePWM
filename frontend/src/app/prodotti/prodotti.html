@@ -92,7 +92,7 @@
       </div>
 
       <div class="row" *ngIf="prodottiFiltrati.length > 0">
-        <div class="col-md-6 col-lg-4 mb-4" *ngFor="let prodotto of prodottiFiltrati">
+        <div class="col-md-6 col-lg-4 mb-4" *ngFor="let prodotto of getProdottiPaginati()">
           <div class="card h-100 shadow-lg product-card position-relative">
             <!-- Pulsante Preferiti -->
             <button class="btn btn-link position-absolute p-2 shadow-none" style="top: 5px; right: 5px; z-index: 10;" (click)="togglePreferito(prodotto)">
@@ -131,6 +131,27 @@
           </div>
         </div>
       </div>
+
+      <!-- Paginazione -->
+      <nav *ngIf="prodottiFiltrati.length > elementiPerPagina" class="mt-5 mb-4 d-flex justify-content-start">
+        <ul class="pagination border-0 mb-0 align-items-center">
+          <li class="page-item border-0" [class.disabled]="paginaCorrente === 1">
+            <button class="page-link border-0 bg-transparent text-info shadow-none d-flex align-items-center" (click)="cambiaPagina(paginaCorrente - 1)">
+              <i class="bi bi-arrow-left-circle fs-4"></i>
+            </button>
+          </li>
+          
+          <li class="page-item border-0" *ngFor="let p of getPagineVisibili()" [class.active]="paginaCorrente === p">
+            <button class="page-link shadow-sm rounded-circle mx-1 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;" [ngClass]="paginaCorrente === p ? 'bg-info border-info text-white font-weight-bold' : 'text-info border-info'" (click)="cambiaPagina(p)">{{ p }}</button>
+          </li>
+          
+          <li class="page-item border-0" [class.disabled]="paginaCorrente === getNumeroPagine()">
+            <button class="page-link border-0 bg-transparent text-info shadow-none d-flex align-items-center" (click)="cambiaPagina(paginaCorrente + 1)">
+              <i class="bi bi-arrow-right-circle fs-4"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </div>

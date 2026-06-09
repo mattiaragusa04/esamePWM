@@ -22,9 +22,9 @@ const Indirizzo = {
     findByUserId : (userId) => {
         return new Promise((res, rej) => {
             const query = `SELECT * FROM indirizzo WHERE utente_id = ?`;    
-            db.get(query, [userId], (err, row) => {
+            db.all(query, [userId], (err, rows) => {
                 if (err) rej(err);
-                else res(row);
+                else res(rows);
             });
         }); 
     },
@@ -34,6 +34,15 @@ const Indirizzo = {
             db.run(query, [indirizzo.utente_id, indirizzo.tipo, indirizzo.via, indirizzo.numero_civico, indirizzo.provincia, indirizzo.paese, indirizzo.cap], function(err) {
                 if (err) rej(err);
                 else res({ id: this.lastID, ...indirizzo });
+            });
+        });
+    },
+    delete : (id) => {
+        return new Promise((res, rej) => {
+            const query = `DELETE FROM indirizzo WHERE id = ?`;
+            db.run(query, [id], function(err) {
+                if (err) rej(err);
+                else res({ id });
             });
         });
     }

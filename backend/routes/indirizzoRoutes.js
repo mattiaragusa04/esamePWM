@@ -14,6 +14,8 @@ router.get('/utente', indirizzoController.getIndirizziByUserId);
 router.get('/:id', indirizzoController.getIndirizzoById);
 // Rotta per creare un nuovo indirizzo
 router.post('/create', indirizzoController.createIndirizzo);
+//Rotta per eliminare un indirizzo
+router.delete('/:id', indirizzoController.deleteIndirizzo);
 
 module.exports = router;
 

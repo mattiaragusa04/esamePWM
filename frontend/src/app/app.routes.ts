@@ -12,6 +12,7 @@ import { Ricerca } from './ricerca/ricerca';
 import { CarteDiCredito } from './carte-di-credito/carte-di-credito';
 import { Pagamento } from './pagamento/pagamento';
 import { PreferitiComponent } from './preferiti/preferiti';
+import { Indirizzi } from './indirizzi/indirizzi';
 
 
 export const routes: Routes = [
@@ -29,4 +30,6 @@ export const routes: Routes = [
     { path: 'profilo/carte-di-credito', component: CarteDiCredito },
     { path: 'pagamento', component: Pagamento },
     { path: 'preferiti', component: PreferitiComponent },
+    { path: 'profilo/indirizzi', component: Indirizzi },
+    
 ];

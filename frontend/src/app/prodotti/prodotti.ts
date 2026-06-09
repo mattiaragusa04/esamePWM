@@ -35,6 +35,10 @@ export class Prodotti implements OnInit, OnDestroy {
   errorMessage: string = '';
   preferiti: number[] = [];
 
+  // Paginazione
+  paginaCorrente: number = 1;
+  elementiPerPagina: number = 9;
+
   // Nuovi stati per i filtri della barra laterale
   ordinamentoPrezzo: string = '';
   prezzoMin: number | null = null;
@@ -236,6 +240,7 @@ export class Prodotti implements OnInit, OnDestroy {
     }
 
     this.prodottiFiltrati = result;
+    this.paginaCorrente = 1; // Ritorna alla prima pagina quando cambia un filtro
   }
 
 
@@ -313,6 +318,45 @@ export class Prodotti implements OnInit, OnDestroy {
       }
       localStorage.setItem('carrello', JSON.stringify(carrello));
       alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+    }
+  }
+
+  // --- Paginazione ---
+  getProdottiPaginati(): Prodotto[] {
+    const inizio = (this.paginaCorrente - 1) * this.elementiPerPagina;
+    const fine = inizio + this.elementiPerPagina;
+    return this.prodottiFiltrati.slice(inizio, fine);
+  }
+
+  getNumeroPagine(): number {
+    return Math.ceil(this.prodottiFiltrati.length / this.elementiPerPagina);
+  }
+
+  getPagine(): number[] {
+    const numPagine = this.getNumeroPagine();
+    return Array.from({ length: numPagine }, (_, i) => i + 1);
+  }
+
+  // Mostra un massimo di 5 pagine alla volta, scorrendo man mano
+  getPagineVisibili(): number[] {
+    const numPagine = this.getNumeroPagine();
+    const maxVisibili = 5; // Puoi cambiare questo numero per mostrare più o meno pallini
+    let inizio = Math.max(1, this.paginaCorrente - Math.floor(maxVisibili / 2));
+    let fine = Math.min(numPagine, inizio + maxVisibili - 1);
+
+    if (fine - inizio < maxVisibili - 1) {
+      inizio = Math.max(1, fine - maxVisibili + 1);
+    }
+
+    return Array.from({ length: (fine - inizio) + 1 }, (_, i) => inizio + i);
+  }
+
+  cambiaPagina(pagina: number) {
+    if (pagina >= 1 && pagina <= this.getNumeroPagine()) {
+      this.paginaCorrente = pagina;
+      if (isPlatformBrowser(this.platformId)) {
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Torna all'inizio in modo fluido
+      }
     }
   }
 }
