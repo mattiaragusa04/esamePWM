@@ -1,3 +1,16 @@
+<style>
+  .image-frame {
+    overflow: hidden; /* Evita che l'immagine esca dal bordo durante lo zoom */
+    border-radius: 0.5rem;
+  }
+  .product-image {
+    transition: transform 0.4s ease; /* Rende lo zoom fluido */
+    cursor: zoom-in; /* Mostra l'icona della lente di ingrandimento */
+  }
+  .image-frame:hover .product-image {
+    transform: scale(1.15); /* Ingrandisce l'immagine del 15% */
+  }
+</style>
 <div class="product-detail-page container py-4">
   <div *ngIf="isLoading" class="loading-panel card p-5 text-center">
     <h3>Caricamento dettagli prodotto...</h3>
