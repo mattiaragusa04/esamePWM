@@ -47,6 +47,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
   errorMessage: string = '';
   prodottoId: number | null = null;
   estimatedPrice: number = 0;
+  selectedFiles: File[] = [];
 
   // Definizione delle categorie di condizione e delle loro opzioni
   allConditionCategories: { [key: string]: ConditionCategory[] } = {
@@ -241,6 +242,12 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
 
     // Assicurati che il prezzo non sia negativo e arrotonda a due cifre decimali
     this.estimatedPrice = Math.max(0, Math.round(this.estimatedPrice * 100) / 100);
+  }
+
+  onFileSelected(event: any) {
+    if (event.target.files) {
+      this.selectedFiles = Array.from(event.target.files);
+    }
   }
 
   async submitSellOffer() {

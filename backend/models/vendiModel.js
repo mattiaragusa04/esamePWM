@@ -1,12 +1,12 @@
 const db = require("../db/database");
 
 const Vendi = {
-  create: (utente_id, prodotto_id, prezzo_stimato, condizioni_json) => {
+  create: (utente_id, prodotto_id, prezzo_stimato, condizioni_json, allegati_foto) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO vendi (utente_id, prodotto_id, prezzo_stimato, condizioni_json, stato_offerta) VALUES (?, ?, ?, ?, ?)`;
-      db.run(query, [utente_id, prodotto_id, prezzo_stimato, condizioni_json, 'In attesa'], function (err) {
+      const query = `INSERT INTO vendi (utente_id, prodotto_id, prezzo_stimato, condizioni_json, allegati_foto, stato_offerta) VALUES (?, ?, ?, ?, ?, ?)`;
+      db.run(query, [utente_id, prodotto_id, prezzo_stimato, condizioni_json, allegati_foto, 'In attesa'], function (err) {
         if (err) reject(err);
-        else resolve({ id: this.lastID, utente_id, prodotto_id, prezzo_stimato, condizioni_json, stato_offerta: 'In attesa' });
+        else resolve({ id: this.lastID, utente_id, prodotto_id, prezzo_stimato, condizioni_json, allegati_foto, stato_offerta: 'In attesa' });
       });
     });
   },

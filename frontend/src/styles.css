@@ -194,3 +194,8 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
   border-color: var(--main-color);
 }
+
+/* Aggiunge un piccolo spazio tra i bottoni "Nuovo" e "Usato" */
+.condition-toggle .btn:not(:last-child) {
+  margin-right: 0.5rem; 
+}

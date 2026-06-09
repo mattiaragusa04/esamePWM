@@ -49,6 +49,19 @@
           </div>
         </div>
 
+        <div class="mb-4">
+          <label class="form-label fw-bold">Carica foto del prodotto (Massimo 5):</label>
+          <input 
+            type="file" 
+            class="form-control" 
+            (change)="onFileSelected($event)" 
+            multiple 
+            accept="image/*">
+          <div class="mt-2 text-muted small" *ngIf="selectedFiles.length > 0">
+            {{ selectedFiles.length }} file selezionati.
+          </div>
+        </div>
+
         <hr>
         <div class="d-flex justify-content-between align-items-center mt-4">
           <h3 class="mb-0">Valutazione stimata: <span class="text-success">€{{ estimatedPrice | number:'1.2-2' }}</span></h3>

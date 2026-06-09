@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS vendi (
     prodotto_id INTEGER NOT NULL,
     prezzo_stimato REAL NOT NULL,
     condizioni_json TEXT NOT NULL,
+    allegati_foto TEXT,
     stato_offerta TEXT NOT NULL DEFAULT 'In attesa',
     data_offerta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_aggiornamento_stato TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
