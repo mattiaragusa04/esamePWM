@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt"); // per criptare le informazioni
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 
-const SECRET = "supersecretkey";
+const SECRET = process.env.JWT_SECRET || "supersecretkey";
 
 exports.register = async (req, res) => {
   try {

@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const SECRET = "supersecretkey";
+const SECRET = process.env.JWT_SECRET || "supersecretkey";
 
 module.exports = (req, res, next) => {
 
@@ -23,6 +23,6 @@ module.exports = (req, res, next) => {
         req.user = verified;
         next();
     } catch (err) {
-        res.status(400).json({ message: "Token non valido" });
+        res.status(401).json({ message: "Token non valido o scaduto" });
     }
 };

@@ -29,11 +29,12 @@ exports.submitSellOffer = async (req, res) => {
     try {
         const userId = req.user.id;
         const { prodottoId, estimatedPrice, conditions } = req.body;
+        const numericPrice = Number(estimatedPrice);
         
         const imagePaths = req.files ? req.files.map(file => `/public/uploads/vendi/${file.filename}`) : [];
-        const newOffer = await vendiModel.create(userId, prodottoId, estimatedPrice, conditions, JSON.stringify(imagePaths));
+        const newOffer = await vendiModel.create(userId, prodottoId, numericPrice, conditions, JSON.stringify(imagePaths));
 
-        console.log(`Offerta di vendita #${newOffer.id} inviata dall'utente ${userId} per il prodotto ${prodottoId}. Prezzo stimato: €${estimatedPrice.toFixed(2)}`);
+        console.log(`Offerta di vendita #${newOffer.id} inviata dall'utente ${userId} per il prodotto ${prodottoId}. Prezzo stimato: €${numericPrice.toFixed(2)}`);
 
         res.status(200).json({ message: "Offerta di vendita ricevuta con successo!", offer: { prodottoId, estimatedPrice, conditions } });
 
