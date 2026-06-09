@@ -5,10 +5,19 @@
   <div class="row mb-4">
     <div class="col-md-8 offset-md-2">
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="Cerca prodotti..." [(ngModel)]="searchTerm" (input)="cercaProdotti()">
-        <button class="btn btn-info" type="button" (click)="cercaProdotti()">Cerca</button>
+        <input type="text" class="form-control" placeholder="Cerca prodotti..." [(ngModel)]="searchTerm" (input)="applicaFiltri()">
+        <button class="btn btn-info" type="button" (click)="applicaFiltri()">Cerca</button>
       </div>
     </div>
+  </div>
+
+  <!-- Filtri Categoria -->
+  <div class="d-flex justify-content-center flex-wrap gap-2 mb-5">
+    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Tutti' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Tutti')">Tutti</button>
+    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Console' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Console')">Console</button>
+    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Videogiochi' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Videogiochi')">Videogiochi</button>
+    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Accessori' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Accessori')">Accessori</button>
+    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Elettronica' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Elettronica')">Elettronica</button>
   </div>
 
   <div *ngIf="isLoading" class="text-center my-5">

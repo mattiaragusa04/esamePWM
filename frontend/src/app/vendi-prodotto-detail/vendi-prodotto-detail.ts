@@ -124,6 +124,25 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       ],
       selectedValue: 'perfetto'
     }
+  ],
+  'Elettronica': [
+    {
+      name: 'Stato Estetico (Hardware)',
+      options: [
+        { value: 'perfetto', label: 'Perfetto / Come nuovo', adjustment: 0 },
+        { value: 'buono', label: 'Buono (Graffi superficiali)', adjustment: -0.10 },
+        { value: 'usurato', label: 'Usurato (Segni evidenti)', adjustment: -0.25 }
+      ],
+      selectedValue: 'perfetto'
+    },
+    {
+      name: 'Funzionamento Hardware',
+      options: [
+        { value: 'funzionante', label: 'Testato e funzionante', adjustment: 0 },
+        { value: 'problemi', label: 'Difetti funzionali', adjustment: -0.50 }
+      ],
+      selectedValue: 'funzionante'
+    }
   ]
 };
 

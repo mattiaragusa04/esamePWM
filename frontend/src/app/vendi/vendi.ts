@@ -33,6 +33,7 @@ export class VendiComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   errorMessage: string = '';
   searchTerm: string = '';
+  categoriaSelezionata: string = 'Tutti';
 
   private routeSub: Subscription | undefined;
 
@@ -63,14 +64,13 @@ export class VendiComponent implements OnInit, OnDestroy {
       const response = await fetch(`http://localhost:3000/api/prodotti`);
       if (response.ok) {
         const data = await response.json();
-        const allowedCategories = ['Videogiochi', 'Console', 'Accessori'];
+        const allowedCategories = ['Videogiochi', 'Console', 'Accessori', 'Elettronica'];
         
         // Filtriamo i prodotti basandoci sulla denominazione della categoria
         this.prodotti = data.filter((p: Prodotto) => allowedCategories.includes(p.categoria_nome));
         
-        this.prodottiFiltrati = [...this.prodotti];
+        this.applicaFiltri();
         console.log('Prodotti caricati per la vendita:', this.prodotti);
-        this.cdr.detectChanges();
       } else {
         this.errorMessage = 'Errore nel recupero dei prodotti.';
       }
@@ -83,16 +83,30 @@ export class VendiComponent implements OnInit, OnDestroy {
     }
   }
 
-  cercaProdotti() {
-    if (this.searchTerm.trim()) {
-      const lowerCaseSearchTerm = this.searchTerm.toLowerCase();
-      this.prodottiFiltrati = this.prodotti.filter(p =>
-        p.nome.toLowerCase().includes(lowerCaseSearchTerm) ||
-        (p.descrizione && p.descrizione.toLowerCase().includes(lowerCaseSearchTerm))
-      );
-    } else {
-      this.prodottiFiltrati = [...this.prodotti];
+  applicaFiltri() {
+    let result = [...this.prodotti];
+
+    // Filtro per categoria
+    if (this.categoriaSelezionata !== 'Tutti') {
+      result = result.filter(p => p.categoria_nome === this.categoriaSelezionata);
     }
+
+    // Filtro per ricerca testuale
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(p =>
+        p.nome.toLowerCase().includes(term) ||
+        (p.descrizione && p.descrizione.toLowerCase().includes(term))
+      );
+    }
+
+    this.prodottiFiltrati = result;
+    this.cdr.detectChanges();
+  }
+
+  impostaFiltro(categoria: string) {
+    this.categoriaSelezionata = categoria;
+    this.applicaFiltri();
   }
 
   selezionaProdottoPerVendita(prodottoId: number) {
