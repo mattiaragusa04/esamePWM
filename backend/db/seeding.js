@@ -17,12 +17,12 @@ async function popolaDaRainForest(categoriaId, searchTerm, nomeCategoria, amazon
 
         const response = await axios.get('https://api.rainforestapi.com/request', { params });
 
-        const stmt = db.prepare("INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioAcquisto, prezzoUnitarioVendita, pubblicatoAcquisto, pubblicatoVetrina, condizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        const stmt = db.prepare("INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, condizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         
         if (response.data && response.data.search_results) {
             response.data.search_results.forEach(item => {
                 if (item.price && item.image) {
-                    stmt.run(categoriaId, item.title, item.snippet || 'Nessuna descrizione disponibile', 20, item.image, parseFloat(item.price.value), parseFloat(item.price.value) * 1.2, true, true, 'Nuovo');
+                    stmt.run(categoriaId, item.title, item.snippet || 'Nessuna descrizione disponibile', 20, item.image, parseFloat(item.price.value) * 1.2, true, 'Nuovo');
                 }
             });
         }
