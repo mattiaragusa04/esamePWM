@@ -1,0 +1,62 @@
+.card {
+  border-radius: 1rem;
+}
+
+.card-img-top {
+  max-height: 300px;
+  object-fit: contain;
+  padding: 15px;
+  background-color: var(--bg-light);
+}
+
+.condition-option input[type="radio"] {
+  display: none;
+}
+
+.condition-label {
+  cursor: pointer;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.95rem;
+  white-space: normal; /* Permette al testo di andare a capo */
+  text-align: center;
+  display: block; /* Rende le label a larghezza piena per una migliore area di click */
+}
+
+.condition-label:hover {
+  background-color: var(--main-color-hover);
+  color: white;
+  border-color: var(--main-color-hover);
+  box-shadow: 0 0 10px rgba(248, 109, 237, 0.3);
+}
+
+.condition-option input[type="radio"]:checked + .condition-label {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+  color: white;
+  box-shadow: 0 0 15px rgba(248, 109, 237, 0.5);
+}
+
+.btn-info {
+  background-color: var(--main-color) !important;
+  border-color: var(--main-color) !important;
+  color: white !important;
+}
+
+.btn-info:hover, .btn-info:focus {
+  background-color: var(--main-color-hover) !important;
+  border-color: var(--main-color-hover) !important;
+  box-shadow: 0 0 15px rgba(248, 109, 237, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-outline-secondary {
+  color: var(--text-secondary);
+  border-color: var(--text-secondary);
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--text-secondary);
+  color: white;
+}

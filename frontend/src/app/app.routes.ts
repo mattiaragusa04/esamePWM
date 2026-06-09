@@ -12,6 +12,8 @@ import { Ricerca } from './ricerca/ricerca';
 import { CarteDiCredito } from './carte-di-credito/carte-di-credito';
 import { Pagamento } from './pagamento/pagamento';
 import { PreferitiComponent } from './preferiti/preferiti';
+import { VendiProdottoDetailComponent } from './vendi-prodotto-detail/vendi-prodotto-detail';
+import { VendiComponent } from './vendi/vendi';
 
 
 export const routes: Routes = [
@@ -29,4 +31,6 @@ export const routes: Routes = [
     { path: 'profilo/carte-di-credito', component: CarteDiCredito },
     { path: 'pagamento', component: Pagamento },
     { path: 'preferiti', component: PreferitiComponent },
+    { path: 'vendi', component: VendiComponent },
+    { path: 'vendi/:id', component: VendiProdottoDetailComponent } // Aggiungi questa riga
 ];

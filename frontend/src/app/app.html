@@ -32,6 +32,14 @@
       </div>
     </div>
 
+    <!-- 3.5 Vendi a PAwerUP -->
+    <div class="d-none d-md-block">
+      <button class="btn btn-info rounded-pill px-3 py-2" [routerLink]="['/vendi']">
+        <i class="bi bi-cash-stack me-2"></i>
+        Vendi a PAwerUP
+      </button>
+     </div>
+
     <!-- 4. Icone destra (Ricerca mobile, Carrello, Utente) -->
     <div class="d-flex align-items-center gap-2 gap-md-3">
       <!-- Icona Ricerca (solo mobile) -->
@@ -186,6 +194,14 @@
               <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
             </svg> 
             Il mio Profilo
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark fs-5 d-flex align-items-center py-2" [routerLink]="['/vendi']" (click)="toggleMenu()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-cash-stack me-3" viewBox="0 0 16 16">
+              <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 13a1 1 0 0 0 1-1H7a1 1 0 0 0 1 1"/>
+              <path d="M14 3H2v7h12zM2 2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
+            </svg> Vendi a PAwerUP
           </a>
         </li>
         <li class="nav-item mt-3">

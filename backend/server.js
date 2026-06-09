@@ -6,11 +6,15 @@ const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
 const prodottiRoutes = require('./routes/prodottiRoutes');
+const ordineRoutes = require('./routes/ordineRoutes');
+const carrelloRoutes = require('./routes/carrelloRoutes');
+const cartaDiCreditoRoutes = require('./routes/cartaDiCreditoRoutes');
+const vendiRoutes = require('./routes/vendiRoutes');
+const indirizzoRoutes = require('./routes/indirizzoRoutes');
+
+
 
 const app = express();
-
-// Middleware
-// app.use(cors());
 
 app.use(cors({
   origin: "*", 
@@ -25,16 +29,18 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/api/auth', authRoutes);
-// Collega le rotte dei prodotti
+
 app.use('/api/prodotti', prodottiRoutes); 
 
-app.use('/api/ordine', require('./routes/ordineRoutes'));
+app.use('/api/ordine', ordineRoutes);
 
-app.use('/api/carrello', require('./routes/carrelloRoutes'));
+app.use('/api/carrello', carrelloRoutes);
 
-app.use('/api/carta', require('./routes/cartaDiCreditoRoutes'));
+app.use('/api/carta', cartaDiCreditoRoutes);
 
-app.use('/api/indirizzo', require('./routes/indirizzoRoutes'));
+app.use('/api/vendi', vendiRoutes);
+
+app.use('/api/indirizzo', indirizzoRoutes);
 // Rotta di prova
 app.get('/', (req, res) => {
     res.send('Il server è attivo e funzionante!');

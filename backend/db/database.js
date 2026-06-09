@@ -36,10 +36,8 @@ CREATE TABLE if not exists prodotto (
     nome TEXT NOT NULL,
     descrizione TEXT NOT NULL,
     giacenza INTEGER NOT NULL,
-    immagine TEXT NOT NULL ,
-    prezzoUnitarioAcquisto double NOT NULL,
+    immagine TEXT NOT NULL,
     prezzoUnitarioVendita double NOT NULL,
-    pubblicatoAcquisto boolean NOT NULL,
     pubblicatoVetrina boolean NOT NULL,
     condizione TEXT NOT NULL,
     FOREIGN KEY (categoria_id) REFERENCES categoria(id)
@@ -52,7 +50,6 @@ CREATE TABLE if not exists ordine (
     data DATE NOT NULL,
     totale double NOT NULL,
     statoOrdine TEXT NOT NULL,
-    acquisto_vendita boolean NOT NULL,
     FOREIGN KEY (utente_id) REFERENCES utente(id),
     FOREIGN KEY (carta_id) REFERENCES carta_di_credito(id),
     FOREIGN KEY (indirizzo_id) REFERENCES indirizzo(id)
@@ -107,6 +104,19 @@ CREATE TABLE IF NOT EXISTS coupon (
     sconto DOUBLE NOT NULL,
     data_scadenza DATE NOT NULL,
     PRIMARY KEY (codice)
+);
+CREATE TABLE IF NOT EXISTS vendi (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    utente_id INTEGER NOT NULL,
+    prodotto_id INTEGER NOT NULL,
+    prezzo_stimato REAL NOT NULL,
+    condizioni_json TEXT NOT NULL,
+    stato_offerta TEXT NOT NULL DEFAULT 'In attesa',
+    data_offerta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_aggiornamento_stato TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    note_amministratore TEXT,
+    FOREIGN KEY (utente_id) REFERENCES utente(id),
+    FOREIGN KEY (prodotto_id) REFERENCES prodotto(id)
 );
 CREATE TABLE IF NOT EXISTS messaggio_contatto (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
