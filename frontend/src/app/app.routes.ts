@@ -11,6 +11,8 @@ import { Ordini } from './ordini/ordini';
 import { Ricerca } from './ricerca/ricerca';
 import { CarteDiCredito } from './carte-di-credito/carte-di-credito';
 import { Pagamento } from './pagamento/pagamento';
+import { PreferitiComponent } from './preferiti/preferiti';
+
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -26,4 +28,5 @@ export const routes: Routes = [
     { path: 'ricerca', component: Ricerca },
     { path: 'profilo/carte-di-credito', component: CarteDiCredito },
     { path: 'pagamento', component: Pagamento },
+    { path: 'preferiti', component: PreferitiComponent },
 ];

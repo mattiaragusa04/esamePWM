@@ -1,18 +1,74 @@
-<main class="d-flex flex-nowrap" style="min-height: 100vh;">
-
-  <app-sidebar></app-sidebar>
-
-  <!-- Area del contenuto principale: Carte di Credito -->
-  <div class="d-flex flex-column flex-grow-1 p-4 bg-light overflow-auto">
-    
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <h2>I Miei Metodi di Pagamento</h2>
-      <!-- Questo bottone sarà utile in futuro per aprire il form di aggiunta carta -->
-      <button class="btn btn-info rounded-pill font-weight-bold px-4">
-        <i class="bi bi-plus-circle me-2"></i>Aggiungi Carta
-      </button>
+<div class="container mt-4 mb-5">
+  
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-credit-card text-info fs-1 me-3"></i>
+      <h2 class="font-weight-bold m-0">I miei <span class="text-info">metodi di pagamento</span></h2>
     </div>
+    <button class="btn btn-info rounded-pill font-weight-bold px-4 text-dark" (click)="toggleForm()" *ngIf="!mostraForm">
+      <i class="bi bi-plus-circle me-2"></i>Nuova Carta
+    </button>
+  </div>
     <p class="lead mb-4 text-muted">Gestisci le tue carte di credito salvate per acquisti più veloci su PAwerUP.</p>
+
+    <!-- Form di aggiunta carta a comparsa -->
+    <div class="card shadow-sm border-0 mb-4 p-4" style="border-radius: 1rem;" *ngIf="mostraForm">
+      <h4 class="mb-4"><i class="bi bi-credit-card me-2 text-info"></i>Dettagli Nuova Carta</h4>
+      <form [formGroup]="cartaForm" (ngSubmit)="salvaCarta()">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="font-weight-bold">Titolare della Carta</label>
+            <input type="text" class="form-control rounded-pill bg-light border-0 px-3" formControlName="nomeCarta" (input)="formatNome($event)" placeholder="Es. MARIO ROSSI" style="text-transform: uppercase;">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="font-weight-bold">Numero Carta</label>
+            <div class="input-group shadow-sm rounded-pill bg-light">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-transparent border-0" style="border-radius: 50rem 0 0 50rem;">
+                  <i class="bi fs-5" 
+                     [ngClass]="{
+                       'bi-credit-card text-muted': cardType() === 'unknown',
+                       'bi-credit-card-fill text-primary': cardType() === 'visa',
+                       'bi-credit-card-fill text-warning': cardType() === 'mastercard',
+                       'bi-credit-card-fill text-success': cardType() === 'amex'
+                     }"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control bg-transparent border-0 px-3" style="border-radius: 0 50rem 50rem 0;" formControlName="numeroCarta" (input)="formatNumeroCarta($event)" placeholder="0000 0000 0000">
+            </div>
+            <small class="text-danger" *ngIf="cartaForm.get('numeroCarta')?.hasError('luhnInvalid') && cartaForm.get('numeroCarta')?.touched">Il numero della carta non è valido.</small>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="font-weight-bold">Scadenza</label>
+            <input type="text" class="form-control rounded-pill bg-light border-0 px-3" formControlName="scadenza" (input)="formatScadenza($event)" placeholder="MM/YY">
+            <small class="text-danger" *ngIf="cartaForm.get('scadenza')?.hasError('cartaScaduta') && cartaForm.get('scadenza')?.touched">La carta risulta scaduta.</small>
+            <small class="text-danger" *ngIf="cartaForm.get('scadenza')?.hasError('meseNonValido') && cartaForm.get('scadenza')?.touched">Il formato del mese non è valido.</small>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="font-weight-bold">
+               CVV <i class="bi bi-info-circle ms-1 text-info" title="Ultime 3 cifre sul retro della carta. Per American Express, sono 4 cifre sul fronte."></i>
+            </label>
+            <div class="input-group shadow-sm rounded-pill bg-light">
+              <input [type]="mostraCvv ? 'text' : 'password'" class="form-control bg-transparent border-0 px-3" style="border-radius: 50rem 0 0 50rem;" formControlName="cvv" (input)="formatCVV($event)" placeholder="123">
+              <div class="input-group-append">
+                <button type="button" class="btn btn-light bg-transparent border-0 text-muted" style="border-radius: 0 50rem 50rem 0;" (click)="toggleCvv()">
+                  <i class="bi" [ngClass]="mostraCvv ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end gap-3 mt-3">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4 font-weight-bold" (click)="toggleForm()">Annulla</button>
+          <button type="submit" class="btn btn-info rounded-pill px-4 font-weight-bold text-dark" [disabled]="cartaForm.invalid || isSaving">
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Salva Carta
+          </button>
+        </div>
+      </form>
+    </div>
 
     <!-- Loader -->
     <div *ngIf="isLoading" class="text-center my-5">
@@ -20,11 +76,11 @@
     </div>
 
     <!-- Nessuna carta salvata -->
-    <div *ngIf="!isLoading && carte.length === 0" class="card shadow-sm p-5 text-center border-0 mt-2">
+    <div *ngIf="!isLoading && carte.length === 0 && !mostraForm" class="card shadow-sm p-5 text-center border-0 mt-2">
       <h4 class="text-muted">Nessuna carta di credito salvata.</h4>
       <p class="mb-4">Non hai ancora aggiunto alcun metodo di pagamento al tuo account.</p>
       <div>
-        <button class="btn btn-info rounded-pill px-4 font-weight-bold text-dark">
+        <button class="btn btn-info rounded-pill px-4 font-weight-bold text-dark" (click)="toggleForm()">
           Aggiungi una nuova carta
         </button>
       </div>
@@ -64,5 +120,3 @@
         </div>
       </div>
     </div>
-  </div>
-</main>

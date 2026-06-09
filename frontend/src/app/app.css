@@ -19,6 +19,15 @@
   transition: color 0.3s ease;
   font-size: 1.05rem;
 }
+
+/* Search bar desktop width control */
+.search-bar-desktop {
+  max-width: 660px;
+  width: 100%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
 .nav-category-link:hover {
   color: var(--main-color) !important;
 }

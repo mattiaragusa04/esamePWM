@@ -29,7 +29,7 @@
 
   .horizontal-scroll-wrapper {
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch; /* Per uno scroll più fluido su iOS */
     padding-bottom: 1rem; /* Spazio per la scrollbar se visibile */
@@ -109,13 +109,28 @@
       <!-- La card ora è un elemento inline-block dentro il contenitore scrollabile -->
 
       <div class="horizontal-scroll-item" *ngFor="let prodotto of prodottiConsigliati">
-        <div class="card h-100 shadow-lg product-card">
-          <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
+        <div class="card h-100 shadow-lg product-card position-relative">
+          <!-- Pulsante Preferiti -->
+          <button class="btn btn-link position-absolute p-2 shadow-none" style="top: 5px; right: 5px; z-index: 10;" (click)="togglePreferito(prodotto)">
+            <i style="font-size: 1.5rem;" [class]="isPreferito(prodotto.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"></i>
+          </button>
+          <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:4200/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
           <div class="card-body text-center d-flex flex-column justify-content-between">
             <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
-            <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
-            <a class="btn btn-info rounded-pill px-4 " [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
+            <div class="mb-2">
+              <div class="condition-toggle btn-group btn-group-sm" role="group" aria-label="Condizione prodotto">
+              <button type="button" class="btn btn-outline-secondary" [class.active-condition]="!prezzoCondizione || prezzoCondizione[prodotto.id] !== 'Usato'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
+              <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione && prezzoCondizione[prodotto.id] === 'Usato'" (click)="setCondizione(prodotto.id, 'Usato')">Usato</button>
+              </div>
+            </div>
 
+            <p class="text-info font-weight-bold mb-3 fs-5">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
+            
+            <!-- Pulsanti Azione -->
+            <div class="d-flex flex-column align-items-center gap-2">
+              <a class="btn btn-info rounded-pill w-100" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
+              <button type="button" class="btn btn-outline-info rounded-pill w-100" (click)="aggiungiAlCarrello(prodotto)">Aggiungi al carrello</button>
+            </div>
           </div>
         </div>
       </div>

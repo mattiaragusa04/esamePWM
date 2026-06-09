@@ -19,20 +19,20 @@
   box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
 }
 
-/* Label styling - bianche - Forza il colore bianco con specificitá elevata */
+/* Label styling - neri */
 label {
-  color: white !important;
+  color: black !important;
   font-weight: bold !important;
   font-size: 0.95rem !important;
 }
 
 .form-group label {
-  color: white !important;
+  color: black !important;
   font-weight: bold !important;
 }
 
 div.form-group > label {
-  color: white !important;
+  color: black !important;
   font-weight: bold !important;
 }
 .form-group:has(.form-control[type="file"]) {

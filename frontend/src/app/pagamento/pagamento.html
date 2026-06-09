@@ -79,26 +79,44 @@
         <div formGroupName="pagamento" class="row gy-3" *ngIf="selectedCartaId == 0">
           <div class="col-md-6">
             <label for="cc-name" class="form-label text-muted">Nome sulla carta</label>
-            <input type="text" formControlName="nomeCarta" class="form-control rounded-3" id="cc-name" placeholder="Mario Rossi">
+            <input type="text" formControlName="nomeCarta" class="form-control rounded-3" id="cc-name" placeholder="Es. MARIO ROSSI" (input)="formatNome($event)" style="text-transform: uppercase;">
             <small class="text-muted d-block mt-1">Nome completo come mostrato sulla carta</small>
           </div>
 
           <div class="col-md-6">
             <label for="cc-number" class="form-label text-muted">Numero della carta</label>
-            <input type="text" formControlName="numeroCarta" class="form-control rounded-3" id="cc-number" placeholder="**** **** **** ****" (input)="formatNumeroCarta($event)" maxlength="19">
-            <small *ngIf="checkoutForm.get('pagamento.numeroCarta')?.invalid && checkoutForm.get('pagamento.numeroCarta')?.touched" class="text-danger mt-1 d-block">Inserisci tutte le 16 cifre.</small>
+            <div class="input-group shadow-sm">
+              <span class="input-group-text bg-white" style="border-top-left-radius: 0.3rem; border-bottom-left-radius: 0.3rem;">
+                <i class="bi fs-5" 
+                   [ngClass]="{
+                     'bi-credit-card text-muted': cardType() === 'unknown',
+                     'bi-credit-card-fill text-primary': cardType() === 'visa',
+                     'bi-credit-card-fill text-warning': cardType() === 'mastercard',
+                     'bi-credit-card-fill text-success': cardType() === 'amex'
+                   }"></i>
+              </span>
+              <input type="text" formControlName="numeroCarta" class="form-control border-start-0" style="border-top-right-radius: 0.3rem; border-bottom-right-radius: 0.3rem;" id="cc-number" placeholder="0000 0000 0000" (input)="formatNumeroCarta($event)">
+            </div>
+            <small *ngIf="checkoutForm.get('pagamento.numeroCarta')?.hasError('luhnInvalid') && checkoutForm.get('pagamento.numeroCarta')?.touched" class="text-danger mt-1 d-block">Il numero della carta non è valido.</small>
           </div>
 
           <div class="col-md-3">
             <label for="cc-expiration" class="form-label text-muted">Scadenza</label>
-            <input type="text" formControlName="scadenza" class="form-control rounded-3" id="cc-expiration" placeholder="MM/YY" (input)="formatScadenza($event)" maxlength="5">
+            <input type="text" formControlName="scadenza" class="form-control rounded-3" id="cc-expiration" placeholder="MM/YY" (input)="formatScadenza($event)">
             <small *ngIf="checkoutForm.get('pagamento.scadenza')?.hasError('cartaScaduta') && checkoutForm.get('pagamento.scadenza')?.touched" class="text-danger mt-1 d-block">Carta scaduta.</small>
             <small *ngIf="checkoutForm.get('pagamento.scadenza')?.hasError('meseNonValido') && checkoutForm.get('pagamento.scadenza')?.touched" class="text-danger mt-1 d-block">Mese errato.</small>
           </div>
 
           <div class="col-md-3">
-            <label for="cc-cvv" class="form-label text-muted">CVV</label>
-            <input type="text" formControlName="cvv" class="form-control rounded-3" id="cc-cvv" placeholder="123">
+            <label for="cc-cvv" class="form-label text-muted">
+               CVV <i class="bi bi-info-circle ms-1 text-info" title="Ultime 3 cifre sul retro della carta. Per American Express, sono 4 cifre sul fronte."></i>
+            </label>
+            <div class="input-group shadow-sm">
+              <input [type]="mostraCvv ? 'text' : 'password'" formControlName="cvv" class="form-control border-end-0" style="border-top-left-radius: 0.3rem; border-bottom-left-radius: 0.3rem;" id="cc-cvv" placeholder="123" (input)="formatCVV($event)">
+              <button class="btn btn-outline-secondary bg-white text-muted" type="button" style="border-top-right-radius: 0.3rem; border-bottom-right-radius: 0.3rem; border-color: #ced4da;" (click)="toggleCvv()">
+                <i class="bi" [ngClass]="mostraCvv ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+            </div>
           </div>
 
           <div class="col-12 mt-2">

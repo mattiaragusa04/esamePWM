@@ -9,7 +9,7 @@
     <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
       <!-- Nome -->
       <div class="form-group mb-4">
-        <label class="font-weight-bold mb-2" style="color: white;">Il tuo nome <span class="text-danger">*</span></label>
+        <label class="font-weight-bold mb-2">Il tuo nome <span class="text-danger">*</span></label>
         <input type="text" formControlName="nome" class="form-control" placeholder="Es. Mario Rossi" [class.is-invalid]="submitted && contactForm.get('nome')?.errors">
         <small class="text-danger" *ngIf="submitted && contactForm.get('nome')?.errors?.['required']">Il nome è obbligatorio.</small>
         <small class="text-danger" *ngIf="submitted && contactForm.get('nome')?.errors?.['minlength']">Il nome deve avere almeno 2 caratteri.</small>
@@ -17,14 +17,14 @@
 
       <!-- Indirizzo -->
       <div class="form-group mb-4">
-        <label class="font-weight-bold mb-2" style="color: white;">Il tuo indirizzo <span class="text-danger">*</span></label>
+        <label class="font-weight-bold mb-2">Il tuo indirizzo <span class="text-danger">*</span></label>
         <input type="text" formControlName="indirizzo" class="form-control" placeholder="Es. Via Roma 123, 20100 Milano" [class.is-invalid]="submitted && contactForm.get('indirizzo')?.errors">
         <small class="text-danger" *ngIf="submitted && contactForm.get('indirizzo')?.errors?.['required']">L'indirizzo è obbligatorio.</small>
       </div>
 
       <!-- Email -->
       <div class="form-group mb-4">
-        <label class="font-weight-bold mb-2" style="color: white;">Email <span class="text-danger">*</span></label>
+        <label class="font-weight-bold mb-2">Email <span class="text-danger">*</span></label>
         <input type="email" formControlName="email" class="form-control" placeholder="Es. mario@example.com" [class.is-invalid]="submitted && contactForm.get('email')?.errors">
         <small class="text-danger" *ngIf="submitted && contactForm.get('email')?.errors?.['required']">L'email è obbligatoria.</small>
         <small class="text-danger" *ngIf="submitted && contactForm.get('email')?.errors?.['email']">Inserisci un'email valida.</small>
@@ -32,7 +32,7 @@
 
       <!-- Tipo di Richiesta -->
       <div class="form-group mb-4">
-        <label class="font-weight-bold mb-2" style="color: white;">Tipo di Richiesta <span class="text-danger">*</span></label>
+        <label class="font-weight-bold mb-2">Tipo di Richiesta <span class="text-danger">*</span></label>
         <select formControlName="tipoRichiesta" class="form-control" [class.is-invalid]="submitted && contactForm.get('tipoRichiesta')?.errors">
           <option value="">-- Seleziona un tipo di richiesta --</option>
           <option *ngFor="let tipo of tipiRichiesta" [value]="tipo.id">{{ tipo.label }}</option>
@@ -42,7 +42,7 @@
 
       <!-- Oggetto -->
       <div class="form-group mb-4">
-        <label class="font-weight-bold mb-2" style="color: white;">Oggetto <span class="text-danger">*</span></label>
+        <label class="font-weight-bold mb-2">Oggetto <span class="text-danger">*</span></label>
         <input type="text" formControlName="oggetto" class="form-control" placeholder="Riassumi il motivo della tua richiesta" [class.is-invalid]="submitted && contactForm.get('oggetto')?.errors">
         <small class="text-danger" *ngIf="submitted && contactForm.get('oggetto')?.errors?.['required']">L'oggetto è obbligatorio.</small>
         <small class="text-danger" *ngIf="submitted && contactForm.get('oggetto')?.errors?.['minlength']">L'oggetto deve avere almeno 5 caratteri.</small>
@@ -50,7 +50,7 @@
 
       <!-- Descrizione -->
       <div class="form-group mb-4">
-        <label class="font-weight-bold mb-2" style="color: white;">Descrizione <span class="text-danger">*</span></label>
+        <label class="font-weight-bold mb-2">Descrizione <span class="text-danger">*</span></label>
         <textarea formControlName="descrizione" class="form-control" rows="6" placeholder="Descrivi nel dettaglio il motivo della tua richiesta..." [class.is-invalid]="submitted && contactForm.get('descrizione')?.errors"></textarea>
         <small class="text-muted">Minimo 10 caratteri</small>
         <small class="text-danger" *ngIf="submitted && contactForm.get('descrizione')?.errors?.['required']">La descrizione è obbligatoria.</small>
@@ -59,7 +59,7 @@
 
       <!-- File Upload -->
       <div class="form-group mb-4">
-        <label class="font-weight-bold mb-2" style="color: white;">
+        <label class="font-weight-bold mb-2">
           <i class="bi bi-paperclip me-2"></i>Allego un file (facoltativo)
         </label>
         <input type="file" class="form-control" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx">

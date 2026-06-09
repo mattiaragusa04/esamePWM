@@ -15,67 +15,121 @@
     Nessun prodotto trovato in questa categoria.
   </div>
 
-  <!-- Container per i filtri per Console -->
-  
-  <div class="d-flex justify-content-center flex-wrap mb-5" *ngIf="!isLoading && !errorMessage && prodotti.length > 0">
-    
-    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('Tutti')">
-      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'Tutti'">
-        <div class="font-weight-bold text-muted" style="font-size: 1.2rem;">Tutte</div>
+  <div class="row" *ngIf="!isLoading && !errorMessage && prodotti.length > 0">
+    <!-- Sidebar Filtri -->
+    <div class="col-lg-3 mb-4">
+      <div class="card shadow-sm p-4 sticky-top" style="top: 20px; z-index: 1; border-radius: 1rem;">
+        <h5 class="font-weight-bold mb-4 border-bottom pb-2"><i class="bi bi-funnel-fill text-info me-2"></i>Filtri</h5>
+        
+        <!-- Ordine Prezzo -->
+        <h6 class="font-weight-bold mb-2">Ordina per Prezzo</h6>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="ordinamentoPrezzo" id="ordNessuno" value="" [(ngModel)]="ordinamentoPrezzo" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-muted" for="ordNessuno">Rilevanza</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="ordinamentoPrezzo" id="ordCrescente" value="crescente" [(ngModel)]="ordinamentoPrezzo" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-muted" for="ordCrescente">Crescente <i class="bi bi-sort-numeric-down text-info ms-1"></i></label>
+        </div>
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="radio" name="ordinamentoPrezzo" id="ordDecrescente" value="decrescente" [(ngModel)]="ordinamentoPrezzo" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-muted" for="ordDecrescente">Decrescente <i class="bi bi-sort-numeric-down-alt text-info ms-1"></i></label>
+        </div>
+
+        <!-- Range di Prezzo -->
+        <h6 class="font-weight-bold mb-2">Range di prezzo</h6>
+        <div class="row g-2 mb-4">
+          <div class="col-6">
+            <input type="number" class="form-control form-control-sm rounded-pill px-3 bg-light border-0" placeholder="Min €" [(ngModel)]="prezzoMin" (ngModelChange)="applicaFiltriAvanzati()">
+          </div>
+          <div class="col-6">
+            <input type="number" class="form-control form-control-sm rounded-pill px-3 bg-light border-0" placeholder="Max €" [(ngModel)]="prezzoMax" (ngModelChange)="applicaFiltriAvanzati()">
+          </div>
+        </div>
+
+        <!-- Disponibilità -->
+        <h6 class="font-weight-bold mb-2">Disponibilità</h6>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="disponibilita" id="dispTutte" value="" [(ngModel)]="disponibilita" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-muted" for="dispTutte">Tutti i prodotti</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="disponibilita" id="dispImmediata" value="immediata" [(ngModel)]="disponibilita" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-success font-weight-bold" for="dispImmediata">Immediata</label>
+        </div>
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="radio" name="disponibilita" id="dispEsaurito" value="esaurito" [(ngModel)]="disponibilita" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-danger font-weight-bold" for="dispEsaurito">Non disponibile</label>
+        </div>
+
+        <button class="btn btn-outline-secondary rounded-pill btn-sm w-100 font-weight-bold" (click)="resetFiltri()">Resetta Filtri</button>
       </div>
-      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'Tutti'">Tutte</h6>
     </div>
 
-    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('PS5')">
-      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'PS5'">
-        <img src="http://localhost:3000/public/immagini/console/ps5.png" class="p-2" alt="PS5" style="max-height: 80px; max-width: 80px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/3/38/PlayStation_5_logo.svg'">
+    <!-- Main Content -->
+    <div class="col-lg-9">
+      <!-- Container per i filtri per Categoria -->
+      <div class="d-flex justify-content-center flex-wrap mb-5">
+        <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('Tutti')">
+          <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'Tutti'">
+            <div class="font-weight-bold text-muted" style="font-size: 1.2rem;">Tutte</div>
+          </div>
+          <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'Tutti'">Tutte</h6>
+        </div>
+
+        <div class="text-center m-2" style="cursor: pointer;" *ngFor="let sub of sottoCategorie" (click)="impostaFiltro(sub.nome)">
+          <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === sub.nome">
+            <img *ngIf="sub.immagineUrl" [src]="sub.immagineUrl" class="p-2" [alt]="sub.nome" style="max-height: 80px; max-width: 80px; object-fit: contain;" (error)="handleImageError($event, sub.fallbackUrl)">
+            <i *ngIf="sub.iconaBootstrap" class="bi {{ sub.iconaBootstrap }}" style="font-size: 3rem;"></i>
+          </div>
+          <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === sub.nome">{{ sub.nome }}</h6>
+        </div>
       </div>
-      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'PS5'">PS5</h6>
-    </div>
 
-    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('PS4')">
-      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'PS4'">
-        <img src="http://localhost:3000/public/immagini/console/ps4_pro.png" class="p-2" alt="PS4" style="max-height: 80px; max-width: 80px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/8/87/PlayStation_4_logo_and_wordmark.svg'">
+      <div *ngIf="prodottiFiltrati.length === 0" class="text-center text-muted mt-5 mb-5 p-5">
+        <i class="bi bi-search fs-1 mb-3"></i>
+        <h4>Nessun prodotto corrisponde ai filtri selezionati.</h4>
       </div>
-      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'PS4'">PS4</h6>
-    </div>
 
-    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('Nintendo Switch')">
-      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'Nintendo Switch'">
-        <img src="http://localhost:3000/public/immagini/console/nintendo_switch.png" class="p-2" alt="Nintendo Switch" style="max-height: 80px; max-width: 80px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/5/5d/Nintendo_Switch_Logo.svg'">
-      </div>
-      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'Nintendo Switch'">Nintendo Switch</h6>
-    </div>
+      <div class="row" *ngIf="prodottiFiltrati.length > 0">
+        <div class="col-md-6 col-lg-4 mb-4" *ngFor="let prodotto of prodottiFiltrati">
+          <div class="card h-100 shadow-lg product-card position-relative">
+            <!-- Pulsante Preferiti -->
+            <button class="btn btn-link position-absolute p-2 shadow-none" style="top: 5px; right: 5px; z-index: 10;" (click)="togglePreferito(prodotto)">
+              <i style="font-size: 1.5rem;" [class]="isPreferito(prodotto.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"></i>
+            </button>
 
-    <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('Xbox')">
-      <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'Xbox'">
-        <img src="http://localhost:3000/public/immagini/console/xbox_one_x.png" class="p-2" alt="Xbox" style="max-height: 80px; max-width: 80px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/8/8c/XBOX_logo_2012.svg'">
-      </div>
-      <h6 class="mt-2 mb-0 font-weight-bold" [class.text-info]="filtroAttivo === 'Xbox'">Xbox</h6>
-    </div>
+            <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
+            <div class="card-body text-center d-flex flex-column justify-content-between">
+              <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
 
-  </div>
+              <!-- Etichetta Sottocategoria Dinamica -->
+              <div class="mb-2" *ngIf="getSottoCategoria(prodotto) as subCat">
+                <span class="badge badge-light border text-muted px-2 py-1">{{ subCat }}</span>
+              </div>
 
-  <div *ngIf="prodottiFiltrati.length === 0 && !isLoading && !errorMessage && prodotti.length > 0" class="text-center text-muted mt-5">
-    Nessun prodotto corrisponde al filtro selezionato.
-  </div>
+              <div class="mb-2">
+                <div class="condition-toggle btn-group btn-group-sm" role="group" aria-label="Condizione prodotto">
+                  <button type="button" class="btn btn-outline-secondary" [class.active-condition]="!prezzoCondizione || prezzoCondizione[prodotto.id] !== 'Usato'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
+                  <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione && prezzoCondizione[prodotto.id] === 'Usato'" (click)="setCondizione(prodotto.id, 'Usato')">Usato</button>
+                </div>
+              </div>
+              <p class="text-info font-weight-bold mb-3 fs-5">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
+              
+              <!-- Indicatore Disponibilità -->
+              <div class="mb-3">
+                <span class="badge rounded-pill" [ngClass]="prodotto.giacenza > 0 ? 'bg-success' : 'bg-danger'">
+                  {{ prodotto.giacenza > 0 ? 'Disponibilità Immediata' : 'Esaurito' }}
+                </span>
+              </div>
 
-  <div class="row">
-    <div class="col-md-3 mb-4" *ngFor="let prodotto of prodottiFiltrati">
-      <div class="card h-100 shadow-lg product-card">
-        <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
-        <div class="card-body text-center d-flex flex-column justify-content-between">
-          <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
-          <div class="mb-2">
-            <div class="condition-toggle btn-group btn-group-sm" role="group" aria-label="Condizione prodotto">
-              <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione[prodotto.id] === 'Nuovo'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
-              <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione[prodotto.id] === 'Usato'" (click)="setCondizione(prodotto.id, 'Usato')">Usato</button>
+              <div class="d-flex flex-column align-items-center gap-2">
+                <a class="btn btn-info rounded-pill w-100" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
+                <button type="button" class="btn btn-outline-info rounded-pill w-100" (click)="aggiungiAlCarrello(prodotto)" [disabled]="prodotto.giacenza <= 0">Aggiungi al Carrello</button>
+              </div>
             </div>
           </div>
-          <p class="text-info font-weight-bold mb-3">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
-          <a class="btn btn-info rounded-pill px-4" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
-          <a class ="btn btn-outline-info rounded-pill px-4 mt-3" (click)="aggiungiAlCarrello(prodotto)">Aggiungi al Carrello</a>
-        </div>  
+        </div>
       </div>
     </div>
   </div>

@@ -1,0 +1,53 @@
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-center align-items-center mb-4">
+    <i class="bi bi-heart-fill text-danger fs-1 me-3"></i>
+    <h2 class="text-center font-weight-bold m-0">I miei <span class="text-info">preferiti</span></h2>
+  </div>
+
+  <!-- Animazione di Caricamento -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-info" role="status">
+      <span class="visually-hidden">Caricamento...</span>
+    </div>
+  </div>
+
+  <!-- Stato: Lista Vuota -->
+  <div *ngIf="!isLoading && prodottiPreferiti.length === 0">
+    <p class="text-center text-muted fs-5">La tua lista dei preferiti è attualmente vuota. Inizia a esplorare i nostri prodotti e aggiungi i tuoi preferiti!</p>
+    <div class="text-center mt-4">
+      <a routerLink="/" class="btn btn-info rounded-pill px-4 py-2 font-weight-bold text-dark">Torna alla Home</a>
+    </div>
+  </div>
+
+  <!-- Lista dei Prodotti Preferiti (Stile Carrello orizzontale) -->
+  <div *ngIf="!isLoading && prodottiPreferiti.length > 0" class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card mb-3 shadow-sm" *ngFor="let prodotto of prodottiPreferiti">
+        <div class="row g-0 align-items-center p-3">
+        
+          <div class="col-md-2 text-center">
+            <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:4200/' + prodotto.immagine" class="img-fluid rounded" alt="{{prodotto.nome}}" style="max-height: 80px; object-fit: contain;">
+          </div>
+        
+          <div class="col-md-6">
+            <h5 class="card-title text-truncate mb-1" title="{{prodotto.nome}}">{{ prodotto.nome }}</h5>
+            <p class="text-muted mb-0 small">Prezzo unitario: {{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol':'1.2-2' }}</p>
+          </div>
+        
+          <div class="col-md-3 text-center text-md-end mt-3 mt-md-0 d-flex justify-content-md-end justify-content-center align-items-center">
+            <a class="btn btn-sm btn-info rounded-pill px-4 fw-bold text-dark shadow-sm" [routerLink]="['/dettagli-prodotto', prodotto.id]">Vedi Dettagli</a>
+          </div>
+          
+          <!-- Tasto Rimozione -->
+          <div class="col-md-1 text-center text-md-end mt-3 mt-md-0">
+            <button class="btn btn-sm btn-danger rounded-circle shadow-sm" (click)="rimuoviPreferito(prodotto.id)" title="Rimuovi dai preferiti">X</button>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between mt-4">
+        <a routerLink="/" class="btn btn-outline-info rounded-pill px-4">Continua lo Shopping</a>
+        <button class="btn btn-outline-danger rounded-pill px-4" (click)="svuotaPreferiti()">Svuota Preferiti</button>
+      </div>
+    </div>
+  </div>
+</div>

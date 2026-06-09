@@ -33,6 +33,17 @@ export function scadenzaValidator(control: AbstractControl): ValidationErrors | 
   return null;
 }
 
+// Validatore Custom Luhn per la carta (Matematico)
+export function luhnValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+  if (!value) return null;
+  const digits = value.replace(/\D/g, '');
+  
+  // Verifica che la lunghezza sia esattamente 12 cifre
+  if (digits.length !== 12) return { luhnInvalid: true };
+  return null;
+}
+
 @Component({
   selector: 'app-pagamento',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
@@ -70,9 +81,9 @@ export class Pagamento implements OnInit {
       }),
       pagamento: this.fb.group({
         nomeCarta: ['', Validators.required],
-        numeroCarta: ['', [Validators.required, Validators.minLength(19), Validators.maxLength(19)]], // 16 cifre + 3 spazi = 19
+        numeroCarta: ['', [Validators.required, luhnValidator]], 
         scadenza: ['', [Validators.required, scadenzaValidator]],
-        cvv: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(4)]],
+        cvv: ['', [Validators.required, Validators.pattern(/^\d{3}$/)]],
         salvaCarta: [false]
       })
     });
@@ -145,22 +156,53 @@ export class Pagamento implements OnInit {
     }
   }
 
+  // Identifica dinamicamente il circuito della carta
+  cardType(): string {
+    const num = this.checkoutForm.get('pagamento.numeroCarta')?.value?.replace(/\D/g, '') || '';
+    if (num.match(/^4/)) return 'visa';
+    if (num.match(/^5[1-5]/)) return 'mastercard';
+    if (num.match(/^3[47]/)) return 'amex';
+    return 'unknown';
+  }
+
   // Formattazione "live" del numero della carta: aggiunge uno spazio ogni 4 cifre
   formatNumeroCarta(event: any) {
-    // Rimuove qualsiasi carattere non numerico
-    let input = event.target.value.replace(/\D/g, '').substring(0, 16);
-    // Inserisce uno spazio ogni 4 cifre
-    let formatted = input.replace(/(\d{4})(?=\d)/g, '$1 ');
+    // Limitiamo l'input a esattamente 12 cifre
+    let input = event.target.value.replace(/\D/g, '').substring(0, 12);
+
+    let formatted = '';
+    const matches = input.match(/.{1,4}/g);
+    if (matches) {
+      formatted = matches.join(' ');
+    }
     this.checkoutForm.get('pagamento.numeroCarta')?.setValue(formatted, { emitEvent: false });
   }
 
   // Formattazione "live" della scadenza: aggiunge lo slash dopo i primi 2 numeri
   formatScadenza(event: any) {
     let input = event.target.value.replace(/\D/g, '').substring(0, 4);
+    if (input.length === 1 && parseInt(input, 10) > 1) {
+      input = '0' + input; // Prefisso automatico per i mesi da 2 a 9
+    }
     if (input.length >= 3) {
       input = input.substring(0, 2) + '/' + input.substring(2, 4);
     }
     this.checkoutForm.get('pagamento.scadenza')?.setValue(input, { emitEvent: false });
+  }
+
+  formatNome(event: any) {
+    let input = event.target.value.replace(/[^a-zA-Z\s\-']/g, '').toUpperCase();
+    this.checkoutForm.get('pagamento.nomeCarta')?.setValue(input, { emitEvent: false });
+  }
+
+  formatCVV(event: any) {
+    const input = event.target.value.replace(/\D/g, '').substring(0, 3);
+    this.checkoutForm.get('pagamento.cvv')?.setValue(input, { emitEvent: false });
+  }
+
+  mostraCvv: boolean = false;
+  toggleCvv() {
+    this.mostraCvv = !this.mostraCvv;
   }
 
   async confermaEPaga() {

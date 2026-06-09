@@ -33,12 +33,21 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
 
   public prodottiConsigliati: any[] = [];
   public prezzoCondizione: { [id: number]: 'Nuovo' | 'Usato' } = {};
+  public preferiti: number[] = [];
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.caricaDatiCatalogo();
+      this.caricaPreferiti();
+    }
+  }
+
+  caricaPreferiti() {
+    const salvati = localStorage.getItem('preferiti');
+    if (salvati) {
+      this.preferiti = JSON.parse(salvati);
     }
   }
 
@@ -94,6 +103,61 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     }
     return p.prezzoUnitarioVendita;
   }
+
+  isPreferito(id: number): boolean {
+    return this.preferiti.includes(id);
+  }
+
+  togglePreferito(prodotto: any) {
+    const index = this.preferiti.indexOf(prodotto.id);
+    if (index > -1) {
+      this.preferiti.splice(index, 1); // Rimuove se c'è già
+    } else {
+      this.preferiti.push(prodotto.id); // Aggiunge se non c'è
+    }
+    localStorage.setItem('preferiti', JSON.stringify(this.preferiti));
+  }
+
+  async aggiungiAlCarrello(prodotto: any) {
+    const token = localStorage.getItem('token');
+    const condizioneScelta = this.prezzoCondizione[prodotto.id] || 'Nuovo';
+    const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
+
+    if (token) {
+      // Utente loggato: invia al database
+      try {
+        const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: prezzoFinale })
+        });
+        if (response.ok) {
+          alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale}!`);
+        } else {
+          const errorData = await response.json();
+          console.error("Dettagli errore backend:", errorData);
+          alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+        }
+      } catch (error) {
+        console.error('Errore di connessione:', error);
+      }
+    } else {
+      // Utente ospite: salva in localStorage
+      let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
+      const index = carrello.findIndex((item: any) => (item.id || item.prodotto_id) === prodotto.id && item.condizione === condizioneScelta);
+      if (index > -1) {
+        carrello[index].quantita += 1;
+      } else {
+        carrello.push({ ...prodotto, quantita: 1, condizione: condizioneScelta, prezzoSelezionato: prezzoFinale });
+      }
+      localStorage.setItem('carrello', JSON.stringify(carrello));
+      alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale}!`);
+    }
+  }
+
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       const canvas = this.canvasRef.nativeElement;
