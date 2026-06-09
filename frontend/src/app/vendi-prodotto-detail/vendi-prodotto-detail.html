@@ -25,7 +25,7 @@
 
         <h4 class="mb-3">Seleziona le condizioni del tuo prodotto:</h4>
 
-        <div *ngFor="let category of conditionCategories" class="mb-4">
+        <div *ngFor="let category of currentConditionCategories" class="mb-4">
           <label class="form-label fw-bold">{{ category.name }}:</label>
           <div class="d-flex flex-wrap gap-3">
             <div *ngFor="let option of category.options" class="condition-option">

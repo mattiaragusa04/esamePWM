@@ -4,7 +4,7 @@ const Prodotto = {
   findAll: () => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT p.*, c.denominazione AS categoria
+        SELECT p.*, c.denominazione AS categoria_nome
         FROM prodotto p
         LEFT JOIN categoria c ON p.categoria_id = c.id
       `;
@@ -18,7 +18,7 @@ const Prodotto = {
   findById: (id) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT p.*, c.denominazione AS categoria
+        SELECT p.*, c.denominazione AS categoria_nome
         FROM prodotto p
         LEFT JOIN categoria c ON p.categoria_id = c.id
         WHERE p.id = ?
@@ -33,7 +33,7 @@ const Prodotto = {
   findByCategoria: (categoriaId) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT p.*, c.denominazione AS categoria
+        SELECT p.*, c.denominazione AS categoria_nome
         FROM prodotto p
         LEFT JOIN categoria c ON p.categoria_id = c.id
         WHERE p.categoria_id = ?
@@ -48,7 +48,7 @@ const Prodotto = {
   search: (q) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT p.*, c.denominazione AS categoria
+        SELECT p.*, c.denominazione AS categoria_nome
         FROM prodotto p
         LEFT JOIN categoria c ON p.categoria_id = c.id
         WHERE p.nome LIKE ? OR p.descrizione LIKE ?

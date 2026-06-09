@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 export interface Prodotto {
   id: number;
   categoria_id: number;
+  categoria_nome: string; // Nome derivato dalla tabella Categoria (denominazione)
   nome: string;
   descrizione: string;
   giacenza: number;
@@ -62,7 +63,11 @@ export class VendiComponent implements OnInit, OnDestroy {
       const response = await fetch(`http://localhost:3000/api/prodotti`);
       if (response.ok) {
         const data = await response.json();
-        this.prodotti = data;
+        const allowedCategories = ['Videogiochi', 'Console', 'Accessori'];
+        
+        // Filtriamo i prodotti basandoci sulla denominazione della categoria
+        this.prodotti = data.filter((p: Prodotto) => allowedCategories.includes(p.categoria_nome));
+        
         this.prodottiFiltrati = [...this.prodotti];
         console.log('Prodotti caricati per la vendita:', this.prodotti);
         this.cdr.detectChanges();

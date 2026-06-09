@@ -37,7 +37,9 @@ CREATE TABLE if not exists prodotto (
     descrizione TEXT NOT NULL,
     giacenza INTEGER NOT NULL,
     immagine TEXT NOT NULL,
+    prezzoUnitarioAcquisto double NOT NULL,
     prezzoUnitarioVendita double NOT NULL,
+    pubblicatoAcquisto boolean NOT NULL,
     pubblicatoVetrina boolean NOT NULL,
     condizione TEXT NOT NULL,
     FOREIGN KEY (categoria_id) REFERENCES categoria(id)

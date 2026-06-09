@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 export interface Prodotto {
   id: number;
   categoria_id: number;
+  categoria_nome: string; // Aggiunto: nome della categoria per la logica di filtro
   nome: string;
   descrizione: string;
   giacenza: number;
@@ -48,42 +49,86 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
   estimatedPrice: number = 0;
 
   // Definizione delle categorie di condizione e delle loro opzioni
-  conditionCategories: ConditionCategory[] = [
-    {
-      name: 'Condizioni Disco/Cartuccia',
+  allConditionCategories: { [key: string]: ConditionCategory[] } = {
+    'Videogiochi': [
+      {
+        name: 'Condizioni Disco/Cartuccia',
+        options: [
+          { value: 'ottime', label: 'Ottime condizioni (Piccoli graffi o assenza totale)', adjustment: 0 },
+          { value: 'buone', label: 'Buone condizioni (Graffi superficiali, funzionante)', adjustment: -0.10 },
+          { value: 'sufficienti', label: 'Condizioni sufficienti (Graffi evidenti, funzionante)', adjustment: -0.20 }
+        ],
+        selectedValue: 'ottime'
+      },
+      {
+        name: 'Condizioni Custodia',
+        options: [
+          { value: 'perfetta', label: 'Perfetta (Nessun segno di usura, copertina originale)', adjustment: 0 },
+          { value: 'buona', label: 'Buona (Piccoli segni di usura, copertina originale)', adjustment: -0.05 },
+          { value: 'danneggiata', label: 'Danneggiata (Rotture, strappi o assenza copertina)', adjustment: -0.10 }
+        ],
+        selectedValue: 'perfetta'
+      },
+      {
+        name: 'Condizioni Manuale e Inserti',
+        options: [
+          { value: 'completo', label: 'Presente e integro', adjustment: 0 },
+        { value: 'mancante', label: 'Mancante', adjustment: -0.05 }
+        ],
+        selectedValue: 'completo'
+      }
+    ],
+    'Console': [
+      {
+        name: 'Stato Estetico Console',
       options: [
-        { value: 'ottime', label: 'Ottime condizioni (Presenza di piccoli graffi o assenza totale)', adjustment: 0 },
-        { value: 'buone', label: 'Buone condizioni (Graffi superficiali che non compromettono il funzionamento)', adjustment: -0.10 },
-        { value: 'sufficienti', label: 'Condizioni sufficienti (Graffi evidenti, ma ancora funzionante)', adjustment: -0.20 }
+        { value: 'pari_nuovo', label: 'Pari al nuovo', adjustment: 0 },
+        { value: 'usato_ottimo', label: 'Ottimo (Segni minimi)', adjustment: -0.10 },
+        { value: 'usato_segni', label: 'Usato (Graffi visibili)', adjustment: -0.20 }
       ],
-      selectedValue: 'ottime' // Selezione predefinita
+      selectedValue: 'pari_nuovo'
     },
     {
-      name: 'Condizioni Custodia',
+      name: 'Funzionamento Tecnico',
       options: [
-        { value: 'perfetta', label: 'Perfetta (Nessun segno di usura, completa di copertina originale)', adjustment: 0 },
-        { value: 'buona', label: 'Buona (Piccoli segni di usura, copertina originale presente)', adjustment: -0.05 },
-        { value: 'danneggiata', label: 'Danneggiata (Rotture, strappi o assenza della copertina)', adjustment: -0.10 }
+        { value: 'perfetto', label: 'Testata e funzionante', adjustment: 0 },
+        { value: 'problemi_minori', label: 'Difetti minori (Esempio: porte USB)', adjustment: -0.30 },
+        { value: 'non_funzionante', label: 'Non funzionante / Per parti', adjustment: -0.70 }
       ],
-      selectedValue: 'perfetta'
+      selectedValue: 'perfetto'
     },
     {
-      name: 'Condizioni Manuale/Extra',
+      name: 'Cavi e Controller originali',
       options: [
-        { value: 'completo', label: 'Completo (Manuale e/o altri extra presenti e in buone condizioni)', adjustment: 0 },
-        { value: 'mancante', label: 'Mancante (Manuale e/o altri extra assenti o molto danneggiati)', adjustment: -0.05 }
+        { value: 'tutti', label: 'Tutti inclusi', adjustment: 0 },
+        { value: 'parziali', label: 'Alcuni mancanti', adjustment: -0.15 }
       ],
-      selectedValue: 'completo'
-    },
-    {
-      name: 'Funzionamento',
-      options: [
-        { value: 'funzionante', label: 'Perfettamente funzionante', adjustment: 0 },
-        { value: 'difettoso', label: 'Funzionamento difettoso (Non si avvia, blocchi, ecc.)', adjustment: -0.50 } // Riduzione significativa per articoli non funzionanti
-      ],
-      selectedValue: 'funzionante'
+      selectedValue: 'tutti'
     }
-  ];
+  ],
+  'Accessori': [
+    {
+      name: 'Condizioni Estetiche',
+      options: [
+        { value: 'ottime', label: 'Ottime', adjustment: 0 },
+        { value: 'buone', label: 'Buone (Segni d\'usura)', adjustment: -0.15 },
+        { value: 'usurato', label: 'Molto usurato (Esempio: gommini analogici)', adjustment: -0.30 }
+      ],
+      selectedValue: 'ottime'
+    },
+    {
+      name: 'Funzionamento Tasti/Sensori',
+      options: [
+        { value: 'perfetto', label: 'Perfetto', adjustment: 0 },
+        { value: 'drift_difetti', label: 'Difetti (Esempio: Drift analogico)', adjustment: -0.50 }
+      ],
+      selectedValue: 'perfetto'
+    }
+  ]
+};
+
+
+  currentConditionCategories: ConditionCategory[] = []; // Questo array conterrà le categorie di condizione attuali
 
   private routeSub: Subscription | undefined;
 
@@ -122,7 +167,19 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       if (response.ok) {
         const data = await response.json();
         this.prodotto = data;
-        this.calculateEstimatedPrice(); // Calcola il prezzo iniziale
+
+        // Determina quale set di condizioni visualizzare in base alla categoria del prodotto
+        const categoryName = this.prodotto?.categoria_nome;
+        console.log('DEBUG: Categoria del prodotto caricato:', categoryName); // Aggiunto per debugging
+        if (categoryName && this.allConditionCategories[categoryName]) {
+          // Deep copy per assicurare che ogni prodotto abbia il proprio set mutabile di valori selezionati
+          this.currentConditionCategories = JSON.parse(JSON.stringify(this.allConditionCategories[categoryName]));
+        } else {
+          this.errorMessage = 'Categoria prodotto non riconosciuta o non supportata per la valutazione.';
+          this.prodotto = null; // Impedisce la visualizzazione del prodotto se la categoria non è supportata
+        }
+
+        this.calculateEstimatedPrice(); // Calcola il prezzo iniziale dopo aver impostato le condizioni
         console.log('Prodotto caricato per la valutazione:', this.prodotto);
       } else {
         this.errorMessage = 'Errore nel recupero del prodotto.';
@@ -150,7 +207,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
     let basePrice = this.prodotto.prezzoUnitarioVendita * 0.60; // 60% del valore originale
 
     let totalAdjustment = 0;
-    this.conditionCategories.forEach(category => {
+    this.currentConditionCategories.forEach(category => { // Usa currentConditionCategories
       const selectedOption = category.options.find(opt => opt.value === category.selectedValue);
       if (selectedOption) {
         totalAdjustment += selectedOption.adjustment;
@@ -184,7 +241,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
     const offerData = {
       prodottoId: this.prodotto.id,
       estimatedPrice: this.estimatedPrice,
-      conditions: this.conditionCategories.map(cat => ({
+      conditions: this.currentConditionCategories.map(cat => ({ // Invia solo le condizioni attuali
         category: cat.name,
         selectedOption: cat.selectedValue
       }))

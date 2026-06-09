@@ -60,3 +60,11 @@
   background-color: var(--text-secondary);
   color: white;
 }
+
+/* Responsive adjustments for condition labels */
+@media (max-width: 767.98px) {
+  .condition-option {
+    min-width: 100%; /* Full width on small screens */
+    max-width: 100%;
+  }
+}
