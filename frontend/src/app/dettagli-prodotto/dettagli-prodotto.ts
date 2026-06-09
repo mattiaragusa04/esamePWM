@@ -122,9 +122,9 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     if (!this.prodotto) return 0;
     if (this.prezzoCondizione === 'Usato') {
       // Applichiamo uno sconto del 25% sul prezzo di vendita per l'usato
-      return Math.round((this.prodotto.prezzoUnitarioVendita * 0.75) * 100) / 100;
+      return Math.round((Number(this.prodotto.prezzoUnitarioVendita) * 0.75) * 100) / 100;
     }
-    return this.prodotto.prezzoUnitarioVendita;
+    return Number(this.prodotto.prezzoUnitarioVendita);
   }
 
   getPrezzoPermutaBase(): number {
@@ -147,7 +147,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: prezzoFinale })
+          body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: Number(prezzoFinale) })
         });
         if (response.ok) {
           alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);

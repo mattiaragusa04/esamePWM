@@ -1,5 +1,4 @@
 const db = require('./database');
-require('dotenv').config();
 const axios = require('axios');
 
 async function popolaDaRainForest(categoriaId, searchTerm, nomeCategoria, amazonCategoryId = null) {
