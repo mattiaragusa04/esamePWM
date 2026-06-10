@@ -42,6 +42,7 @@ CREATE TABLE if not exists prodotto (
     pubblicatoVetrina boolean NOT NULL,
     genere TEXT,
     condizione TEXT NOT NULL,
+    puntiFedelta INTEGER DEFAULT 0,
     FOREIGN KEY (categoria_id) REFERENCES categoria(id)
 );
 CREATE TABLE if not exists ordine (

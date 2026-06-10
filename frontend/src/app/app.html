@@ -49,13 +49,22 @@
         </svg>
       </button>
 
-      <a class="nav-link text-dark p-1" [routerLink]="['/preferiti']" title="Preferiti">
+      <a class="nav-link text-dark p-1 position-relative" [routerLink]="['/preferiti']" title="Preferiti">
         <i class="bi bi-heart" style="font-size: 1.4rem;"></i>
       </a>
 
-      <a class="nav-link text-dark p-1" [routerLink]="['/carrello']" title="Carrello">
+      <div class="cart-nav-item" routerLink="/carrello">
         <i class="bi bi-cart3" style="font-size: 1.5rem;"></i>
-      </a>
+        <!-- Counter con animazione -->
+        <span class="cart-badge" *ngIf="((carrelloService.cartCount$ | async) ?? 0) > 0">
+          {{ carrelloService.cartCount$ | async }}
+        </span>
+        <!-- Box Totale su Hover -->
+        <div class="cart-total-preview shadow-sm">
+          <span class="text-muted small">Totale stimato:</span>
+          <div class="fw-bold text-info">€{{ (carrelloService.cartTotal$ | async)?.toFixed(2) }}</div>
+        </div>
+      </div>
 
       <ng-container *ngIf="!utenteLoggato">
         <a class="nav-link text-dark p-1" [routerLink]="['/login']" title="Accedi">

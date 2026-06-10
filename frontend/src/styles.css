@@ -371,3 +371,67 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
   color: var(--text-main);
 }
+
+/* --- Sistema Carrello Navbar --- */
+.cart-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.cart-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--main-color);
+  color: white;
+  font-size: 0.65rem;
+  line-height: 1;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(25%, -25%);
+  border: 2px solid var(--card-bg);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  animation: cartPulse 0.3s ease-out;
+}
+
+@keyframes cartPulse {
+  0% { transform: translate(25%, -25%) scale(1); }
+  50% { transform: translate(25%, -25%) scale(1.4); }
+  100% { transform: translate(25%, -25%) scale(1); }
+}
+
+.cart-nav-item i {
+  color: var(--text-main);
+}
+
+.cart-total-preview {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  color: var(--text-main);
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.05);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1050;
+}
+
+.cart-nav-item:hover .cart-total-preview {
+  opacity: 1;
+  transform: translateY(5px);
+  pointer-events: auto;
+}

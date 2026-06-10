@@ -11,7 +11,7 @@ export interface Utente {
   telefono?: string;
   indirizzo?: string;
   data_iscrizione?: string;
-  punti_fedelta?: number;
+  puntiFedelta?: number; // Modificato per corrispondere al backend
 }
 
 @Component({

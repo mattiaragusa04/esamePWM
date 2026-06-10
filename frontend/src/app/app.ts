@@ -2,6 +2,7 @@ import { Component, signal, OnInit, Inject, PLATFORM_ID, HostListener, ViewChild
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
+import { CarrelloService } from './carrello.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,7 @@ export class App implements OnInit {
   @ViewChild('searchInput') searchInput!: ElementRef;
 
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object, public carrelloService: CarrelloService) {
     // Questo permette alla navbar di aggiornarsi automaticamente
     // ogni volta che si cambia pagina (ad esempio dopo la registrazione)
     this.router.events.subscribe((event) => {
@@ -48,6 +49,7 @@ export class App implements OnInit {
           localStorage.removeItem('redirectDopoLogin');
           this.router.navigate([redirectUrl]);
         }
+        this.carrelloService.refreshCart(); // Aggiorna il carrello dopo il login
       } else {
         this.utenteLoggato = null;
         // Rimuove il redirect in sospeso se l'utente abbandona le pagine di autenticazione
@@ -55,6 +57,7 @@ export class App implements OnInit {
           localStorage.removeItem('redirectDopoLogin');
         }
       }
+      this.carrelloService.refreshCart(); // Caricamento iniziale per ospiti
     }
   }
 

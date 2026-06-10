@@ -207,7 +207,7 @@
                      'bi-credit-card-fill text-success': cardType() === 'amex'
                    }"></i>
               </span>
-              <input type="text" formControlName="numeroCarta" class="form-control border-start-0" style="border-top-right-radius: 0.3rem; border-bottom-right-radius: 0.3rem;" id="cc-number" placeholder="0000 0000 0000" (input)="formatNumeroCarta($event)">
+              <input type="text" formControlName="numeroCarta" class="form-control border-start-0" style="border-top-right-radius: 0.3rem; border-bottom-right-radius: 0.3rem;" id="cc-number" placeholder="0000 0000 0000 0000" (input)="formatNumeroCarta($event)">
             </div>
             <small *ngIf="checkoutForm.get('pagamento.numeroCarta')?.hasError('luhnInvalid') && checkoutForm.get('pagamento.numeroCarta')?.touched" class="text-danger mt-1 d-block">Il numero della carta non è valido.</small>
           </div>

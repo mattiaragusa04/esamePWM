@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angu
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { CarrelloService } from '../carrello.service';
 
 // Validatore Custom per la scadenza
 export function scadenzaValidator(control: AbstractControl): ValidationErrors | null {
@@ -39,8 +40,8 @@ export function luhnValidator(control: AbstractControl): ValidationErrors | null
   if (!value) return null;
   const digits = value.replace(/\D/g, '');
   
-  // Verifica che la lunghezza sia esattamente 12 cifre
-  if (digits.length !== 12) return { luhnInvalid: true };
+  // Verifica che la lunghezza sia esattamente 16 cifre
+  if (digits.length !== 16) return { luhnInvalid: true };
   return null;
 }
 
@@ -66,7 +67,8 @@ export class Pagamento implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private carrelloService: CarrelloService
   ) {
     // Inizializziamo il Reactive Form
     this.checkoutForm = this.fb.group({
@@ -167,8 +169,8 @@ export class Pagamento implements OnInit {
 
   // Formattazione "live" del numero della carta: aggiunge uno spazio ogni 4 cifre
   formatNumeroCarta(event: any) {
-    // Limitiamo l'input a esattamente 12 cifre
-    let input = event.target.value.replace(/\D/g, '').substring(0, 12);
+    // Limitiamo l'input a esattamente 16 cifre
+    let input = event.target.value.replace(/\D/g, '').substring(0, 16);
 
     let formatted = '';
     const matches = input.match(/.{1,4}/g);
@@ -287,6 +289,7 @@ export class Pagamento implements OnInit {
 
       if (response.ok) {
         alert('Ordine creato con successo! Grazie per aver acquistato su PAwerUP!');
+        this.carrelloService.refreshCart(); // Svuota il counter dopo il pagamento
         this.router.navigate(['/profilo/ordini']); // Reindirizza allo storico ordini
       } else {
         const errorData = await response.json();

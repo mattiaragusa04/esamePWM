@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { CarrelloService } from '../carrello.service';
 
 // Interfaccia allineata al database SQLite
 export interface Prodotto {
@@ -17,6 +18,7 @@ export interface Prodotto {
   pubblicatoAcquisto: boolean;
   pubblicatoVetrina: boolean;
   condizione: string;
+  puntiFedelta: number;
 }
 
 @Component({
@@ -63,7 +65,8 @@ export class Prodotti implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute, 
     private cdr: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    public carrelloService: CarrelloService
   ) {}
 
   ngOnInit(): void {
@@ -289,39 +292,10 @@ export class Prodotti implements OnInit, OnDestroy {
     const condizioneScelta = this.prezzoCondizione[prodotto.id] || 'Nuovo';
     const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
 
-    if (token) {
-      // Utente loggato: invia al database
-      try {
-        const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: prezzoFinale })
-        });
-        if (response.ok) {
-          alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
-        } else {
-          const errorData = await response.json();
-          console.error("Dettagli errore backend:", errorData);
-          alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
-        }
-      } catch (error) {
-        console.error('Errore di connessione:', error);
-        alert('Errore di connessione al server.');
-      }
-    } else {
-      // Utente ospite: salva in localStorage
-      let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
-      const index = carrello.findIndex((item: any) => (item.id || item.prodotto_id) === prodotto.id && item.condizione === condizioneScelta);
-      if (index > -1) {
-        carrello[index].quantita += 1;
-      } else {
-        carrello.push({ ...prodotto, quantita: 1, condizione: condizioneScelta, prezzoSelezionato: prezzoFinale });
-      }
-      localStorage.setItem('carrello', JSON.stringify(carrello));
-      alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+    const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizioneScelta, prezzoFinale);
+    
+    if (successo) {
+      alert(`${prodotto.nome} aggiunto correttamente!`);
     }
   }
 

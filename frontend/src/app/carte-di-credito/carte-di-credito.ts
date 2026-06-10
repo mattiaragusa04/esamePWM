@@ -30,8 +30,8 @@ export function luhnValidator(control: AbstractControl): ValidationErrors | null
   if (!value) return null;
   const digits = value.replace(/\D/g, '');
   
-  // Verifica che la lunghezza sia esattamente 12 cifre
-  if (digits.length !== 12) return { luhnInvalid: true };
+  // Verifica che la lunghezza sia esattamente 16 cifre
+  if (digits.length !== 16) return { luhnInvalid: true };
   return null;
 }
 

@@ -18,6 +18,7 @@ export interface Prodotto {
   pubblicatoAcquisto: boolean;
   pubblicatoVetrina: boolean;
   condizione: string;
+  puntiFedelta: number; // Nuovo campo per i punti fedeltà
 }
 
 // Interfaccia per le opzioni di condizione

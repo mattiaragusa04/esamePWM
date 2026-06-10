@@ -3,7 +3,6 @@ const Carrello = require('../models/carrelloModel');
 const User = require('../models/userModel'); // Import User model
 const Prodotto = require('../models/prodottoModel'); // Import Prodotto model to get points
 
-
 exports.createOrdine = async (req, res) => {
     const userId = req.user.id; // Assumendo che l'ID utente sia disponibile dal middleware di autenticazione
     const { carta_id, indirizzo_id } = req.body; 
@@ -28,7 +27,7 @@ exports.createOrdine = async (req, res) => {
             puntiFedeltaTotali += item.quantita * puntiFedeltaProdotto;
             
             prodottiPerOrdine.push({
-                prodottoId: item.id, // L'ID del prodotto dal JOIN nel carrello
+                prodottoId: item.id,
                 quantita: item.quantita,
                 prezzoUnitario: prezzoUnitario
             });
@@ -62,36 +61,3 @@ exports.createOrdine = async (req, res) => {
         res.status(500).json({ error: 'Errore interno del server durante la creazione dell\'ordine.' });
     }
 };
-
-exports.getAllOrdini = async (req, res) => {
-    try {
-        const ordini = await Ordine.findAll();
-        res.json(ordini);
-    }catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-}
-
-exports.getOrdineById = async (req, res) => {
-    try {
-        const id = req.params.id;
-        const ordineData = await Ordine.findById(id);
-        if (!ordineData) {
-            return res.status(404).json({ message: "Ordine non trovato" });
-        }
-        res.json(ordineData);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-}
-
-exports.getOrdiniByUserId = async (req, res) => {
-    try {
-        // Usiamo req.user.id per la sicurezza, così ogni utente può vedere solo i propri ordini
-        const userId = req.user.id;
-        const ordini = await Ordine.findByUserId(userId);
-        res.json(ordini);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-}

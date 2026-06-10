@@ -32,8 +32,8 @@ const  Ordine = {
     
     create : (ordine) => {
         return new Promise((res, rej) => {
-            const query = `INSERT INTO ordine (carta_id, indirizzo_id, utente_id, data, totale, statoOrdine, acquisto_vendita) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-            db.run(query, [ordine.carta_id, ordine.indirizzo_id, ordine.utente_id, ordine.data, ordine.totale, ordine.statoOrdine, ordine.acquisto_vendita], function(err) {
+            const query = `INSERT INTO ordine (carta_id, indirizzo_id, utente_id, data, totale, statoOrdine) VALUES (?, ?, ?, ?, ?, ?)`;
+            db.run(query, [ordine.carta_id, ordine.indirizzo_id, ordine.utente_id, ordine.data, ordine.totale, ordine.statoOrdine], function(err) {
                 if (err) rej(err);
                 else res({ id: this.lastID, ...ordine });
             });
