@@ -1,10 +1,15 @@
-<div class="container mt-4 mb-5">
-  <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-    <h3 class="font-weight-bold text-uppercase m-0">I miei <span class="text-info">Indirizzi</span></h3>
-    <button class="btn btn-info rounded-pill px-4 font-weight-bold shadow-sm" (click)="toggleForm()" *ngIf="!mostraForm">
-      + Nuovo Indirizzo
+<div>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-geo-alt text-info fs-1 me-3"></i>
+      <h2 class="font-weight-bold m-0">I miei <span class="text-info">indirizzi</span></h2>
+    </div>
+    <button class="btn btn-info rounded-pill font-weight-bold px-4 text-white" (click)="toggleForm()" *ngIf="!mostraForm">
+      <i class="bi bi-plus-circle me-2"></i> Aggiungi Nuovo Indirizzo
     </button>
   </div>
+
+  <p class="lead mb-4 text-muted">Gestisci i tuoi indirizzi salvati su PAwerUP.</p>
 
   <!-- Loader -->
   <div *ngIf="isLoading" class="text-center my-5">
@@ -13,10 +18,9 @@
 
   <!-- Elenco degli indirizzi salvati -->
   <div *ngIf="!isLoading && !mostraForm">
-    <div *ngIf="indirizzi.length === 0" class="text-center my-5 text-muted p-5 bg-white shadow-sm" style="border-radius: 1.5rem;">
-      <i class="bi bi-geo-alt fs-1 mb-3"></i>
-      <h5>Nessun indirizzo salvato.</h5>
-      <p>Aggiungi un indirizzo per velocizzare i tuoi futuri acquisti.</p>
+    <div *ngIf="indirizzi.length === 0" class="card shadow-sm p-5 text-center border-0 mt-2">
+      <h4 class="text-muted">Nessun indirizzo salvato.</h4>
+      <p class="mb-4">Aggiungi un indirizzo per velocizzare i tuoi futuri acquisti.</p>
     </div>
 
     <div class="row g-4" *ngIf="indirizzi.length > 0">
@@ -47,8 +51,8 @@
       <div class="col-md-6">
         <label class="form-label text-muted font-weight-bold">Tipo di Indirizzo</label>
         <select class="form-select rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="tipo">
-          <option value="Casa">Casa</option>
-          <option value="Lavoro">Lavoro</option>
+          <option value="Casa">Spedizione</option>
+          <option value="Lavoro">Fatturazione</option>
           <option value="Altro">Altro</option>
         </select>
       </div>
@@ -62,22 +66,134 @@
 
       <div class="col-md-8 mt-3">
         <label class="form-label text-muted font-weight-bold">Via / Piazza</label>
-        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="via" placeholder="Es. Via Roma">
+        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="via" placeholder="Es. Via Roma" (input)="indirizzoForm.get('via')?.setValue($any($event.target).value.replace(/[^a-zA-ZÀ-ÿ\s\']/g, ''))">
       </div>
 
       <div class="col-md-4 mt-3">
         <label class="form-label text-muted font-weight-bold">N° Civico</label>
-        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="numero_civico" placeholder="Es. 123">
+        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="numero_civico" placeholder="Es. 123" maxlength="4" (input)="indirizzoForm.get('numero_civico')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
       </div>
 
       <div class="col-md-6 mt-3">
         <label class="form-label text-muted font-weight-bold">Provincia / Città</label>
-        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="provincia" placeholder="Es. Roma (RM)">
+        <select class="form-select rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="provincia">
+          <option value="" disabled selected>Seleziona una città</option>
+          <option value="Agrigento">Agrigento</option>
+          <option value="Alessandria">Alessandria</option>
+          <option value="Ancona">Ancona</option>
+          <option value="Aosta">Aosta</option>
+          <option value="Arezzo">Arezzo</option>
+          <option value="Ascoli Piceno">Ascoli Piceno</option>
+          <option value="Asti">Asti</option>
+          <option value="Avellino">Avellino</option>
+          <option value="Bari">Bari</option>
+          <option value="Barletta-Andria-Trani">Barletta-Andria-Trani</option>
+          <option value="Belluno">Belluno</option>
+          <option value="Benevento">Benevento</option>
+          <option value="Bergamo">Bergamo</option>
+          <option value="Biella">Biella</option>
+          <option value="Bologna">Bologna</option>
+          <option value="Bolzano">Bolzano</option>
+          <option value="Brescia">Brescia</option>
+          <option value="Brindisi">Brindisi</option>
+          <option value="Cagliari">Cagliari</option>
+          <option value="Caltanissetta">Caltanissetta</option>
+          <option value="Campobasso">Campobasso</option>
+          <option value="Carbonia-Iglesias">Carbonia-Iglesias</option>
+          <option value="Caserta">Caserta</option>
+          <option value="Catania">Catania</option>
+          <option value="Catanzaro">Catanzaro</option>
+          <option value="Chieti">Chieti</option>
+          <option value="Como">Como</option>
+          <option value="Cosenza">Cosenza</option>
+          <option value="Cremona">Cremona</option>
+          <option value="Crotone">Crotone</option>
+          <option value="Cuneo">Cuneo</option>
+          <option value="Enna">Enna</option>
+          <option value="Fermo">Fermo</option>
+          <option value="Ferrara">Ferrara</option>
+          <option value="Firenze">Firenze</option>
+          <option value="Foggia">Foggia</option>
+          <option value="Forlì-Cesena">Forlì-Cesena</option>
+          <option value="Frosinone">Frosinone</option>
+          <option value="Genova">Genova</option>
+          <option value="Gorizia">Gorizia</option>
+          <option value="Grosseto">Grosseto</option>
+          <option value="Imperia">Imperia</option>
+          <option value="Isernia">Isernia</option>
+          <option value="L'Aquila">L'Aquila</option>
+          <option value="La Spezia">La Spezia</option>
+          <option value="Latina">Latina</option>
+          <option value="Lecce">Lecce</option>
+          <option value="Lecco">Lecco</option>
+          <option value="Livorno">Livorno</option>
+          <option value="Lodi">Lodi</option>
+          <option value="Lucca">Lucca</option>
+          <option value="Macerata">Macerata</option>
+          <option value="Mantova">Mantova</option>
+          <option value="Massa-Carrara">Massa-Carrara</option>
+          <option value="Matera">Matera</option>
+          <option value="Medio Campidano">Medio Campidano</option>
+          <option value="Messina">Messina</option>
+          <option value="Milano">Milano</option>
+          <option value="Modena">Modena</option>
+          <option value="Monza e della Brianza">Monza e della Brianza</option>
+          <option value="Napoli">Napoli</option>
+          <option value="Novara">Novara</option>
+          <option value="Nuoro">Nuoro</option>
+          <option value="Ogliastra">Ogliastra</option>
+          <option value="Olbia-Tempio">Olbia-Tempio</option>
+          <option value="Oristano">Oristano</option>
+          <option value="Padova">Padova</option>
+          <option value="Palermo">Palermo</option>
+          <option value="Parma">Parma</option>
+          <option value="Pavia">Pavia</option>
+          <option value="Perugia">Perugia</option>
+          <option value="Pesaro e Urbino">Pesaro e Urbino</option>
+          <option value="Pescara">Pescara</option>
+          <option value="Piacenza">Piacenza</option>
+          <option value="Pisa">Pisa</option>
+          <option value="Pistoia">Pistoia</option>
+          <option value="Pordenone">Pordenone</option>
+          <option value="Potenza">Potenza</option>
+          <option value="Prato">Prato</option>
+          <option value="Ragusa">Ragusa</option>
+          <option value="Ravenna">Ravenna</option>
+          <option value="Reggio Calabria">Reggio Calabria</option>
+          <option value="Reggio Emilia">Reggio Emilia</option>
+          <option value="Rieti">Rieti</option>
+          <option value="Rimini">Rimini</option>
+          <option value="Roma">Roma</option>
+          <option value="Rovigo">Rovigo</option>
+          <option value="Salerno">Salerno</option>
+          <option value="Sassari">Sassari</option>
+          <option value="Savona">Savona</option>
+          <option value="Siena">Siena</option>
+          <option value="Siracusa">Siracusa</option>
+          <option value="Sondrio">Sondrio</option>
+          <option value="Taranto">Taranto</option>
+          <option value="Teramo">Teramo</option>
+          <option value="Terni">Terni</option>
+          <option value="Torino">Torino</option>
+          <option value="Trapani">Trapani</option>
+          <option value="Trento">Trento</option>
+          <option value="Treviso">Treviso</option>
+          <option value="Trieste">Trieste</option>
+          <option value="Udine">Udine</option>
+          <option value="Varese">Varese</option>
+          <option value="Venezia">Venezia</option>
+          <option value="Verbano-Cusio-Ossola">Verbano-Cusio-Ossola</option>
+          <option value="Vercelli">Vercelli</option>
+          <option value="Verona">Verona</option>
+          <option value="Vibo Valentia">Vibo Valentia</option>
+          <option value="Vicenza">Vicenza</option>
+          <option value="Viterbo">Viterbo</option>
+        </select>
       </div>
 
       <div class="col-md-6 mt-3">
         <label class="form-label text-muted font-weight-bold">CAP</label>
-        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="cap" placeholder="Es. 00100">
+        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="cap" placeholder="Es. 00100" maxlength="5" (input)="indirizzoForm.get('cap')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
       </div>
 
       <div class="col-12 mt-5 d-flex gap-3 justify-content-end">

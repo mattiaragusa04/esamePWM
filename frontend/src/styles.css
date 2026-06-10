@@ -96,6 +96,15 @@ body {
   z-index: 10 !important; /* Evita che la card finisca sotto le altre quando si ingrandisce */
 }
 
+/* Effetto zoom sull'immagine nel dettaglio prodotto al passaggio del mouse */
+app-dettagli-prodotto img {
+  transition: transform 0.4s ease !important;
+}
+
+app-dettagli-prodotto img:hover {
+  transform: scale(1.15) !important;
+}
+
 /* Tronca i titoli dei prodotti troppo lunghi e uniforma l'altezza delle card */
 .product-card .card-title {
   display: -webkit-box;
@@ -207,4 +216,41 @@ h1, h2, h3, h4, h5, h6 {
 /* Aggiunge un piccolo spazio tra i bottoni "Nuovo" e "Usato" */
 .condition-toggle .btn:not(:last-child) {
   margin-right: 0.5rem; 
+}
+
+/* Stili e animazioni per la Sidebar del Profilo */
+.sidebar-container .nav-link {
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease, transform 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  color: var(--text-main);
+}
+
+.sidebar-container .nav-link:hover:not(.active) {
+  background-color: rgba(248, 109, 237, 0.1);
+  color: var(--main-color);
+  transform: translateX(5px);
+}
+
+.sidebar-container .nav-link.active {
+  background-color: var(--main-color) !important;
+  color: white !important;
+  box-shadow: 0 4px 10px rgba(248, 109, 237, 0.4);
+}
+
+/* Stili globali per la paginazione */
+.pagination .page-item .page-link.pagination-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--main-color);
+  color: var(--main-color);
+  background-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.pagination .page-item.active .page-link.pagination-dot {
+  background-color: var(--text-main) !important; /* Sfondo nero */
+  border-color: var(--text-main) !important;
+  color: white !important; /* Testo bianco */
+  font-weight: bold;
 }

@@ -258,7 +258,8 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Sessione scaduta, effettua nuovamente il login per vendere il prodotto.');
+      alert('Devi effettuare l\'accesso o registrarti per poter inviare una proposta di vendita.');
+      localStorage.setItem('redirectDopoLogin', this.router.url);
       this.router.navigate(['/login']);
       return;
     }

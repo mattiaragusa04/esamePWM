@@ -15,6 +15,8 @@ import { PreferitiComponent } from './preferiti/preferiti';
 import { Indirizzi } from './indirizzi/indirizzi';
 import { VendiProdottoDetailComponent } from './vendi-prodotto-detail/vendi-prodotto-detail';
 import { VendiComponent } from './vendi/vendi';
+import { ProfiloLayoutComponent } from './profilo/profilo-layout.component';
+import { Vendite } from './vendite/vendite';
 
 
 export const routes: Routes = [
@@ -26,14 +28,19 @@ export const routes: Routes = [
     { path: 'register', component: Register},
     { path: 'carrello', component: Carrello},
     { path: 'contattaci', component: Contattaci},
-    { path: 'profilo', component: Profilo},
-    { path: 'profilo/ordini', component: Ordini },
     { path: 'ricerca', component: Ricerca },
-    { path: 'profilo/carte-di-credito', component: CarteDiCredito },
     { path: 'pagamento', component: Pagamento },
     { path: 'preferiti', component: PreferitiComponent },
-    { path: 'profilo/indirizzi', component: Indirizzi },
-    
     { path: 'vendi', component: VendiComponent },
-    { path: 'vendi/:id', component: VendiProdottoDetailComponent } // Aggiungi questa riga
+    { path: 'vendi/:id', component: VendiProdottoDetailComponent },
+    { path: 'profilo',
+        component: ProfiloLayoutComponent,
+        children: [
+            { path: '', component: Profilo },
+            { path: 'ordini', component: Ordini },
+            { path: 'vendite', component: Vendite },
+            { path: 'carte-di-credito', component: CarteDiCredito },
+            { path: 'indirizzi', component: Indirizzi }
+        ]
+    }
 ];

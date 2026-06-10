@@ -21,19 +21,27 @@
       <div class="card shadow-sm p-4 sticky-top" style="top: 20px; z-index: 1; border-radius: 1rem;">
         <h5 class="font-weight-bold mb-4 border-bottom pb-2"><i class="bi bi-funnel-fill text-info me-2"></i>Filtri</h5>
         
-        <!-- Ordine Prezzo -->
-        <h6 class="font-weight-bold mb-2">Ordina per Prezzo</h6>
+        <!-- Ordinamento -->
+        <h6 class="font-weight-bold mb-2">Ordina per</h6>
         <div class="form-check mb-2">
-          <input class="form-check-input" type="radio" name="ordinamentoPrezzo" id="ordNessuno" value="" [(ngModel)]="ordinamentoPrezzo" (change)="applicaFiltriAvanzati()">
+          <input class="form-check-input" type="radio" name="ordinamento" id="ordNessuno" value="" [(ngModel)]="ordinamento" (change)="applicaFiltriAvanzati()">
           <label class="form-check-label text-muted" for="ordNessuno">Rilevanza</label>
         </div>
         <div class="form-check mb-2">
-          <input class="form-check-input" type="radio" name="ordinamentoPrezzo" id="ordCrescente" value="crescente" [(ngModel)]="ordinamentoPrezzo" (change)="applicaFiltriAvanzati()">
-          <label class="form-check-label text-muted" for="ordCrescente">Crescente <i class="bi bi-sort-numeric-down text-info ms-1"></i></label>
+          <input class="form-check-input" type="radio" name="ordinamento" id="ordPrezzoCrescente" value="prezzoCrescente" [(ngModel)]="ordinamento" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-muted" for="ordPrezzoCrescente">Prezzo Crescente <i class="bi bi-sort-numeric-down text-info ms-1"></i></label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="ordinamento" id="ordPrezzoDecrescente" value="prezzoDecrescente" [(ngModel)]="ordinamento" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-muted" for="ordPrezzoDecrescente">Prezzo Decrescente <i class="bi bi-sort-numeric-down-alt text-info ms-1"></i></label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="ordinamento" id="ordNomeCrescente" value="nomeCrescente" [(ngModel)]="ordinamento" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-muted" for="ordNomeCrescente">Nome (A-Z) <i class="bi bi-sort-alpha-down text-info ms-1"></i></label>
         </div>
         <div class="form-check mb-4">
-          <input class="form-check-input" type="radio" name="ordinamentoPrezzo" id="ordDecrescente" value="decrescente" [(ngModel)]="ordinamentoPrezzo" (change)="applicaFiltriAvanzati()">
-          <label class="form-check-label text-muted" for="ordDecrescente">Decrescente <i class="bi bi-sort-numeric-down-alt text-info ms-1"></i></label>
+          <input class="form-check-input" type="radio" name="ordinamento" id="ordNomeDecrescente" value="nomeDecrescente" [(ngModel)]="ordinamento" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-muted" for="ordNomeDecrescente">Nome (Z-A) <i class="bi bi-sort-alpha-down-alt text-info ms-1"></i></label>
         </div>
 
         <!-- Range di Prezzo -->
@@ -133,7 +141,7 @@
       </div>
 
       <!-- Paginazione -->
-      <nav *ngIf="prodottiFiltrati.length > elementiPerPagina" class="mt-5 mb-4 d-flex justify-content-start">
+      <nav *ngIf="!isLoading && prodottiFiltrati.length > elementiPerPagina" class="mt-5 mb-4 d-flex justify-content-center">
         <ul class="pagination border-0 mb-0 align-items-center">
           <li class="page-item border-0" [class.disabled]="paginaCorrente === 1">
             <button class="page-link border-0 bg-transparent text-info shadow-none d-flex align-items-center" (click)="cambiaPagina(paginaCorrente - 1)">
@@ -142,7 +150,7 @@
           </li>
           
           <li class="page-item border-0" *ngFor="let p of getPagineVisibili()" [class.active]="paginaCorrente === p">
-            <button class="page-link shadow-sm rounded-circle mx-1 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;" [ngClass]="paginaCorrente === p ? 'bg-info border-info text-white font-weight-bold' : 'text-info border-info'" (click)="cambiaPagina(p)">{{ p }}</button>
+            <button class="page-link shadow-sm rounded-circle mx-1 d-flex justify-content-center align-items-center pagination-dot" (click)="cambiaPagina(p)">{{ p }}</button>
           </li>
           
           <li class="page-item border-0" [class.disabled]="paginaCorrente === getNumeroPagine()">

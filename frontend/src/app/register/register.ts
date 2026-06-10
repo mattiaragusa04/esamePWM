@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -13,16 +15,21 @@ export class Register {
   isLoading: boolean = false;
   errorMessage: string = '';
   registerForm: FormGroup;
+  mostraPassword: boolean = false;
 
   constructor(private fb: FormBuilder, private router: Router) {
     // Definiamo la struttura del nostro form e le validazioni
     this.registerForm = this.fb.group({
-      nome: ['', Validators.required],
-      cognome: ['', Validators.required],
+      nome: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ\s']+$/)]],
+      cognome: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ\s']+$/)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{6,}$/)]],
       confermaPassword: ['', Validators.required]
     });
+  }
+
+  togglePassword() {
+    this.mostraPassword = !this.mostraPassword;
   }
 
   async onSubmit() {

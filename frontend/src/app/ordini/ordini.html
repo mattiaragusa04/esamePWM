@@ -1,36 +1,35 @@
-
-<main class="d-flex flex-nowrap" style="min-height: 100vh;">
-    <app-sidebar></app-sidebar>
-
-
-
-  <!-- Area del contenuto principale: Storico Ordini -->
-  <div class="d-flex flex-column flex-grow-1 p-4 bg-light overflow-auto">
-    <h2 class="mb-2">I Miei Ordini</h2>
-    <p class="lead mb-4 text-muted">Consulta lo storico dei tuoi acquisti su PAwerUP.</p>
-    
-    <!-- Loader -->
-    <div *ngIf="isLoading" class="text-center my-5">
-      <div class="spinner-border text-info" role="status"></div>
+<div>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-box-seam text-info fs-1 me-3"></i>
+      <h2 class="font-weight-bold m-0">I miei <span class="text-info">ordini</span></h2>
     </div>
+    <a routerLink="/" class="btn btn-info rounded-pill font-weight-bold px-4 text-white">
+      <i class="bi bi-cart3 me-2"></i> Vai allo Shopping
+    </a>
+  </div>  
+  <p class="lead mb-4 text-muted">Consulta lo storico dei tuoi acquisti su PAwerUP.</p>
+  
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-info" role="status"></div>
+  </div>
 
-    <!-- Nessun ordine effettuato -->
-    <div *ngIf="!isLoading && ordini.length === 0" class="card shadow-sm p-5 text-center border-0 mt-2">
-      <h4 class="text-muted">Non hai ancora effettuato nessun ordine.</h4>
-      <p class="mb-4">Il tuo storico acquisti è vuoto, inizia a esplorare il nostro catalogo!</p>
-      <div><a routerLink="/" class="btn btn-info rounded-pill px-4 font-weight-bold text-dark">Vai allo Shopping</a></div>
-    </div>
+  <!-- Nessun ordine effettuato -->
+  <div *ngIf="!isLoading && ordini.length === 0" class="card shadow-sm p-5 text-center border-0 mt-2">
+    <h4 class="text-muted">Non hai ancora effettuato nessun ordine.</h4>
+    <p class="mb-4">Il tuo storico acquisti è vuoto, inizia a esplorare il nostro catalogo!</p>
+  </div>
 
-    <!-- Lista Ordini effettuati -->
-    <div *ngIf="!isLoading && ordini.length > 0">
-      <div class="card mb-4 shadow-sm border-0" *ngFor="let ordine of ordini">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 border-bottom">
-          <div><span class="text-muted small">Data Ordine:</span><br><strong>{{ ordine.data | date:'dd/MM/yyyy' }}</strong></div>
-          <div><span class="text-muted small">Totale:</span><br><strong class="text-info fs-5">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</strong></div>
-          <div><span class="text-muted small">N. Ordine:</span><br><strong>#{{ ordine.id }}</strong></div>
-          <div><span class="badge fs-6 rounded-pill" [ngClass]="{'bg-success': ordine.statoOrdine === 'Completato', 'bg-warning text-dark': ordine.statoOrdine === 'In elaborazione', 'bg-secondary': ordine.statoOrdine !== 'Completato' && ordine.statoOrdine !== 'In elaborazione'}">{{ ordine.statoOrdine }}</span></div>
-        </div>
+  <!-- Lista Ordini effettuati -->
+  <div *ngIf="!isLoading && ordini.length > 0">
+    <div class="card mb-4 shadow-sm border-0" *ngFor="let ordine of ordini">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 border-bottom">
+        <div><span class="text-muted small">Data Ordine:</span><br><strong>{{ ordine.data | date:'dd/MM/yyyy' }}</strong></div>
+        <div><span class="text-muted small">Totale:</span><br><strong class="text-info fs-5">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</strong></div>
+        <div><span class="text-muted small">N. Ordine:</span><br><strong>#{{ ordine.id }}</strong></div>
+        <div><span class="badge fs-6 rounded-pill" [ngClass]="{'bg-success': ordine.statoOrdine === 'Completato', 'bg-warning text-dark': ordine.statoOrdine === 'In elaborazione', 'bg-secondary': ordine.statoOrdine !== 'Completato' && ordine.statoOrdine !== 'In elaborazione'}">{{ ordine.statoOrdine }}</span></div>
       </div>
     </div>
   </div>
-</main>
+</div>

@@ -1,4 +1,4 @@
-<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-white shadow-lg sidebar-container" [class.collapsed]="isMenuCollapsed" [class.no-transition]="!isAnimationEnabled" style="border-radius: 1.5rem; z-index: 1; min-height: 100vh;">
+<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-white shadow-lg sidebar-container" [class.collapsed]="isMenuCollapsed" [class.no-transition]="!isAnimationEnabled" style="border-radius: 1.5rem; z-index: 1;">
     <div class="d-flex align-items-center justify-content-between mb-3 mb-md-0 w-100">
       <a href="/" class="d-flex align-items-center text-dark text-decoration-none brand-text">
         <i class="bi bi-person-circle fs-2 pe-none me-2 bi"></i>
@@ -10,49 +10,49 @@
       </button>
     </div>
     <hr />
-    <ul class="nav nav-pills flex-column mb-auto">
+    <ul class="nav nav-pills flex-column mb-4">
       <li class="nav-item">
-        <a routerLink="/profilo" class="nav-link text-dark d-flex align-items-center" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" title="Dati Personali">
+        <a routerLink="/profilo" class="nav-link d-flex align-items-center" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" title="Dati Personali">
           <i class="bi bi-house pe-none me-2 bi"></i>
           <span class="nav-text text-nowrap">Dati Personali</span>
         </a>
       </li>
-      <li>
-        <a routerLink="/profilo/ordini" class="nav-link text-dark d-flex align-items-center" routerLinkActive="active" title="I miei Ordini">
+      <li class="nav-item">
+        <a routerLink="/profilo/ordini" class="nav-link d-flex align-items-center" routerLinkActive="active" title="I miei Ordini">
           <i class="bi bi-table pe-none me-2 bi"></i>
           <span class="nav-text text-nowrap">I miei Ordini</span>
         </a>
       </li>
-      <li>
-        <a routerLink="/profilo/carte-di-credito" class="nav-link text-dark d-flex align-items-center" routerLinkActive="active" title="Lista Desideri">
+      <li class="nav-item">
+        <a routerLink="/profilo/vendite" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Le mie Vendite">
+          <i class="bi bi-cash-coin pe-none me-2 bi"></i>
+          <span class="nav-text text-nowrap">Le mie Vendite</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/profilo/carte-di-credito" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Metodi di Pagamento">
           <i class="bi bi-credit-card pe-none me-2 bi"></i>
           <span class="nav-text text-nowrap">Metodi di Pagamento</span>
         </a>
       </li>
-      <li>
-        <a routerLink="/profilo/indirizzi" class="nav-link text-dark d-flex align-items-center" routerLinkActive="active" title="Lista Desideri">
+      <li class="nav-item">
+        <a routerLink="/profilo/indirizzi" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Indirizzi Salvati">
           <i class="bi bi-pin-map pe-none me-2 bi"></i>
           <span class="nav-text text-nowrap">Indirizzi Salvati</span>
         </a>
       </li>
-      <li>
-        <a routerLink="/profilo/impostazioni" class="nav-link text-dark d-flex align-items-center" routerLinkActive="active" title="Impostazioni">
+      <li class="nav-item">
+        <a routerLink="/profilo/impostazioni" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Impostazioni">
           <i class="bi bi-speedometer2 pe-none me-2 bi"></i>
           <span class="nav-text text-nowrap">Impostazioni</span>
         </a>
       </li>
     </ul>
     <hr />
-    <div class="dropdown">
-      <a href="javascript:void(0)" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="Menu Utente">
-       <i class="bi bi-person-circle mr-1 bi" style="font-size: 1.1rem; margin-right: 5px;"></i>
-        <strong class="nav-text text-nowrap">{{ utente?.nome || 'Utente' }}</strong>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-        <li><a class="dropdown-item" routerLink="/profilo/impostazioni">Impostazioni</a></li>
-        <li><a class="dropdown-item" routerLink="/profilo">Profilo</a></li>
-        <li><hr class="dropdown-divider" /></li>
-        <li><a class="dropdown-item" href="javascript:void(0)" (click)="logout()">Esci</a></li>
-      </ul>
+    <div>
+      <button class="btn btn-outline-danger w-100 rounded-pill font-weight-bold d-flex align-items-center justify-content-center" (click)="logout()" title="Logout">
+        <i class="bi bi-box-arrow-left pe-none me-2 bi" style="font-size: 1.2rem;"></i>
+        <span class="nav-text text-nowrap">Logout</span>
+      </button>
     </div>
 </div>

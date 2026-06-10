@@ -31,30 +31,44 @@
           <h5 class="mb-3 text-info border-bottom pb-2">Dati Personali</h5>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="nome" class="font-weight-bold text-muted">Nome</label>
-              <input type="text" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('nome')?.invalid" id="nome" formControlName="nome" placeholder="Inserisci nome...">
+              <label for="nome" class="font-weight-bold text-dark">Nome</label>
+              <input type="text" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('nome')?.invalid" id="nome" formControlName="nome" placeholder="Inserisci nome..." (input)="registerForm.get('nome')?.setValue($any($event.target).value.replace(/[^a-zA-ZÀ-ÿ\s\']/g, ''))">
             </div>
             <div class="form-group col-md-6">
-              <label for="cognome" class="font-weight-bold text-muted">Cognome</label>
-              <input type="text" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('cognome')?.invalid" id="cognome" formControlName="cognome" placeholder="Inserisci cognome...">
+              <label for="cognome" class="font-weight-bold text-dark">Cognome</label>
+              <input type="text" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('cognome')?.invalid" id="cognome" formControlName="cognome" placeholder="Inserisci cognome..." (input)="registerForm.get('cognome')?.setValue($any($event.target).value.replace(/[^a-zA-ZÀ-ÿ\s\']/g, ''))">
             </div>
           </div>
           
           <div class="form-group">
-            <label for="email" class="font-weight-bold text-muted">Email</label>
+            <label for="email" class="font-weight-bold text-dark">Email</label>
             <input type="email" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('email')?.invalid" id="email" formControlName="email" placeholder="Inserisci email...">
           </div>
           
           <div class="form-row">
             <div class="form-group col-md-6">
             
-              <label for="password" class="font-weight-bold text-muted">Password</label>
-              <input type="password" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('password')?.invalid" id="password" formControlName="password" placeholder="Inserisci password">
+              <label for="password" class="font-weight-bold text-dark">Password</label>
+              <div class="input-group rounded-pill bg-light" [class.is-invalid]="submitted && registerForm.get('password')?.invalid">
+                <input [type]="mostraPassword ? 'text' : 'password'" class="form-control bg-transparent border-0 px-4" [class.is-invalid]="submitted && registerForm.get('password')?.invalid" id="password" formControlName="password" placeholder="Inserisci password" style="border-radius: 50rem 0 0 50rem;">
+                <div class="input-group-append">
+                  <button class="btn btn-light bg-transparent border-0 text-muted pr-3" type="button" style="border-radius: 0 50rem 50rem 0;" (click)="togglePassword()">
+                    <i class="bi" [ngClass]="mostraPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                  </button>
+                </div>
+              </div>
               <small class="form-text ml-2 mt-2" [class.text-danger]="submitted && registerForm.get('password')?.invalid" [class.text-muted]="!(submitted && registerForm.get('password')?.invalid)">La password deve contenere almeno 6 caratteri, 1 carattere speciale, 1 lettera maiuscola e 1 numero.</small>
             </div>
             <div class="form-group col-md-6">
-              <label for="confermaPassword" class="font-weight-bold text-muted">Conferma Password</label>
-              <input type="password" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('confermaPassword')?.invalid" id="confermaPassword" formControlName="confermaPassword" placeholder="Conferma password">
+              <label for="confermaPassword" class="font-weight-bold text-dark">Conferma Password</label>
+              <div class="input-group rounded-pill bg-light" [class.is-invalid]="submitted && registerForm.get('confermaPassword')?.invalid">
+                <input [type]="mostraPassword ? 'text' : 'password'" class="form-control bg-transparent border-0 px-4" [class.is-invalid]="submitted && registerForm.get('confermaPassword')?.invalid" id="confermaPassword" formControlName="confermaPassword" placeholder="Conferma password" style="border-radius: 50rem 0 0 50rem;">
+                <div class="input-group-append">
+                  <button class="btn btn-light bg-transparent border-0 text-muted pr-3" type="button" style="border-radius: 0 50rem 50rem 0;" (click)="togglePassword()">
+                    <i class="bi" [ngClass]="mostraPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <!--

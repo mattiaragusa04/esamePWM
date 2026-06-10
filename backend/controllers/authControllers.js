@@ -13,7 +13,6 @@ exports.register = async (req, res) => {
     }
 
     console.log("Registering user:", email);
-    console.log("Password:", password);
 
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
@@ -35,19 +34,15 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     console.log("Logging in user:", email);
-    console.log("Password:", password);
 
 
     const user = await User.findByEmail(email);
-    console.log("Found user:", user);
     if (!user) {
       return res.status(400).json({ message: "Credenziali non valide" });
     }
 
-   console.log("Password type:", typeof(password), "User password type:", typeof(user.password));
 
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("Password match:", password, user.password, isMatch);
     if (!isMatch) {
       return res.status(400).json({ message: "Credenziali non valide" });
     }

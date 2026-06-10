@@ -35,6 +35,10 @@ export class VendiComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   categoriaSelezionata: string = 'Tutti';
 
+  // Proprietà per la paginazione
+  paginaCorrente: number = 1;
+  elementiPerPagina: number = 9;
+
   private routeSub: Subscription | undefined;
 
   constructor(
@@ -101,6 +105,7 @@ export class VendiComponent implements OnInit, OnDestroy {
     }
 
     this.prodottiFiltrati = result;
+    this.paginaCorrente = 1; // Resetta alla prima pagina quando si applica un filtro
     this.cdr.detectChanges();
   }
 
@@ -115,5 +120,36 @@ export class VendiComponent implements OnInit, OnDestroy {
 
   handleImageError(event: any) {
     event.target.src = 'https://via.placeholder.com/150?text=No+Image'; // Immagine di fallback
+  }
+
+  getProdottiPaginati(): Prodotto[] {
+    const inizio = (this.paginaCorrente - 1) * this.elementiPerPagina;
+    const fine = inizio + this.elementiPerPagina;
+    return this.prodottiFiltrati.slice(inizio, fine);
+  }
+
+  getNumeroPagine(): number {
+    return Math.ceil(this.prodottiFiltrati.length / this.elementiPerPagina);
+  }
+
+  getPagineVisibili(): number[] {
+    const numPagine = this.getNumeroPagine();
+    const maxVisibili = 5;
+    let inizio = Math.max(1, this.paginaCorrente - Math.floor(maxVisibili / 2));
+    let fine = Math.min(numPagine, inizio + maxVisibili - 1);
+
+    if (fine - inizio < maxVisibili - 1) {
+      inizio = Math.max(1, fine - maxVisibili + 1);
+    }
+    return Array.from({ length: (fine - inizio) + 1 }, (_, i) => inizio + i);
+  }
+
+  cambiaPagina(pagina: number) {
+    if (pagina >= 1 && pagina <= this.getNumeroPagine()) {
+      this.paginaCorrente = pagina;
+      if (isPlatformBrowser(this.platformId)) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
   }
 }

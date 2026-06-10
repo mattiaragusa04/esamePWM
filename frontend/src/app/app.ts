@@ -11,6 +11,7 @@ import { VendiProdottoDetailComponent } from './vendi-prodotto-detail/vendi-prod
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
+
 export class App implements OnInit {
   protected readonly title = signal('PAwerUP');
   utenteLoggato: any = null;
@@ -27,7 +28,7 @@ export class App implements OnInit {
     // ogni volta che si cambia pagina (ad esempio dopo la registrazione)
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        this.checkSession();
+        this.checkSession(event.urlAfterRedirects);
       }
     });
   }
@@ -36,14 +37,25 @@ export class App implements OnInit {
     this.checkSession();
   }
 
-  checkSession() {
+  checkSession(url?: string) {
     // Controlla se il codice è in esecuzione nel browser prima di usare localStorage
     if (isPlatformBrowser(this.platformId)) {
       const userString = localStorage.getItem('user');
       if (userString) {
         this.utenteLoggato = JSON.parse(userString);
+        
+        // Controlla se c'è un redirect in sospeso
+        const redirectUrl = localStorage.getItem('redirectDopoLogin');
+        if (redirectUrl) {
+          localStorage.removeItem('redirectDopoLogin');
+          this.router.navigate([redirectUrl]);
+        }
       } else {
         this.utenteLoggato = null;
+        // Rimuove il redirect in sospeso se l'utente abbandona le pagine di autenticazione
+        if (url && !url.includes('/login') && !url.includes('/register')) {
+          localStorage.removeItem('redirectDopoLogin');
+        }
       }
     }
   }
@@ -88,5 +100,13 @@ export class App implements OnInit {
     this.mostraRicerca = false;
   }
 
-  
+  vaiAVendi() {
+    if (this.utenteLoggato) {
+      this.router.navigate(['/vendi']);
+    } else {
+      localStorage.setItem('redirectDopoLogin', '/vendi');
+      this.router.navigate(['/login']);
+    }
+  }
+
 }

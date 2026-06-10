@@ -19,7 +19,7 @@
     </div>
 
     <!-- 3. Barra di ricerca (Visibile solo su schermi grandi) -->
-    <div class="d-none d-lg-flex justify-content-center search-bar-desktop">
+    <div class="d-none d-lg-flex justify-content-center align-items-center search-bar-desktop">
       <div class="input-group input-group-lg w-100 shadow-sm rounded-pill">
         <input #searchInput type="text" name="ricerca" class="form-control rounded-pill border-0 px-4 bg-white" style="border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; font-size: 1.05rem;" placeholder="Cerca su PAwerUP..." [(ngModel)]="termineRicerca" (keyup.enter)="cerca()">
         <div class="input-group-append">
@@ -34,8 +34,8 @@
 
     <!-- 3.5 Vendi a PAwerUP -->
     <div class="d-none d-md-block">
-      <button class="btn btn-info rounded-pill px-3 py-2" [routerLink]="['/vendi']">
-        <i class="bi bi-cash-stack me-2"></i>
+      <button class="btn btn-info rounded-pill px-3 py-2" (click)="vaiAVendi()">
+        <i class="bi bi-tags-fill me-2"></i>
         Vendi a PAwerUP
       </button>
      </div>
@@ -175,6 +175,11 @@
           Carrello
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark fs-5 d-flex align-items-center py-2" style="cursor: pointer;" (click)="vaiAVendi(); toggleMenu()">
+          <i class="bi bi-tags-fill me-3 fs-4"></i> Vendi a PAwerUP
+        </a>
+      </li>
       <ng-container *ngIf="!utenteLoggato">
         <li class="nav-item">
           <a class="nav-link text-dark fs-5 d-flex align-items-center py-2" [routerLink]="['/login']" (click)="toggleMenu()">
@@ -196,16 +201,11 @@
             Il mio Profilo
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark fs-5 d-flex align-items-center py-2" [routerLink]="['/vendi']" (click)="toggleMenu()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-cash-stack me-3" viewBox="0 0 16 16">
-              <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 13a1 1 0 0 0 1-1H7a1 1 0 0 0 1 1"/>
-              <path d="M14 3H2v7h12zM2 2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
-            </svg> Vendi a PAwerUP
-          </a>
-        </li>
         <li class="nav-item mt-3">
-          <button class="btn btn-outline-danger w-100 rounded-pill fs-5 py-2 font-weight-bold" (click)="logout(); toggleMenu()">Logout</button>
+          <button class="btn btn-outline-danger w-100 rounded-pill fs-5 py-2 font-weight-bold d-flex justify-content-center align-items-center" (click)="logout(); toggleMenu()">
+            <i class="bi bi-box-arrow-left me-2"></i>
+            Logout
+          </button>
         </li>
       </ng-container>
     </ul>

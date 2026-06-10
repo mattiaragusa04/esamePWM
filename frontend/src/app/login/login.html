@@ -7,12 +7,12 @@
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           
           <div class="form-group">
-            <label for="email" class="font-weight-bold text-muted">Email</label>
+            <label for="email" class="font-weight-bold text-dark">Email</label>
             <input type="email" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && loginForm.get('email')?.invalid" id="email" formControlName="email" placeholder="Inserisci email">
           </div>
           
           <div class="form-group">
-            <label for="password" class="font-weight-bold text-muted">Password</label>
+            <label for="password" class="font-weight-bold text-dark">Password</label>
             <input type="password" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && loginForm.get('password')?.invalid" id="password" formControlName="password" placeholder="Inserisci password">
           </div>
 

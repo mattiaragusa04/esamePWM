@@ -35,8 +35,8 @@
     Nessun prodotto trovato.
   </div>
 
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" *ngIf="prodottiFiltrati.length > 0">
-    <div class="col" *ngFor="let prodotto of prodottiFiltrati">
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" *ngIf="!isLoading && prodottiFiltrati.length > 0">
+    <div class="col" *ngFor="let prodotto of getProdottiPaginati()">
       <div class="card h-100 product-card">
         <img [src]="prodotto.immagine" class="card-img-top" alt="{{ prodotto.nome }}" (error)="handleImageError($event)">
         <div class="card-body d-flex flex-column">
@@ -52,4 +52,25 @@
       </div>
     </div>
   </div>
+
+  <!-- Paginazione -->
+  <nav *ngIf="!isLoading && prodottiFiltrati.length > elementiPerPagina" class="mt-5 mb-4 d-flex justify-content-center">
+    <ul class="pagination border-0 mb-0 align-items-center">
+      <li class="page-item border-0" [class.disabled]="paginaCorrente === 1">
+        <button class="page-link border-0 bg-transparent text-info shadow-none d-flex align-items-center" (click)="cambiaPagina(paginaCorrente - 1)">
+          <i class="bi bi-arrow-left-circle fs-4"></i>
+        </button>
+      </li>
+
+      <li class="page-item border-0" *ngFor="let p of getPagineVisibili()" [class.active]="paginaCorrente === p">
+        <button class="page-link shadow-sm rounded-circle mx-1 d-flex justify-content-center align-items-center pagination-dot" (click)="cambiaPagina(p)">{{ p }}</button>
+      </li>
+
+      <li class="page-item border-0" [class.disabled]="paginaCorrente === getNumeroPagine()">
+        <button class="page-link border-0 bg-transparent text-info shadow-none d-flex align-items-center" (click)="cambiaPagina(paginaCorrente + 1)">
+          <i class="bi bi-arrow-right-circle fs-4"></i>
+        </button>
+      </li>
+    </ul>
+  </nav>
 </div>

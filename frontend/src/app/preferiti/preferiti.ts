@@ -7,12 +7,15 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './preferiti.html',
-  styleUrl: './preferiti.css'
+  styleUrl: './preferiti.css',
 })
 export class PreferitiComponent implements OnInit {
   prodottiPreferiti: any[] = [];
   isLoading: boolean = true;
   preferitiIds: number[] = [];
+  mostraModaleSvuota: boolean = false;
+  prodottoDaRimuovere: number | null = null;
+
 
   constructor(
     private cdr: ChangeDetectorRef,

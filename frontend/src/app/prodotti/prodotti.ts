@@ -40,7 +40,7 @@ export class Prodotti implements OnInit, OnDestroy {
   elementiPerPagina: number = 9;
 
   // Nuovi stati per i filtri della barra laterale
-  ordinamentoPrezzo: string = '';
+  ordinamento: string = '';
   prezzoMin: number | null = null;
   prezzoMax: number | null = null;
   disponibilita: string = '';
@@ -187,7 +187,7 @@ export class Prodotti implements OnInit, OnDestroy {
   }
 
   resetFiltri() {
-    this.ordinamentoPrezzo = '';
+    this.ordinamento = '';
     this.prezzoMin = null;
     this.prezzoMax = null;
     this.disponibilita = '';
@@ -232,11 +232,15 @@ export class Prodotti implements OnInit, OnDestroy {
       result = result.filter(p => p.giacenza <= 0);
     }
 
-    // 4. Ordinamento Prezzo
-    if (this.ordinamentoPrezzo === 'crescente') {
+    // 4. Ordinamento
+    if (this.ordinamento === 'prezzoCrescente') {
       result.sort((a, b) => this.getPrezzoVisualizzato(a) - this.getPrezzoVisualizzato(b));
-    } else if (this.ordinamentoPrezzo === 'decrescente') {
+    } else if (this.ordinamento === 'prezzoDecrescente') {
       result.sort((a, b) => this.getPrezzoVisualizzato(b) - this.getPrezzoVisualizzato(a));
+    } else if (this.ordinamento === 'nomeCrescente') {
+      result.sort((a, b) => a.nome.localeCompare(b.nome));
+    } else if (this.ordinamento === 'nomeDecrescente') {
+      result.sort((a, b) => b.nome.localeCompare(a.nome));
     }
 
     this.prodottiFiltrati = result;
