@@ -11,4 +11,5 @@ router.get("/categoria/:categoriaId", prodottoController.getProdottobyCategoria)
 // Rotta per ottenere un singolo prodotto
 router.get("/:id", prodottoController.getProdottoById);
 
+router.delete("/:id", prodottoController.deleteProdotto);
 module.exports = router;

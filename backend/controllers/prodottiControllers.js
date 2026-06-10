@@ -50,3 +50,13 @@ exports.cercaProdotti = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 }
+
+exports.deleteProdotto = async (req, res) => {
+    try {
+        const prodottoId = req.params.id;
+        const deletedProdotto = await prodotto.delete(prodottoId);
+        res.json(deletedProdotto);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}

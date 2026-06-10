@@ -46,8 +46,20 @@ export class AdminProdotti implements OnInit {
   }
 
   async eliminaProdotto(id: number) {
-    // Per ora stampiamo solo un log. Implementeremo la logica Delete a breve.
     if (!confirm('Sei sicuro di voler eliminare il prodotto #' + id + '?')) return;
-    console.log("Richiesta eliminazione prodotto ID:", id);
+
+    try{
+      const response = await fetch(`http://localhost:3000/api/prodotti/${id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        this.caricaProdotti(); // Ricarica la lista dopo l'eliminazione
+      } else {
+        this.errorMessage = 'Errore durante l\'eliminazione.';
+      }
+    } catch (error) {
+      console.error('Errore di rete:', error);
+      this.errorMessage = 'Impossibile connettersi al server.';
+    }
   }
 }

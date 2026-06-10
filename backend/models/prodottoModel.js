@@ -58,7 +58,18 @@ const Prodotto = {
         else resolve(rows);
       });
     });
+  },
+
+  delete: (id) => {
+    return new Promise((resolve, reject) => {
+      const query = `DELETE FROM prodotto WHERE id = ?`;
+      db.run(query, [id], (err) => {
+        if (err) reject(err);
+        else resolve({ id });
+      });
+    });
   }
 };
+
 
 module.exports = Prodotto;
