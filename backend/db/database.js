@@ -76,7 +76,7 @@ CREATE TABLE if not exists recensione (
 CREATE TABLE if not exists carrello (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     totale double NOT NULL,
-    utente_id INTEGER,
+    utente_id INTEGER UNIQUE,
     FOREIGN KEY (utente_id) REFERENCES utente(id)
 );
 CREATE TABLE if not exists contiene (
