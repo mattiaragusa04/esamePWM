@@ -20,6 +20,7 @@ import { Vendite } from './vendite/vendite';
 import { AdminLayout } from './admin-layout/admin-layout';
 import { AdminDashboard } from './admin-dashboard/admin-dashboard';
 import { adminGuard } from './guards/admin-guard';
+import { AdminProdotti } from './admin-prodotti/admin-prodotti';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -51,7 +52,7 @@ export const routes: Routes = [
          canActivate: [adminGuard], // <-- Protegge la rotta e tutti i suoi figli
          children: [
              { path: '', component: AdminDashboard  , pathMatch: 'full' },
-             // Qui aggiungeremo: gestione prodotti, ordini, offerte dell'usato ecc.
+             { path: 'prodotti', component: AdminProdotti },
          ]
      }
 

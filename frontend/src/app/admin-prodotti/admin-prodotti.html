@@ -1,0 +1,57 @@
+<div class="container-fluid py-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="font-weight-bold m-0"><i class="bi bi-box-seam text-danger me-2"></i> Gestione <span class="text-danger">Prodotti</span></h2>
+            <p class="text-muted mt-1 mb-0">Gestisci il catalogo dei prodotti del tuo e-commerce.</p>
+        </div>
+        <button class="btn btn-danger rounded-pill font-weight-bold px-4 shadow-sm" routerLink="/admin/prodotti/nuovo">
+            <i class="bi bi-plus-lg me-1"></i> Nuovo Prodotto
+        </button>
+    </div>
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="text-center my-5">
+        <div class="spinner-border text-danger" role="status"></div>
+    </div>
+
+    <!-- Messaggio di errore -->
+    <div *ngIf="errorMessage" class="alert alert-danger text-center shadow-sm rounded-4 border-0">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+    </div>
+
+    <!-- Tabella Prodotti -->
+    <div class="card shadow-sm border-0" style="border-radius: 1rem; overflow: hidden;" *ngIf="!isLoading && !errorMessage">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 bg-white">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th scope="col" class="ps-4">ID</th>
+                        <th scope="col">Immagine</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Prezzo</th>
+                        <th scope="col">Giacenza</th>
+                        <th scope="col" class="text-end pe-4">Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="prodotti.length === 0">
+                        <td colspan="6" class="text-center py-5 text-muted">Nessun prodotto presente a catalogo.</td>
+                    </tr>
+                    <tr *ngFor="let prodotto of prodotti">
+                        <td class="ps-4 font-weight-bold text-secondary">#{{ prodotto.id }}</td>
+                        <td>
+                            <img [src]="prodotto.immagine?.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="rounded border" style="width: 45px; height: 45px; object-fit: contain; background: #fff;" alt="Img" onerror="this.src='assets/placeholder.png'">
+                        </td>
+                        <td class="font-weight-bold">{{ prodotto.nome }}</td>
+                        <td class="text-danger font-weight-bold">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</td>
+                        <td><span class="badge rounded-pill" [ngClass]="prodotto.giacenza > 0 ? 'bg-success' : 'bg-danger'">{{ prodotto.giacenza }}</span></td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-secondary rounded-circle me-2" title="Modifica" [routerLink]="['/admin/prodotti/modifica', prodotto.id]"><i class="bi bi-pencil-fill"></i></button>
+                            <button class="btn btn-sm btn-outline-danger rounded-circle" title="Elimina" (click)="eliminaProdotto(prodotto.id)"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -47,7 +47,7 @@ async function popolaDatabaseCategoriaVideogiochi() {
             ['EA SPORTS FC 26 (PS5)', 'La nuova era del calcio virtuale. Scendi in campo con le squadre, i giocatori e le leghe più realistiche di sempre.', 20, 'http://localhost:3000/public/immagini/videogiochi/fc26.webp', 69.99, 1, 'Sport', 'Nuovo', Math.round(69.99 / 5)],
             ['Grand Theft Auto V', 'Esplora la sconfinata e vibrante Los Santos. Un\'esperienza open world senza precedenti tra rapine mozzafiato.', 20, 'http://localhost:3000/public/immagini/videogiochi/gta_V.webp', 29.99, 1, 'Azione', 'Nuovo', Math.round(29.99 / 5)],
             ['The Last of Us Part I', 'Rivivi il capolavoro che ha segnato una generazione, ricostruito da zero per sfruttare appieno la potenza di PS5.', 20, 'http://localhost:3000/public/immagini/videogiochi/tlou1.jpg', 69.99, 1, 'Avventura', 'Nuovo', Math.round(69.99 / 5)],
-            ['Call of Duty: Black Ops 7', 'L\'esperienza definitiva della serie Black Ops ti attende con nuove sfide, campagna avvincente e un multiplayer esplosivo.', 20, 'http://localhost:3000/public/immagini/videogiochi/trasferimento (6).jpg', 79.99, 1, 'Sparatutto', 'Nuovo', Math.round(79.99 / 5)],
+            ['Call of Duty: Black Ops 7', 'L\'esperienza definitiva della serie Black Ops ti attende con nuove sfide, campagna avvincente e un multiplayer esplosivo.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping (6).webp', 79.99, 1, 'Sparatutto', 'Nuovo', Math.round(79.99 / 5)],
             ['Gran Turismo 7', 'La massima espressione della simulazione automobilistica con centinaia di auto riprodotte in ogni minimo dettaglio.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping.webp', 69.99, 1, 'Sport', 'Nuovo', Math.round(69.99 / 5)]
         ];
 
