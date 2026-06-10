@@ -3,6 +3,17 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 
+export interface Utente {
+  id: number;
+  nome: string;
+  cognome: string;
+  email: string;
+  telefono?: string;
+  indirizzo?: string;
+  data_iscrizione?: string;
+  punti_fedelta?: number;
+}
+
 @Component({
   selector: 'app-profilo',
   imports: [CommonModule],
@@ -10,7 +21,7 @@ import { Subscription } from 'rxjs';
   styleUrl: './profilo.css',
 })
 export class Profilo implements OnInit, OnDestroy {
-  utente: any = null;
+  utente: Utente | null = null;
   private routerSub!: Subscription;
 
   constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {
