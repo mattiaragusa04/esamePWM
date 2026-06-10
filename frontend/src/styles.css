@@ -219,23 +219,82 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Stili e animazioni per la Sidebar del Profilo */
+.sidebar-container {
+  background: var(--card-bg);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 .sidebar-container .nav-link {
-  border-radius: 0.5rem;
-  transition: background-color 0.2s ease, transform 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  border-radius: 0.75rem;
+  padding: 0.8rem 1.2rem;
+  margin-bottom: 0.4rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--text-main);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .sidebar-container .nav-link:hover:not(.active) {
   background-color: rgba(248, 109, 237, 0.1);
   color: var(--main-color);
-  transform: translateX(5px);
+  transform: translateX(4px);
 }
 
 .sidebar-container .nav-link.active {
   background-color: var(--main-color) !important;
   color: white !important;
-  box-shadow: 0 4px 10px rgba(248, 109, 237, 0.4);
+  box-shadow: 0 8px 16px rgba(248, 109, 237, 0.25);
 }
+
+.sidebar-container .nav-link.active::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+}
+
+/* Utility per Dashboard Profilo */
+.profile-header-card {
+  background: linear-gradient(135deg, var(--main-color), #bc4ec6);
+  color: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 25px rgba(248, 109, 237, 0.3);
+}
+
+.stat-card {
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  text-align: center;
+  background: white;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Badge di Stato Professionali */
+.badge-status {
+  padding: 0.4rem 0.8rem;
+  border-radius: 50rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-pending { background: #fff7ed; color: #9a3412; border: 1px solid #ffedd5; }
+.badge-success { background: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
 
 /* Stili globali per la paginazione */
 .pagination .page-item .page-link.pagination-dot {
@@ -253,4 +312,62 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--text-main) !important;
   color: white !important; /* Testo bianco */
   font-weight: bold;
+}
+
+/* Sezione Dati Personali Professionali */
+.personal-info-card {
+  background: white;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.info-group {
+  margin-bottom: 2rem;
+}
+
+.info-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-field {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem;
+  background: var(--bg-light);
+  border-radius: 0.75rem;
+  transition: background 0.2s ease;
+}
+
+.info-field:hover {
+  background: rgba(248, 109, 237, 0.03);
+}
+
+.info-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.info-data {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-main);
 }

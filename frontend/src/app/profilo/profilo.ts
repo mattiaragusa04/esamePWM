@@ -4,6 +4,17 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Sidebar } from '../sidebar/sidebar';
 
+export interface Utente {
+  id: number;
+  nome: string;
+  cognome: string;
+  email: string;
+  telefono?: string;
+  indirizzo?: string;
+  data_iscrizione?: string;
+  punti_fedelta?: number;
+}
+
 @Component({
   selector: 'app-profilo',
   imports: [CommonModule, Sidebar],
@@ -11,7 +22,7 @@ import { Sidebar } from '../sidebar/sidebar';
   styleUrl: './profilo.css',
 })
 export class Profilo implements OnInit, OnDestroy {
-  utente: any = null;
+  utente: Utente | null = null;
   private routerSub!: Subscription;
 
   constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {

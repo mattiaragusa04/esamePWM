@@ -1,25 +1,38 @@
-<div>
-  <h2>Benvenuto nel tuo profilo, <span class="text-info">{{ utente?.nome }}</span>!</h2>
+<div class="profile-content">
+  <div class="profile-header-card shadow-sm mb-4">
+    <h2 class="mb-1">Benvenuto, <span class="fw-bold">{{ utente?.nome }}</span>!</h2>
+    <p class="opacity-75 mb-0">Gestisci le tue informazioni e monitora le tue attività su PAwerUP.</p>
+  </div>
+  
   <p class="lead mb-4 text-muted">Seleziona una voce dal menu a sinistra per gestire i tuoi dati o i tuoi ordini.</p>
   
-  <div class="card mt-4 shadow-sm" *ngIf="utente">
-    <div class="card-body">
-      <h4 class="card-title mb-4">I tuoi dati personali</h4>
-      <div class="row mb-3 border-bottom pb-2">
-        <div class="col-md-3 fw-bold text-muted">Nome:</div>
-        <div class="col-md-9">{{ utente.nome }}</div>
+  <div class="personal-info-card shadow-sm" *ngIf="utente">
+    <div class="info-group">
+      <div class="info-group-title">
+        <i class="bi bi-person-badge text-info"></i>
+        <span>Informazioni Account</span>
       </div>
-      <div class="row mb-3 border-bottom pb-2">
-        <div class="col-md-3 fw-bold text-muted">Cognome:</div>
-        <div class="col-md-9">{{ utente.cognome }}</div>
-      </div>
-      <div class="row mb-3 border-bottom pb-2">
-        <div class="col-md-3 fw-bold text-muted">Email:</div>
-        <div class="col-md-9">{{ utente.email }}</div>
-      </div>
-      <div class="row mb-3">
-        <div class="col-md-3 fw-bold text-muted">Punti Fedeltà:</div>
-        <div class="col-md-9"><span class="badge bg-warning text-dark fs-6">{{ utente.puntiFedelta || 0 }}</span></div>
+      
+      <div class="info-grid">
+        <div class="info-field">
+          <span class="info-label">Nome</span>
+          <span class="info-data">{{ utente.nome }}</span>
+        </div>
+        
+        <div class="info-field">
+          <span class="info-label">Cognome</span>
+          <span class="info-data">{{ utente.cognome }}</span>
+        </div>
+        
+        <div class="info-field">
+          <span class="info-label">Indirizzo Email</span>
+          <span class="info-data">{{ utente.email }}</span>
+        </div>
+
+        <div class="info-field">
+          <span class="info-label">Punti Fedeltà</span>
+          <span class="info-data"><span class="badge-status badge-success">{{ utente.punti_fedelta || 0 }} Punti</span></span>
+        </div>
       </div>
     </div>
   </div>
