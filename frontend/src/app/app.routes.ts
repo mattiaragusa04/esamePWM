@@ -15,9 +15,11 @@ import { PreferitiComponent } from './preferiti/preferiti';
 import { Indirizzi } from './indirizzi/indirizzi';
 import { VendiProdottoDetailComponent } from './vendi-prodotto-detail/vendi-prodotto-detail';
 import { VendiComponent } from './vendi/vendi';
-import { ProfiloLayoutComponent } from './profilo/profilo-layout.component';
+import { ProfiloLayoutComponent } from './profilo-layout/profilo-layout.component';
 import { Vendite } from './vendite/vendite';
-
+import { AdminLayout } from './admin-layout/admin-layout';
+import { AdminDashboard } from './admin-dashboard/admin-dashboard';
+import { adminGuard } from './guards/admin-guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -36,11 +38,22 @@ export const routes: Routes = [
     { path: 'profilo',
         component: ProfiloLayoutComponent,
         children: [
-            { path: '', component: Profilo },
+            { path: '', component: Profilo, pathMatch: 'full' },
             { path: 'ordini', component: Ordini },
             { path: 'vendite', component: Vendite },
             { path: 'carte-di-credito', component: CarteDiCredito },
             { path: 'indirizzi', component: Indirizzi }
         ]
-    }
+    },
+        // --- PORTALE ADMIN ---
+     { path: 'admin',
+         component: AdminLayout,
+         canActivate: [adminGuard], // <-- Protegge la rotta e tutti i suoi figli
+         children: [
+             { path: '', component: AdminDashboard  , pathMatch: 'full' },
+             // Qui aggiungeremo: gestione prodotti, ordini, offerte dell'usato ecc.
+         ]
+     }
+
+    
 ];

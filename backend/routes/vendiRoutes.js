@@ -20,13 +20,14 @@ router.use(authMiddleware);
 
 router.get('/', vendiController.getAllProdottiForSelling);
 
-router.get('/:id', vendiController.getProdottoForSellingById);
+router.get('/utente', vendiController.getProdottoForSellingByUserId);
 
 router.post('/offerta', upload.array('images', 5), vendiController.submitSellOffer);
 
-router.get('/utente', vendiController.getProdottoForSellingByUserId);
+router.get('/:id', vendiController.getProdottoForSellingById);
 
 router.post('/:id', vendiController.update);
+
 
 
 

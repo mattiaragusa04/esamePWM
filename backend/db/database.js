@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS utente (
     cognome TEXT NOT NULL,
     email TEXT NOT NULL,
     password TEXT NOT NULL,
-    puntiFedelta INTEGER DEFAULT 0
+    puntiFedelta INTEGER DEFAULT 0,
+    ruolo TEXT DEFAULT 'user'
 );
 CREATE TABLE IF NOT EXISTS indirizzo(
     id INTEGER PRIMARY KEY AUTOINCREMENT,

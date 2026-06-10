@@ -36,7 +36,7 @@ export class Vendite implements OnInit {
 
     try {
       // Effettua la chiamata al backend per recuperare lo storico
-      const response = await fetch('http://localhost:3000/api/vendi/storico', {
+      const response = await fetch('http://localhost:3000/api/vendi/utente', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {

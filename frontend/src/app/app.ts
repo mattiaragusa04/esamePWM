@@ -1,13 +1,11 @@
 import { Component, signal, OnInit, Inject, PLATFORM_ID, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { VendiComponent } from './vendi/vendi'; 
-import { VendiProdottoDetailComponent } from './vendi-prodotto-detail/vendi-prodotto-detail';
+import { FormsModule } from '@angular/forms'; 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule, VendiComponent, VendiProdottoDetailComponent],
+  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -47,7 +47,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Credenziali non valide" });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, SECRET, {
+    const token = jwt.sign({ id: user.id, email: user.email, ruolo: user.ruolo }, SECRET, {
       expiresIn: "1h"
     });
 

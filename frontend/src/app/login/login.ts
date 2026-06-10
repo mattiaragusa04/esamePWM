@@ -45,9 +45,17 @@ export class Login {
         // Salva l'utente nella sessione
         if (data.token) localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.utente || data));
+        const userToSave = data.utente || data;
+        localStorage.setItem('user', JSON.stringify(userToSave));
         
         alert('Login effettuato con successo!');
-        this.router.navigate(['/']); // Reindirizza alla home
+        
+        // Controlla il ruolo e reindirizza alla pagina corretta
+        if (userToSave.ruolo === 'admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/']); // Reindirizza alla home
+        }
       } else {
         const errorData = await response.json();
         alert(errorData.message || errorData.error);

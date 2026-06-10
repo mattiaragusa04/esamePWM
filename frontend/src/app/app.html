@@ -32,13 +32,13 @@
       </div>
     </div>
 
-    <!-- 3.5 Vendi a PAwerUP -->
-    <div class="d-none d-md-block">
+    <!-- 3.5 Vendi a PAwerUP & Dashboard Admin -->
+    <div class="d-none d-md-flex align-items-center gap-2"> 
       <button class="btn btn-info rounded-pill px-3 py-2" (click)="vaiAVendi()">
         <i class="bi bi-tags-fill me-2"></i>
         Vendi a PAwerUP
       </button>
-     </div>
+    </div>
 
     <!-- 4. Icone destra (Ricerca mobile, Carrello, Utente) -->
     <div class="d-flex align-items-center gap-2 gap-md-3">
@@ -178,6 +178,11 @@
       <li class="nav-item">
         <a class="nav-link text-dark fs-5 d-flex align-items-center py-2" style="cursor: pointer;" (click)="vaiAVendi(); toggleMenu()">
           <i class="bi bi-tags-fill me-3 fs-4"></i> Vendi a PAwerUP
+        </a>
+      </li>
+      <li class="nav-item" *ngIf="utenteLoggato?.ruolo === 'admin'">
+        <a class="nav-link text-danger fs-5 d-flex align-items-center py-2 font-weight-bold" [routerLink]="['/admin']" (click)="toggleMenu()">
+          <i class="bi bi-shield-lock-fill me-3 fs-4"></i> Dashboard
         </a>
       </li>
       <ng-container *ngIf="!utenteLoggato">

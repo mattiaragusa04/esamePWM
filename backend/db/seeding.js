@@ -1,4 +1,5 @@
 const db = require('./database');
+const bcrypt = require('bcrypt');
 
 async function popolaDatabaseCategoriaConsole() {
     try {
@@ -35,19 +36,19 @@ async function popolaDatabaseCategoriaVideogiochi() {
     try {
         const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, genere, condizione) VALUES (2, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
-            ['Marvel\'s Spider-Man: Miles Morales', 'Vivi l\'ascesa di Miles Morales mentre padroneggia nuovi poteri incredibili ed esplosivi per diventare il suo Spider-Man.', 20, 'http://localhost:3000/public/immagini/console/shopping (4).webp', 49.99, 1, 'Azione', 'Nuovo'],
-            ['Marvel\'s Spider-Man 2', 'I due Spider-Man, Peter Parker e Miles Morales, tornano per una nuova emozionante avventura su PS5.', 20, 'http://localhost:3000/public/immagini/console/shopping (3).webp', 79.99, 1, 'Azione', 'Nuovo'],
-            ['Marvel\'s Spider-Man (GOTY)', 'Esplora una New York vibrante e affronta i cattivi più iconici in questa edizione completa e imperdibile.', 20, 'http://localhost:3000/public/immagini/console/shopping (2).webp', 39.99, 1, 'Azione', 'Usato'],
-            ['God of War Ragnarok', 'Il Fimbulwinter è arrivato. Accompagna Kratos e Atreus in un viaggio epico attraverso i Nove Regni norreni.', 20, 'http://localhost:3000/public/immagini/console/shopping (8).webp', 69.99, 1, 'Azione', 'Nuovo'],
-            ['Minecraft', 'Costruisci tutto ciò che puoi immaginare ed esplora mondi infiniti in questo classico intramontabile.', 20, 'http://localhost:3000/public/immagini/console/shopping (5).webp', 29.99, 1, 'Avventura', 'Nuovo'],
-            ['Far Cry 6', 'Unisciti alla guerriglia per liberare Yara dalla morsa del dittatore Antón Castillo. Esplosioni, armi e puro caos.', 20, 'http://localhost:3000/public/immagini/console/shopping (7).webp', 29.99, 1, 'Azione', 'Nuovo'],
-            ['Ratchet & Clank', 'Rivivi le origini dell\'eroico duo in questa avventura ricca di azione e armi stravaganti in stile PlayStation Hits.', 20, 'http://localhost:3000/public/immagini/console/shopping (15).webp', 19.99, 1, 'Avventura', 'Nuovo'],
-            ['The Last of Us Remastered', 'Un viaggio emozionante e brutale. Vivi la cruda storia di Joel ed Ellie in un mondo post-apocalittico spietato.', 20, 'http://localhost:3000/public/immagini/console/shopping (16).webp', 19.99, 1, 'Avventura', 'Usato'],
-            ['EA SPORTS FC 26 (PS5)', 'La nuova era del calcio virtuale. Scendi in campo con le squadre, i giocatori e le leghe più realistiche di sempre.', 20, 'http://localhost:3000/public/immagini/console/fc26.webp', 69.99, 1, 'Sport', 'Nuovo'],
-            ['Grand Theft Auto V', 'Esplora la sconfinata e vibrante Los Santos. Un\'esperienza open world senza precedenti tra rapine mozzafiato.', 20, 'http://localhost:3000/public/immagini/console/gta_V.webp', 29.99, 1, 'Azione', 'Nuovo'],
-            ['The Last of Us Part I', 'Rivivi il capolavoro che ha segnato una generazione, ricostruito da zero per sfruttare appieno la potenza di PS5.', 20, 'http://localhost:3000/public/immagini/console/tlou1.jpg', 69.99, 1, 'Avventura', 'Nuovo'],
-            ['Call of Duty: Black Ops 7', 'L\'esperienza definitiva della serie Black Ops ti attende con nuove sfide, campagna avvincente e un multiplayer esplosivo.', 20, 'http://localhost:3000/public/immagini/console/trasferimento (6).jpg', 79.99, 1, 'Sparatutto', 'Nuovo'],
-            ['Gran Turismo 7', 'La massima espressione della simulazione automobilistica con centinaia di auto riprodotte in ogni minimo dettaglio.', 20, 'http://localhost:3000/public/immagini/console/shopping.webp', 69.99, 1, 'Sport', 'Nuovo']
+            ['Marvel\'s Spider-Man: Miles Morales', 'Vivi l\'ascesa di Miles Morales mentre padroneggia nuovi poteri incredibili ed esplosivi per diventare il suo Spider-Man.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping (4).webp', 49.99, 1, 'Azione', 'Nuovo'],
+            ['Marvel\'s Spider-Man 2', 'I due Spider-Man, Peter Parker e Miles Morales, tornano per una nuova emozionante avventura su PS5.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping (3).webp', 79.99, 1, 'Azione', 'Nuovo'],
+            ['Marvel\'s Spider-Man (GOTY)', 'Esplora una New York vibrante e affronta i cattivi più iconici in questa edizione completa e imperdibile.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping (2).webp', 39.99, 1, 'Azione', 'Usato'],
+            ['God of War Ragnarok', 'Il Fimbulwinter è arrivato. Accompagna Kratos e Atreus in un viaggio epico attraverso i Nove Regni norreni.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping (8).webp', 69.99, 1, 'Azione', 'Nuovo'],
+            ['Minecraft', 'Costruisci tutto ciò che puoi immaginare ed esplora mondi infiniti in questo classico intramontabile.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping (5).webp', 29.99, 1, 'Avventura', 'Nuovo'],
+            ['Far Cry 6', 'Unisciti alla guerriglia per liberare Yara dalla morsa del dittatore Antón Castillo. Esplosioni, armi e puro caos.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping (7).webp', 29.99, 1, 'Azione', 'Nuovo'],
+            ['Ratchet & Clank', 'Rivivi le origini dell\'eroico duo in questa avventura ricca di azione e armi stravaganti in stile PlayStation Hits.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping (15).webp', 19.99, 1, 'Avventura', 'Nuovo'],
+            ['The Last of Us Remastered', 'Un viaggio emozionante e brutale. Vivi la cruda storia di Joel ed Ellie in un mondo post-apocalittico spietato.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping (16).webp', 19.99, 1, 'Avventura', 'Usato'],
+            ['EA SPORTS FC 26 (PS5)', 'La nuova era del calcio virtuale. Scendi in campo con le squadre, i giocatori e le leghe più realistiche di sempre.', 20, 'http://localhost:3000/public/immagini/videogiochi/fc26.webp', 69.99, 1, 'Sport', 'Nuovo'],
+            ['Grand Theft Auto V', 'Esplora la sconfinata e vibrante Los Santos. Un\'esperienza open world senza precedenti tra rapine mozzafiato.', 20, 'http://localhost:3000/public/immagini/videogiochi/gta_V.webp', 29.99, 1, 'Azione', 'Nuovo'],
+            ['The Last of Us Part I', 'Rivivi il capolavoro che ha segnato una generazione, ricostruito da zero per sfruttare appieno la potenza di PS5.', 20, 'http://localhost:3000/public/immagini/videogiochi/tlou1.jpg', 69.99, 1, 'Avventura', 'Nuovo'],
+            ['Call of Duty: Black Ops 7', 'L\'esperienza definitiva della serie Black Ops ti attende con nuove sfide, campagna avvincente e un multiplayer esplosivo.', 20, 'http://localhost:3000/public/immagini/videogiochi/trasferimento (6).jpg', 79.99, 1, 'Sparatutto', 'Nuovo'],
+            ['Gran Turismo 7', 'La massima espressione della simulazione automobilistica con centinaia di auto riprodotte in ogni minimo dettaglio.', 20, 'http://localhost:3000/public/immagini/videogiochi/shopping.webp', 69.99, 1, 'Sport', 'Nuovo']
         ];
 
         values.forEach(val => {
@@ -66,12 +67,12 @@ async function popolaDatabaseCategoriaAccessori() {
     try {
         const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, condizione) VALUES (3, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
-            ['Cuffie Gaming Kotion Each', 'Cuffie over-ear con microfono e luci LED, perfette per lunghe sessioni di gaming. Audio stereo ad alta fedeltà e comfort garantito.', 20, 'http://localhost:3000/public/immagini/console/kotion (18).webp', 29.99, 1, 'Nuovo'],
-            ['Cuffie Gaming Razer Kraken', 'Vivi l\'audio posizionale con le celebri cuffie Razer. Padiglioni in gel rinfrescante e microfono retrattile per la massima chiarezza vocale.', 15, 'http://localhost:3000/public/immagini/console/razer (18).webp', 79.99, 1, 'Nuovo'],
-            ['PlayStation VR2', 'Immergiti in mondi incredibili con la realtà virtuale di nuova generazione per PS5. Display 4K HDR e controller Sense innovativi.', 10, 'http://localhost:3000/public/immagini/console/shopping (22).webp', 549.99, 1, 'Nuovo'],
-            ['Adattatore USB-C a HDMI 4K', 'Collega la tua console o dispositivo portatile al monitor o alla TV con questo cavo adattatore ad alta velocità per una risoluzione fino a 4K 60Hz.', 30, 'http://localhost:3000/public/immagini/console/shopping (21).webp', 19.99, 1, 'Nuovo'],
-            ['Cuffie Wireless Over-Ear Premium', 'Audio ad altissima fedeltà, cancellazione attiva del rumore e design elegante. Il top per l\'ascolto e il gaming wireless.', 5, 'http://localhost:3000/public/immagini/console/shopping (23).webp', 199.99, 1, 'Nuovo'],
-            ['PlayStation Camera per PS4', 'Aggiungi nuove modalità di interazione alla tua PS4. Trasmetti i tuoi gameplay e sblocca le funzionalità di PlayStation VR.', 12, 'http://localhost:3000/public/immagini/console/ps4_camera.jpg', 49.99, 1, 'Usato']
+            ['Cuffie Gaming Kotion Each', 'Cuffie over-ear con microfono e luci LED, perfette per lunghe sessioni di gaming. Audio stereo ad alta fedeltà e comfort garantito.', 20, 'http://localhost:3000/public/immagini/accessori/kotion (18).webp', 29.99, 1, 'Nuovo'],
+            ['Cuffie Gaming Razer Kraken', 'Vivi l\'audio posizionale con le celebri cuffie Razer. Padiglioni in gel rinfrescante e microfono retrattile per la massima chiarezza vocale.', 15, 'http://localhost:3000/public/immagini/accessori/razer (18).webp', 79.99, 1, 'Nuovo'],
+            ['PlayStation VR2', 'Immergiti in mondi incredibili con la realtà virtuale di nuova generazione per PS5. Display 4K HDR e controller Sense innovativi.', 10, 'http://localhost:3000/public/immagini/accessori/shopping (22).webp', 549.99, 1, 'Nuovo'],
+            ['Adattatore USB-C a HDMI 4K', 'Collega la tua console o dispositivo portatile al monitor o alla TV con questo cavo adattatore ad alta velocità per una risoluzione fino a 4K 60Hz.', 30, 'http://localhost:3000/public/immagini/accessori/shopping (21).webp', 19.99, 1, 'Nuovo'],
+            ['Cuffie Wireless Over-Ear Premium', 'Audio ad altissima fedeltà, cancellazione attiva del rumore e design elegante. Il top per l\'ascolto e il gaming wireless.', 5, 'http://localhost:3000/public/immagini/accessori/shopping (23).webp', 199.99, 1, 'Nuovo'],
+            ['PlayStation Camera per PS4', 'Aggiungi nuove modalità di interazione alla tua PS4. Trasmetti i tuoi gameplay e sblocca le funzionalità di PlayStation VR.', 12, 'http://localhost:3000/public/immagini/accessori/ps4_camera.jpg', 49.99, 1, 'Usato']
         ];
 
         values.forEach(val => {
@@ -90,10 +91,10 @@ async function popolaDatabaseCategoriaElettronica() {
     try {
         const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, condizione) VALUES (4, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
-            ['Smartwatch Amazfit', 'Smartwatch con display AMOLED, monitoraggio della frequenza cardiaca e 14 giorni di autonomia.', 20, 'http://localhost:3000/public/immagini/console/shopping (20).webp', 99.99, 1, 'Nuovo'],
-            ['Apple Watch SE 2022', 'Smartwatch con display AMOLED, monitoraggio della frequenza cardiaca, monitoraggio allenamenti, sensori di movimento.', 30, 'http://localhost:3000/public/immagini/console/shopping (19).webp', 99.99, 1, 'usato'],
-            ['Cuffie JBL Tune', 'Audio avvolgente e bassi potenti in un design compatto. Connessione Bluetooth affidabile.', 10, 'http://localhost:3000/public/immagini/console/trasferimento (2).webp', 49.99, 1, 'Nuovo'],
-            ['Alimentatore USB-C', 'Alimentatore compatto per una ricarica rapida e sicura dei tuoi dispositivi.', 25, 'http://localhost:3000/public/immagini/console/trasferimento (5).webp', 19.99, 1, 'Nuovo']
+            ['Smartwatch Amazfit', 'Smartwatch con display AMOLED, monitoraggio della frequenza cardiaca e 14 giorni di autonomia.', 20, 'http://localhost:3000/public/immagini/elettronica/shopping (20).webp', 99.99, 1, 'Nuovo'],
+            ['Apple Watch SE 2022', 'Smartwatch con display AMOLED, monitoraggio della frequenza cardiaca, monitoraggio allenamenti, sensori di movimento.', 30, 'http://localhost:3000/public/immagini/elettronica/shopping (19).webp', 99.99, 1, 'usato'],
+            ['Cuffie JBL Tune', 'Audio avvolgente e bassi potenti in un design compatto. Connessione Bluetooth affidabile.', 10, 'http://localhost:3000/public/immagini/elettronica/trasferimento (2).webp', 49.99, 1, 'Nuovo'],
+            ['Alimentatore USB-C', 'Alimentatore compatto per una ricarica rapida e sicura dei tuoi dispositivi.', 25, 'http://localhost:3000/public/immagini/elettronica/trasferimento (5).webp', 19.99, 1, 'Nuovo']
         ];
 
         values.forEach(val => {
@@ -102,6 +103,25 @@ async function popolaDatabaseCategoriaElettronica() {
                     console.error('Errore durante l\'inserimento di elettronica:', err);
                 }
             });
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function popolaDatabaseUtenteAdmin() {
+    try {
+        // Creiamo la password cifrata per l'admin (la password in chiaro sarà 'admin')
+        const hashedPassword = await bcrypt.hash('Admin12!', 10);
+        const response = "INSERT INTO utente (nome, cognome, email, password, ruolo) VALUES (?, ?, ?, ?, 'admin')";
+        const values = ['Admin', 'PAwerUP', 'admin@pawerup.it', hashedPassword];
+
+        db.run(response, values, (err) => {
+            if (err) {
+                console.error('Errore durante l\'inserimento dell\'admin:', err);
+            } else {
+                console.log('Utente admin generato con successo (Email: admin@pawerup.it - Password: Admin12!)');
+            }
         });
     } catch (error) {
         console.log(error);
@@ -135,6 +155,11 @@ function seedDatabase() {
         }   
     });
 
+    db.get ("SELECT COUNT(*) AS count from utente WHERE ruolo = 'admin'", async (err, row) => {
+        if (row && row.count === 0) {
+            await popolaDatabaseUtenteAdmin();
+        }
+    });
 }
 
 module.exports = seedDatabase;

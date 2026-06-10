@@ -2,11 +2,10 @@ import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Sidebar } from '../sidebar/sidebar';
 
 @Component({
   selector: 'app-profilo',
-  imports: [CommonModule, Sidebar],
+  imports: [CommonModule],
   templateUrl: './profilo.html',
   styleUrl: './profilo.css',
 })

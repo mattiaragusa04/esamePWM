@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Sidebar } from '../sidebar/sidebar';
 
 @Component({
   selector: 'app-ordini',
-  imports: [CommonModule, RouterLink, Sidebar],
+  imports: [CommonModule, RouterLink],
   templateUrl: './ordini.html',
   styleUrl: './ordini.css',
 })
