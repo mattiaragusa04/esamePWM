@@ -14,7 +14,7 @@
     <div class="row g-0">
       <!-- Colonna Sinistra: Immagine Prodotto -->
       <div class="col-md-6 bg-light d-flex flex-column justify-content-center align-items-center p-4 p-lg-5 border-end">
-        <img [src]="prodotto.immagine" class="img-fluid rounded-4 shadow-sm mb-4" alt="{{ prodotto.nome }}" (error)="handleImageError($event)" style="max-height: 500px; object-fit: contain;">
+        <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="img-fluid rounded-4 shadow-sm mb-4" alt="{{ prodotto.nome }}" (error)="handleImageError($event)" style="max-height: 500px; object-fit: contain;">
         <div class="badge bg-info text-white px-3 py-2 rounded-pill fs-6 shadow-sm">{{ prodotto.categoria_nome }}</div>
       </div>
 
