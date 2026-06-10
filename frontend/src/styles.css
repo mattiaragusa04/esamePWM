@@ -187,12 +187,21 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 999px;
   padding: 0.25rem 0.9rem;
   font-size: 0.85rem;
+  color: var(--text-secondary) !important;
+  border-color: var(--text-secondary) !important;
+  background-color: transparent !important;
 }
 .condition-toggle .active-condition,
 .condition-toggle .btn.active-condition {
-  background: var(--main-color);
-  color: white;
-  border-color: var(--main-color);
+  background: var(--main-color) !important;
+  color: white !important;
+  border-color: var(--main-color) !important;
+}
+
+.condition-toggle .btn:hover:not(.active-condition) {
+  background-color: var(--text-secondary) !important;
+  color: white !important;
+  border-color: var(--text-secondary) !important;
 }
 
 /* Aggiunge un piccolo spazio tra i bottoni "Nuovo" e "Usato" */

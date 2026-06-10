@@ -118,7 +118,7 @@
           <div class="card-body text-center d-flex flex-column justify-content-between">
             <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
             <div class="mb-2">
-              <div class="condition-toggle btn-group btn-group-sm" role="group" aria-label="Condizione prodotto">
+              <div class="condition-toggle d-flex justify-content-center" role="group" aria-label="Condizione prodotto">
               <button type="button" class="btn btn-outline-secondary" [class.active-condition]="!prezzoCondizione || prezzoCondizione[prodotto.id] !== 'Usato'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
               <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione && prezzoCondizione[prodotto.id] === 'Usato'" (click)="setCondizione(prodotto.id, 'Usato')">Usato</button>
               </div>
