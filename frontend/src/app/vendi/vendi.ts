@@ -27,7 +27,7 @@ export interface Prodotto {
   templateUrl: './vendi.html',
   styleUrl: './vendi.css',
 })
-export class VendiComponent implements OnInit, OnDestroy {
+export class Vendi implements OnInit, OnDestroy {
   prodotti: Prodotto[] = [];
   prodottiFiltrati: Prodotto[] = [];
   isLoading: boolean = false;
