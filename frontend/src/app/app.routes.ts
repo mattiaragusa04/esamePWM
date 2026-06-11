@@ -14,7 +14,7 @@ import { Pagamento } from './pagamento/pagamento';
 import { PreferitiComponent } from './preferiti/preferiti';
 import { Indirizzi } from './indirizzi/indirizzi';
 import { VendiProdottoDetailComponent } from './vendi-prodotto-detail/vendi-prodotto-detail';
-import { VendiComponent } from './vendi/vendi';
+import { Vendi } from './vendi/vendi';
 import { ProfiloLayoutComponent } from './profilo-layout/profilo-layout.component';
 import { Vendite } from './vendite/vendite';
 import { AdminLayout } from './admin-layout/admin-layout';
@@ -37,7 +37,7 @@ export const routes: Routes = [
     { path: 'ricerca', component: Ricerca },
     { path: 'pagamento', component: Pagamento },
     { path: 'preferiti', component: PreferitiComponent },
-    { path: 'vendi', component: VendiComponent },
+    { path: 'vendi', component: Vendi },
     { path: 'vendi/:id', component: VendiProdottoDetailComponent },
     { path: 'profilo',
         component: ProfiloLayoutComponent,
