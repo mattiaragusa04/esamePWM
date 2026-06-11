@@ -5,7 +5,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
-router.post('/password-reset', authControllers.passwordReset);
+router.post('/password-reset', authController.passwordReset);
 
 // rotta per ottenere tutti gli utenti
 router.get("/utenti", authController.getAllUsers);
