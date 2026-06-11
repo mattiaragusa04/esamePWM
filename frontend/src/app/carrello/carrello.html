@@ -50,6 +50,11 @@
                   {{ (item.condizione === 'Usato' ? (item.prezzoUnitarioVendita * 0.75) : item.prezzoUnitarioVendita) | currency:'EUR' }}
                 </span>
               </p>
+              <!-- Badge stato giacenza dinamico -->
+              <div class="giacenza-badge mt-2" [ngClass]="'giacenza-' + statoGiacenza(item).livello">
+                <i class="bi" [ngClass]="statoGiacenza(item).icona"></i>
+                <span>{{ statoGiacenza(item).testo }}</span>
+              </div>
             </div>
 
             <!-- Selettore Quantità -->

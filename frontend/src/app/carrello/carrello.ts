@@ -65,6 +65,30 @@ export class Carrello implements OnInit, OnDestroy {
     await this.carrelloService.svuotaCarrello();
   }
 
+  /**
+   * Restituisce lo stato della disponibilità in base ai pezzi rimasti
+   * (giacenza totale - quantità già nel carrello).
+   *   > 20  → verde "Disponibilità immediata"
+   *   11-20 → giallo "Solo X pezzi rimasti"
+   *   1-10  → rosso "Ultimi X pezzi!"
+   *   = 0   → esaurito "Esaurito"
+   */
+  statoGiacenza(item: any): { livello: 'ok' | 'warning' | 'danger' | 'out'; testo: string; icona: string } {
+    const giacenza = item.giacenza ?? 0;
+    const rimasti = Math.max(0, giacenza - (item.quantita ?? 0));
+
+    if (rimasti === 0) {
+      return { livello: 'out', testo: 'Esaurito', icona: 'bi-emoji-dizzy-fill' };
+    }
+    if (rimasti <= 10) {
+      return { livello: 'danger', testo: `Ultimi ${rimasti} pezzi!`, icona: 'bi-exclamation-octagon-fill' };
+    }
+    if (rimasti <= 20) {
+      return { livello: 'warning', testo: `Solo ${rimasti} pezzi rimasti`, icona: 'bi-exclamation-triangle-fill' };
+    }
+    return { livello: 'ok', testo: 'Disponibilità immediata', icona: 'bi-check-circle-fill' };
+  }
+
   procediAlPagamento() {
     const token = localStorage.getItem('token');
     if (!token) {
