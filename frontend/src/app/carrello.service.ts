@@ -88,7 +88,16 @@ export class CarrelloService {
           await this.refreshCart();
           return true;
         }
-      } catch (e) { console.error(e); }
+        // Errore lato server (giacenza insufficiente o altro)
+        const errData = await response.json().catch(() => ({}));
+        this.toast.error(errData.error || 'Impossibile aggiungere il prodotto.');
+        await this.refreshCart();
+        return false;
+      } catch (e) {
+        console.error(e);
+        this.toast.error('Errore di connessione.');
+        return false;
+      }
     } else {
       // OSPITE: Persistenza su localStorage
       let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
@@ -116,6 +125,13 @@ export class CarrelloService {
     if (!isPlatformBrowser(this.platformId)) return false;
     if (nuovaQuantita < 1) return false;
 
+    // Controllo di giacenza lato client (feedback immediato)
+    const giacenza = item.giacenza;
+    if (typeof giacenza === 'number' && nuovaQuantita > giacenza) {
+      this.toast.error(`Giacenza massima raggiunta (${giacenza} pezzi disponibili).`);
+      return false;
+    }
+
     const token = localStorage.getItem('token');
     const prodottoId = item.id || item.prodotto_id;
 
@@ -139,8 +155,9 @@ export class CarrelloService {
           body: JSON.stringify({ prodottoId, quantita: nuovaQuantita, condizione: item.condizione })
         });
         if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
           await this.refreshCart(); // rollback
-          this.toast.error('Errore aggiornamento carrello.');
+          this.toast.error(errData.error || 'Errore aggiornamento carrello.');
           return false;
         }
         return true;
