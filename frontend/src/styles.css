@@ -268,6 +268,22 @@ h1, h2, h3, h4, h5, h6 {
   margin-right: 0.5rem; 
 }
 
+/* Barra rossa obliqua e oscuramento per pulsante carrello disabilitato su Retrogaming */
+.retro-slash {
+  position: relative;
+  overflow: hidden;
+  opacity: 0.4 !important; /* Oscura il tasto */
+  cursor: not-allowed !important;
+}
+
+.retro-slash::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to top right, transparent calc(50% - 2px), #dc3545 calc(50% - 1.5px), #dc3545 calc(50% + 1.5px), transparent calc(50% + 2px));
+  pointer-events: none;
+}
+
 /* Stili e animazioni per la Sidebar del Profilo */
 .sidebar-container {
   background: var(--card-bg);
@@ -484,4 +500,14 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 1;
   transform: translateY(5px);
   pointer-events: auto;
+}
+
+/* Animazione per il filtraggio e ricaricamento dei prodotti */
+.filter-animation {
+  animation: fadeInFilter 0.4s ease-out;
+}
+
+@keyframes fadeInFilter {
+  0% { opacity: 0; transform: scale(0.98) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }

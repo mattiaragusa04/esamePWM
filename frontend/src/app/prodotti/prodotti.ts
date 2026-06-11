@@ -35,6 +35,7 @@ export class Prodotti implements OnInit, OnDestroy {
   prodottiFiltrati: Prodotto[] = [];
   filtroAttivo: string = 'Tutti';
   isLoading: boolean = false;
+  isAnimating: boolean = false;
   errorMessage: string = '';
   preferiti: number[] = [];
 
@@ -111,7 +112,11 @@ export class Prodotti implements OnInit, OnDestroy {
         const data = await response.json();
         this.prodotti = data.map((p: Prodotto) => {
           if (p.condizione === 'Usata') p.condizione = 'Usato'; // Normalizza in caso di refusi nel DB
-          this.prezzoCondizione[p.id] = (p.condizione as 'Nuovo' | 'Usato') || 'Nuovo';
+          if (this.isRetrogaming(p)) {
+            this.prezzoCondizione[p.id] = 'Usato';
+          } else {
+            this.prezzoCondizione[p.id] = 'Nuovo';
+          }
           return p;
         });
         this.prodottiFiltrati = [...this.prodotti];
@@ -137,26 +142,27 @@ export class Prodotti implements OnInit, OnDestroy {
         { nome: 'PS4', keywords: ['ps4', 'playstation 4'], immagineUrl: 'http://localhost:3000/public/immagini/console/ps4_pro.png', fallbackUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/87/PlayStation_4_logo_and_wordmark.svg' },
         { nome: 'Nintendo Switch', keywords: ['switch', 'nintendo'], immagineUrl: 'http://localhost:3000/public/immagini/console/nintendo_switch.png', fallbackUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/5d/Nintendo_Switch_Logo.svg' },
         { nome: 'Xbox', keywords: ['xbox'], immagineUrl: 'http://localhost:3000/public/immagini/console/xbox_one_x.png', fallbackUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/XBOX_logo_2012.svg' },
-        { nome: 'Retrogaming', keywords: ['playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3', 'retrò', 'retrogaming'], immagineUrl: 'http://localhost:3000/public/immagini/console/trasferimento (11).jpg', fallbackUrl: 'https://it.wikipedia.org/wiki/PlayStation#/media/File:PSX-Console-wController.png' }
+        { nome: 'Retrogaming', keywords: ['playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3'], immagineUrl: 'http://localhost:3000/public/immagini/console/trasferimento (11).jpg', fallbackUrl: 'https://it.wikipedia.org/wiki/PlayStation#/media/File:PSX-Console-wController.png' }
       ];
     } else if (cat === 'videogiochi') {
       this.sottoCategorie = [
-        { nome: 'Azione', keywords: ['azione', 'action', 'gta', 'spider', 'the last of us', 'god of war', 'assassin', 'bloodborne', 'red dead', 'cyberpunk', 'elden ring'], iconaBootstrap: 'bi-fire text-danger' },
-        { nome: 'Avventura', keywords: ['avventura', 'adventure', 'zelda', 'mario', 'tomb raider', 'uncharted', 'horizon', 'minecraft', 'crash', 'spyro', 'pokemon'], iconaBootstrap: 'bi-map text-success' },
-        { nome: 'Sport', keywords: ['sport', 'calcio', 'fifa', 'pes', 'fc 24', 'nba', 'gran turismo', 'racing', 'f1', 'motogp', 'wwe', 'tennis'], iconaBootstrap: 'bi-trophy text-warning' },
-        { nome: 'Sparatutto', keywords: ['sparatutto', 'shooter', 'call of duty', 'battlefield', 'halo', 'doom', 'destiny', 'overwatch', 'gears', 'far cry'], iconaBootstrap: 'bi-bullseye text-primary' }
+        { nome: 'Azione', keywords: ['gta', 'theft', 'spider', 'god of war', 'far cry', 'farcry', 'assassin', 'bloodborne', 'red dead', 'cyberpunk', 'elden ring'], iconaBootstrap: 'bi-fire text-danger' },
+        { nome: 'Avventura', keywords: ['zelda', 'mario', 'tomb raider', 'uncharted', 'horizon', 'minecraft', 'ratchet', 'clank', 'the last of us', 'crash', 'spyro', 'pokemon'], iconaBootstrap: 'bi-map text-success' },
+        { nome: 'Sport', keywords: ['calcio', 'fifa', 'pes', 'fc 24', 'fc 26', 'ea sports', 'nba', 'gran turismo', 'need for speed', 'racing', 'f1', 'motogp', 'wwe', 'tennis'], iconaBootstrap: 'bi-trophy text-warning' },
+        { nome: 'Sparatutto', keywords: ['call of duty', 'black ops', 'battlefield', 'halo', 'doom', 'destiny', 'overwatch', 'gears'], iconaBootstrap: 'bi-bullseye text-primary' }
       ];
     } else if (cat === 'accessori') {
       this.sottoCategorie = [
-        { nome: 'Controller', keywords: ['controller', 'pad', 'joypad', 'dualshock', 'dualsense', 'remote'], iconaBootstrap: 'bi-controller text-dark' },
-        { nome: 'Cuffie', keywords: ['cuffie', 'headset', 'auricolari', 'earbuds'], iconaBootstrap: 'bi-headset text-info' },
-        { nome: 'Tastiere', keywords: ['tastier', 'keyboard'], iconaBootstrap: 'bi-keyboard text-secondary' },
-        { nome: 'Mouse', keywords: ['mouse', 'mice'], iconaBootstrap: 'bi-mouse text-primary' }
+        { nome: 'Cover e Custodie', keywords: ['cover', 'custodi', 'case', 'protezion', 'bumper'], iconaBootstrap: 'bi-shield-fill text-info' },
+        { nome: 'Cavi e Adattatori', keywords: ['cavo', 'adattatore', 'hdmi', 'usb'], iconaBootstrap: 'bi-usb-drive text-secondary' },
+        { nome: 'Ricarica', keywords: ['caricabatterie', 'alimentatore', 'ricarica', 'power'], iconaBootstrap: 'bi-battery-charging text-success' }
       ];
     } else if (cat === 'elettronica') {
       this.sottoCategorie = [
         { nome: 'Smartwatch', keywords: ['smartwatch', 'orologio', 'apple watch', 'galaxy watch', 'band'], iconaBootstrap: 'bi-smartwatch text-dark' },
-        { nome: 'Cover', keywords: ['cover', 'custodi', 'pellicol', 'case', 'protezion'], iconaBootstrap: 'bi-shield-fill text-info' }
+        { nome: 'Cuffie e Audio', keywords: ['cuffie', 'auricolari', 'headset', 'earbuds', 'audio', 'jbl', 'razer'], iconaBootstrap: 'bi-headset text-info' },
+        { nome: 'Tastiere e Mouse', keywords: ['tastier', 'keyboard', 'mouse', 'mice', 'logitech'], iconaBootstrap: 'bi-pc-display text-primary' },
+        { nome: 'Accessori Gaming', keywords: ['camera', 'webcam', 'microfono', 'streaming'], iconaBootstrap: 'bi-camera-video text-danger' }
       ];
     } else {
       this.sottoCategorie = [];
@@ -169,21 +175,35 @@ export class Prodotti implements OnInit, OnDestroy {
     }
   }
 
+  isRetrogaming(prodotto: Prodotto): boolean {
+    const nomeLower = prodotto.nome.toLowerCase();
+    const retroKeywords = ['playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3'];
+    return retroKeywords.some(kw => nomeLower.includes(kw));
+  }
+
   getSottoCategoria(prodotto: Prodotto): string | null {
     // Se il prodotto possiede già il campo 'genere' assegnato dal database (es. Videogiochi), lo restituiamo direttamente
-    if (prodotto.genere) return prodotto.genere;
+    if (prodotto.genere) return prodotto.genere.trim();
 
     if (!this.sottoCategorie || this.sottoCategorie.length === 0) return null;
     
     const nomeLower = prodotto.nome.toLowerCase();
     const descLower = prodotto.descrizione ? prodotto.descrizione.toLowerCase() : '';
 
+    // REGOLA 1: Identificazione prioritaria ed esclusiva delle console Retrogaming
+    if (this.isRetrogaming(prodotto)) {
+      // È una console Retrogaming. Nascondiamo il badge della categoria per mostrare solo "Usato".
+      return null;
+    }
+
+    // REGOLA 2: Se non è Retrogaming, cerca le altre sottocategorie
     for (const sub of this.sottoCategorie) {
+      // Salta la categoria 'Retrogaming' perché già gestita (e per evitare false-positive)
+      if (sub.nome === 'Retrogaming') continue;
+
       if (sub.keywords) {
-        for (const kw of sub.keywords) {
-          if (nomeLower.includes(kw) || descLower.includes(kw)) {
-            return sub.nome;
-          }
+        if (sub.keywords.some((kw: string) => nomeLower.includes(kw) || descLower.includes(kw))) {
+          return sub.nome;
         }
       } else {
         const f = sub.nome.toLowerCase();
@@ -205,10 +225,15 @@ export class Prodotti implements OnInit, OnDestroy {
 
   impostaFiltro(filtro: string) {
     this.filtroAttivo = filtro;
+    this.isAnimating = true; // Attiva la classe CSS dell'animazione
     this.applicaFiltriAvanzati();
+    
+    setTimeout(() => {
+      this.isAnimating = false; // Rimuove la classe una volta finita l'animazione
+    }, 400); 
   }
 
-  applicaFiltriAvanzati() {
+  applicaFiltriAvanzati(resetPaginazione: boolean = true) {
     let result = [...this.prodotti];
 
     // 1. Filtro per Sottocategoria (Azione, PS5, Sport, etc.)
@@ -216,9 +241,12 @@ export class Prodotti implements OnInit, OnDestroy {
       const subCat = this.sottoCategorie.find(s => s.nome === this.filtroAttivo);
       if (subCat && subCat.keywords) {
         result = result.filter(p => {
-          // Controllo sul genere reale fornito dal DB
-          if (p.genere && p.genere.toLowerCase() === subCat.nome.toLowerCase()) return true;
+          // Se il prodotto ha un genere definito nel DB, usiamo ESCLUSIVAMENTE quello per evitare falsi positivi
+          if (p.genere) {
+            return p.genere.trim().toLowerCase() === subCat.nome.toLowerCase();
+          }
 
+          // Fallback per i prodotti senza genere (es. Accessori, Console, Elettronica)
           const n = p.nome.toLowerCase();
           const d = p.descrizione ? p.descrizione.toLowerCase() : '';
           return subCat.keywords.some((kw: string) => n.includes(kw) || d.includes(kw));
@@ -256,34 +284,49 @@ export class Prodotti implements OnInit, OnDestroy {
     }
 
     this.prodottiFiltrati = result;
-    this.paginaCorrente = 1; // Ritorna alla prima pagina quando cambia un filtro
+    if (resetPaginazione) {
+      this.paginaCorrente = 1; // Ritorna alla prima pagina solo quando cambia un vero filtro
+    }
   }
 
 
   setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
     const prodotto = this.prodotti.find(p => p.id === prodId);
-    // Impedisce di selezionare "Nuovo" per i prodotti che nascono solo come "Usato" (es. retro-console)
-    if (prodotto && prodotto.condizione === 'Usato' && cond === 'Nuovo') {
+    
+    // Impedisce di selezionare "Nuovo" SOLO per i veri prodotti vintage (Retrogaming)
+    if (prodotto && cond === 'Nuovo' && this.isRetrogaming(prodotto)) {
+      alert("Questo prodotto vintage è disponibile solo in condizione Usato.");
       return; 
     }
+
     this.prezzoCondizione[prodId] = cond;
-    this.applicaFiltriAvanzati(); // Ricalcola i filtri per ri-ordinare se il prezzo cambia
+    this.applicaFiltriAvanzati(false); // Ricalcola i prezzi MA senza resettare la pagina
   }
 
   getPrezzoVisualizzato(p: Prodotto): number {
     const cond = this.prezzoCondizione[p.id] || 'Nuovo';
     
-    // Se il prodotto nel database è nativamente "Usato", il suo prezzo base è già corretto
-    if (p.condizione === 'Usato') {
+    const isRetro = this.isRetrogaming(p);
+
+    // Se è un prodotto vintage, il prezzo rimane fisso a prescindere
+    if (isRetro) {
       return p.prezzoUnitarioVendita;
     }
 
+    if (p.condizione === 'Usato') {
+      // Se nel DB è 'Usato' ma l'utente seleziona 'Nuovo', calcoliamo il prezzo pieno senza sconto (+33.33%)
+      if (cond === 'Nuovo') {
+        return Math.round((p.prezzoUnitarioVendita / 0.75) * 100) / 100;
+      }
+      return p.prezzoUnitarioVendita;
+    }
+
+    // Se nel DB è 'Nuovo' ma l'utente seleziona 'Usato', applichiamo sconto del 25%
     if (cond === 'Usato') {
-      // Applichiamo uno sconto del 25% sul prezzo di vendita per l'usato
       return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
     }
+    
     return p.prezzoUnitarioVendita;
-
   }
 
   caricaPreferiti() {

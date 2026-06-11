@@ -74,8 +74,11 @@ export class DettagliProdotto implements OnInit, OnDestroy {
       if (response.ok) {
         const data = await response.json();
         this.prodotto = data;
-        // Inizializza la condizione a 'Nuovo' per default
-        this.prezzoCondizione = 'Nuovo'; 
+        if (this.prodotto && this.isRetrogaming(this.prodotto)) {
+          this.prezzoCondizione = 'Usato';
+        } else {
+          this.prezzoCondizione = 'Nuovo'; 
+        }
         console.log('Prodotto caricato:', this.prodotto);
       } else {
         this.errorMessage = 'Errore nel recupero del prodotto.';
@@ -87,6 +90,12 @@ export class DettagliProdotto implements OnInit, OnDestroy {
       this.isLoading = false;
       this.cdr.detectChanges();
     }
+  }
+
+  isRetrogaming(prodotto: Prodotto): boolean {
+    const nomeLower = prodotto.nome.toLowerCase();
+    const retroKeywords = ['playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3'];
+    return retroKeywords.some(kw => nomeLower.includes(kw));
   }
 
   caricaPreferiti() {
@@ -127,10 +136,22 @@ export class DettagliProdotto implements OnInit, OnDestroy {
 
   getPrezzoVisualizzato(): number {
     if (!this.prodotto) return 0;
+    
+    if (this.isRetrogaming(this.prodotto)) {
+      return Number(this.prodotto.prezzoUnitarioVendita);
+    }
+
+    if (this.prodotto.condizione === 'Usato') {
+      if (this.prezzoCondizione === 'Nuovo') {
+        return Math.round((Number(this.prodotto.prezzoUnitarioVendita) / 0.75) * 100) / 100;
+      }
+      return Number(this.prodotto.prezzoUnitarioVendita);
+    }
+
     if (this.prezzoCondizione === 'Usato') {
-      // Applichiamo uno sconto del 25% sul prezzo di vendita per l'usato
       return Math.round((Number(this.prodotto.prezzoUnitarioVendita) * 0.75) * 100) / 100;
     }
+    
     return Number(this.prodotto.prezzoUnitarioVendita);
   }
 

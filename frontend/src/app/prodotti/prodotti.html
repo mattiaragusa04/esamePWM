@@ -99,7 +99,7 @@
         <h4>Nessun prodotto corrisponde ai filtri selezionati.</h4>
       </div>
 
-      <div class="row" *ngIf="prodottiFiltrati.length > 0">
+      <div class="row" *ngIf="prodottiFiltrati.length > 0" [class.filter-animation]="isAnimating">
         <div class="col-md-6 col-lg-4 mb-4" *ngFor="let prodotto of getProdottiPaginati()">
           <div class="card h-100 shadow-lg product-card position-relative">
             <!-- Pulsante Preferiti -->
@@ -118,22 +118,25 @@
 
               <div class="mb-2">
                 <div class="condition-toggle btn-group btn-group-sm" role="group" aria-label="Condizione prodotto">
-                  <button type="button" class="btn btn-outline-secondary" [class.active-condition]="!prezzoCondizione || prezzoCondizione[prodotto.id] !== 'Usato'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
+                  <button *ngIf="!isRetrogaming(prodotto)" type="button" class="btn btn-outline-secondary" [class.active-condition]="!prezzoCondizione || prezzoCondizione[prodotto.id] !== 'Usato'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
                   <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione && prezzoCondizione[prodotto.id] === 'Usato'" (click)="setCondizione(prodotto.id, 'Usato')">Usato</button>
                 </div>
               </div>
               <p class="text-info font-weight-bold mb-3 fs-5">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
               
               <!-- Indicatore Disponibilità -->
-              <div class="mb-3">
-                <span class="badge rounded-pill" [ngClass]="prodotto.giacenza > 0 ? 'bg-success' : 'bg-danger'">
-                  {{ prodotto.giacenza > 0 ? 'Disponibilità Immediata' : 'Esaurito' }}
+              <div class="mb-3" *ngIf="prodotto.giacenza > 0">
+                <span class="badge rounded-pill bg-success">
+                  Disponibilità Immediata
                 </span>
               </div>
 
               <div class="d-flex flex-column align-items-center gap-2">
                 <a class="btn btn-info rounded-pill w-100" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
-                <button type="button" class="btn btn-outline-info rounded-pill w-100" (click)="aggiungiAlCarrello(prodotto)" [disabled]="prodotto.giacenza <= 0">Aggiungi al Carrello</button>
+                <button type="button" class="btn btn-outline-info rounded-pill w-100" [ngClass]="{'retro-slash': prodotto.giacenza <= 0}" (click)="aggiungiAlCarrello(prodotto)" [disabled]="prodotto.giacenza <= 0">Aggiungi al Carrello</button>
+                <div *ngIf="prodotto.giacenza <= 0" class="text-danger fw-bold small mt-1">
+                  Prodotto esaurito
+                </div>
               </div>
             </div>
           </div>
