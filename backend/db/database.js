@@ -80,14 +80,18 @@ CREATE TABLE if not exists carrello (
     utente_id INTEGER UNIQUE,
     FOREIGN KEY (utente_id) REFERENCES utente(id)
 );
-CREATE TABLE if not exists contiene (
+-- ATTENZIONE: Questo cancellerà i dati attuali della tabella contiene
+DROP TABLE IF EXISTS contiene;
+CREATE TABLE contiene (
     carrello_id INTEGER,
     prodotto_id INTEGER,
-    quantita INTEGER NOT NULL,
-    PRIMARY KEY (carrello_id, prodotto_id),
+    condizione TEXT NOT NULL,
+    quantita INTEGER,
+    PRIMARY KEY (carrello_id, prodotto_id, condizione),
     FOREIGN KEY (carrello_id) REFERENCES carrello(id),
     FOREIGN KEY (prodotto_id) REFERENCES prodotto(id)
 );
+
 CREATE TABLE IF NOT EXISTS carta_di_credito (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     utente_id INTEGER,

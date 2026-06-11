@@ -153,7 +153,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
           alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
         } else {
           const errorData = await response.json();
-          console.error("Dettagli errore backend:", errorData);
+          console.error("Dettagli errore backend:", JSON.stringify(errorData, null, 2));
           alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
         }
       } catch (error) {

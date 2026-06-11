@@ -3,8 +3,8 @@ const carrelloModel = require('../models/carrelloModel');
 exports.addToCart = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { prodottoId, quantita } = req.body;
-        const item = await carrelloModel.addItem(userId, prodottoId, quantita);
+        const { prodottoId, quantita, condizione } = req.body;
+        const item = await carrelloModel.addItem(userId, prodottoId, quantita, condizione);
         res.json(item);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -14,8 +14,8 @@ exports.addToCart = async (req, res) => {
 exports.removeFromCart = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { prodottoId } = req.body;
-        const item = await carrelloModel.removeItem(userId, prodottoId);
+        const { prodottoId, condizione } = req.body;
+        const item = await carrelloModel.removeItem(userId, prodottoId, condizione);
         res.json(item);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -25,8 +25,8 @@ exports.removeFromCart = async (req, res) => {
 exports.updateCartItem = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { prodottoId, quantita } = req.body;
-        const item = await carrelloModel.updateItem(userId, prodottoId, quantita);
+        const { prodottoId, quantita, condizione } = req.body;
+        const item = await carrelloModel.updateItem(userId, prodottoId, quantita, condizione);
         res.json(item);
     } catch (err) {
         res.status(500).json({ error: err.message });
