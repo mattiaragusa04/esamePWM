@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
+import { ToastService } from '../shared/toast.service';
 @Component({
   selector: 'app-register',
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
@@ -17,7 +18,7 @@ export class Register {
   registerForm: FormGroup;
   mostraPassword: boolean = false;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private toast: ToastService) {
     // Definiamo la struttura del nostro form e le validazioni
     this.registerForm = this.fb.group({
       nome: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ\s']+$/)]],
@@ -37,7 +38,7 @@ export class Register {
     this.errorMessage = '';
     
     if (this.registerForm.get('password')?.value !== this.registerForm.get('confermaPassword')?.value) {
-      alert("Le password non coincidono. Riprova.");
+      this.toast.warning("Le password non coincidono. Riprova.");
       this.errorMessage = 'Le password non coincidono.';
       return; // Interrompe l'invio se le password non coincidono
     }
@@ -71,23 +72,23 @@ export class Register {
             // Salva il token e i dati dell'utente (sessione attiva)
             localStorage.setItem('token', loginData.token);
             localStorage.setItem('user', JSON.stringify(loginData.utente || loginData));
-            alert('Benvenuto in PAwerUP! Registrazione completata.');
+            this.toast.success('Benvenuto in PAwerUP! Registrazione completata.');
             this.router.navigate(['/']);
           } else {
-            alert('Registrazione completata. Effettua il login.');
+            this.toast.success('Registrazione completata. Effettua il login.');
             this.router.navigate(['/login']);
           }
         } else if (response.status === 400) {
           const errorData = await response.json();
           // Legge 'message' inviato per gli errori 400, o 'error' inviato per gli errori 500
-          alert(errorData.message || errorData.error);
+          this.toast.error(errorData.message || errorData.error);
           this.errorMessage = errorData.message || errorData.error;
         } else {
-          alert('Errore durante la registrazione. Riprova.');
+          this.toast.error('Errore durante la registrazione. Riprova.');
         }
       } catch (error) {
         console.error('Errore di connessione:', error);
-        alert('Impossibile contattare il server.');
+        this.toast.error('Impossibile contattare il server.');
       }
     } else {
       console.log('Attenzione: il form contiene errori di validazione.');

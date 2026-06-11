@@ -3,10 +3,12 @@ import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { CarrelloService } from './carrello.service';
+import { ToastService } from './shared/toast.service';
+import { ToastContainerComponent } from './shared/toast-container.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule],
+  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule, ToastContainerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -22,7 +24,7 @@ export class App implements OnInit {
   @ViewChild('searchInput') searchInput!: ElementRef;
 
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object, public carrelloService: CarrelloService) {
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object, public carrelloService: CarrelloService, private toast: ToastService) {
     // Questo permette alla navbar di aggiornarsi automaticamente
     // ogni volta che si cambia pagina (ad esempio dopo la registrazione)
     this.router.events.subscribe((event) => {
@@ -67,7 +69,7 @@ export class App implements OnInit {
     localStorage.removeItem('user');
     //Aggiorna lo stato locale e reindirizza alla home
     this.utenteLoggato = null;
-    alert('Logout effettuato con successo!');
+    this.toast.success('Logout effettuato con successo!');
     this.router.navigate(['/']);
   }
 

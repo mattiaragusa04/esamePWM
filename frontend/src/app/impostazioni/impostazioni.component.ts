@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
+import { ToastService } from '../shared/toast.service';
 @Component({
   selector: 'app-impostazioni',
   standalone: true,
@@ -29,8 +30,7 @@ export class ImpostazioniComponent implements OnInit {
   constructor(
     private router: Router,
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+    @Inject(PLATFORM_ID) private platformId: Object, private toast: ToastService) {}
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -89,13 +89,13 @@ export class ImpostazioniComponent implements OnInit {
     localStorage.setItem('notifOrdini', String(this.notificheOrdini));
     localStorage.setItem('notifVendite', String(this.notificheVendite));
 
-    alert('Preferenze di notifica salvate.');
+    this.toast.success('Preferenze di notifica salvate.');
   }
 
   // === RESET PASSWORD ===
   richiediResetPassword(): void {
     if (!this.emailResetPassword) {
-      alert('Inserisci un indirizzo email.');
+      this.toast.warning('Inserisci un indirizzo email.');
       return;
     }
 
@@ -104,11 +104,11 @@ export class ImpostazioniComponent implements OnInit {
     this.http.post('/api/auth/password-reset', { email: this.emailResetPassword })
       .subscribe({
         next: () => {
-          alert('Se l’email è corretta, riceverai a breve le istruzioni per il reset.');
+          this.toast.info('Se l’email è corretta, riceverai a breve le istruzioni per il reset.');
           this.isRichiestaResetInCorso = false;
         },
         error: () => {
-          alert('Si è verificato un problema durante la richiesta di reset.');
+          this.toast.error('Si è verificato un problema durante la richiesta di reset.');
           this.isRichiestaResetInCorso = false;
         }
       });
@@ -125,7 +125,7 @@ export class ImpostazioniComponent implements OnInit {
     localStorage.removeItem('notifVendite');
     localStorage.removeItem('isSidebarCollapsed');
 
-    alert('Impostazioni e stato pagina ripristinati ai valori iniziali.');
+    this.toast.success('Impostazioni e stato pagina ripristinati ai valori iniziali.');
     window.location.reload();
   }
 
@@ -139,7 +139,7 @@ export class ImpostazioniComponent implements OnInit {
       if (token) {
         localStorage.setItem('token', token);
       }
-      alert('Dati locali cancellati.');
+      this.toast.success('Dati locali cancellati.');
       this.router.navigate(['/']);
     }
   }
@@ -150,7 +150,7 @@ export class ImpostazioniComponent implements OnInit {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     }
-    alert('Logout effettuato con successo!');
+    this.toast.success('Logout effettuato con successo!');
     this.router.navigate(['/']);
   }
 }

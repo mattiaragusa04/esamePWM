@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
+import { ToastService } from '../shared/toast.service';
 @Component({
   selector: 'app-sidebar',
   imports: [CommonModule, RouterLink, RouterLinkActive],
@@ -23,8 +24,7 @@ export class Sidebar implements OnInit {
 
   constructor(
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+    @Inject(PLATFORM_ID) private platformId: Object, private toast: ToastService) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -58,7 +58,7 @@ export class Sidebar implements OnInit {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     }
-    alert('Logout effettuato con successo!');
+    this.toast.success('Logout effettuato con successo!');
     this.router.navigate(['/']);
   }
 }

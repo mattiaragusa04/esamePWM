@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { ToastService } from '../shared/toast.service';
 @Component({
   selector: 'app-contattaci',
   standalone: true,
@@ -24,7 +25,7 @@ export class Contattaci {
     { id: 'altro', label: 'Altro' }
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private toast: ToastService) {
     this.contactForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(2)]],
       indirizzo: ['', Validators.required],
@@ -52,7 +53,7 @@ export class Contattaci {
   async onSubmit() {
     this.submitted = true;
     if (this.contactForm.invalid) {
-      alert('Per favore compila tutti i campi obbligatori correttamente.');
+      this.toast.warning('Per favore compila tutti i campi obbligatori correttamente.');
       return;
     }
 
@@ -86,11 +87,11 @@ export class Contattaci {
           this.successMessage = '';
         }, 5000);
       } else {
-        alert("Errore durante l'invio. Riprova più tardi.");
+        this.toast.error("Errore durante l'invio. Riprova più tardi.");
       }
     } catch (error) {
       console.error('Errore:', error);
-      alert('Impossibile connettersi al server.');
+      this.toast.error('Impossibile connettersi al server.');
     }
   }
 }

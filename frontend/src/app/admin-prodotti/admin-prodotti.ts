@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../shared/toast.service';
 @Component({
   selector: 'app-admin-prodotti',
   standalone: true,
@@ -30,8 +31,7 @@ export class AdminProdotti implements OnInit {
   };
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef, private toast: ToastService) {}
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -144,7 +144,7 @@ export class AdminProdotti implements OnInit {
 
   gestisciFile(file: File) {
     if (!file.type.match(/image\/*/)) {
-      alert("Formato non supportato. Carica un'immagine.");
+      this.toast.error("Formato non supportato. Carica un'immagine.");
       return;
     }
     this.fileImmagine = file;

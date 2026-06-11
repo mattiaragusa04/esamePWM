@@ -2,6 +2,7 @@ import { Component, OnDestroy, ViewChild, ElementRef, AfterViewInit, Inject, PLA
 import { RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { CarrelloService } from '../carrello.service';
+import { ToastService } from '../shared/toast.service';
 interface Particle {
   x: number;
   y: number;
@@ -35,7 +36,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   public prezzoCondizione: { [id: number]: 'Nuovo' | 'Usato' } = {};
   public preferiti: number[] = [];
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef, public carrelloService: CarrelloService) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef, public carrelloService: CarrelloService, private toast: ToastService) {}
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -126,7 +127,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizioneScelta, prezzoFinale);
 
     if (successo) {
-      alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale}!`);
+      this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale}!`);
     }
   }
 

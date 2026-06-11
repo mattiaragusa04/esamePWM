@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../shared/toast.service';
 
 @Component({
   selector: 'app-admin-ordini',
@@ -16,7 +17,8 @@ export class AdminOrdini implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
@@ -77,13 +79,13 @@ export class AdminOrdini implements OnInit {
         if (ordine) {
           ordine.statoOrdine = nuovoStato;
         }
-        alert('Stato ordine aggiornato con successo');
+        this.toast.success('Stato ordine aggiornato con successo');
       } else {
-        alert('Errore nell\'aggiornamento dello stato');
+        this.toast.error('Errore nell\'aggiornamento dello stato');
       }
     } catch (error) {
       console.error('Errore di rete:', error);
-      alert('Impossibile contattare il server.');
+      this.toast.error('Impossibile contattare il server.');
     }
   }
 }

@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
+import { ToastService } from '../shared/toast.service';
 // Interfaccia per il prodotto, riutilizzata dal componente Prodotti
 export interface Prodotto {
   id: number;
@@ -157,8 +158,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router
-  ) {}
+    private router: Router, private toast: ToastService) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -253,13 +253,13 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
 
   async submitSellOffer() {
     if (!this.prodotto || this.estimatedPrice <= 0) {
-      alert('Impossibile inviare l\'offerta. Prodotto non valido o prezzo stimato non calcolabile.');
+      this.toast.error('Impossibile inviare l\'offerta. Prodotto non valido o prezzo stimato non calcolabile.');
       return;
     }
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Devi effettuare l\'accesso o registrarti per poter inviare una proposta di vendita.');
+      this.toast.warning('Devi effettuare l\'accesso o registrarti per poter inviare una proposta di vendita.');
       localStorage.setItem('redirectDopoLogin', this.router.url);
       this.router.navigate(['/login']);
       return;
@@ -287,16 +287,16 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       });
 
       if (response.ok) {
-        alert(`Offerta di vendita per "${this.prodotto.nome}" inviata con successo! Prezzo stimato: €${this.estimatedPrice.toFixed(2)}. Riceverai una conferma a breve.`);
+        this.toast.success(`Offerta di vendita per "${this.prodotto.nome}" inviata con successo! Prezzo stimato: €${this.estimatedPrice.toFixed(2)}. Riceverai una conferma a breve.`);
         this.router.navigate(['/']); // Reindirizza alla home o a una pagina "le mie offerte"
       } else {
         const errorData = await response.json();
         console.error("Dettagli errore backend (offerta di vendita):", errorData);
-        alert(`Errore nell'invio dell'offerta: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+        this.toast.error(`Errore nell'invio dell'offerta: ${errorData.error || errorData.message || 'Sconosciuto'}`);
       }
     } catch (error) {
       console.error('Errore di connessione durante l\'invio dell\'offerta:', error);
-      alert('Errore di connessione al server durante l\'invio dell\'offerta.');
+      this.toast.error('Errore di connessione al server durante l\'invio dell\'offerta.');
     }
   }
 

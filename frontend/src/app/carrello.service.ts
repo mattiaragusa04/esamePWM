@@ -2,6 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
+import { ToastService } from './shared/toast.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +15,7 @@ export class CarrelloService {
   cartTotal$ = this.cartTotalSource.asObservable();
   cartItems$ = this.cartItemsSource.asObservable();
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private toast: ToastService) {
     if (isPlatformBrowser(this.platformId)) {
       this.refreshCart();
     }
@@ -59,7 +60,7 @@ export class CarrelloService {
     const quantitaTotaleRichiesta = (itemEsistente ? itemEsistente.quantita : 0) + quantita;
 
     if (quantitaTotaleRichiesta > prodotto.giacenza) {
-      alert(`Azione non consentita: giacenza massima raggiunta (${prodotto.giacenza} pezzi).`);
+      this.toast.error(`Azione non consentita: giacenza massima raggiunta (${prodotto.giacenza} pezzi).`);
       return;
     }
 

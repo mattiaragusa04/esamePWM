@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CarrelloService } from '../carrello.service';
 
+import { ToastService } from '../shared/toast.service';
 // Validatore Custom per la scadenza
 export function scadenzaValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
@@ -68,8 +69,7 @@ export class Pagamento implements OnInit {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private fb: FormBuilder,
-    private carrelloService: CarrelloService
-  ) {
+    private carrelloService: CarrelloService, private toast: ToastService) {
     // Inizializziamo il Reactive Form
     this.checkoutForm = this.fb.group({
       spedizione: this.fb.group({
@@ -209,13 +209,13 @@ export class Pagamento implements OnInit {
 
   async confermaEPaga() {
     if (this.checkoutForm.invalid) {
-      alert('Per favore, compila tutti i campi del form correttamente.');
+      this.toast.warning('Per favore, compila tutti i campi del form correttamente.');
       return;
     }
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Sessione scaduta, effettua nuovamente il login.');
+      this.toast.info('Sessione scaduta, effettua nuovamente il login.');
       this.router.navigate(['/login']);
       return;
     }
@@ -288,17 +288,17 @@ export class Pagamento implements OnInit {
       });
 
       if (response.ok) {
-        alert('Ordine creato con successo! Grazie per aver acquistato su PAwerUP!');
+        this.toast.success('Ordine creato con successo! Grazie per aver acquistato su PAwerUP!');
         this.carrelloService.refreshCart(); // Svuota il counter dopo il pagamento
         this.router.navigate(['/profilo/ordini']); // Reindirizza allo storico ordini
       } else {
         const errorData = await response.json();
         console.error("Dettagli errore backend (Ordine):", errorData);
-        alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+        this.toast.error(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
       }
     } catch (error) {
       console.error('Errore checkout:', error);
-      alert(`Impossibile completare il pagamento.\n\nDettaglio errore: ${error}`);
+      this.toast.error(`Impossibile completare il pagamento.\n\nDettaglio errore: ${error}`);
     } finally {
       this.isProcessing = false;
       this.cdr.detectChanges();

@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angu
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from "@angular/router";
 
+import { ToastService } from '../shared/toast.service';
 @Component({
   selector: 'app-carrello',
   imports: [CommonModule, RouterLink],
@@ -16,8 +17,7 @@ export class Carrello implements OnInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
-    private router: Router
-  ) {}
+    private router: Router, private toast: ToastService) {}
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -129,13 +129,13 @@ export class Carrello implements OnInit {
   procediAlPagamento() {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Devi effettuare l\'accesso per completare l\'ordine.');
+      this.toast.warning('Devi effettuare l\'accesso per completare l\'ordine.');
       this.router.navigate(['/login']);
       return;
     }
 
     if (this.carrello.length === 0) {
-      alert('Il carrello è vuoto!');
+      this.toast.warning('Il carrello è vuoto!');
       return;
     }
 

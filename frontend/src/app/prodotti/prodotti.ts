@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CarrelloService } from '../carrello.service';
 
+import { ToastService } from '../shared/toast.service';
 // Interfaccia allineata al database SQLite
 export interface Prodotto {
   id: number;
@@ -65,8 +66,7 @@ export class Prodotti implements OnInit, OnDestroy {
     private route: ActivatedRoute, 
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-    public carrelloService: CarrelloService
-  ) {}
+    public carrelloService: CarrelloService, private toast: ToastService) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -285,7 +285,7 @@ export class Prodotti implements OnInit, OnDestroy {
     const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizioneScelta, prezzoFinale);
     
     if (successo) {
-      alert(`${prodotto.nome} aggiunto correttamente!`);
+      this.toast.success(`${prodotto.nome} aggiunto correttamente!`);
     }
   }
 
