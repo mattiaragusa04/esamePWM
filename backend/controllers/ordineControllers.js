@@ -38,14 +38,13 @@ exports.createOrdine = async (req, res) => {
             });
         }
 
-        // 1. Creare l'ordine principale (Salviamo i punti ma non li accreditiamo all'utente)
+        // 1. Creare l'ordine principale
         const newOrdine = await Ordine.create({
             carta_id,
             indirizzo_id,
             utente_id: userId,
             data: new Date().toISOString(),
             totale: totaleOrdine,
-            punti_fedelta: puntiFedeltaTotali,
             statoOrdine: 'In elaborazione'
         });
 
@@ -73,9 +72,16 @@ exports.updateStatoOrdine = async (req, res) => {
         const ordine = await Ordine.findById(ordineId);
         if (!ordine) return res.status(404).json({ error: "Ordine non trovato" });
 
+        let puntiDaAccreditare = 0;
+
         // Se lo stato precedente non era 'Consegnato' e quello nuovo lo è, accreditiamo i punti
         if (ordine.statoOrdine !== 'Consegnato' && nuovoStato === 'Consegnato') {
-            const puntiDaAccreditare = ordine.punti_fedelta || 0;
+            // Calcoliamo i punti fedeltà recuperando i prodotti dell'ordine
+            const prodottiOrdine = await Ordine.getProdottiByOrdineId(ordineId);
+            for (const p of prodottiOrdine) {
+                puntiDaAccreditare += (p.puntiFedelta || 0) * p.quantita;
+            }
+
             if (puntiDaAccreditare > 0) {
                 await User.updatePuntiFedelta(ordine.utente_id, puntiDaAccreditare);
                 console.log(`Accreditati ${puntiDaAccreditare} punti all'utente ${ordine.utente_id}`);
@@ -87,7 +93,7 @@ exports.updateStatoOrdine = async (req, res) => {
 
         res.json({ 
             message: `Stato ordine aggiornato a ${nuovoStato}`, 
-            puntiAccreditati: nuovoStato === 'Consegnato' ? ordine.punti_fedelta : 0 
+            puntiAccreditati: puntiDaAccreditare 
         });
 
     } catch (error) {

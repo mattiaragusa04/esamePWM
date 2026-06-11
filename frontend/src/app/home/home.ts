@@ -1,7 +1,7 @@
 import { Component, OnDestroy, ViewChild, ElementRef, AfterViewInit, Inject, PLATFORM_ID, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-
+import { CarrelloService } from '../carrello.service';
 interface Particle {
   x: number;
   y: number;
@@ -35,7 +35,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   public prezzoCondizione: { [id: number]: 'Nuovo' | 'Usato' } = {};
   public preferiti: number[] = [];
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef, public carrelloService: CarrelloService) {}
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -119,41 +119,13 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async aggiungiAlCarrello(prodotto: any) {
-    const token = localStorage.getItem('token');
     const condizioneScelta = this.prezzoCondizione[prodotto.id] || 'Nuovo';
     const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
 
-    if (token) {
-      // Utente loggato: invia al database
-      try {
-        const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: prezzoFinale })
-        });
-        if (response.ok) {
-          alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale}!`);
-        } else {
-          const errorData = await response.json();
-          console.error("Dettagli errore backend:", errorData);
-          alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
-        }
-      } catch (error) {
-        console.error('Errore di connessione:', error);
-      }
-    } else {
-      // Utente ospite: salva in localStorage
-      let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
-      const index = carrello.findIndex((item: any) => (item.id || item.prodotto_id) === prodotto.id && item.condizione === condizioneScelta);
-      if (index > -1) {
-        carrello[index].quantita += 1;
-      } else {
-        carrello.push({ ...prodotto, quantita: 1, condizione: condizioneScelta, prezzoSelezionato: prezzoFinale });
-      }
-      localStorage.setItem('carrello', JSON.stringify(carrello));
+    // Delega tutta la logica (ospite/loggato e aggiornamento navbar) al CarrelloService
+    const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizioneScelta, prezzoFinale);
+
+    if (successo) {
       alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale}!`);
     }
   }
