@@ -1,9 +1,11 @@
+/* Contenitore pagina */
 .settings-page {
   max-width: 980px;
   margin: 0 auto;
   padding: 2rem 1rem 3rem;
 }
 
+/* Guscio principale */
 .settings-shell {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(15, 23, 42, 0.06);
@@ -13,6 +15,7 @@
   backdrop-filter: blur(12px);
 }
 
+/* Header */
 .settings-header {
   padding: 2rem 2rem 1.5rem;
   background: linear-gradient(135deg, rgba(248, 109, 237, 0.10), rgba(255, 255, 255, 0));
@@ -50,16 +53,24 @@
   line-height: 1.6;
 }
 
+/* Contenuto */
 .settings-content {
-  padding: 1.25rem 2rem 2rem;
+  padding: 1.5rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
+/* Ogni sezione è un box unico */
 .settings-section {
   background: #fff;
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: 1.15rem;
   padding: 1.35rem 1.4rem;
-  margin-bottom: 1rem;
+  min-height: 180px; /* stessa altezza minima per tutti i box */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -69,6 +80,7 @@
   transform: translateY(-1px);
 }
 
+/* Header sezione + testo */
 .settings-section-head {
   display: flex;
   align-items: flex-start;
@@ -91,6 +103,7 @@
   line-height: 1.55;
 }
 
+/* Zona contenuto sezione */
 .settings-inline {
   display: flex;
   align-items: center;
@@ -99,12 +112,18 @@
   flex-wrap: wrap;
 }
 
+.settings-section-body {
+  margin-top: 0.5rem;
+}
+
+/* Azioni */
 .settings-actions {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
 
+/* Pulsanti */
 .settings-btn {
   border-radius: 999px;
   padding: 0.7rem 1.2rem;
@@ -150,12 +169,7 @@
   color: #a61b1b;
 }
 
-.settings-divider {
-  height: 1px;
-  background: rgba(15, 23, 42, 0.06);
-  margin: 1rem 0;
-}
-
+/* Label e note */
 .settings-label {
   font-size: 0.78rem;
   font-weight: 700;
@@ -171,6 +185,7 @@
   margin: 0;
 }
 
+/* Toggle tema */
 .settings-toggle-group {
   display: flex;
   gap: 0.6rem;
@@ -187,6 +202,7 @@
   color: #fff !important;
 }
 
+/* Box notifiche */
 .settings-muted-box {
   background: #f8fafc;
   border: 1px solid rgba(15, 23, 42, 0.06);
@@ -194,18 +210,18 @@
   padding: 1rem 1.1rem;
 }
 
-.settings-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(248, 109, 237, 0.08);
-  color: var(--main-color);
-  flex: 0 0 auto;
+.settings-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
+/* Ripristino password layout */
+.settings-reset-password-actions {
+  align-items: stretch;
+}
+
+/* Responsivo */
 @media (max-width: 768px) {
   .settings-page {
     padding: 1rem 0.75rem 2rem;
@@ -221,6 +237,7 @@
 
   .settings-section {
     padding: 1.15rem;
+    min-height: auto;
   }
 
   .settings-section-head,
@@ -230,7 +247,8 @@
   }
 
   .settings-actions,
-  .settings-toggle-group {
+  .settings-toggle-group,
+  .settings-reset-password-actions {
     width: 100%;
   }
 

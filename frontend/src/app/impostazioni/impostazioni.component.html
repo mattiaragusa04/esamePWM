@@ -13,6 +13,8 @@
     </div>
 
     <div class="settings-content">
+
+      <!-- ASPETTO -->
       <div class="settings-section">
         <div class="settings-section-head">
           <div>
@@ -26,90 +28,98 @@
         <div class="settings-inline">
           <div>
             <div class="settings-label">Tema attivo</div>
-            <p class="settings-note">La preferenza viene salvata localmente sul dispositivo.</p>
+            <p class="settings-note">
+              La preferenza viene salvata localmente sul dispositivo.
+            </p>
           </div>
 
           <div class="settings-actions settings-toggle-group">
-          <button
-            type="button"
-            class="btn settings-btn settings-btn-outline"
-            [ngClass]="{ 'active': tema === 'light' }"
-            (click)="cambiaTema('light')">
-            Tema chiaro
-          </button>
+            <button
+              type="button"
+              class="btn settings-btn settings-btn-outline"
+              [ngClass]="{ 'active': tema === 'light' }"
+              (click)="cambiaTema('light')">
+              Tema chiaro
+            </button>
 
-          <button
-            type="button"
-            class="btn settings-btn settings-btn-outline"
-            [ngClass]="{ 'active': tema === 'dark' }"
-            (click)="cambiaTema('dark')">
-            Tema scuro
-          </button>
+            <button
+              type="button"
+              class="btn settings-btn settings-btn-outline"
+              [ngClass]="{ 'active': tema === 'dark' }"
+              (click)="cambiaTema('dark')">
+              Tema scuro
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICHE -->
+      <div class="settings-section">
+        <div class="settings-section-head">
+          <div>
+            <h2 class="settings-section-title">Notifiche</h2>
+            <p class="settings-section-desc">
+              Scegli quali comunicazioni ricevere via email.
+            </p>
+          </div>
         </div>
 
-      <div class="settings-section">
-  <div class="settings-section-head">
-    <div>
-      <h2 class="settings-section-title">Notifiche</h2>
-      <p class="settings-section-desc">
-        Scegli quali comunicazioni ricevere via email.
-      </p>
-    </div>
-  </div>
+        <div class="settings-section-body">
+          <div class="settings-muted-box">
+            <div class="mb-3">
+              <div class="settings-label">Tipologie di notifiche</div>
+              <p class="settings-note mb-0">
+                Puoi modificare queste preferenze in qualsiasi momento. Alcune email di servizio potrebbero rimanere attive.
+              </p>
+            </div>
 
-  <div class="settings-muted-box">
-    <div class="mb-3">
-      <div class="settings-label">Tipologie di notifiche</div>
-      <p class="settings-note mb-0">
-        Puoi modificare queste preferenze in qualsiasi momento. Alcune email di servizio potrebbero rimanere attive.
-      </p>
-    </div>
+            <div class="settings-checkbox-group">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="notifPromozioni"
+                  [(ngModel)]="notifichePromozioni">
+                <label class="form-check-label" for="notifPromozioni">
+                  Ricevi email per promozioni e offerte
+                </label>
+              </div>
 
-    <div class="settings-checkbox-group">
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          id="notifPromozioni"
-          [(ngModel)]="notifichePromozioni">
-        <label class="form-check-label" for="notifPromozioni">
-          Ricevi email per promozioni e offerte
-        </label>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="notifOrdini"
+                  [(ngModel)]="notificheOrdini">
+                <label class="form-check-label" for="notifOrdini">
+                  Ricevi email per aggiornamenti sui tuoi ordini
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="notifVendite"
+                  [(ngModel)]="notificheVendite">
+                <label class="form-check-label" for="notifVendite">
+                  Ricevi email per notifiche sulle tue vendite
+                </label>
+              </div>
+
+              <div class="mt-2">
+                <button
+                  class="btn settings-btn settings-btn-primary btn-sm"
+                  (click)="salvaImpostazioniNotifiche()">
+                  Salva preferenze notifiche
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          id="notifOrdini"
-          [(ngModel)]="notificheOrdini">
-        <label class="form-check-label" for="notifOrdini">
-          Ricevi email per aggiornamenti sui tuoi ordini
-        </label>
-      </div>
-
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          id="notifVendite"
-          [(ngModel)]="notificheVendite">
-        <label class="form-check-label" for="notifVendite">
-          Ricevi email per notifiche sulle tue vendite
-        </label>
-      </div>
-
-      <div class="mt-2">
-        <button
-          class="btn settings-btn settings-btn-primary btn-sm"
-          (click)="salvaImpostazioniNotifiche()">
-          Salva preferenze notifiche
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
+      <!-- RIPRISTINO UI -->
       <div class="settings-section">
         <div class="settings-section-head">
           <div>
@@ -123,49 +133,58 @@
         <div class="settings-inline">
           <div>
             <div class="settings-label">Reset UI</div>
-            <p class="settings-note">Elimina le preferenze salvate nel browser e ricarica la pagina.</p>
+            <p class="settings-note">
+              Elimina le preferenze salvate nel browser e ricarica la pagina.
+            </p>
           </div>
 
           <div class="settings-actions">
-            <button class="btn settings-btn settings-btn-primary">Ripristina pagina</button>
+            <button
+              class="btn settings-btn settings-btn-primary"
+              (click)="ripristinaPagina()">
+              Ripristina pagina
+            </button>
           </div>
         </div>
       </div>
 
-        <div class="settings-section">
-  <div class="settings-section-head">
-    <div>
-      <h2 class="settings-section-title">Ripristino password</h2>
-      <p class="settings-section-desc">
-        Richiedi il reset della password del tuo account PAwerUP.
-      </p>
-    </div>
-  </div>
+      <!-- RIPRISTINO PASSWORD -->
+      <div class="settings-section">
+        <div class="settings-section-head">
+          <div>
+            <h2 class="settings-section-title">Ripristino password</h2>
+            <p class="settings-section-desc">
+              Richiedi il reset della password del tuo account PAwerUP.
+            </p>
+          </div>
+        </div>
 
-  <div class="settings-inline">
-    <div>
-      <div class="settings-label">Email account</div>
-      <p class="settings-note">
-        Inserisci l’indirizzo email con cui ti sei registrato. Riceverai istruzioni per creare una nuova password.
-      </p>
-    </div>
+        <div class="settings-inline">
+          <div>
+            <div class="settings-label">Email account</div>
+            <p class="settings-note">
+              Inserisci l’indirizzo email con cui ti sei registrato. Riceverai istruzioni per creare una nuova password.
+            </p>
+          </div>
 
-    <div class="settings-actions flex-column flex-sm-row">
-      <input
-        type="email"
-        class="form-control mb-2 mb-sm-0"
-        placeholder="nome@esempio.it"
-        [(ngModel)]="emailResetPassword" />
+          <div class="settings-actions flex-column flex-sm-row settings-reset-password-actions">
+            <input
+              type="email"
+              class="form-control mb-2 mb-sm-0"
+              placeholder="nome@esempio.it"
+              [(ngModel)]="emailResetPassword" />
 
-      <button
-        class="btn settings-btn settings-btn-primary"
-        (click)="richiediResetPassword()">
-        Invia richiesta
-      </button>
-    </div>
-  </div>
-</div>
+            <button
+              class="btn settings-btn settings-btn-primary"
+              (click)="richiediResetPassword()"
+              [disabled]="isRichiestaResetInCorso">
+              Invia richiesta
+            </button>
+          </div>
+        </div>
+      </div>
 
+      <!-- SESSIONE -->
       <div class="settings-section">
         <div class="settings-section-head">
           <div>
@@ -176,10 +195,19 @@
           </div>
         </div>
 
-        <div class="settings-actions">
-          <button class="btn settings-btn settings-btn-danger">Logout</button>
-        </div>
-      </div>
+        <div class="settings-inline">
+          <div>
+            <div class="settings-label">Logout</div>
+            <p class="settings-note">
+              Termina la sessione corrente. Potrai accedere nuovamente in qualsiasi momento.
+            </p>
+          </div>
+
+          <button class="btn btn-outline-danger rounded-pill font-weight-bold d-flex align-items-center justify-content-center" (click)="logout()" title="Logout">
+  <i class="bi bi-box-arrow-left pe-none me-2" style="font-size: 1.2rem;"></i>
+  <span class="text-nowrap">Logout</span>
+</button>
+
     </div>
   </div>
 </div>
