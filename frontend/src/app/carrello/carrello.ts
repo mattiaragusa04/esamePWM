@@ -56,6 +56,11 @@ export class Carrello implements OnInit {
     const nuovaQuantita = item.quantita + delta;
     if (nuovaQuantita < 1) return; // Se la quantità scende a 0, impediamo l'azione
 
+    // Aggiornamento immediato dell'interfaccia (Optimistic Update)
+    const quantitaPrecedente = item.quantita;
+    item.quantita = nuovaQuantita;
+    this.calcolaTotale();
+
     const token = localStorage.getItem('token');
     if (token) {
       try {
@@ -67,17 +72,21 @@ export class Carrello implements OnInit {
           },
           body: JSON.stringify({ prodottoId: item.id || item.prodotto_id, quantita: nuovaQuantita, condizione: item.condizione })
         });
-        if (response.ok) {
-          item.quantita = nuovaQuantita;
+        
+        if (!response.ok) {
+          // Rollback in caso di errore del server
+          item.quantita = quantitaPrecedente;
+          this.calcolaTotale();
+          console.error('Errore aggiornamento carrello sul server');
         }
       } catch (error) {
+        item.quantita = quantitaPrecedente;
+        this.calcolaTotale();
         console.error('Errore aggiornamento:', error);
       }
-    } else {
-      item.quantita = nuovaQuantita;
+    } else if (!token) {
       localStorage.setItem('carrello', JSON.stringify(this.carrello));
     }
-    this.calcolaTotale();
   }
 
   async rimuoviOggetto(item: any) {
