@@ -1,6 +1,10 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from "@angular/router";
+import { Subscription } from 'rxjs';
+
+import { ToastService } from '../shared/toast.service';
+import { CarrelloService } from '../carrello.service';
 
 @Component({
   selector: 'app-carrello',
@@ -8,126 +12,102 @@ import { Router, RouterLink } from "@angular/router";
   templateUrl: './carrello.html',
   styleUrl: './carrello.css',
 })
-export class Carrello implements OnInit {
+export class Carrello implements OnInit, OnDestroy {
   carrello: any[] = [];
   isLoading: boolean = true;
   totale: number = 0;
 
+  private itemsSub?: Subscription;
+  private totalSub?: Subscription;
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private toast: ToastService,
+    public carrelloService: CarrelloService
   ) {}
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.caricaCarrello();
-    }
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    // Sottoscrizione reattiva al carrello: ogni cambio aggiorna la UI
+    this.itemsSub = this.carrelloService.cartItems$.subscribe(items => {
+      this.carrello = items;
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    });
+    this.totalSub = this.carrelloService.cartTotal$.subscribe(total => {
+      this.totale = total;
+      this.cdr.detectChanges();
+    });
+
+    // Forza il refresh dal backend/localStorage all'apertura della pagina
+    this.carrelloService.refreshCart();
   }
 
-  async caricaCarrello() {
-    this.isLoading = true;
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      try {
-        const response = await fetch('http://localhost:3000/api/carrello', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (response.ok) {
-          this.carrello = await response.json();
-        } else {
-          console.error('Errore nel caricamento del carrello');
-        }
-      } catch (error) {
-        console.error('Errore di rete:', error);
-      }
-    } else {
-      // Fallback per l'utente non registrato
-      this.carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
-    }
-
-    this.calcolaTotale();
-    this.isLoading = false;
-    this.cdr.detectChanges();
+  ngOnDestroy() {
+    this.itemsSub?.unsubscribe();
+    this.totalSub?.unsubscribe();
   }
 
   async aggiornaQuantita(item: any, delta: number) {
     const nuovaQuantita = item.quantita + delta;
-    if (nuovaQuantita < 1) return; // Se la quantità scende a 0, impediamo l'azione
-
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const response = await fetch('http://localhost:3000/api/carrello/aggiorna', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ prodottoId: item.id || item.prodotto_id, quantita: nuovaQuantita, condizione: item.condizione })
-        });
-        if (response.ok) {
-          item.quantita = nuovaQuantita;
-        }
-      } catch (error) {
-        console.error('Errore aggiornamento:', error);
-      }
-    } else {
-      item.quantita = nuovaQuantita;
-      localStorage.setItem('carrello', JSON.stringify(this.carrello));
-    }
-    this.calcolaTotale();
+    if (nuovaQuantita < 1) return;
+    await this.carrelloService.aggiornaQuantita(item, nuovaQuantita);
   }
 
   async rimuoviOggetto(item: any) {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        await fetch('http://localhost:3000/api/carrello/rimuovi', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ prodottoId: item.id || item.prodotto_id, condizione: item.condizione })
-        });
-      } catch (error) {
-        console.error('Errore rimozione:', error);
-      }
-    }
-    // Rimuove visivamente l'oggetto in entrambi i casi (e da local storage se ospite)
-    this.carrello = this.carrello.filter(i => i !== item);
-    if (!token) localStorage.setItem('carrello', JSON.stringify(this.carrello));
-    this.calcolaTotale();
+    await this.carrelloService.rimuoviProdotto(item);
   }
 
   async svuotaCarrello() {
-    const token = localStorage.getItem('token');
-    if (token) await fetch('http://localhost:3000/api/carrello/svuota', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }});
-    this.carrello = [];
-    if (!token) localStorage.removeItem('carrello');
-    this.calcolaTotale();
+    await this.carrelloService.svuotaCarrello();
   }
 
+<<<<<<< HEAD
   calcolaTotale() {
     this.totale = this.carrello.reduce((acc, item) => {
       // Il prezzoUnitarioVendita / prezzo è già il prezzo finale determinato all'aggiunta
       const prezzoEffettivo = item.prezzo || item.prezzoUnitarioVendita;
       return acc + (Number(prezzoEffettivo) * item.quantita);
     }, 0);
+=======
+  /**
+   * Restituisce lo stato della disponibilità in base ai pezzi rimasti
+   * (giacenza totale - quantità già nel carrello).
+   *   > 20  → verde "Disponibilità immediata"
+   *   11-20 → giallo "Solo X pezzi rimasti"
+   *   1-10  → rosso "Ultimi X pezzi!"
+   *   = 0   → esaurito "Esaurito"
+   */
+  statoGiacenza(item: any): { livello: 'ok' | 'warning' | 'danger' | 'out'; testo: string; icona: string } {
+    const giacenza = item.giacenza ?? 0;
+    const rimasti = Math.max(0, giacenza - (item.quantita ?? 0));
+
+    if (rimasti === 0) {
+      return { livello: 'out', testo: 'Esaurito', icona: 'bi-emoji-dizzy-fill' };
+    }
+    if (rimasti <= 10) {
+      return { livello: 'danger', testo: `Ultimi ${rimasti} pezzi!`, icona: 'bi-exclamation-octagon-fill' };
+    }
+    if (rimasti <= 20) {
+      return { livello: 'warning', testo: `Solo ${rimasti} pezzi rimasti`, icona: 'bi-exclamation-triangle-fill' };
+    }
+    return { livello: 'ok', testo: 'Disponibilità immediata', icona: 'bi-check-circle-fill' };
+>>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
   }
 
   procediAlPagamento() {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Devi effettuare l\'accesso per completare l\'ordine.');
+      this.toast.warning('Devi effettuare l\'accesso per completare l\'ordine.');
       this.router.navigate(['/login']);
       return;
     }
 
     if (this.carrello.length === 0) {
-      alert('Il carrello è vuoto!');
+      this.toast.warning('Il carrello è vuoto!');
       return;
     }
 

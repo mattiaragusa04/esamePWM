@@ -30,7 +30,9 @@
                         <th scope="col">Nome</th>
                         <th scope="col">Prezzo</th>
                         <th scope="col">Giacenza</th>
+                        <th scope="col">Condizione</th>
                         <th scope="col" class="text-end pe-4">Azioni</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -45,6 +47,7 @@
                         <td class="font-weight-bold">{{ prodotto.nome }}</td>
                         <td class="text-danger font-weight-bold">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</td>
                         <td><span class="badge rounded-pill" [ngClass]="prodotto.giacenza > 0 ? 'bg-success' : 'bg-danger'">{{ prodotto.giacenza }}</span></td>
+                        <td><span class="badge rounded-pill" [ngClass]="prodotto.condizione === 'Nuovo' ? 'bg-primary' : 'bg-warning'">{{ prodotto.condizione }}</span></td>
                         <td class="text-end pe-4">
                             <button class="btn btn-sm btn-outline-secondary rounded-circle me-2" title="Modifica" (click)="apriModale(prodotto)"><i class="bi bi-pencil-fill"></i></button>
                             <button class="btn btn-sm btn-outline-danger rounded-circle" title="Elimina" (click)="eliminaProdotto(prodotto.id)"><i class="bi bi-trash-fill"></i></button>

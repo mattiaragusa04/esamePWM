@@ -7,7 +7,8 @@ exports.addToCart = async (req, res) => {
         const item = await carrelloModel.addItem(userId, prodottoId, quantita, condizione);
         res.json(item);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        const status = err.status || 500;
+        res.status(status).json({ error: err.message, disponibili: err.disponibili, giacenza: err.giacenza });
     }
 };
 
@@ -29,7 +30,8 @@ exports.updateCartItem = async (req, res) => {
         const item = await carrelloModel.updateItem(userId, prodottoId, quantita, condizione);
         res.json(item);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        const status = err.status || 500;
+        res.status(status).json({ error: err.message, giacenza: err.giacenza });
     }
 };
 

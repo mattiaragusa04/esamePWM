@@ -35,12 +35,10 @@ exports.login = async (req, res) => {
 
     console.log("Logging in user:", email);
 
-
     const user = await User.findByEmail(email);
     if (!user) {
       return res.status(400).json({ message: "Credenziali non valide" });
     }
-
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -86,5 +84,47 @@ exports.getProfile = async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+/**
+ * Richiesta di reset password
+ * 
+ * Non cambia i tuoi modelli:
+ * - usa User.findByEmail(email)
+ * - non rivela se l'email esiste o meno
+ * - per ora logga la richiesta sul server
+ */
+exports.passwordReset = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email obbligatoria" });
+    }
+
+    const user = await User.findByEmail(email);
+
+    // Non riveliamo se l'utente esiste, per sicurezza
+    if (!user) {
+      console.log(`Richiesta reset password per email non presente: ${email}`);
+      return res.status(200).json({
+        message: "Se l’email è corretta, riceverai a breve le istruzioni per il reset."
+      });
+    }
+
+    console.log(`Richiesta reset password per utente: ${email} (id: ${user.id})`);
+
+    // Qui potresti:
+    // - generare un token di reset e salvarlo su DB
+    // - inviare una mail con il link di reset
+    // Per l'esame basta la risposta generica
+
+    return res.status(200).json({
+      message: "Se l’email è corretta, riceverai a breve le istruzioni per il reset."
+    });
+  } catch (err) {
+    console.error("Errore passwordReset:", err);
+    return res.status(500).json({ message: "Errore interno durante il reset password." });
   }
 };

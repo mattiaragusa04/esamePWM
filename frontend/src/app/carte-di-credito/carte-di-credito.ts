@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angu
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
+import { ToastService } from '../shared/toast.service';
 // Riutilizziamo lo stesso validatore custom presente in pagamento.ts
 export function scadenzaValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
@@ -52,8 +53,7 @@ export class CarteDiCredito implements OnInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
-    private fb: FormBuilder
-  ) {
+    private fb: FormBuilder, private toast: ToastService) {
     this.cartaForm = this.fb.group({
       nomeCarta: ['', Validators.required],
       numeroCarta: ['', [Validators.required, luhnValidator]],
@@ -145,7 +145,7 @@ export class CarteDiCredito implements OnInit {
   // --- Salvataggio ---
   async salvaCarta() {
     if (this.cartaForm.invalid) {
-      alert("Compila correttamente tutti i campi.");
+      this.toast.warning("Compila correttamente tutti i campi.");
       return;
     }
 
@@ -163,16 +163,16 @@ export class CarteDiCredito implements OnInit {
       });
 
       if (response.ok) {
-        alert("Carta salvata con successo!");
+        this.toast.success("Carta salvata con successo!");
         this.toggleForm();
         this.caricaCarte(); // Ricarica la lista aggiornata
       } else {
         const errData = await response.json();
-        alert(`Errore: ${errData.error || errData.message}`);
+        this.toast.error(`Errore: ${errData.error || errData.message}`);
       }
     } catch (error) {
       console.error(error);
-      alert("Errore di connessione al server.");
+      this.toast.error("Errore di connessione al server.");
     } finally {
       this.isSaving = false;
       this.cdr.detectChanges();
@@ -194,7 +194,7 @@ export class CarteDiCredito implements OnInit {
       this.cdr.detectChanges();
     } else {
       const errData = await response.json();
-      alert(errData.error || "Impossibile eliminare la carta.");
+      this.toast.error(errData.error || "Impossibile eliminare la carta.");
     }
   }
 }

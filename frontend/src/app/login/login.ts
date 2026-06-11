@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { ToastService } from '../shared/toast.service';
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink],
@@ -15,7 +16,7 @@ export class Login {
   password: string = '';
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private toast: ToastService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -48,7 +49,7 @@ export class Login {
         const userToSave = data.utente || data;
         localStorage.setItem('user', JSON.stringify(userToSave));
         
-        alert('Login effettuato con successo!');
+        this.toast.success('Login effettuato con successo!');
         
         // Controlla il ruolo e reindirizza alla pagina corretta
         if (userToSave.ruolo === 'admin') {
@@ -58,7 +59,7 @@ export class Login {
         }
       } else {
         const errorData = await response.json();
-        alert(errorData.message || errorData.error);
+        this.toast.error(errorData.message || errorData.error);
         this.errorMessage = errorData.message || errorData.error;
       }
     }catch(error){

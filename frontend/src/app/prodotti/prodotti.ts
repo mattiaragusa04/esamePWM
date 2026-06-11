@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CarrelloService } from '../carrello.service';
 
+import { ToastService } from '../shared/toast.service';
 // Interfaccia allineata al database SQLite
 export interface Prodotto {
   id: number;
@@ -48,11 +49,10 @@ export class Prodotti implements OnInit, OnDestroy {
   prezzoMin: number | null = null;
   prezzoMax: number | null = null;
   disponibilita: string = '';
+  condizione: string = '';
+
 
   sottoCategorie: any[] = [];
-
-  // Stato di selezione condizione per ogni prodotto (nuovo | usato)
-  prezzoCondizione: { [id: number]: 'Nuovo' | 'Usato' } = {};
 
   // Mappatura tra il nome nella URL e l'ID della categoria nel DB
   private categoriaMap: { [key: string]: number } = {
@@ -68,8 +68,7 @@ export class Prodotti implements OnInit, OnDestroy {
     private route: ActivatedRoute, 
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-    public carrelloService: CarrelloService
-  ) {}
+    public carrelloService: CarrelloService, private toast: ToastService) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -110,6 +109,7 @@ export class Prodotti implements OnInit, OnDestroy {
       const response = await fetch(`http://localhost:3000/api/prodotti/categoria/${categoriaId}`);
       if (response.ok) {
         const data = await response.json();
+<<<<<<< HEAD
         this.prodotti = data.map((p: Prodotto) => {
           if (p.condizione === 'Usata') p.condizione = 'Usato'; // Normalizza in caso di refusi nel DB
           if (this.isRetrogaming(p)) {
@@ -119,6 +119,9 @@ export class Prodotti implements OnInit, OnDestroy {
           }
           return p;
         });
+=======
+        this.prodotti = data;
+>>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
         this.prodottiFiltrati = [...this.prodotti];
         console.log('Prodotti caricati con successo:', this.prodotti);
         this.cdr.detectChanges(); // Forza l'aggiornamento dell'HTML
@@ -220,6 +223,7 @@ export class Prodotti implements OnInit, OnDestroy {
     this.prezzoMin = null;
     this.prezzoMax = null;
     this.disponibilita = '';
+    this.condizione = '';
     this.impostaFiltro('Tutti');
   }
 
@@ -283,12 +287,18 @@ export class Prodotti implements OnInit, OnDestroy {
       result.sort((a, b) => b.nome.localeCompare(a.nome));
     }
 
+    // 5. Filtro per Condizione
+    if (this.condizione !== '') {
+      result = result.filter(p => p.condizione === this.condizione);
+    }
+    
     this.prodottiFiltrati = result;
     if (resetPaginazione) {
       this.paginaCorrente = 1; // Ritorna alla prima pagina solo quando cambia un vero filtro
     }
   }
 
+<<<<<<< HEAD
 
   setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
     const prodotto = this.prodotti.find(p => p.id === prodId);
@@ -326,6 +336,9 @@ export class Prodotti implements OnInit, OnDestroy {
       return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
     }
     
+=======
+  getPrezzoVisualizzato(p: Prodotto): number {
+>>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
     return p.prezzoUnitarioVendita;
   }
 
@@ -352,9 +365,10 @@ export class Prodotti implements OnInit, OnDestroy {
 
   async aggiungiAlCarrello(prodotto: Prodotto) {
     const token = localStorage.getItem('token');
-    const condizioneScelta = this.prezzoCondizione[prodotto.id] || 'Nuovo';
+    const condizioneScelta = prodotto.condizione;
     const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
 
+<<<<<<< HEAD
     if (token) {
       try {
         const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
@@ -391,6 +405,12 @@ export class Prodotti implements OnInit, OnDestroy {
       if (this.carrelloService && typeof (this.carrelloService as any).aggiornaCarrello === 'function') {
         (this.carrelloService as any).aggiornaCarrello();
       }
+=======
+    const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizioneScelta, prezzoFinale);
+    
+    if (successo) {
+      this.toast.success(`${prodotto.nome} aggiunto correttamente!`);
+>>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
     }
   }
 

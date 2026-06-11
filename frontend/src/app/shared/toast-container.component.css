@@ -1,0 +1,128 @@
+.toast-container {
+  position: fixed;
+  top: 90px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 2000;
+  pointer-events: none;
+  max-width: calc(100vw - 48px);
+}
+
+.toast-item {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 280px;
+  max-width: 420px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  border-left: 5px solid #999;
+  font-size: 0.95rem;
+  color: #1f1f1f;
+  animation: toast-in 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.toast-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.toast-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #333;
+}
+
+/* Varianti per tipo */
+.toast-success {
+  border-left-color: #2ecc71;
+}
+.toast-success .toast-icon {
+  color: #2ecc71;
+}
+
+.toast-error {
+  border-left-color: #e74c3c;
+}
+.toast-error .toast-icon {
+  color: #e74c3c;
+}
+
+.toast-warning {
+  border-left-color: #f5a623;
+}
+.toast-warning .toast-icon {
+  color: #f5a623;
+}
+
+.toast-info {
+  border-left-color: #d63ec9;
+}
+.toast-info .toast-icon {
+  color: #d63ec9;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Tema scuro */
+:host-context(body.theme-dark) .toast-item {
+  background: #2a2a2e;
+  color: #f1f1f1;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+:host-context(body.theme-dark) .toast-close {
+  color: #bbb;
+}
+
+:host-context(body.theme-dark) .toast-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .toast-container {
+    top: 80px;
+    right: 12px;
+    left: 12px;
+    align-items: flex-end;
+  }
+  .toast-item {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+}

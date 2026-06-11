@@ -5,9 +5,10 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
+router.post('/password-reset', authControllers.passwordReset);
 
 // rotta per ottenere tutti gli utenti
-router.get("/users", authController.getAllUsers);
+router.get("/utenti", authController.getAllUsers);
 
 // esempio route protetta
 router.get("/profilo", authMiddleware, authController.getProfile);

@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
+import { ToastService } from '../shared/toast.service';
 // Assicurati che questa interfaccia sia definita nel tuo progetto
 export interface Prodotto {
   id: number;
@@ -42,7 +43,8 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router // Inietta il Router per la navigazione
+    private router: Router, // Inietta il Router per la navigazione
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -178,15 +180,15 @@ export class DettagliProdotto implements OnInit, OnDestroy {
           body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: Number(prezzoFinale) })
         });
         if (response.ok) {
-          alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+          this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
         } else {
           const errorData = await response.json();
           console.error("Dettagli errore backend:", JSON.stringify(errorData, null, 2));
-          alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+          this.toast.error(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
         }
       } catch (error) {
         console.error('Errore di connessione:', error);
-        alert('Errore di connessione al server.');
+        this.toast.error('Errore di connessione al server.');
       }
     } else {
       // Utente ospite: salva in localStorage
@@ -209,7 +211,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
           });
         }
       localStorage.setItem('carrello', JSON.stringify(carrello));
-      alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+      this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
     }
   }
 

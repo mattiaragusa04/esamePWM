@@ -43,7 +43,7 @@ const User = {
 
   updatePuntiFedelta: (userId, puntiDaAggiungere) => {
     return new Promise((resolve, reject) => {
-      const query = `UPDATE utente SET puntiFedelta = puntiFedelta + ? WHERE id = ?`;
+      const query = `UPDATE utente SET puntiFedelta = COALESCE(puntiFedelta, 0) + ? WHERE id = ?`;
       db.run(query, [puntiDaAggiungere, userId], function (err) {
         if (err) reject(err);
         else resolve({ id: userId, changes: this.changes });

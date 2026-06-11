@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angu
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { ToastService } from '../shared/toast.service';
 @Component({
   selector: 'app-indirizzi',
   standalone: true,
@@ -19,8 +20,7 @@ export class Indirizzi implements OnInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
-    private fb: FormBuilder
-  ) {
+    private fb: FormBuilder, private toast: ToastService) {
     this.indirizzoForm = this.fb.group({
       tipo: ['Casa', Validators.required],
       via: ['', Validators.required],
@@ -70,7 +70,7 @@ export class Indirizzi implements OnInit {
   // --- Salvataggio ---
   async salvaIndirizzo() {
     if (this.indirizzoForm.invalid) {
-      alert("Compila correttamente tutti i campi.");
+      this.toast.warning("Compila correttamente tutti i campi.");
       return;
     }
 
@@ -88,16 +88,16 @@ export class Indirizzi implements OnInit {
       });
 
       if (response.ok) {
-        alert("Indirizzo salvato con successo!");
+        this.toast.success("Indirizzo salvato con successo!");
         this.toggleForm();
         this.caricaIndirizzi(); // Ricarica la lista aggiornata
       } else {
         const errData = await response.json();
-        alert(`Errore: ${errData.error || errData.message}`);
+        this.toast.error(`Errore: ${errData.error || errData.message}`);
       }
     } catch (error) {
       console.error(error);
-      alert("Errore di connessione al server.");
+      this.toast.error("Errore di connessione al server.");
     } finally {
       this.isSaving = false;
       this.cdr.detectChanges();
@@ -119,7 +119,7 @@ export class Indirizzi implements OnInit {
       this.cdr.detectChanges();
     } else {
       const errData = await response.json();
-      alert(errData.error || "Impossibile eliminare l'indirizzo.");
+      this.toast.error(errData.error || "Impossibile eliminare l'indirizzo.");
     }
   }
 }

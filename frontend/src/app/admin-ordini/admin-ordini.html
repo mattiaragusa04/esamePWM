@@ -1,0 +1,74 @@
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="font-weight-bold m-0"><i class="bi bi-box-seam text-info me-2"></i> Gestione <span class="text-info">Ordini</span></h2>
+            <p class="text-muted mt-1 mb-0">Visualizza e gestisci tutti gli ordini ricevuti da PAwerUP.</p>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="text-center my-5">
+        <div class="spinner-border text-info" role="status"></div>
+    </div>
+
+    <!-- Messaggio di errore -->
+    <div *ngIf="errorMessage" class="alert alert-danger text-center shadow-sm rounded-4 border-0">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+    </div>
+
+    <!-- Tabella Ordini -->
+    <div class="card shadow-sm border-0" style="border-radius: 1rem; overflow: hidden;" *ngIf="!isLoading && !errorMessage">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 bg-white">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th scope="col" class="ps-4">ID Ordine</th>
+                        <th scope="col">Data</th>
+                        <th scope="col">Utente (ID)</th>
+                        <th scope="col">Totale</th>
+                        <th scope="col">Indirizzo Spedizione</th>
+                        <th scope="col">Stato</th>
+                        <th scope="col" class="text-center">Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="ordini.length === 0">
+                        <td colspan="7" class="text-center py-5 text-muted">Nessun ordine trovato.</td>
+                    </tr>
+                    <tr *ngFor="let ordine of ordini">
+                        <td class="ps-4 font-weight-bold text-secondary">#{{ ordine.id }}</td>
+                        <td>{{ ordine.data | date:'short' }}</td>
+                        <td>{{ ordine.utente_id }}</td>
+                        <td class="font-weight-bold text-info">{{ ordine.totale | currency:'EUR':'symbol' }}</td>
+                        <td>
+                            <small class="text-muted d-block text-wrap" style="max-width: 250px; line-height: 1.5;">
+                                {{ ordine.indirizzo_spedizione || 'N/A' }}
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill" 
+                                  [ngClass]="{
+                                    'bg-warning text-dark': ordine.statoOrdine === 'In elaborazione',
+                                    'bg-primary': ordine.statoOrdine === 'Spedito',
+                                    'bg-success': ordine.statoOrdine === 'Consegnato',
+                                    'bg-danger': ordine.statoOrdine === 'Annullato'
+                                  }">
+                                {{ ordine.statoOrdine | uppercase }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <select class="form-select form-select-sm d-inline-block w-auto" 
+                                    [ngModel]="ordine.statoOrdine" 
+                                    (ngModelChange)="aggiornaStato(ordine.id, $event)">
+                                <option value="In elaborazione">In elaborazione</option>
+                                <option value="Spedito">Spedito</option>
+                                <option value="Consegnato">Consegnato</option>
+                                <option value="Annullato">Annullato</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

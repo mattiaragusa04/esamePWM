@@ -1,5 +1,28 @@
 const db = require("../db/database");
 
+// Helper: legge la giacenza disponibile del prodotto e la quantità già presente nel carrello dell'utente
+const getGiacenzaEQuantitaInCarrello = (userId, prodottoId, condizione) => {
+    return new Promise((res, rej) => {
+        const query = `
+            SELECT 
+                p.giacenza AS giacenza,
+                COALESCE(c.quantita, 0) AS quantitaInCarrello
+            FROM prodotto p
+            LEFT JOIN carrello car ON car.utente_id = ?
+            LEFT JOIN contiene c 
+                ON c.carrello_id = car.id 
+                AND c.prodotto_id = p.id 
+                AND c.condizione = ?
+            WHERE p.id = ?
+        `;
+        db.get(query, [userId, condizione, prodottoId], (err, row) => {
+            if (err) return rej(err);
+            if (!row) return rej(new Error('Prodotto non trovato.'));
+            res(row);
+        });
+    });
+};
+
 const Carrello = {
     findByUserId : (userId) => {
         return new Promise((res, rej) => {
@@ -16,7 +39,23 @@ const Carrello = {
             });
         });
     },
-    addItem : (userId, prodottoId, quantita, condizione) => {
+    addItem : async (userId, prodottoId, quantita, condizione) => {
+        // Controllo giacenza prima di scrivere su DB
+        const { giacenza, quantitaInCarrello } = await getGiacenzaEQuantitaInCarrello(userId, prodottoId, condizione);
+        if (quantita <= 0) {
+            const e = new Error('Quantità non valida.');
+            e.status = 400;
+            throw e;
+        }
+        if (quantitaInCarrello + quantita > giacenza) {
+            const disponibili = Math.max(0, giacenza - quantitaInCarrello);
+            const e = new Error(`Giacenza insufficiente. Disponibili: ${disponibili} pezzi (giacenza totale: ${giacenza}).`);
+            e.status = 409;
+            e.disponibili = disponibili;
+            e.giacenza = giacenza;
+            throw e;
+        }
+
         return new Promise((res, rej) => {
             const findCartQuery = `SELECT id FROM carrello WHERE utente_id = ?`;
             db.get(findCartQuery, [userId], (err, row) => {
@@ -66,7 +105,21 @@ const Carrello = {
             });
         });
     },
-    updateItem : (userId, prodottoId, quantita, condizione) => {
+    updateItem : async (userId, prodottoId, quantita, condizione) => {
+        // Controllo limiti prima di scrivere su DB
+        if (quantita < 1) {
+            const e = new Error('La quantità deve essere almeno 1.');
+            e.status = 400;
+            throw e;
+        }
+        const { giacenza } = await getGiacenzaEQuantitaInCarrello(userId, prodottoId, condizione);
+        if (quantita > giacenza) {
+            const e = new Error(`Giacenza insufficiente. Disponibili: ${giacenza} pezzi.`);
+            e.status = 409;
+            e.giacenza = giacenza;
+            throw e;
+        }
+
         return new Promise((res, rej) => {
             const query = `
                 UPDATE contiene 

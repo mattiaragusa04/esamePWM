@@ -69,8 +69,26 @@
           <input class="form-check-input" type="radio" name="disponibilita" id="dispEsaurito" value="esaurito" [(ngModel)]="disponibilita" (change)="applicaFiltriAvanzati()">
           <label class="form-check-label text-danger font-weight-bold" for="dispEsaurito">Non disponibile</label>
         </div>
-
+        
+        <!-- Condizione -->
+        <h6 class="font-weight-bold mb-2">Condizione</h6>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="condizione" id="condTutte" value="" [(ngModel)]="condizione" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-muted" for="condTutte">Tutte le condizioni</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="condizione" id="condNuovo" value="Nuovo" [(ngModel)]="condizione" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-success font-weight-bold" for="condNuovo">Nuovo</label>
+        </div>
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="radio" name="condizione" id="condUsato" value="Usato" [(ngModel)]="condizione" (change)="applicaFiltriAvanzati()">
+          <label class="form-check-label text-danger font-weight-bold" for="condUsato">Usato</label>
+        </div>
+        
         <button class="btn btn-outline-secondary rounded-pill btn-sm w-100 font-weight-bold" (click)="resetFiltri()">Resetta Filtri</button>
+        
+
+
       </div>
     </div>
 
@@ -117,10 +135,16 @@
               </div>
 
               <div class="mb-2">
+<<<<<<< HEAD
                 <div class="condition-toggle btn-group btn-group-sm" role="group" aria-label="Condizione prodotto">
                   <button *ngIf="!isRetrogaming(prodotto)" type="button" class="btn btn-outline-secondary" [class.active-condition]="!prezzoCondizione || prezzoCondizione[prodotto.id] !== 'Usato'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
                   <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione && prezzoCondizione[prodotto.id] === 'Usato'" (click)="setCondizione(prodotto.id, 'Usato')">Usato</button>
                 </div>
+=======
+                <span class="badge rounded-pill" [ngClass]="prodotto.condizione === 'Nuovo' ? 'bg-primary' : 'bg-warning text-dark'">
+                  {{ prodotto.condizione }}
+                </span>
+>>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
               </div>
               <p class="text-info font-weight-bold mb-3 fs-5">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
               
