@@ -59,4 +59,58 @@ exports.deleteProdotto = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+
+}
+
+exports.createProdotto = async (req, res) => {
+    try {
+        const prodottoData = req.body || {};
+        
+        if (Object.keys(prodottoData).length === 0) {
+            return res.status(400).json({ error: "Nessun dato fornito per il prodotto" });
+        }
+
+        // Assicuriamoci che i campi numerici inviati dal FormData vengano convertiti
+        if (prodottoData.prezzoUnitarioVendita) prodottoData.prezzoUnitarioVendita = parseFloat(prodottoData.prezzoUnitarioVendita);
+        if (prodottoData.giacenza) prodottoData.giacenza = parseInt(prodottoData.giacenza, 10);
+        if (prodottoData.categoria_id) prodottoData.categoria_id = parseInt(prodottoData.categoria_id, 10);
+
+        // Se è stata caricata un'immagine, impostiamo l'URL
+        if (req.file) {
+            prodottoData.immagine = 'http://localhost:3000/public/immagini/upload-admin/' + req.file.filename;
+        }
+        
+        const newProdotto = await prodotto.create(prodottoData);
+        res.json(newProdotto);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+exports.updateProdotto = async (req, res) => {
+    try {
+        const prodottoId = req.params.id;
+        const prodottoData = req.body || {};
+        prodottoData.id = prodottoId;
+        
+        if (Object.keys(prodottoData).length === 0) {
+            return res.status(400).json({ error: "Nessun dato fornito per l'aggiornamento" });
+        }
+
+        // Assicuriamoci che i campi numerici inviati dal FormData vengano convertiti
+        if (prodottoData.prezzoUnitarioVendita) prodottoData.prezzoUnitarioVendita = parseFloat(prodottoData.prezzoUnitarioVendita);
+        if (prodottoData.giacenza) prodottoData.giacenza = parseInt(prodottoData.giacenza, 10);
+        if (prodottoData.categoria_id) prodottoData.categoria_id = parseInt(prodottoData.categoria_id, 10);
+        if (prodottoData.pubblicatoVetrina) prodottoData.pubblicatoVetrina = parseInt(prodottoData.pubblicatoVetrina, 10);
+
+        // Se è stata caricata un'immagine nuova, impostiamo l'URL
+        if (req.file) {
+            prodottoData.immagine = 'http://localhost:3000/public/immagini/upload-admin/' + req.file.filename;
+        }
+
+        const updatedProdotto = await prodotto.update(prodottoData);
+        res.json(updatedProdotto);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 }

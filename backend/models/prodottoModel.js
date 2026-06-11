@@ -68,8 +68,55 @@ const Prodotto = {
         else resolve({ id });
       });
     });
+  },
+
+  create: (prodotto) => {
+    return new Promise((resolve, reject) => {
+      const query = `INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, genere, condizione, puntiFedelta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      
+      // Calcolo punti fedeltà (1 punto ogni 5 euro, come fatto nel seeding)
+      const puntiFedelta = Math.round((prodotto.prezzoUnitarioVendita || 0) / 5);
+
+      db.run(query, [
+        prodotto.categoria_id,
+        prodotto.nome,
+        prodotto.descrizione,
+        prodotto.giacenza || 0,
+        prodotto.immagine || '',
+        prodotto.prezzoUnitarioVendita || 0,
+        1, // pubblicatoVetrina di default a true
+        prodotto.genere || null,
+        prodotto.condizione || 'Nuovo',
+        puntiFedelta
+      ], function (err) {
+        if (err) reject(err);
+        else resolve({ id: this.lastID, ...prodotto });
+      });
+    });
+  },
+
+  update : (prodotto) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE prodotto SET categoria_id = ?, nome = ?, descrizione = ?, giacenza = ?, immagine = ?, prezzoUnitarioVendita = ?, pubblicatoVetrina = ?, genere = ?, condizione = ? WHERE id = ?`;
+      db.run(query, [
+        prodotto.categoria_id,
+        prodotto.nome,
+        prodotto.descrizione,
+        prodotto.giacenza || 0,
+        prodotto.immagine || '',
+        prodotto.prezzoUnitarioVendita || 0,
+        prodotto.pubblicatoVetrina || 0,
+        prodotto.genere || null,
+        prodotto.condizione || 'Nuovo',
+        prodotto.id
+      ], function (err) {
+        if (err) reject(err);
+        else resolve({ id: prodotto.id, ...prodotto });
+      });
+    });
   }
 };
+
 
 
 module.exports = Prodotto;
