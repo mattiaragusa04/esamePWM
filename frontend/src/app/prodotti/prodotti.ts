@@ -46,11 +46,10 @@ export class Prodotti implements OnInit, OnDestroy {
   prezzoMin: number | null = null;
   prezzoMax: number | null = null;
   disponibilita: string = '';
+  condizione: string = '';
+
 
   sottoCategorie: any[] = [];
-
-  // Stato di selezione condizione per ogni prodotto (nuovo | usato)
-  prezzoCondizione: { [id: number]: 'Nuovo' | 'Usato' } = {};
 
   // Mappatura tra il nome nella URL e l'ID della categoria nel DB
   private categoriaMap: { [key: string]: number } = {
@@ -108,10 +107,7 @@ export class Prodotti implements OnInit, OnDestroy {
       const response = await fetch(`http://localhost:3000/api/prodotti/categoria/${categoriaId}`);
       if (response.ok) {
         const data = await response.json();
-        this.prodotti = data.map((p: Prodotto) => {
-          this.prezzoCondizione[p.id] = 'Nuovo';
-          return p;
-        });
+        this.prodotti = data;
         this.prodottiFiltrati = [...this.prodotti];
         console.log('Prodotti caricati con successo:', this.prodotti);
         this.cdr.detectChanges(); // Forza l'aggiornamento dell'HTML
@@ -194,6 +190,7 @@ export class Prodotti implements OnInit, OnDestroy {
     this.prezzoMin = null;
     this.prezzoMax = null;
     this.disponibilita = '';
+    this.condizione = '';
     this.impostaFiltro('Tutti');
   }
 
@@ -246,24 +243,17 @@ export class Prodotti implements OnInit, OnDestroy {
       result.sort((a, b) => b.nome.localeCompare(a.nome));
     }
 
+    // 5. Filtro per Condizione
+    if (this.condizione !== '') {
+      result = result.filter(p => p.condizione === this.condizione);
+    }
+    
     this.prodottiFiltrati = result;
     this.paginaCorrente = 1; // Ritorna alla prima pagina quando cambia un filtro
   }
 
-
-  setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
-    this.prezzoCondizione[prodId] = cond;
-    this.applicaFiltriAvanzati(); // Ricalcola i filtri per ri-ordinare se il prezzo cambia
-  }
-
   getPrezzoVisualizzato(p: Prodotto): number {
-    const cond = this.prezzoCondizione[p.id] || 'Nuovo';
-    if (cond === 'Usato') {
-      // Applichiamo uno sconto del 25% sul prezzo di vendita per l'usato
-      return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
-    }
     return p.prezzoUnitarioVendita;
-
   }
 
   caricaPreferiti() {
@@ -289,7 +279,7 @@ export class Prodotti implements OnInit, OnDestroy {
 
   async aggiungiAlCarrello(prodotto: Prodotto) {
     const token = localStorage.getItem('token');
-    const condizioneScelta = this.prezzoCondizione[prodotto.id] || 'Nuovo';
+    const condizioneScelta = prodotto.condizione;
     const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
 
     const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizioneScelta, prezzoFinale);

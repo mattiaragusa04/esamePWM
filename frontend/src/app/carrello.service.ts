@@ -70,7 +70,7 @@ export class CarrelloService {
         const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ prodottoId: prodotto.id, quantita: quantita })
+          body: JSON.stringify({ prodottoId: prodotto.id, quantita: quantita, condizione: condizione, prezzo: prezzo })
         });
         if (response.ok) {
           await this.refreshCart();

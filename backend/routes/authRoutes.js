@@ -7,7 +7,7 @@ router.post("/register", authController.register);
 router.post("/login", authController.login);
 
 // rotta per ottenere tutti gli utenti
-router.get("/users", authController.getAllUsers);
+router.get("/utenti", authController.getAllUsers);
 
 // esempio route protetta
 router.get("/profilo", authMiddleware, authController.getProfile);

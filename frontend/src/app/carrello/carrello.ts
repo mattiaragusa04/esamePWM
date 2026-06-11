@@ -121,8 +121,8 @@ export class Carrello implements OnInit {
 
   calcolaTotale() {
     this.totale = this.carrello.reduce((acc, item) => {
-      const prezzoEffettivo = item.condizione === 'Usato' ? (item.prezzoUnitarioVendita * 0.75) : item.prezzoUnitarioVendita;
-      return acc + (prezzoEffettivo * item.quantita);
+      
+      return acc + (item.prezzoUnitarioVendita * item.quantita);
     }, 0);
   }
 

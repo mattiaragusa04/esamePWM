@@ -1,0 +1,51 @@
+<div class="container-fluid py-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="font-weight-bold m-0"><i class="bi bi-people text-danger me-2"></i> Gestione <span class="text-danger">Utenti</span></h2>
+            <p class="text-muted mt-1 mb-0">Visualizza e gestisci gli account degli utenti registrati.</p>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="text-center my-5">
+        <div class="spinner-border text-danger" role="status"></div>
+    </div>
+
+    <!-- Messaggio di errore -->
+    <div *ngIf="errorMessage" class="alert alert-danger text-center shadow-sm rounded-4 border-0">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+    </div>
+
+    <!-- Tabella Utenti -->
+    <div class="card shadow-sm border-0" style="border-radius: 1rem; overflow: hidden;" *ngIf="!isLoading && !errorMessage">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 bg-white">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th scope="col" class="ps-4">ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Cognome</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Ruolo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="utenti.length === 0">
+                        <td colspan="5" class="text-center py-5 text-muted">Nessun utente trovato.</td>
+                    </tr>
+                    <tr *ngFor="let utente of utenti">
+                        <td class="ps-4 font-weight-bold text-secondary">#{{ utente.id }}</td>
+                        <td class="font-weight-bold">{{ utente.nome }}</td>
+                        <td>{{ utente.cognome }}</td>
+                        <td><a href="mailto:{{ utente.email }}" class="text-decoration-none text-info">{{ utente.email }}</a></td>
+                        <td>
+                            <span class="badge rounded-pill" [ngClass]="utente.ruolo === 'admin' ? 'bg-danger' : 'bg-secondary'">
+                                {{ utente.ruolo | uppercase }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

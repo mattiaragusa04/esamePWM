@@ -21,6 +21,8 @@ import { AdminLayout } from './admin-layout/admin-layout';
 import { AdminDashboard } from './admin-dashboard/admin-dashboard';
 import { adminGuard } from './guards/admin-guard';
 import { AdminProdotti } from './admin-prodotti/admin-prodotti';
+import { AdminUtenti } from './admin-utenti/admin-utenti';
+import { AdminOrdini } from './admin-ordini/admin-ordini';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -53,6 +55,10 @@ export const routes: Routes = [
          children: [
              { path: '', component: AdminDashboard  , pathMatch: 'full' },
              { path: 'prodotti', component: AdminProdotti },
+             { path: 'utenti', component: AdminUtenti },
+             { path: 'ordini', component: AdminOrdini }
+
+
          ]
      }
 
