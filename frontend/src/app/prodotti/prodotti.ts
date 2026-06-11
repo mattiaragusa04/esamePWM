@@ -19,6 +19,7 @@ export interface Prodotto {
   pubblicatoVetrina: boolean;
   condizione: string;
   puntiFedelta: number;
+  genere?: string;
 }
 
 @Component({
@@ -109,7 +110,8 @@ export class Prodotti implements OnInit, OnDestroy {
       if (response.ok) {
         const data = await response.json();
         this.prodotti = data.map((p: Prodotto) => {
-          this.prezzoCondizione[p.id] = 'Nuovo';
+          if (p.condizione === 'Usata') p.condizione = 'Usato'; // Normalizza in caso di refusi nel DB
+          this.prezzoCondizione[p.id] = (p.condizione as 'Nuovo' | 'Usato') || 'Nuovo';
           return p;
         });
         this.prodottiFiltrati = [...this.prodotti];
@@ -134,7 +136,8 @@ export class Prodotti implements OnInit, OnDestroy {
         { nome: 'PS5', keywords: ['ps5', 'playstation 5'], immagineUrl: 'http://localhost:3000/public/immagini/console/ps5.png', fallbackUrl: 'https://upload.wikimedia.org/wikipedia/commons/3/38/PlayStation_5_logo.svg' },
         { nome: 'PS4', keywords: ['ps4', 'playstation 4'], immagineUrl: 'http://localhost:3000/public/immagini/console/ps4_pro.png', fallbackUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/87/PlayStation_4_logo_and_wordmark.svg' },
         { nome: 'Nintendo Switch', keywords: ['switch', 'nintendo'], immagineUrl: 'http://localhost:3000/public/immagini/console/nintendo_switch.png', fallbackUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/5d/Nintendo_Switch_Logo.svg' },
-        { nome: 'Xbox', keywords: ['xbox'], immagineUrl: 'http://localhost:3000/public/immagini/console/xbox_one_x.png', fallbackUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/XBOX_logo_2012.svg' }
+        { nome: 'Xbox', keywords: ['xbox'], immagineUrl: 'http://localhost:3000/public/immagini/console/xbox_one_x.png', fallbackUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/XBOX_logo_2012.svg' },
+        { nome: 'Retrogaming', keywords: ['playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3', 'retrò', 'retrogaming'], immagineUrl: 'http://localhost:3000/public/immagini/console/trasferimento (11).jpg', fallbackUrl: 'https://it.wikipedia.org/wiki/PlayStation#/media/File:PSX-Console-wController.png' }
       ];
     } else if (cat === 'videogiochi') {
       this.sottoCategorie = [
@@ -167,6 +170,9 @@ export class Prodotti implements OnInit, OnDestroy {
   }
 
   getSottoCategoria(prodotto: Prodotto): string | null {
+    // Se il prodotto possiede già il campo 'genere' assegnato dal database (es. Videogiochi), lo restituiamo direttamente
+    if (prodotto.genere) return prodotto.genere;
+
     if (!this.sottoCategorie || this.sottoCategorie.length === 0) return null;
     
     const nomeLower = prodotto.nome.toLowerCase();
@@ -210,6 +216,9 @@ export class Prodotti implements OnInit, OnDestroy {
       const subCat = this.sottoCategorie.find(s => s.nome === this.filtroAttivo);
       if (subCat && subCat.keywords) {
         result = result.filter(p => {
+          // Controllo sul genere reale fornito dal DB
+          if (p.genere && p.genere.toLowerCase() === subCat.nome.toLowerCase()) return true;
+
           const n = p.nome.toLowerCase();
           const d = p.descrizione ? p.descrizione.toLowerCase() : '';
           return subCat.keywords.some((kw: string) => n.includes(kw) || d.includes(kw));
@@ -252,12 +261,23 @@ export class Prodotti implements OnInit, OnDestroy {
 
 
   setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
+    const prodotto = this.prodotti.find(p => p.id === prodId);
+    // Impedisce di selezionare "Nuovo" per i prodotti che nascono solo come "Usato" (es. retro-console)
+    if (prodotto && prodotto.condizione === 'Usato' && cond === 'Nuovo') {
+      return; 
+    }
     this.prezzoCondizione[prodId] = cond;
     this.applicaFiltriAvanzati(); // Ricalcola i filtri per ri-ordinare se il prezzo cambia
   }
 
   getPrezzoVisualizzato(p: Prodotto): number {
     const cond = this.prezzoCondizione[p.id] || 'Nuovo';
+    
+    // Se il prodotto nel database è nativamente "Usato", il suo prezzo base è già corretto
+    if (p.condizione === 'Usato') {
+      return p.prezzoUnitarioVendita;
+    }
+
     if (cond === 'Usato') {
       // Applichiamo uno sconto del 25% sul prezzo di vendita per l'usato
       return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
@@ -292,10 +312,42 @@ export class Prodotti implements OnInit, OnDestroy {
     const condizioneScelta = this.prezzoCondizione[prodotto.id] || 'Nuovo';
     const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
 
-    const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizioneScelta, prezzoFinale);
-    
-    if (successo) {
-      alert(`${prodotto.nome} aggiunto correttamente!`);
+    if (token) {
+      try {
+        const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: Number(prezzoFinale) })
+        });
+        if (response.ok) {
+          alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+          if (this.carrelloService && typeof (this.carrelloService as any).aggiornaCarrello === 'function') {
+            (this.carrelloService as any).aggiornaCarrello();
+          }
+        } else {
+          const errorData = await response.json();
+          alert(`Errore: ${errorData.error || errorData.message || 'Impossibile aggiungere al carrello'}`);
+        }
+      } catch (error) {
+        console.error('Errore di connessione:', error);
+        alert('Errore di connessione al server.');
+      }
+    } else {
+      let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
+      const index = carrello.findIndex((item: any) => (item.id || item.prodotto_id) === prodotto.id && item.condizione === condizioneScelta);
+      if (index > -1) {
+        carrello[index].quantita += 1;
+      } else {
+        carrello.push({ ...prodotto, quantita: 1, condizione: condizioneScelta, prezzoUnitarioVendita: prezzoFinale });
+      }
+      localStorage.setItem('carrello', JSON.stringify(carrello));
+      alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+      if (this.carrelloService && typeof (this.carrelloService as any).aggiornaCarrello === 'function') {
+        (this.carrelloService as any).aggiornaCarrello();
+      }
     }
   }
 
