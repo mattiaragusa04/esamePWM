@@ -4,7 +4,6 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { ToastService } from '../shared/toast.service';
 // Assicurati che questa interfaccia sia definita nel tuo progetto
 export interface Prodotto {
   id: number;
@@ -43,8 +42,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router, // Inietta il Router per la navigazione
-    private toast: ToastService
+    private router: Router // Inietta il Router per la navigazione
   ) {}
 
   ngOnInit(): void {
@@ -96,7 +94,10 @@ export class DettagliProdotto implements OnInit, OnDestroy {
 
   isRetrogaming(prodotto: Prodotto): boolean {
     const nomeLower = prodotto.nome.toLowerCase();
-    const retroKeywords = ['playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3'];
+    const retroKeywords = [
+      'playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3',
+      'black ops iii', 'uncharted 3', 'need for speed rivals', 'farcry 3', 'gran turismo 5'
+    ];
     return retroKeywords.some(kw => nomeLower.includes(kw));
   }
 
@@ -180,15 +181,15 @@ export class DettagliProdotto implements OnInit, OnDestroy {
           body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: Number(prezzoFinale) })
         });
         if (response.ok) {
-          this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+          alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
         } else {
           const errorData = await response.json();
           console.error("Dettagli errore backend:", JSON.stringify(errorData, null, 2));
-          this.toast.error(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+          alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
         }
       } catch (error) {
         console.error('Errore di connessione:', error);
-        this.toast.error('Errore di connessione al server.');
+        alert('Errore di connessione al server.');
       }
     } else {
       // Utente ospite: salva in localStorage
@@ -211,7 +212,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
           });
         }
       localStorage.setItem('carrello', JSON.stringify(carrello));
-      this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+      alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
     }
   }
 

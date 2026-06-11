@@ -483,11 +483,11 @@ h6 {
   right: 0;
   background-color: var(--main-color);
   color: white;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   line-height: 1;
   font-weight: 700;
-  min-width: 22px;
-  height: 22px;
+  min-width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -538,7 +538,6 @@ h6 {
   pointer-events: auto;
 }
 
-<<<<<<< HEAD
 /* Animazione per il filtraggio e ricaricamento dei prodotti */
 .filter-animation {
   animation: fadeInFilter 0.4s ease-out;
@@ -548,7 +547,7 @@ h6 {
   0% { opacity: 0; transform: scale(0.98) translateY(10px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
-=======
+
 /* =========================
    Tema scuro globale raffinato
    ========================= */
@@ -716,4 +715,3 @@ body.theme-dark .settings-label {
 body.theme-dark .hero-box {
   background: linear-gradient(135deg, #020617, #111827, #0f172a);
 }
->>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909

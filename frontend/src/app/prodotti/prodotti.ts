@@ -39,6 +39,7 @@ export class Prodotti implements OnInit, OnDestroy {
   isAnimating: boolean = false;
   errorMessage: string = '';
   preferiti: number[] = [];
+  prezzoCondizione: { [key: number]: 'Nuovo' | 'Usato' } = {};
 
   // Paginazione
   paginaCorrente: number = 1;
@@ -109,7 +110,6 @@ export class Prodotti implements OnInit, OnDestroy {
       const response = await fetch(`http://localhost:3000/api/prodotti/categoria/${categoriaId}`);
       if (response.ok) {
         const data = await response.json();
-<<<<<<< HEAD
         this.prodotti = data.map((p: Prodotto) => {
           if (p.condizione === 'Usata') p.condizione = 'Usato'; // Normalizza in caso di refusi nel DB
           if (this.isRetrogaming(p)) {
@@ -119,9 +119,6 @@ export class Prodotti implements OnInit, OnDestroy {
           }
           return p;
         });
-=======
-        this.prodotti = data;
->>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
         this.prodottiFiltrati = [...this.prodotti];
         console.log('Prodotti caricati con successo:', this.prodotti);
         this.cdr.detectChanges(); // Forza l'aggiornamento dell'HTML
@@ -133,7 +130,12 @@ export class Prodotti implements OnInit, OnDestroy {
       this.errorMessage = 'Impossibile contattare il server.';
     } finally {
       this.isLoading = false;
+      this.isAnimating = true;
       this.cdr.detectChanges();
+      setTimeout(() => {
+        this.isAnimating = false;
+        this.cdr.detectChanges();
+      }, 400);
     }
   }
 
@@ -158,14 +160,14 @@ export class Prodotti implements OnInit, OnDestroy {
       this.sottoCategorie = [
         { nome: 'Cover e Custodie', keywords: ['cover', 'custodi', 'case', 'protezion', 'bumper'], iconaBootstrap: 'bi-shield-fill text-info' },
         { nome: 'Cavi e Adattatori', keywords: ['cavo', 'adattatore', 'hdmi', 'usb'], iconaBootstrap: 'bi-usb-drive text-secondary' },
-        { nome: 'Ricarica', keywords: ['caricabatterie', 'alimentatore', 'ricarica', 'power'], iconaBootstrap: 'bi-battery-charging text-success' }
+        { nome: 'Pulizia', keywords: ['pulizia', 'spazzola', 'kit', 'estrattore', 'panno'], iconaBootstrap: 'bi-stars text-success' }
       ];
     } else if (cat === 'elettronica') {
       this.sottoCategorie = [
         { nome: 'Smartwatch', keywords: ['smartwatch', 'orologio', 'apple watch', 'galaxy watch', 'band'], iconaBootstrap: 'bi-smartwatch text-dark' },
         { nome: 'Cuffie e Audio', keywords: ['cuffie', 'auricolari', 'headset', 'earbuds', 'audio', 'jbl', 'razer'], iconaBootstrap: 'bi-headset text-info' },
         { nome: 'Tastiere e Mouse', keywords: ['tastier', 'keyboard', 'mouse', 'mice', 'logitech'], iconaBootstrap: 'bi-pc-display text-primary' },
-        { nome: 'Accessori Gaming', keywords: ['camera', 'webcam', 'microfono', 'streaming'], iconaBootstrap: 'bi-camera-video text-danger' }
+        { nome: 'Gaming', keywords: ['camera', 'webcam', 'microfono', 'streaming', 'gaming', 'playstation'], iconaBootstrap: 'bi-camera-video text-danger' }
       ];
     } else {
       this.sottoCategorie = [];
@@ -180,7 +182,10 @@ export class Prodotti implements OnInit, OnDestroy {
 
   isRetrogaming(prodotto: Prodotto): boolean {
     const nomeLower = prodotto.nome.toLowerCase();
-    const retroKeywords = ['playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3'];
+    const retroKeywords = [
+      'playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3',
+      'black ops iii', 'uncharted 3', 'need for speed rivals', 'farcry 3', 'gran turismo 5'
+    ];
     return retroKeywords.some(kw => nomeLower.includes(kw));
   }
 
@@ -195,8 +200,7 @@ export class Prodotti implements OnInit, OnDestroy {
 
     // REGOLA 1: Identificazione prioritaria ed esclusiva delle console Retrogaming
     if (this.isRetrogaming(prodotto)) {
-      // È una console Retrogaming. Nascondiamo il badge della categoria per mostrare solo "Usato".
-      return null;
+      return 'Retrogaming';
     }
 
     // REGOLA 2: Se non è Retrogaming, cerca le altre sottocategorie
@@ -206,6 +210,13 @@ export class Prodotti implements OnInit, OnDestroy {
 
       if (sub.keywords) {
         if (sub.keywords.some((kw: string) => nomeLower.includes(kw) || descLower.includes(kw))) {
+          // Specializzazione visiva del badge per Tastiere e Mouse
+          if (sub.nome === 'Tastiere e Mouse') {
+            const isTastiera = ['tastier', 'keyboard'].some(kw => nomeLower.includes(kw) || descLower.includes(kw));
+            const isMouse = ['mouse', 'mice'].some(kw => nomeLower.includes(kw) || descLower.includes(kw));
+            if (isTastiera) return 'Tastiera';
+            if (isMouse) return 'Mouse';
+          }
           return sub.nome;
         }
       } else {
@@ -229,15 +240,10 @@ export class Prodotti implements OnInit, OnDestroy {
 
   impostaFiltro(filtro: string) {
     this.filtroAttivo = filtro;
-    this.isAnimating = true; // Attiva la classe CSS dell'animazione
     this.applicaFiltriAvanzati();
-    
-    setTimeout(() => {
-      this.isAnimating = false; // Rimuove la classe una volta finita l'animazione
-    }, 400); 
   }
 
-  applicaFiltriAvanzati(resetPaginazione: boolean = true) {
+  applicaFiltriAvanzati(resetPaginazione: boolean = true, animate: boolean = true) {
     let result = [...this.prodotti];
 
     // 1. Filtro per Sottocategoria (Azione, PS5, Sport, etc.)
@@ -251,9 +257,11 @@ export class Prodotti implements OnInit, OnDestroy {
           }
 
           // Fallback per i prodotti senza genere (es. Accessori, Console, Elettronica)
-          const n = p.nome.toLowerCase();
-          const d = p.descrizione ? p.descrizione.toLowerCase() : '';
-          return subCat.keywords.some((kw: string) => n.includes(kw) || d.includes(kw));
+          const appartenenza = this.getSottoCategoria(p);
+          if (subCat.nome === 'Tastiere e Mouse') {
+            return appartenenza === 'Tastiera' || appartenenza === 'Mouse' || appartenenza === 'Tastiere e Mouse';
+          }
+          return appartenenza === subCat.nome;
         });
       } else {
         const f = this.filtroAttivo.toLowerCase();
@@ -288,29 +296,44 @@ export class Prodotti implements OnInit, OnDestroy {
     }
 
     // 5. Filtro per Condizione
-    if (this.condizione !== '') {
-      result = result.filter(p => p.condizione === this.condizione);
+    if (this.condizione === 'Nuovo') {
+      result = result.filter(p => !this.isRetrogaming(p));
+    } else if (this.condizione === 'Usato') {
+      result = result.filter(p => this.isRetrogaming(p));
     }
     
     this.prodottiFiltrati = result;
     if (resetPaginazione) {
       this.paginaCorrente = 1; // Ritorna alla prima pagina solo quando cambia un vero filtro
     }
+
+    // Se richiesto, forza un riavvio pulito dell'animazione CSS
+    if (animate) {
+      this.isAnimating = false;
+      this.cdr.detectChanges(); // Rimuove la classe dal DOM
+      setTimeout(() => {
+        this.isAnimating = true;
+        this.cdr.detectChanges(); // Reinserisce la classe dopo 10ms per forzare l'animazione
+        setTimeout(() => {
+          this.isAnimating = false;
+          this.cdr.detectChanges();
+        }, 400);
+      }, 10);
+    }
   }
 
-<<<<<<< HEAD
 
   setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
     const prodotto = this.prodotti.find(p => p.id === prodId);
     
     // Impedisce di selezionare "Nuovo" SOLO per i veri prodotti vintage (Retrogaming)
     if (prodotto && cond === 'Nuovo' && this.isRetrogaming(prodotto)) {
-      alert("Questo prodotto vintage è disponibile solo in condizione Usato.");
+      this.toast.error("Questo prodotto vintage è disponibile solo in condizione Usato.");
       return; 
     }
 
     this.prezzoCondizione[prodId] = cond;
-    this.applicaFiltriAvanzati(false); // Ricalcola i prezzi MA senza resettare la pagina
+    this.applicaFiltriAvanzati(false, false); // Ricalcola i prezzi MA senza resettare la pagina e senza riavviare l'animazione
   }
 
   getPrezzoVisualizzato(p: Prodotto): number {
@@ -336,9 +359,6 @@ export class Prodotti implements OnInit, OnDestroy {
       return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
     }
     
-=======
-  getPrezzoVisualizzato(p: Prodotto): number {
->>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
     return p.prezzoUnitarioVendita;
   }
 
@@ -365,10 +385,9 @@ export class Prodotti implements OnInit, OnDestroy {
 
   async aggiungiAlCarrello(prodotto: Prodotto) {
     const token = localStorage.getItem('token');
-    const condizioneScelta = prodotto.condizione;
+    const condizioneScelta = this.prezzoCondizione[prodotto.id] || 'Nuovo';
     const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
 
-<<<<<<< HEAD
     if (token) {
       try {
         const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
@@ -380,17 +399,17 @@ export class Prodotti implements OnInit, OnDestroy {
           body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: Number(prezzoFinale) })
         });
         if (response.ok) {
-          alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+          this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
           if (this.carrelloService && typeof (this.carrelloService as any).aggiornaCarrello === 'function') {
             (this.carrelloService as any).aggiornaCarrello();
           }
         } else {
           const errorData = await response.json();
-          alert(`Errore: ${errorData.error || errorData.message || 'Impossibile aggiungere al carrello'}`);
+          this.toast.error(`Errore: ${errorData.error || errorData.message || 'Impossibile aggiungere al carrello'}`);
         }
       } catch (error) {
         console.error('Errore di connessione:', error);
-        alert('Errore di connessione al server.');
+        this.toast.error('Errore di connessione al server.');
       }
     } else {
       let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
@@ -401,16 +420,10 @@ export class Prodotti implements OnInit, OnDestroy {
         carrello.push({ ...prodotto, quantita: 1, condizione: condizioneScelta, prezzoUnitarioVendita: prezzoFinale });
       }
       localStorage.setItem('carrello', JSON.stringify(carrello));
-      alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+      this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
       if (this.carrelloService && typeof (this.carrelloService as any).aggiornaCarrello === 'function') {
         (this.carrelloService as any).aggiornaCarrello();
       }
-=======
-    const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizioneScelta, prezzoFinale);
-    
-    if (successo) {
-      this.toast.success(`${prodotto.nome} aggiunto correttamente!`);
->>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
     }
   }
 

@@ -135,16 +135,10 @@
               </div>
 
               <div class="mb-2">
-<<<<<<< HEAD
                 <div class="condition-toggle btn-group btn-group-sm" role="group" aria-label="Condizione prodotto">
                   <button *ngIf="!isRetrogaming(prodotto)" type="button" class="btn btn-outline-secondary" [class.active-condition]="!prezzoCondizione || prezzoCondizione[prodotto.id] !== 'Usato'" (click)="setCondizione(prodotto.id, 'Nuovo')">Nuovo</button>
                   <button type="button" class="btn btn-outline-secondary" [class.active-condition]="prezzoCondizione && prezzoCondizione[prodotto.id] === 'Usato'" (click)="setCondizione(prodotto.id, 'Usato')">Usato</button>
                 </div>
-=======
-                <span class="badge rounded-pill" [ngClass]="prodotto.condizione === 'Nuovo' ? 'bg-primary' : 'bg-warning text-dark'">
-                  {{ prodotto.condizione }}
-                </span>
->>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
               </div>
               <p class="text-info font-weight-bold mb-3 fs-5">{{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}</p>
               

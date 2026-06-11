@@ -1,8 +1,54 @@
 const bcrypt = require("bcrypt"); // per criptare le informazioni
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const nodemailer = require('nodemailer');
 
 const SECRET = process.env.JWT_SECRET || "supersecretkey";
+
+// 1. Configurazione del Trasportatore per le Email
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // Puoi usare anche 'outlook', 'hotmail', 'yahoo', ecc.
+    auth: {
+        user: 'pawerupecommerce@gmail.com', 
+        pass: 'btns oosq omhr wuqm' // generata una "Password per le app" da Google Account
+    }
+});
+
+// 2. Funzione per inviare l'email con un bel template HTML
+function inviaEmailBenvenuto(emailUtente, nomeUtente) {
+    const mailOptions = {
+        from: '"PAwerUP Store" <la_tua_email_del_negozio@gmail.com>',
+        to: emailUtente,
+        subject: 'Conferma avvenuta registrazione su PAwerUP',
+        html: `
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="color: #f86ded; margin: 0;">PAwerUP</h1>
+                </div>
+                <h2 style="color: #0f172a;">Benvenuto a bordo, ${nomeUtente}! 🎮</h2>
+                <p style="font-size: 16px; line-height: 1.5;">Siamo felicissimi di confermarti che la tua registrazione su <strong>PAwerUP</strong> è avvenuta con successo.</p>
+                <p style="font-size: 16px; line-height: 1.5;">Il tuo account è ora attivo e pronto per permetterti di esplorare il nostro catalogo di console, videogiochi, accessori ed elettronica.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="http://localhost:4200/login" style="background-color: #f86ded; color: white; padding: 12px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">Accedi subito al tuo Account</a>
+                </div>
+                
+                <p style="font-size: 14px; color: #64748b;">Se hai bisogno di assistenza, non esitare a contattarci rispondendo a questa email.</p>
+                <br>
+                <p style="font-size: 14px; margin-bottom: 0;">Buon divertimento,</p>
+                <p style="font-size: 16px; margin-top: 5px; font-weight: bold; color: #0f172a;">Il team di PAwerUP</p>
+            </div>
+        `
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Errore durante l\'invio dell\'email di benvenuto:', error);
+        } else {
+            console.log('Email di benvenuto inviata con successo a: ' + emailUtente);
+        }
+    });
+}
 
 exports.register = async (req, res) => {
   try {
@@ -22,6 +68,9 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create(nome, cognome, email, hashedPassword);
+
+    // Quando il database conferma l'inserimento, spara l'email!
+    inviaEmailBenvenuto(email, nome);
 
     res.status(201).json(user);
   } catch (err) {

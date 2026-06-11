@@ -58,21 +58,17 @@ export class Carrello implements OnInit, OnDestroy {
   }
 
   async rimuoviOggetto(item: any) {
-    await this.carrelloService.rimuoviProdotto(item);
+    if (confirm(`Sei sicuro di voler rimuovere ${item.nome} dal carrello?`)) {
+      await this.carrelloService.rimuoviProdotto(item);
+    }
   }
 
   async svuotaCarrello() {
-    await this.carrelloService.svuotaCarrello();
+    if (confirm('Sei sicuro di voler svuotare l\'intero carrello?')) {
+      await this.carrelloService.svuotaCarrello();
+    }
   }
 
-<<<<<<< HEAD
-  calcolaTotale() {
-    this.totale = this.carrello.reduce((acc, item) => {
-      // Il prezzoUnitarioVendita / prezzo è già il prezzo finale determinato all'aggiunta
-      const prezzoEffettivo = item.prezzo || item.prezzoUnitarioVendita;
-      return acc + (Number(prezzoEffettivo) * item.quantita);
-    }, 0);
-=======
   /**
    * Restituisce lo stato della disponibilità in base ai pezzi rimasti
    * (giacenza totale - quantità già nel carrello).
@@ -95,7 +91,6 @@ export class Carrello implements OnInit, OnDestroy {
       return { livello: 'warning', testo: `Solo ${rimasti} pezzi rimasti`, icona: 'bi-exclamation-triangle-fill' };
     }
     return { livello: 'ok', testo: 'Disponibilità immediata', icona: 'bi-check-circle-fill' };
->>>>>>> 1b47c0a4c0d7edd5d8076d6a0ecffdaa7a162909
   }
 
   procediAlPagamento() {
