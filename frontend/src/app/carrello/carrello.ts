@@ -65,7 +65,7 @@ export class Carrello implements OnInit {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ prodottoId: item.id || item.prodotto_id, quantita: nuovaQuantita })
+          body: JSON.stringify({ prodottoId: item.id || item.prodotto_id, quantita: nuovaQuantita, condizione: item.condizione })
         });
         if (response.ok) {
           item.quantita = nuovaQuantita;
@@ -90,7 +90,7 @@ export class Carrello implements OnInit {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ prodottoId: item.id || item.prodotto_id })
+          body: JSON.stringify({ prodottoId: item.id || item.prodotto_id, condizione: item.condizione })
         });
       } catch (error) {
         console.error('Errore rimozione:', error);
@@ -111,7 +111,10 @@ export class Carrello implements OnInit {
   }
 
   calcolaTotale() {
-    this.totale = this.carrello.reduce((acc, item) => acc + (item.prezzoUnitarioVendita * item.quantita), 0);
+    this.totale = this.carrello.reduce((acc, item) => {
+      const prezzoEffettivo = item.condizione === 'Usato' ? (item.prezzoUnitarioVendita * 0.75) : item.prezzoUnitarioVendita;
+      return acc + (prezzoEffettivo * item.quantita);
+    }, 0);
   }
 
   procediAlPagamento() {

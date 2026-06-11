@@ -21,7 +21,11 @@ exports.createOrdine = async (req, res) => {
         const prodottiPerOrdine = [];
 
         for (const item of prodottiInCarrello) {
-            const prezzoUnitario = item.prezzoUnitarioVendita;
+            // Logica del prezzo: se usato applica lo sconto del 25%
+            let prezzoUnitario = item.prezzoUnitarioVendita;
+            if (item.condizione === 'Usato') {
+                prezzoUnitario = Math.round((prezzoUnitario * 0.75) * 100) / 100;
+            }
             const puntiFedeltaProdotto = item.puntiFedelta || 0;
 
             totaleOrdine += item.quantita * prezzoUnitario;
@@ -34,13 +38,14 @@ exports.createOrdine = async (req, res) => {
             });
         }
 
-        // 1. Creare l'ordine principale
+        // 1. Creare l'ordine principale (Salviamo i punti ma non li accreditiamo all'utente)
         const newOrdine = await Ordine.create({
             carta_id,
             indirizzo_id,
             utente_id: userId,
             data: new Date().toISOString(),
             totale: totaleOrdine,
+            punti_fedelta: puntiFedeltaTotali,
             statoOrdine: 'In elaborazione'
         });
 
@@ -52,14 +57,42 @@ exports.createOrdine = async (req, res) => {
         // 3. Svuotare il carrello dell'utente
         await Carrello.clearCart(userId);
 
-        // 4. Aggiornare i punti fedeltà dell'utente
-        await User.updatePuntiFedelta(userId, puntiFedeltaTotali);
-
         res.status(201).json({ message: 'Ordine creato con successo!', ordine: newOrdine, puntiGuadagnati: puntiFedeltaTotali });
 
     } catch (error) {
         console.error('Errore durante la creazione dell\'ordine:', error);
         res.status(500).json({ error: 'Errore interno del server durante la creazione dell\'ordine.' });
+    }
+};
+
+exports.updateStatoOrdine = async (req, res) => {
+    const { ordineId, nuovoStato } = req.body;
+
+    try {
+        // Recuperiamo l'ordine corrente
+        const ordine = await Ordine.findById(ordineId);
+        if (!ordine) return res.status(404).json({ error: "Ordine non trovato" });
+
+        // Se lo stato precedente non era 'Consegnato' e quello nuovo lo è, accreditiamo i punti
+        if (ordine.statoOrdine !== 'Consegnato' && nuovoStato === 'Consegnato') {
+            const puntiDaAccreditare = ordine.punti_fedelta || 0;
+            if (puntiDaAccreditare > 0) {
+                await User.updatePuntiFedelta(ordine.utente_id, puntiDaAccreditare);
+                console.log(`Accreditati ${puntiDaAccreditare} punti all'utente ${ordine.utente_id}`);
+            }
+        }
+
+        // Aggiorniamo lo stato nel database
+        await Ordine.updateStatus(ordineId, nuovoStato);
+
+        res.json({ 
+            message: `Stato ordine aggiornato a ${nuovoStato}`, 
+            puntiAccreditati: nuovoStato === 'Consegnato' ? ordine.punti_fedelta : 0 
+        });
+
+    } catch (error) {
+        console.error('Errore aggiornamento stato ordine:', error);
+        res.status(500).json({ error: 'Errore durante l\'aggiornamento dell\'ordine.' });
     }
 };
 

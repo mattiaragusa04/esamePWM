@@ -18,6 +18,7 @@ export interface Prodotto {
   pubblicatoAcquisto: boolean;
   pubblicatoVetrina: boolean;
   condizione: string;
+  puntiFedelta: number;
 }
 
 @Component({
@@ -118,6 +119,12 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     this.cdr.detectChanges(); // Aggiorna la vista per il prezzo
   }
 
+  getPuntiFedeltaVisualizzati(): number {
+    if (!this.prodotto) return 0;
+    const prezzoAttuale = this.getPrezzoVisualizzato();
+    return Math.round(prezzoAttuale / 5);
+  }
+
   getPrezzoVisualizzato(): number {
     if (!this.prodotto) return 0;
     if (this.prezzoCondizione === 'Usato') {
@@ -163,12 +170,23 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     } else {
       // Utente ospite: salva in localStorage
       let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
-      const index = carrello.findIndex((item: any) => (item.id || item.prodotto_id) === prodotto.id && item.condizione === condizioneScelta);
+        
+        // Cerchiamo un elemento che abbia lo stesso ID E la stessa condizione
+          const index = carrello.findIndex((item: any) => 
+          (item.id || item.prodotto_id) === prodotto.id && item.condizione === condizioneScelta
+        );
+
       if (index > -1) {
         carrello[index].quantita += 1;
       } else {
-        carrello.push({ ...prodotto, quantita: 1, condizione: condizioneScelta, prezzoSelezionato: prezzoFinale });
-      }
+          // Creiamo una voce distinta per questa condizione
+          carrello.push({ 
+            ...prodotto, 
+            quantita: 1, 
+            condizione: condizioneScelta, 
+            prezzoSelezionato: prezzoFinale 
+          });
+        }
       localStorage.setItem('carrello', JSON.stringify(carrello));
       alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
     }

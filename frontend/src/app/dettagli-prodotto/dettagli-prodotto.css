@@ -21,6 +21,36 @@
   line-height: 1;
 }
 
+.price-display.discounted {
+  color: #dc3545;
+  animation: pulseDiscount 2s infinite;
+}
+
+/* Box Punti Fedeltà */
+.loyalty-points-wrapper {
+  background: rgba(248, 109, 237, 0.08);
+  border: 1px dashed var(--main-color);
+  border-radius: 1rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1.5rem 0;
+}
+
+.points-icon-circle {
+  background: var(--main-color);
+  color: white;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 10px rgba(248, 109, 237, 0.3);
+}
+
 /* Stili per i bottoni di condizione (Nuovo/Usato) */
 .condition-toggle .btn {
   border-radius: 999px; /* Pill shape */

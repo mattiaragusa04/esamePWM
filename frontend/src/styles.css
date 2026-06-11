@@ -178,6 +178,56 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
 }
 
+/* Scrollbar personalizzata per le liste di riepilogo */
+.summary-items-list::-webkit-scrollbar {
+  width: 5px;
+}
+.summary-items-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+.summary-items-list::-webkit-scrollbar-thumb {
+  background: var(--main-color);
+  border-radius: 10px;
+}
+
+/* Badge Condizione Prodotto */
+.badge-condizione {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+}
+
+.badge-nuovo {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.badge-usato {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Sistema Prezzi Scontati */
+.price-old {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+  font-size: 0.85em;
+  margin-right: 8px;
+  font-weight: 400;
+}
+
+.price-current.is-discount {
+  color: #dc3545; /* Rosso per evidenziare lo sconto */
+  font-weight: 800;
+}
+
 .hero-content {
   position: relative;
   z-index: 1; /* Sopra al canvas */

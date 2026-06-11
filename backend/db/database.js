@@ -52,6 +52,7 @@ CREATE TABLE if not exists ordine (
     utente_id INTEGER,
     data DATE NOT NULL,
     totale double NOT NULL,
+    punti_fedelta INTEGER DEFAULT 0,
     statoOrdine TEXT NOT NULL,
     FOREIGN KEY (utente_id) REFERENCES utente(id),
     FOREIGN KEY (carta_id) REFERENCES carta_di_credito(id),
