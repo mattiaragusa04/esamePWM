@@ -281,7 +281,7 @@
           
           <button class="btn btn-info w-100 rounded-pill py-3 font-weight-bold fs-5 shadow-sm mt-3" 
                   type="submit" 
-                  [disabled]="isProcessing || isLoading || checkoutForm.invalid">
+                  [disabled]="isProcessing || isLoading">
             <span *ngIf="!isProcessing">Conferma e Paga <i class="bi bi-lock-fill ms-1"></i></span>
             <span *ngIf="isProcessing"><span class="spinner-border spinner-border-sm me-2"></span>Elaborazione...</span>
           </button>
