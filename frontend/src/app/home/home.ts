@@ -33,7 +33,12 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   private COLORS = ['#f86ded', '#a78bfa'];
 
   public prodottiConsigliati: any[] = [];
+  public prodottiUsati: any[] = [];
   public preferiti: number[] = [];
+
+  // Mappa nome normalizzato -> prezzo del record DB Nuovo (se esiste).
+  // Serve per calcolare il prezzo barrato sulla card Usato della nuova sezione.
+  private prezzoNuovoPerNome: Map<string, number> = new Map();
 
   private RETRO_KEYWORDS = [
     'playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3',
@@ -61,17 +66,60 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       const response = await fetch('http://localhost:3000/api/prodotti');
       if (response.ok) {
         const tuttiIProdotti = await response.json();
-        // Selezione random base + sostituzioni custom
+
+        // Normalizza eventuali refusi e costruisci mappa prezzi Nuovo per nome
+        tuttiIProdotti.forEach((p: any) => {
+          if (p.condizione === 'Usata') p.condizione = 'Usato';
+        });
+        this.prezzoNuovoPerNome = new Map();
+        tuttiIProdotti.forEach((p: any) => {
+          if (p.condizione === 'Nuovo') {
+            const key = (p.nome || '').trim().toLowerCase();
+            this.prezzoNuovoPerNome.set(key, Number(p.prezzoUnitarioVendita));
+          }
+        });
+
+        // ---- Consigliati per te ----
+        // Mostra una variante per riga DB (la condizione effettiva del record).
+        // Le card Usato qui sono "semplici" (senza barrato + -25%, come ora).
         let selezione = tuttiIProdotti.sort(() => 0.5 - Math.random()).slice(0, 12);
         selezione = this.applyCustomReplacements(selezione, tuttiIProdotti);
-        // Per ogni prodotto selezionato preferiamo la variante Nuovo (se disponibile),
-        // altrimenti la variante Usato (es. retrogaming / prodotti già usati nel DB).
         this.prodottiConsigliati = selezione.map((raw: any) => this.preferredVariant(raw));
+
+        // ---- Guarda il nostro Usato ----
+        // Prende SOLO le righe DB con condizione = 'Usato' (oppure retrogaming
+        // anche se nel DB risultano 'Nuovo'), shuffle, max 12 elementi.
+        const usati = tuttiIProdotti
+          .filter((p: any) => p.condizione === 'Usato' || this.isRetrogaming(p))
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 12);
+        this.prodottiUsati = usati.map((raw: any) => this.usatoVariantConSconto(raw));
       }
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Errore nel caricamento del catalogo dalla Home:', error);
     }
+  }
+
+  /**
+   * Costruisce la variante Usato "full grafica" per la sezione "Guarda il nostro Usato":
+   * include il prezzo barrato (originale) e abilita il badge -25%.
+   * - se per lo stesso nome esiste anche il record Nuovo, usiamo il prezzo del Nuovo DB;
+   * - altrimenti ricostruiamo il prezzo "originale" come prezzo_usato / 0.75.
+   */
+  private usatoVariantConSconto(raw: any): any {
+    const prezzoDB = Number(raw.prezzoUnitarioVendita);
+    const key = (raw.nome || '').trim().toLowerCase();
+    const prezzoNuovoDb = this.prezzoNuovoPerNome.get(key);
+    const prezzoOriginale = prezzoNuovoDb !== undefined && prezzoNuovoDb > prezzoDB
+      ? prezzoNuovoDb
+      : Math.round((prezzoDB / 0.75) * 100) / 100;
+    return {
+      ...raw,
+      condizioneVariante: 'Usato',
+      prezzoVariante: prezzoDB,
+      prezzoOriginale,
+    };
   }
 
   private applyCustomReplacements(selezione: any[], tuttiIProdotti: any[]): any[] {
@@ -118,6 +166,12 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   getPrezzoVisualizzato(p: any): number {
     if (p?.prezzoVariante !== undefined) return Number(p.prezzoVariante);
     return Number(p.prezzoUnitarioVendita);
+  }
+
+  /** Prezzo barrato (originale) per la card Usato della sezione "Guarda il nostro Usato". */
+  getPrezzoOriginale(p: any): number | null {
+    if (!p || p.prezzoOriginale == null) return null;
+    return Number(p.prezzoOriginale);
   }
 
   isVariantUsato(p: any): boolean {

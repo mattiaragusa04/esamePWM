@@ -70,6 +70,72 @@
   </div>
 </div>
 
+<!-- Sezione "Guarda il nostro Usato" - mostra SOLO prodotti Usato con grafica -25% completa -->
+<div class="mt-5 container" *ngIf="prodottiUsati.length > 0">
+  <h2 class="text-center mb-5 text-uppercase font-weight-bold text-white">Guarda il nostro <span class="text-info">Usato</span></h2>
+
+  <div class="scroll-wrapper-container">
+    <!-- Bottone Scorrimento Sinistra -->
+    <button class="btn btn-info rounded-circle position-absolute scroll-btn left-btn" (click)="scrollUsatoContainer.scrollBy({ left: -300, behavior: 'smooth' })">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
+    </button>
+
+    <div class="horizontal-scroll-wrapper w-100" #scrollUsatoContainer>
+      <div class="horizontal-scroll-content">
+        <div class="horizontal-scroll-item" *ngFor="let prodotto of prodottiUsati">
+          <div class="card h-100 shadow-lg product-card position-relative usato-variant">
+            <!-- Corner badge -25% -->
+            <div *ngIf="getPrezzoOriginale(prodotto) !== null" class="discount-corner-badge">-25%</div>
+
+            <!-- Pulsante Preferiti -->
+            <button class="btn btn-link position-absolute p-2 shadow-none" style="top: 5px; right: 5px; z-index: 10;" (click)="togglePreferito(prodotto)">
+              <i style="font-size: 1.5rem;" [class]="isPreferito(prodotto.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"></i>
+            </button>
+            <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:4200/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
+            <div class="card-body text-center d-flex flex-column justify-content-between">
+              <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
+
+              <!-- Label condizione Usato -->
+              <div class="mb-2">
+                <span class="badge-condizione badge-usato">
+                  <i class="bi bi-recycle"></i>
+                  Usato
+                </span>
+              </div>
+
+              <!-- Prezzo con barrato + prezzo scontato -->
+              <div class="mb-3">
+                <div>
+                  <span *ngIf="getPrezzoOriginale(prodotto) as originale" class="price-old me-2">
+                    {{ originale | currency:'EUR':'symbol' }}
+                  </span>
+                  <span class="font-weight-bold fs-5 text-danger price-current is-discount">
+                    {{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}
+                  </span>
+                </div>
+                <div *ngIf="getPrezzoOriginale(prodotto) !== null" class="small text-danger fw-bold mt-1">
+                  RISPARMI IL 25%
+                </div>
+              </div>
+
+              <!-- Pulsanti Azione -->
+              <div class="d-flex flex-column align-items-center gap-2">
+                <a class="btn btn-info rounded-pill w-100" [routerLink]="['/dettagli-prodotto', prodotto.id]" [queryParams]="{ cond: 'Usato' }">Dettagli</a>
+                <button type="button" class="btn btn-outline-info rounded-pill w-100" (click)="aggiungiAlCarrello(prodotto)">Aggiungi al carrello</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottone Scorrimento Destra -->
+    <button class="btn btn-info rounded-circle position-absolute scroll-btn right-btn" (click)="scrollUsatoContainer.scrollBy({ left: 300, behavior: 'smooth' })">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+    </button>
+  </div>
+</div>
+
 <!-- Card Categorie -->
 <div class="row text-center mt-5">
   <div class="col-md-3 mb-4">
