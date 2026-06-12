@@ -6,6 +6,34 @@
         </div>
     </div>
 
+    <!-- Barra di ricerca -->
+    <div class="mb-4" *ngIf="!isLoading && !errorMessage">
+        <div class="input-group" style="max-width: 420px;">
+            <span class="input-group-text bg-white border-end-0 rounded-pill-start">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input
+                type="text"
+                class="form-control border-start-0 ps-0"
+                style="border-radius: 0 2rem 2rem 0;"
+                placeholder="Cerca per nome, cognome, email o ruolo..."
+                [(ngModel)]="searchQuery"
+                (ngModelChange)="filtraUtenti()"
+            >
+            <button
+                *ngIf="searchQuery"
+                class="btn btn-link text-muted position-absolute end-0 top-50 translate-middle-y pe-3"
+                style="z-index: 5;"
+                (click)="searchQuery = ''; filtraUtenti()"
+                title="Cancella ricerca">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <small class="text-muted mt-1 d-block" *ngIf="searchQuery">
+            {{ utentiFiltrati.length }} risultat{{ utentiFiltrati.length === 1 ? 'o' : 'i' }} su {{ utenti.length }} utenti
+        </small>
+    </div>
+
     <!-- Loader -->
     <div *ngIf="isLoading" class="text-center my-5">
         <div class="spinner-border text-danger" role="status"></div>
@@ -15,7 +43,8 @@
     <div *ngIf="errorMessage" class="alert alert-danger text-center shadow-sm rounded-4 border-0">
         <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
     </div>
-
+    <!-- Totale Utenti registrati -->
+    <div class="row" *ngIf="!isLoading && !errorMessage"><h4 class="font-weight-bold text-danger">Totale utenti: {{ utenti.length }}</h4></div>
     <!-- Tabella Utenti -->
     <div class="card shadow-sm border-0" style="border-radius: 1rem; overflow: hidden;" *ngIf="!isLoading && !errorMessage">
         <div class="table-responsive">
@@ -27,13 +56,17 @@
                         <th scope="col">Cognome</th>
                         <th scope="col">Email</th>
                         <th scope="col">Ruolo</th>
+                        <th scope="col" class="text-end pe-4">Azioni</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngIf="utenti.length === 0">
-                        <td colspan="5" class="text-center py-5 text-muted">Nessun utente trovato.</td>
+                    <tr *ngIf="utentiFiltrati.length === 0">
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-search me-2"></i>
+                            {{ searchQuery ? 'Nessun utente trovato per "' + searchQuery + '".' : 'Nessun utente trovato.' }}
+                        </td>
                     </tr>
-                    <tr *ngFor="let utente of utenti">
+                    <tr *ngFor="let utente of utentiFiltrati">
                         <td class="ps-4 font-weight-bold text-secondary">#{{ utente.id }}</td>
                         <td class="font-weight-bold">{{ utente.nome }}</td>
                         <td>{{ utente.cognome }}</td>
@@ -42,6 +75,9 @@
                             <span class="badge rounded-pill" [ngClass]="utente.ruolo === 'admin' ? 'bg-danger' : 'bg-secondary'">
                                 {{ utente.ruolo | uppercase }}
                             </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-danger rounded-circle" title="Elimina" (click)="eliminaUtente(utente)"><i class="bi bi-trash-fill"></i></button>
                         </td>
                     </tr>
                 </tbody>

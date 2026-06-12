@@ -33,8 +33,17 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   private COLORS = ['#f86ded', '#a78bfa'];
 
   public prodottiConsigliati: any[] = [];
-  public prezzoCondizione: { [id: number]: 'Nuovo' | 'Usato' } = {};
+  public prodottiUsati: any[] = [];
   public preferiti: number[] = [];
+
+  // Mappa nome normalizzato -> prezzo del record DB Nuovo (se esiste).
+  // Serve per calcolare il prezzo barrato sulla card Usato della nuova sezione.
+  private prezzoNuovoPerNome: Map<string, number> = new Map();
+
+  private RETRO_KEYWORDS = [
+    'playstation 1', 'playstation 2', 'playstation 3', 'ps1', 'ps2', 'ps3',
+    'black ops iii', 'uncharted 3', 'need for speed rivals', 'farcry 3', 'gran turismo 5'
+  ];
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef, public carrelloService: CarrelloService, private toast: ToastService) {}
 
@@ -54,55 +63,122 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
 
   async caricaDatiCatalogo() {
     try {
-      // Carica tutti i prodotti e mescolali per un effetto "consigliato"
       const response = await fetch('http://localhost:3000/api/prodotti');
       if (response.ok) {
         const tuttiIProdotti = await response.json();
-        // Mescola l'array per un effetto casuale e ne prende 12
-        this.prodottiConsigliati = tuttiIProdotti.sort(() => 0.5 - Math.random()).slice(0, 12);
-        this.prodottiConsigliati.forEach((p: any) => this.prezzoCondizione[p.id] = 'Nuovo');
-        // Sostituisci alcune card consigliate con prodotti reali cercati nel catalogo
-        this.injectCustomReplacements(tuttiIProdotti);
-      }
 
-      this.cdr.detectChanges(); // Aggiorna la vista
+        // Normalizza eventuali refusi e costruisci mappa prezzi Nuovo per nome
+        tuttiIProdotti.forEach((p: any) => {
+          if (p.condizione === 'Usata') p.condizione = 'Usato';
+        });
+        this.prezzoNuovoPerNome = new Map();
+        tuttiIProdotti.forEach((p: any) => {
+          if (p.condizione === 'Nuovo') {
+            const key = (p.nome || '').trim().toLowerCase();
+            this.prezzoNuovoPerNome.set(key, Number(p.prezzoUnitarioVendita));
+          }
+        });
+
+        // Escludiamo dalle vetrine della home i prodotti esauriti (giacenza <= 0)
+        const disponibili = tuttiIProdotti.filter((p: any) => Number(p.giacenza) > 0);
+
+        // ---- Consigliati per te ----
+        // Mostra una variante per riga DB (la condizione effettiva del record).
+        // Le card Usato qui sono "semplici" (senza barrato + -25%, come ora).
+        let selezione = disponibili.sort(() => 0.5 - Math.random()).slice(0, 12);
+        selezione = this.applyCustomReplacements(selezione, disponibili);
+        this.prodottiConsigliati = selezione.map((raw: any) => this.preferredVariant(raw));
+
+        // ---- Guarda il nostro Usato ----
+        // Prende SOLO le righe DB con condizione = 'Usato' (oppure retrogaming
+        // anche se nel DB risultano 'Nuovo'), shuffle, max 12 elementi.
+        const usati = disponibili
+          .filter((p: any) => p.condizione === 'Usato' || this.isRetrogaming(p))
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 12);
+        this.prodottiUsati = usati.map((raw: any) => this.usatoVariantConSconto(raw));
+      }
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Errore nel caricamento del catalogo dalla Home:', error);
     }
   }
 
-  private injectCustomReplacements(tuttiIProdotti: any[]) {
-    // Cerca i prodotti reali dal database per parole chiave
+  /**
+   * Costruisce la variante Usato "full grafica" per la sezione "Guarda il nostro Usato":
+   * include il prezzo barrato (originale) e abilita il badge -25%.
+   * - se per lo stesso nome esiste anche il record Nuovo, usiamo il prezzo del Nuovo DB;
+   * - altrimenti ricostruiamo il prezzo "originale" come prezzo_usato / 0.75.
+   */
+  private usatoVariantConSconto(raw: any): any {
+    const prezzoDB = Number(raw.prezzoUnitarioVendita);
+    const key = (raw.nome || '').trim().toLowerCase();
+    const prezzoNuovoDb = this.prezzoNuovoPerNome.get(key);
+    const prezzoOriginale = prezzoNuovoDb !== undefined && prezzoNuovoDb > prezzoDB
+      ? prezzoNuovoDb
+      : Math.round((prezzoDB / 0.75) * 100) / 100;
+    return {
+      ...raw,
+      condizioneVariante: 'Usato',
+      prezzoVariante: prezzoDB,
+      prezzoOriginale,
+    };
+  }
+
+  private applyCustomReplacements(selezione: any[], tuttiIProdotti: any[]): any[] {
     const ps5 = tuttiIProdotti.find(p => p.nome.toLowerCase().includes('ps5') && !p.nome.toLowerCase().includes('ps4'));
     const xbox = tuttiIProdotti.find(p => p.nome.toLowerCase().includes('xbox series'));
     const gta = tuttiIProdotti.find(p => p.nome.toLowerCase().includes('gta') || p.nome.toLowerCase().includes('grand theft'));
     const spiderman = tuttiIProdotti.find(p => p.nome.toLowerCase().includes('spider'));
-
-    const custom = [];
-    if (ps5) custom.push(ps5);
-    if (xbox) custom.push(xbox);
-    if (gta) custom.push(gta);
-    if (spiderman) custom.push(spiderman);
-
-    // Sostituisci i primi elementi delle card consigliate con i prodotti trovati
-    for (let i = 0; i < custom.length && i < this.prodottiConsigliati.length; i++) {
-      this.prodottiConsigliati[i] = custom[i];
-      this.prezzoCondizione[custom[i].id] = 'Nuovo';
+    const custom = [ps5, xbox, gta, spiderman].filter(Boolean);
+    for (let i = 0; i < custom.length && i < selezione.length; i++) {
+      selezione[i] = custom[i];
     }
-
-    this.cdr.detectChanges();
+    return selezione;
   }
 
-  setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
-    this.prezzoCondizione[prodId] = cond;
+  private isRetrogaming(p: any): boolean {
+    const nome = (p?.nome || '').toLowerCase();
+    return this.RETRO_KEYWORDS.some(kw => nome.includes(kw));
+  }
+
+  /**
+   * Costruisce la variante da mostrare nella home:
+   *  - retrogaming        -> Usato (prezzo DB)
+   *  - DB "Usato"         -> Usato (prezzo DB)
+   *  - DB "Nuovo"         -> Nuovo (prezzo DB)
+   */
+  private preferredVariant(raw: any): any {
+    const prezzoDB = Number(raw.prezzoUnitarioVendita);
+    if (this.isRetrogaming(raw) || raw.condizione === 'Usato' || raw.condizione === 'Usata') {
+      return {
+        ...raw,
+        condizioneVariante: 'Usato',
+        prezzoVariante: prezzoDB,
+        prezzoOriginale: null,
+      };
+    }
+    return {
+      ...raw,
+      condizioneVariante: 'Nuovo',
+      prezzoVariante: prezzoDB,
+      prezzoOriginale: null,
+    };
   }
 
   getPrezzoVisualizzato(p: any): number {
-    const cond = this.prezzoCondizione[p.id] || 'Nuovo';
-    if (cond === 'Usato') {
-      return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
-    }
-    return p.prezzoUnitarioVendita;
+    if (p?.prezzoVariante !== undefined) return Number(p.prezzoVariante);
+    return Number(p.prezzoUnitarioVendita);
+  }
+
+  /** Prezzo barrato (originale) per la card Usato della sezione "Guarda il nostro Usato". */
+  getPrezzoOriginale(p: any): number | null {
+    if (!p || p.prezzoOriginale == null) return null;
+    return Number(p.prezzoOriginale);
+  }
+
+  isVariantUsato(p: any): boolean {
+    return p?.condizioneVariante === 'Usato';
   }
 
   isPreferito(id: number): boolean {
@@ -120,7 +196,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async aggiungiAlCarrello(prodotto: any) {
-    const condizioneScelta = this.prezzoCondizione[prodotto.id] || 'Nuovo';
+    const condizioneScelta = prodotto.condizioneVariante || 'Nuovo';
     const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
 
     // Delega tutta la logica (ospite/loggato e aggiornamento navbar) al CarrelloService

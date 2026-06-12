@@ -1,14 +1,14 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="font-weight-bold m-0"><i class="bi bi-box-seam text-info me-2"></i> Gestione <span class="text-info">Ordini</span></h2>
+            <h2 class="font-weight-bold m-0"><i class="bi bi-receipt text-danger me-2"></i> Gestione <span class="text-danger">Ordini</span></h2>
             <p class="text-muted mt-1 mb-0">Visualizza e gestisci tutti gli ordini ricevuti da PAwerUP.</p>
         </div>
     </div>
 
     <!-- Loader -->
     <div *ngIf="isLoading" class="text-center my-5">
-        <div class="spinner-border text-info" role="status"></div>
+        <div class="spinner-border text-danger" role="status"></div>
     </div>
 
     <!-- Messaggio di errore -->
@@ -39,7 +39,7 @@
                         <td class="ps-4 font-weight-bold text-secondary">#{{ ordine.id }}</td>
                         <td>{{ ordine.data | date:'short' }}</td>
                         <td>{{ ordine.utente_id }}</td>
-                        <td class="font-weight-bold text-info">{{ ordine.totale | currency:'EUR':'symbol' }}</td>
+                        <td class="font-weight-bold text-danger">{{ ordine.totale | currency:'EUR':'symbol' }}</td>
                         <td>
                             <small class="text-muted d-block text-wrap" style="max-width: 250px; line-height: 1.5;">
                                 {{ ordine.indirizzo_spedizione || 'N/A' }}

@@ -21,6 +21,10 @@ export interface Prodotto {
   condizione: string;
   puntiFedelta: number;
   genere?: string;
+  // Campi virtuali aggiunti lato client per generare le varianti Nuovo/Usato
+  variantKey?: string;            // chiave univoca = id + '-' + condizioneVariante
+  condizioneVariante?: 'Nuovo' | 'Usato'; // condizione effettiva mostrata nella card
+  prezzoVariante?: number;        // prezzo calcolato per questa variante
 }
 
 @Component({
@@ -32,6 +36,7 @@ export interface Prodotto {
 })
 export class Prodotti implements OnInit, OnDestroy {
   categoriaDenominazione: string | null = null;
+  // 'prodotti' contiene le VARIANTI (es. un prodotto Nuovo genera 2 elementi: Nuovo + Usato)
   prodotti: Prodotto[] = [];
   prodottiFiltrati: Prodotto[] = [];
   filtroAttivo: string = 'Tutti';
@@ -39,7 +44,6 @@ export class Prodotti implements OnInit, OnDestroy {
   isAnimating: boolean = false;
   errorMessage: string = '';
   preferiti: number[] = [];
-  prezzoCondizione: { [key: number]: 'Nuovo' | 'Usato' } = {};
 
   // Paginazione
   paginaCorrente: number = 1;
@@ -51,6 +55,11 @@ export class Prodotti implements OnInit, OnDestroy {
   prezzoMax: number | null = null;
   disponibilita: string = '';
   condizione: string = '';
+
+  // Per ogni "prodotto logico" (chiave = nome normalizzato) memorizziamo il
+  // prezzo della riga DB Nuovo, se esiste. Serve per mostrare il prezzo barrato
+  // sulla card Usato quando esistono entrambe le condizioni nel DB.
+  private prezzoNuovoPerNome: Map<string, number> = new Map();
 
 
   sottoCategorie: any[] = [];
@@ -110,18 +119,34 @@ export class Prodotti implements OnInit, OnDestroy {
       const response = await fetch(`http://localhost:3000/api/prodotti/categoria/${categoriaId}`);
       if (response.ok) {
         const data = await response.json();
-        this.prodotti = data.map((p: Prodotto) => {
-          if (p.condizione === 'Usata') p.condizione = 'Usato'; // Normalizza in caso di refusi nel DB
-          if (this.isRetrogaming(p)) {
-            this.prezzoCondizione[p.id] = 'Usato';
-          } else {
-            this.prezzoCondizione[p.id] = 'Nuovo';
-          }
-          return p;
+        // Normalizza eventuali refusi nel campo condizione
+        data.forEach((raw: Prodotto) => {
+          if ((raw.condizione as any) === 'Usata') raw.condizione = 'Usato';
         });
+        // Mappa: per ogni "prodotto logico" (raggruppato per nome normalizzato)
+        // tracciamo quali condizioni esistono realmente nel DB e il prezzo Nuovo (se presente).
+        const condizioniPerNome = new Map<string, Set<string>>();
+        this.prezzoNuovoPerNome = new Map();
+        data.forEach((raw: Prodotto) => {
+          const key = (raw.nome || '').trim().toLowerCase();
+          if (!condizioniPerNome.has(key)) condizioniPerNome.set(key, new Set());
+          condizioniPerNome.get(key)!.add(raw.condizione);
+          if (raw.condizione === 'Nuovo') {
+            this.prezzoNuovoPerNome.set(key, Number(raw.prezzoUnitarioVendita));
+          }
+        });
+        // Costruiamo le varianti mostrando SOLO le condizioni realmente presenti nel DB.
+        // Se per uno stesso nome esiste sia Nuovo che Usato, l'Usato avrà comunque il -25%
+        // calcolato dal prezzo del Nuovo (per coerenza visiva); altrimenti viene usato
+        // il prezzo della riga DB corrispondente.
+        const varianti: Prodotto[] = [];
+        data.forEach((raw: Prodotto) => {
+          varianti.push(...this.espandiInVarianti(raw, condizioniPerNome));
+        });
+        this.prodotti = varianti;
         this.prodottiFiltrati = [...this.prodotti];
-        console.log('Prodotti caricati con successo:', this.prodotti);
-        this.cdr.detectChanges(); // Forza l'aggiornamento dell'HTML
+        console.log('Prodotti caricati con successo (varianti):', this.prodotti);
+        this.cdr.detectChanges();
       } else {
         this.errorMessage = 'Errore nel recupero dei prodotti.';
       }
@@ -178,6 +203,43 @@ export class Prodotti implements OnInit, OnDestroy {
     if (event.target.src !== fallbackUrl) {
       event.target.src = fallbackUrl;
     }
+  }
+
+  /**
+   * Costruisce le varianti visualizzabili a partire da una riga del DB.
+   * Regola: si mostrano SOLO le condizioni effettivamente presenti nel DB
+   * (raggruppando i record per nome). Nessuna variante “fantasma” viene generata.
+   *
+   * - Retrogaming      -> SOLO variante Usato (prezzo DB)
+   * - Riga DB Usato    -> variante Usato col prezzo della riga DB Usato
+   * - Riga DB Nuovo    -> variante Nuovo col prezzo della riga DB Nuovo
+   *
+   * Per evitare di duplicare l’elenco quando per lo stesso nome esistono sia
+   * il record Nuovo sia il record Usato, ogni riga DB genera SOLO la variante
+   * della propria condizione.
+   */
+  private espandiInVarianti(raw: Prodotto, condizioniPerNome: Map<string, Set<string>>): Prodotto[] {
+    const result: Prodotto[] = [];
+    const prezzoDB = Number(raw.prezzoUnitarioVendita);
+
+    if (this.isRetrogaming(raw)) {
+      result.push({
+        ...raw,
+        condizioneVariante: 'Usato',
+        variantKey: `${raw.id}-Usato`,
+        prezzoVariante: prezzoDB,
+      });
+      return result;
+    }
+
+    const cond: 'Nuovo' | 'Usato' = raw.condizione === 'Usato' ? 'Usato' : 'Nuovo';
+    result.push({
+      ...raw,
+      condizioneVariante: cond,
+      variantKey: `${raw.id}-${cond}`,
+      prezzoVariante: prezzoDB,
+    });
+    return result;
   }
 
   isRetrogaming(prodotto: Prodotto): boolean {
@@ -238,6 +300,15 @@ export class Prodotti implements OnInit, OnDestroy {
     this.impostaFiltro('Tutti');
   }
 
+  /**
+   * Imposta il filtro condizione (chiamato dai 3 bottoni Tutti/Nuovo/Usato nella sidebar).
+   * 'val' = '' (Tutti), 'Nuovo', 'Usato'.
+   */
+  impostaCondizione(val: string) {
+    this.condizione = val;
+    this.applicaFiltriAvanzati();
+  }
+
   impostaFiltro(filtro: string) {
     this.filtroAttivo = filtro;
     this.applicaFiltriAvanzati();
@@ -269,7 +340,7 @@ export class Prodotti implements OnInit, OnDestroy {
       }
     }
 
-    // 2. Filtro per Range di Prezzo
+    // 2. Filtro per Range di Prezzo (usa prezzoVariante)
     if (this.prezzoMin !== null && this.prezzoMin !== undefined) {
       result = result.filter(p => this.getPrezzoVisualizzato(p) >= this.prezzoMin!);
     }
@@ -295,11 +366,11 @@ export class Prodotti implements OnInit, OnDestroy {
       result.sort((a, b) => b.nome.localeCompare(a.nome));
     }
 
-    // 5. Filtro per Condizione
+    // 5. Filtro per Condizione (usa la condizione della variante)
     if (this.condizione === 'Nuovo') {
-      result = result.filter(p => !this.isRetrogaming(p));
+      result = result.filter(p => p.condizioneVariante === 'Nuovo');
     } else if (this.condizione === 'Usato') {
-      result = result.filter(p => this.isRetrogaming(p));
+      result = result.filter(p => p.condizioneVariante === 'Usato');
     }
     
     this.prodottiFiltrati = result;
@@ -323,44 +394,42 @@ export class Prodotti implements OnInit, OnDestroy {
   }
 
 
-  setCondizione(prodId: number, cond: 'Nuovo' | 'Usato') {
-    const prodotto = this.prodotti.find(p => p.id === prodId);
-    
-    // Impedisce di selezionare "Nuovo" SOLO per i veri prodotti vintage (Retrogaming)
-    if (prodotto && cond === 'Nuovo' && this.isRetrogaming(prodotto)) {
-      this.toast.error("Questo prodotto vintage è disponibile solo in condizione Usato.");
-      return; 
-    }
-
-    this.prezzoCondizione[prodId] = cond;
-    this.applicaFiltriAvanzati(false, false); // Ricalcola i prezzi MA senza resettare la pagina e senza riavviare l'animazione
-  }
-
+  /**
+   * Prezzo visualizzato per la variante (Nuovo: prezzo DB, Usato non-retro: -25%, retro: prezzo DB).
+   */
   getPrezzoVisualizzato(p: Prodotto): number {
-    const cond = this.prezzoCondizione[p.id] || 'Nuovo';
-    
-    const isRetro = this.isRetrogaming(p);
-
-    // Se è un prodotto vintage, il prezzo rimane fisso a prescindere
-    if (isRetro) {
-      return p.prezzoUnitarioVendita;
-    }
-
-    if (p.condizione === 'Usato') {
-      // Se nel DB è 'Usato' ma l'utente seleziona 'Nuovo', calcoliamo il prezzo pieno senza sconto (+33.33%)
-      if (cond === 'Nuovo') {
-        return Math.round((p.prezzoUnitarioVendita / 0.75) * 100) / 100;
-      }
-      return p.prezzoUnitarioVendita;
-    }
-
-    // Se nel DB è 'Nuovo' ma l'utente seleziona 'Usato', applichiamo sconto del 25%
-    if (cond === 'Usato') {
-      return Math.round((p.prezzoUnitarioVendita * 0.75) * 100) / 100;
-    }
-    
-    return p.prezzoUnitarioVendita;
+    if (p.prezzoVariante !== undefined) return Number(p.prezzoVariante);
+    return Number(p.prezzoUnitarioVendita);
   }
+
+  /**
+   * Prezzo "originale" usato per il barrato sulla card Usato.
+   * Mostriamo SEMPRE il barrato + badge -25% su ogni card Usato (compreso retrogaming
+   * e Usato “standalone”) per una grafica uniforme:
+   *  - se per lo stesso nome esiste il record Nuovo nel DB con prezzo maggiore,
+   *    usiamo quel prezzo come barrato;
+   *  - altrimenti calcoliamo il prezzo "pieno" come prezzo_usato / 0.75
+   *    (cioè il prezzo dal quale il -25% restituirebbe esattamente il prezzo Usato).
+   */
+  getPrezzoOriginale(p: Prodotto): number | null {
+    if (p.condizioneVariante !== 'Usato') return null;
+    const prezzoUsato = this.getPrezzoVisualizzato(p);
+    if (!prezzoUsato || prezzoUsato <= 0) return null;
+    const key = (p.nome || '').trim().toLowerCase();
+    const prezzoNuovoDb = this.prezzoNuovoPerNome.get(key);
+    if (prezzoNuovoDb !== undefined && prezzoNuovoDb > prezzoUsato) {
+      return prezzoNuovoDb;
+    }
+    // Fallback: ricostruiamo il prezzo "originale" dal prezzo Usato.
+    return Math.round((prezzoUsato / 0.75) * 100) / 100;
+  }
+
+  isVariantUsato(p: Prodotto): boolean {
+    return p.condizioneVariante === 'Usato';
+  }
+
+  /** Identificatore stabile per *ngFor sulle varianti */
+  trackByVariant = (_: number, p: Prodotto) => p.variantKey || p.id;
 
   caricaPreferiti() {
     const salvati = localStorage.getItem('preferiti');
@@ -385,7 +454,7 @@ export class Prodotti implements OnInit, OnDestroy {
 
   async aggiungiAlCarrello(prodotto: Prodotto) {
     const token = localStorage.getItem('token');
-    const condizioneScelta = this.prezzoCondizione[prodotto.id] || 'Nuovo';
+    const condizioneScelta: 'Nuovo' | 'Usato' = prodotto.condizioneVariante || 'Nuovo';
     const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
 
     if (token) {

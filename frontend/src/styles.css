@@ -1258,3 +1258,142 @@ body.theme-dark .nav-category-link {
 body.theme-dark .nav-category-link:hover {
   color: var(--main-color) !important;
 }
+
+/* ============================================================
+   Sistema varianti Nuovo/Usato (card prodotto, sidebar, badge)
+   ============================================================ */
+
+/* Badge condizione: aggiungo icona inline + arrotondamento pillola */
+.badge-condizione {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px !important;
+  padding: 0.3rem 0.7rem !important;
+}
+.badge-condizione i {
+  font-size: 0.85rem;
+}
+
+/* Badge angolare "-25%" per card variante Usato (corner top-left) */
+.product-card { overflow: hidden; }
+.product-card .discount-corner-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: linear-gradient(135deg, #dc3545, #b91c1c);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(220, 53, 69, 0.45);
+}
+
+/* Sottile evidenza visiva per le card variante Usato */
+.product-card.usato-variant {
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+.product-card.usato-variant::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.04), rgba(245, 158, 11, 0));
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Gruppo bottoni filtro condizione (sidebar) */
+.condizione-filter-group {
+  display: flex;
+  gap: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--bg-input, #f8f9fb);
+}
+.condizione-filter-group .btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #6c757d);
+  font-weight: 600;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.condizione-filter-group .btn:hover {
+  color: var(--main-color);
+  background: rgba(248, 109, 236, 0.08);
+}
+.condizione-filter-group .btn.active-pill {
+  background: linear-gradient(135deg, var(--main-color), #fb7185);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.45);
+}
+
+/* Dark mode tweaks */
+body.theme-dark .condizione-filter-group {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+body.theme-dark .condizione-filter-group .btn {
+  color: #cbd5e1;
+}
+body.theme-dark .condizione-filter-group .btn:hover {
+  color: var(--main-color);
+  background: rgba(248, 109, 236, 0.12);
+}
+body.theme-dark .product-card.usato-variant {
+  border-color: rgba(245, 158, 11, 0.45);
+}
+body.theme-dark .product-card .discount-corner-badge {
+  box-shadow: 0 6px 22px rgba(220, 53, 69, 0.6);
+}
+
+/* === Stato ESAURITO (giacenza = 0) ============================== */
+
+/* Badge label "Esaurito" mostrato accanto al badge condizione */
+.badge-condizione.badge-esaurito {
+  background-color: rgba(148, 163, 184, 0.18);
+  color: #475569;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+/* Corner badge angolare grigio per prodotti esauriti (sostituisce il -25%) */
+.product-card .out-of-stock-corner-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: linear-gradient(135deg, #64748b, #334155);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(51, 65, 85, 0.45);
+  text-transform: uppercase;
+}
+
+/* Le card esaurite vengono leggermente "spente" per dare un segnale visivo */
+.product-card.is-sold-out {
+  opacity: 0.78;
+}
+.product-card.is-sold-out img {
+  filter: grayscale(0.4);
+}
+
+/* Dark mode */
+body.theme-dark .badge-condizione.badge-esaurito {
+  background-color: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.35);
+}
+body.theme-dark .product-card .out-of-stock-corner-badge {
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.6);
+}
+

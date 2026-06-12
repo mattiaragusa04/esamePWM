@@ -1,22 +1,26 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';  
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-utenti',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-utenti.html',
   styleUrl: './admin-utenti.css',
 })
 export class AdminUtenti implements OnInit {
   utenti: any[] = [];
+  utentiFiltrati: any[] = [];
   isLoading = true;
   errorMessage = '';
+  searchQuery = '';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef
   ) {}
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.caricaUtenti();
@@ -26,14 +30,15 @@ export class AdminUtenti implements OnInit {
   async caricaUtenti() {
     this.isLoading = true;
     this.errorMessage = '';
-    try{
+    try {
       const response = await fetch('http://localhost:3000/api/auth/utenti');
       if (response.ok) {
         this.utenti = await response.json();
+        this.utentiFiltrati = [...this.utenti];
       } else {
         this.errorMessage = 'Errore nel caricamento degli utenti.';
       }
-    } catch (error) {  
+    } catch (error) {
       console.error('Errore di rete:', error);
       this.errorMessage = 'Impossibile connettersi al server.';
     } finally {
@@ -42,5 +47,39 @@ export class AdminUtenti implements OnInit {
     }
   }
 
-  
+  filtraUtenti() {
+    const q = this.searchQuery.toLowerCase().trim();
+    if (!q) {
+      this.utentiFiltrati = [...this.utenti];
+      return;
+    }
+    this.utentiFiltrati = this.utenti.filter(u =>
+      u.nome?.toLowerCase().includes(q) ||
+      u.cognome?.toLowerCase().includes(q) ||
+      u.email?.toLowerCase().includes(q) ||
+      u.ruolo?.toLowerCase().includes(q)
+    );
+  }
+
+  async eliminaUtente(utente : any) {
+    if (!confirm('Sei sicuro di voler eliminare l\'utente ' + utente.email + '?')) return;
+    
+    const token = localStorage.getItem('token');
+    try{
+      const response = await fetch(`http://localhost:3000/api/auth/${utente.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        this.caricaUtenti(); // Ricarica la lista dopo l'eliminazione
+      } else {
+        this.errorMessage = 'Errore durante l\'eliminazione.';
+      }
+    } catch (error) {
+      console.error('Errore di rete:', error);
+      this.errorMessage = 'Impossibile connettersi al server.';
+    }
+  }
 }

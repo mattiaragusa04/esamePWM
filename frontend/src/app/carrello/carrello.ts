@@ -58,15 +58,14 @@ export class Carrello implements OnInit, OnDestroy {
   }
 
   async rimuoviOggetto(item: any) {
-    if (confirm(`Sei sicuro di voler rimuovere ${item.nome} dal carrello?`)) {
-      await this.carrelloService.rimuoviProdotto(item);
-    }
+    await this.carrelloService.rimuoviProdotto(item);
+    this.toast.info(`${item.nome} rimosso dal carrello`);
   }
 
   async svuotaCarrello() {
-    if (confirm('Sei sicuro di voler svuotare l\'intero carrello?')) {
-      await this.carrelloService.svuotaCarrello();
-    }
+    if (!this.carrello || this.carrello.length === 0) return;
+    await this.carrelloService.svuotaCarrello();
+    this.toast.info('Carrello svuotato');
   }
 
   /**

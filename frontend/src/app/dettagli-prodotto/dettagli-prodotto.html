@@ -24,28 +24,38 @@
         <p class="text-secondary mb-4">{{ prodotto.descrizione }}</p>
         <hr>
 
-        <!-- Selezione Condizione (Nuovo/Usato) -->
+        <!-- Condizione (label fissa, non modificabile dall'utente) + badge Esaurito -->
         <div class="mb-4">
           <label class="form-label text-muted small text-uppercase fw-bold ls-1">Condizione:</label>
-          <div class="d-flex gap-3 condition-toggle">
-            <button *ngIf="!isRetrogaming(prodotto)"
-                    class="btn btn-outline-info rounded-pill px-4" 
-                    [class.active-condition]="prezzoCondizione === 'Nuovo'" 
-                    (click)="setCondizione('Nuovo')">
-              Nuovo
-            </button>
-            <button class="btn btn-outline-info rounded-pill px-4" 
-                    [class.active-condition]="prezzoCondizione === 'Usato'" 
-                    (click)="setCondizione('Usato')">
-              Usato
-            </button>
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="badge-condizione"
+                  [ngClass]="isUsato() ? 'badge-usato' : 'badge-nuovo'"
+                  style="font-size: 1rem; padding: 0.5rem 1rem;">
+              <i class="bi" [ngClass]="isUsato() ? 'bi-recycle' : 'bi-stars'"></i>
+              {{ getCondizioneEffettiva() }}
+            </span>
+            <span *ngIf="prodotto.giacenza <= 0" class="badge-condizione badge-esaurito"
+                  style="font-size: 1rem; padding: 0.5rem 1rem;">
+              <i class="bi bi-x-octagon-fill"></i>
+              Esaurito
+            </span>
           </div>
         </div>
 
         <!-- Prezzo -->
         <div class="mb-4">
           <p class="text-muted small text-uppercase mb-0 fw-bold ls-1">Prezzo:</p>
-          <div class="price-display">€ {{ getPrezzoVisualizzato() | number:'1.2-2' }}</div>
+          <div class="d-flex align-items-baseline gap-3 flex-wrap">
+            <span *ngIf="getPrezzoOriginale() as originale"
+                  class="price-old fs-4">
+              € {{ originale | number:'1.2-2' }}
+            </span>
+            <div class="price-display" [class.text-danger]="isUsato()">€ {{ getPrezzoVisualizzato() | number:'1.2-2' }}</div>
+            <span *ngIf="getPrezzoOriginale() !== null"
+                  class="badge bg-danger text-white px-3 py-2 fs-6 rounded-pill">
+              -25% RISPARMI
+            </span>
+          </div>
         </div>
 
         <!-- Box Punti Fedeltà -->

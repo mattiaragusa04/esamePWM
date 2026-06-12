@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { ToastService } from '../shared/toast.service';
 
 // Assicurati che questa interfaccia sia definita nel tuo progetto
 export interface Prodotto {
@@ -34,7 +35,9 @@ export class DettagliProdotto implements OnInit, OnDestroy {
   errorMessage: string = '';
   prodottoId: number | null = null;
   preferiti: number[] = []; // Array per memorizzare gli ID dei prodotti preferiti
-  prezzoCondizione: 'Nuovo' | 'Usato' = 'Nuovo'; // Stato per la condizione del prodotto
+  prezzoCondizione: 'Nuovo' | 'Usato' = 'Nuovo'; // Condizione effettiva mostrata
+  /** Variante esplicitamente richiesta dall'utente (via query param ?cond=Nuovo|Usato). */
+  varianteScelta: 'Nuovo' | 'Usato' | null = null;
 
   private routeSub: Subscription | undefined;
 
@@ -42,16 +45,21 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router // Inietta il Router per la navigazione
+    private router: Router,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.caricaPreferiti(); // Carica i preferiti all'inizializzazione
+      this.caricaPreferiti();
       this.routeSub = this.route.paramMap.subscribe(params => {
         const id = params.get('id');
         if (id) {
           this.prodottoId = +id;
+          // Legge la variante (Nuovo/Usato) eventualmente passata via query param,
+          // per arrivare al dettaglio dalla card corretta.
+          const cond = this.route.snapshot.queryParamMap.get('cond');
+          this.varianteScelta = (cond === 'Usato' || cond === 'Nuovo') ? cond : null;
           this.caricaProdotto(this.prodottoId);
         } else {
           this.errorMessage = 'ID prodotto non fornito.';
@@ -74,10 +82,19 @@ export class DettagliProdotto implements OnInit, OnDestroy {
       if (response.ok) {
         const data = await response.json();
         this.prodotto = data;
+        // Determina la variante effettiva da mostrare:
+        // 1) Retro -> sempre Usato
+        // 2) Variante esplicita via query param se compatibile con la condizione DB
+        // 3) Condizione DB altrimenti
         if (this.prodotto && this.isRetrogaming(this.prodotto)) {
           this.prezzoCondizione = 'Usato';
+        } else if (this.prodotto && this.prodotto.condizione === 'Usato') {
+          this.prezzoCondizione = 'Usato';
+        } else if (this.prodotto && this.prodotto.condizione === 'Nuovo') {
+          // DB Nuovo: l'utente può atterrare sulla variante Nuovo o Usato (-25%)
+          this.prezzoCondizione = this.varianteScelta || 'Nuovo';
         } else {
-          this.prezzoCondizione = 'Nuovo'; 
+          this.prezzoCondizione = 'Nuovo';
         }
         console.log('Prodotto caricato:', this.prodotto);
       } else {
@@ -128,7 +145,37 @@ export class DettagliProdotto implements OnInit, OnDestroy {
 
   setCondizione(cond: 'Nuovo' | 'Usato') {
     this.prezzoCondizione = cond;
-    this.cdr.detectChanges(); // Aggiorna la vista per il prezzo
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Condizione effettivamente mostrata in questa pagina (Nuovo o Usato).
+   * Coincide con prezzoCondizione, calcolata in caricaProdotto.
+   */
+  getCondizioneEffettiva(): 'Nuovo' | 'Usato' {
+    return this.prezzoCondizione;
+  }
+
+  isUsato(): boolean {
+    return this.prezzoCondizione === 'Usato';
+  }
+
+  /**
+   * Prezzo "originale" da mostrare barrato accanto al prezzo Usato.
+   * Grafica uniforme: ogni variante Usato (anche retrogaming e Usato "standalone"
+   * dal DB) mostra sempre il barrato + -25%.
+   *  - DB Nuovo visualizzato come Usato -> barrato = prezzo DB
+   *  - DB Usato (o retrogaming)         -> barrato = prezzo_usato / 0.75
+   */
+  getPrezzoOriginale(): number | null {
+    if (!this.prodotto) return null;
+    if (this.prezzoCondizione !== 'Usato') return null;
+    const prezzoUsato = this.getPrezzoVisualizzato();
+    if (!prezzoUsato || prezzoUsato <= 0) return null;
+    if (this.prodotto.condizione === 'Nuovo') {
+      return Number(this.prodotto.prezzoUnitarioVendita);
+    }
+    return Math.round((prezzoUsato / 0.75) * 100) / 100;
   }
 
   getPuntiFedeltaVisualizzati(): number {
@@ -166,7 +213,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
 
   async aggiungiAlCarrello(prodotto: Prodotto) {
     const token = localStorage.getItem('token');
-    const condizioneScelta = this.prezzoCondizione; // Usa la condizione selezionata
+    const condizioneScelta = this.getCondizioneEffettiva();
     const prezzoFinale = this.getPrezzoVisualizzato();
 
     if (token) {
@@ -181,15 +228,15 @@ export class DettagliProdotto implements OnInit, OnDestroy {
           body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: Number(prezzoFinale) })
         });
         if (response.ok) {
-          alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+          this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
         } else {
           const errorData = await response.json();
           console.error("Dettagli errore backend:", JSON.stringify(errorData, null, 2));
-          alert(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+          this.toast.error(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
         }
       } catch (error) {
         console.error('Errore di connessione:', error);
-        alert('Errore di connessione al server.');
+        this.toast.error('Errore di connessione al server.');
       }
     } else {
       // Utente ospite: salva in localStorage
@@ -212,7 +259,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
           });
         }
       localStorage.setItem('carrello', JSON.stringify(carrello));
-      alert(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
+      this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
     }
   }
 
