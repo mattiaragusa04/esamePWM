@@ -404,18 +404,24 @@ export class Prodotti implements OnInit, OnDestroy {
 
   /**
    * Prezzo "originale" usato per il barrato sulla card Usato.
-   * Lo mostriamo SOLO quando per lo stesso prodotto (stesso nome) esiste anche
-   * il record Nuovo nel DB, ed il suo prezzo è superiore al prezzo Usato.
-   * Negli altri casi (retrogaming, oppure Usato “standalone” senza Nuovo) ritorna null.
+   * Mostriamo SEMPRE il barrato + badge -25% su ogni card Usato (compreso retrogaming
+   * e Usato “standalone”) per una grafica uniforme:
+   *  - se per lo stesso nome esiste il record Nuovo nel DB con prezzo maggiore,
+   *    usiamo quel prezzo come barrato;
+   *  - altrimenti calcoliamo il prezzo "pieno" come prezzo_usato / 0.75
+   *    (cioè il prezzo dal quale il -25% restituirebbe esattamente il prezzo Usato).
    */
   getPrezzoOriginale(p: Prodotto): number | null {
     if (p.condizioneVariante !== 'Usato') return null;
-    if (this.isRetrogaming(p)) return null;
-    const key = (p.nome || '').trim().toLowerCase();
-    const prezzoNuovo = this.prezzoNuovoPerNome.get(key);
-    if (prezzoNuovo === undefined) return null;
     const prezzoUsato = this.getPrezzoVisualizzato(p);
-    return prezzoNuovo > prezzoUsato ? prezzoNuovo : null;
+    if (!prezzoUsato || prezzoUsato <= 0) return null;
+    const key = (p.nome || '').trim().toLowerCase();
+    const prezzoNuovoDb = this.prezzoNuovoPerNome.get(key);
+    if (prezzoNuovoDb !== undefined && prezzoNuovoDb > prezzoUsato) {
+      return prezzoNuovoDb;
+    }
+    // Fallback: ricostruiamo il prezzo "originale" dal prezzo Usato.
+    return Math.round((prezzoUsato / 0.75) * 100) / 100;
   }
 
   isVariantUsato(p: Prodotto): boolean {

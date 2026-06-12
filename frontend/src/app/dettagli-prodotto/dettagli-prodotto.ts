@@ -160,14 +160,22 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     return this.prezzoCondizione === 'Usato';
   }
 
-  /** Prezzo originale (solo se la variante Usato deriva da un prodotto DB Nuovo, con sconto -25%). */
+  /**
+   * Prezzo "originale" da mostrare barrato accanto al prezzo Usato.
+   * Grafica uniforme: ogni variante Usato (anche retrogaming e Usato "standalone"
+   * dal DB) mostra sempre il barrato + -25%.
+   *  - DB Nuovo visualizzato come Usato -> barrato = prezzo DB
+   *  - DB Usato (o retrogaming)         -> barrato = prezzo_usato / 0.75
+   */
   getPrezzoOriginale(): number | null {
     if (!this.prodotto) return null;
-    if (this.isRetrogaming(this.prodotto)) return null;
-    if (this.prodotto.condizione === 'Nuovo' && this.prezzoCondizione === 'Usato') {
+    if (this.prezzoCondizione !== 'Usato') return null;
+    const prezzoUsato = this.getPrezzoVisualizzato();
+    if (!prezzoUsato || prezzoUsato <= 0) return null;
+    if (this.prodotto.condizione === 'Nuovo') {
       return Number(this.prodotto.prezzoUnitarioVendita);
     }
-    return null;
+    return Math.round((prezzoUsato / 0.75) * 100) / 100;
   }
 
   getPuntiFedeltaVisualizzati(): number {
