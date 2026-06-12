@@ -15,29 +15,79 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// 2. Funzione per inviare l'email con un bel template HTML
-function inviaEmailBenvenuto(emailUtente, nomeUtente) {
+// 2. Funzione per inviare la prima email (Conferma registrazione)
+exports.inviaEmailConferma = async function(emailUtente, nomeUtente, cognomeUtente, token) {
+    const linkConferma = `http://localhost:3000/api/auth/conferma/${token}`; // Regola l'URL in base alle tue route
     const mailOptions = {
-        from: '"PAwerUP Store" <la_tua_email_del_negozio@gmail.com>',
+        from: '"PAwerUP Store" <pawerupecommerce@gmail.com>',
+        to: emailUtente,
+        subject: 'Conferma la tua registrazione su PAwerUP',
+        html: `
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 15px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.05); background-color: #f8fafc;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="color: #f86ded; margin: 0; font-size: 32px;">PAwerUP</h1>
+                </div>
+                <div style="background-color: #ffffff; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    <h2 style="color: #0f172a; margin-top: 0;">Ciao ${nomeUtente} ${cognomeUtente}! 👋</h2>
+                    <p style="font-size: 16px; line-height: 1.6; color: #475569;">Grazie per esserti registrato su <strong>PAwerUP</strong>. Per confermare la tua iscrizione e attivare l'account, clicca sul pulsante qui sotto:</p>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${linkConferma}" style="background: linear-gradient(135deg, #f86ded, #fb7185); color: white; padding: 14px 28px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 10px rgba(248, 109, 237, 0.3);">Conferma la registrazione</a>
+                </div>
+                
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                
+                <p style="font-size: 14px; color: #64748b; text-align: center;">Se non hai richiesto tu questa registrazione, ignora pure questa email.</p>
+            </div>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email di conferma inviata con successo a: ' + emailUtente);
+        return true;
+    } catch (error) {
+        console.error('Errore durante l\'invio dell\'email di conferma:', error);
+        throw error; // Propaghiamo l'errore per gestirlo nel controller
+    }
+}
+
+// 3. Funzione per inviare l'email di benvenuto (seconda email o per gli account seed)
+exports.inviaEmailBenvenuto = function(emailUtente, nomeUtente, cognomeUtente) {
+    const mailOptions = {
+        from: '"PAwerUP Store" <pawerupecommerce@gmail.com>',
         to: emailUtente,
         subject: 'Conferma avvenuta registrazione su PAwerUP',
         html: `
-            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 15px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.05); background-color: #f8fafc;">
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <h1 style="color: #f86ded; margin: 0;">PAwerUP</h1>
+                    <h1 style="color: #f86ded; margin: 0; font-size: 32px;">PAwerUP</h1>
                 </div>
-                <h2 style="color: #0f172a;">Benvenuto a bordo, ${nomeUtente}! 🎮</h2>
-                <p style="font-size: 16px; line-height: 1.5;">Siamo felicissimi di confermarti che la tua registrazione su <strong>PAwerUP</strong> è avvenuta con successo.</p>
-                <p style="font-size: 16px; line-height: 1.5;">Il tuo account è ora attivo e pronto per permetterti di esplorare il nostro catalogo di console, videogiochi, accessori ed elettronica.</p>
+                <div style="background-color: #ffffff; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    <h2 style="color: #0f172a; margin-top: 0;">Benvenuto a bordo, ${nomeUtente} ${cognomeUtente}! 🎮</h2>
+                    <p style="font-size: 16px; line-height: 1.6; color: #475569;">Siamo felicissimi di confermarti che la tua registrazione su <strong>PAwerUP</strong> è avvenuta con successo.</p>
+                    <p style="font-size: 16px; line-height: 1.6; color: #475569;">Il tuo account è ora attivo e pronto per permetterti di esplorare il nostro catalogo. Ecco cosa troverai nel nostro store:</p>
+                    <ul style="font-size: 16px; color: #475569; padding-left: 20px; line-height: 1.6;">
+                        <li>🕹️ <strong>Console Next-Gen e Retrò:</strong> PlayStation, Xbox, Nintendo e molto altro...</li>
+                        <li>👾 <strong>Videogiochi:</strong> Le ultime uscite e i grandi classici, nuovi e usati.</li>
+                        <li>🎧 <strong>Elettronica:</strong> Periferiche gaming, cuffie, smartwatch, videocamere...</li>
+                        <li>✨​ <strong>Accessori:</strong> Cover, cavi, caricabatterie e kit pulizie.</li>
+                    </ul>
+                </div>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="http://localhost:4200/login" style="background-color: #f86ded; color: white; padding: 12px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">Accedi subito al tuo Account</a>
+                    <a href="http://localhost:4200/login" style="background: linear-gradient(135deg, #f86ded, #fb7185); color: white; padding: 14px 28px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 10px rgba(248, 109, 237, 0.3);">Accedi subito al tuo Account</a>
                 </div>
                 
-                <p style="font-size: 14px; color: #64748b;">Se hai bisogno di assistenza, non esitare a contattarci rispondendo a questa email.</p>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                
+                <p style="font-size: 14px; color: #64748b; text-align: center;">Hai bisogno di assistenza o hai qualche domanda? <br><a href="http://localhost:4200/contattaci" style="color: #f86ded; text-decoration: none; font-weight: bold;">Visita la nostra pagina Contattaci</a> oppure rispondi direttamente a questa email.</p>
                 <br>
-                <p style="font-size: 14px; margin-bottom: 0;">Buon divertimento,</p>
-                <p style="font-size: 16px; margin-top: 5px; font-weight: bold; color: #0f172a;">Il team di PAwerUP</p>
+                <div style="text-align: center;">
+                    <p style="font-size: 14px; margin-bottom: 0; color: #64748b;">Buon divertimento,</p>
+                    <p style="font-size: 16px; margin-top: 5px; font-weight: bold; color: #0f172a;">Il team di PAwerUP</p>
+                </div>
             </div>
         `
     };
@@ -68,14 +118,42 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create(nome, cognome, email, hashedPassword);
+    // INVECE di salvare l'utente nel DB, incapsuliamo tutti i suoi dati nel token
+    const token = jwt.sign({ nome, cognome, email, hashedPassword }, SECRET, { expiresIn: "24h" });
 
-    // Quando il database conferma l'inserimento, spara l'email!
-    inviaEmailBenvenuto(email, nome);
+    // Inviamo SOLO la prima mail con il link di conferma (attendiamo che parta)
+    await exports.inviaEmailConferma(email, nome, cognome, token);
 
-    res.status(201).json(user);
+    // Rispondiamo al frontend SOLO se la mail è partita correttamente
+    res.status(201).json({ message: "Controlla la tua email per completare la registrazione." });
   } catch (err) {
+    console.error("Errore durante la registrazione:", err);
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.confermaRegistrazione = async (req, res) => {
+  try {
+    const { token } = req.params;
+    
+    // Decodifica e verifica il token
+    const decoded = jwt.verify(token, SECRET);
+    
+    // Controlliamo che l'utente non esista già (es. se clicca il link due volte per sbaglio)
+    const existingUser = await User.findByEmail(decoded.email);
+    if (!existingUser) {
+        // Inseriamo l'utente nel DB SOLO ORA che ha confermato
+        await User.create(decoded.nome, decoded.cognome, decoded.email, decoded.hashedPassword);
+        
+        // Quando la creazione ha successo, inviamo la seconda mail (benvenuto)
+        exports.inviaEmailBenvenuto(decoded.email, decoded.nome, decoded.cognome);
+    }
+
+    // Reindirizziamo l'utente alla pagina di login del frontend
+    res.redirect('http://localhost:4200/login');
+  } catch (err) {
+    console.error("Errore durante la conferma della registrazione:", err);
+    res.status(400).send('<h2 style="font-family: Arial; text-align: center; margin-top: 50px;">Il link di conferma non è valido o è scaduto.</h2>');
   }
 };
 

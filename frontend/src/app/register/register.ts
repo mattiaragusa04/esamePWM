@@ -57,27 +57,11 @@ export class Register {
         });
 
         if (response.ok) {
-          // Dopo la registrazione con successo, facciamo subito il login per attivare la sessione
-          const loginResponse = await fetch('http://localhost:3000/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: this.registerForm.value.email,
-              password: this.registerForm.value.password
-            })
-          });
-
-          if (loginResponse.ok) {
-            const loginData = await loginResponse.json();
-            // Salva il token e i dati dell'utente (sessione attiva)
-            localStorage.setItem('token', loginData.token);
-            localStorage.setItem('user', JSON.stringify(loginData.utente || loginData));
-            this.toast.success('Benvenuto in PAwerUP! Registrazione completata.');
-            this.router.navigate(['/']);
-          } else {
-            this.toast.success('Registrazione completata. Effettua il login.');
-            this.router.navigate(['/login']);
-          }
+          // Dal momento che abbiamo introdotto la verifica tramite email,
+          // l'utente non viene inserito nel database finché non clicca sul link di conferma.
+          // Quindi mostriamo solo il messaggio e reindirizziamo al login.
+          this.toast.success('Registrazione inviata ✅​');
+          this.router.navigate(['/login']);
         } else if (response.status === 400) {
           const errorData = await response.json();
           // Legge 'message' inviato per gli errori 400, o 'error' inviato per gli errori 500

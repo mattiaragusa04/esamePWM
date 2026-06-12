@@ -13,4 +13,7 @@ router.get("/utenti", authController.getAllUsers);
 // esempio route protetta
 router.get("/profilo", authMiddleware, authController.getProfile);
 
+// rotta conferma registrazione utente
+router.get("/conferma/:token", authController.confermaRegistrazione);
+
 module.exports = router;

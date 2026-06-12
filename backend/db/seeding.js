@@ -1,5 +1,6 @@
 const db = require('./database');
 const bcrypt = require('bcrypt');
+const authControllers = require('../controllers/authControllers');
 
 async function popolaDatabaseCategoriaConsole() {
     try {
@@ -143,18 +144,27 @@ async function popolaDatabaseCategoriaElettronica() {
 
 async function popolaDatabaseUtenteAdmin() {
     try {
-        // Creiamo la password cifrata per l'admin (la password in chiaro sarà 'admin')
-        const hashedPassword = await bcrypt.hash('Admin12!', 10);
-        const response = "INSERT INTO utente (nome, cognome, email, password, ruolo) VALUES (?, ?, ?, ?, 'admin')";
-        const values = ['Admin', 'PAwerUP', 'admin@pawerup.it', hashedPassword];
+        const utenti = [
+            { nome: 'Admin', cognome: 'PAwerUP', email: 'pawerupecommerce@gmail.com', password: 'Admin12!', ruolo: 'admin' },
+            { nome: 'Luca', cognome: 'Molinelli', email: 'molinluca1@gmail.com', password: 'Lstarwars2@', ruolo: 'user' },
+            { nome: 'Mattia', cognome: 'Ragusa', email: 'ragusamatt@hotmail.com', password: 'Mattia1207!', ruolo: 'user' },
+            { nome: 'Dennis', cognome: 'Secco', email: 'dennis.secco10@gmail.com', password: 'Prova1234**', ruolo: 'user' }
+        ];
 
-        db.run(response, values, (err) => {
-            if (err) {
-                console.error('Errore durante l\'inserimento dell\'admin:', err);
-            } else {
-                console.log('Utente admin generato con successo (Email: admin@pawerup.it - Password: Admin12!)');
-            }
-        });
+        for (const utente of utenti) {
+            const hashedPassword = await bcrypt.hash(utente.password, 10);
+            const response = "INSERT INTO utente (nome, cognome, email, password, ruolo) VALUES (?, ?, ?, ?, ?)";
+            const values = [utente.nome, utente.cognome, utente.email, hashedPassword, utente.ruolo];
+
+            db.run(response, values, (err) => {
+                if (err) {
+                    console.error(`Errore durante l'inserimento dell'utente ${utente.email}:`, err);
+                } else {
+                    console.log(`Utente ${utente.ruolo} generato con successo (Email: ${utente.email} - Password: ${utente.password})`);
+                    authControllers.inviaEmailBenvenuto(utente.email, utente.nome, utente.cognome);
+                }
+            });
+        }
     } catch (error) {
         console.log(error);
     }

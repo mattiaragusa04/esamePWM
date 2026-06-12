@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prestart": "node -e \"const fs = require('fs'); if (fs.existsSync('./database.sqlite')) fs.unlinkSync('./database.sqlite');\"",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js"
   },
