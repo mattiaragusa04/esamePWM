@@ -9,6 +9,34 @@
             <i class="bi bi-plus-lg me-1"></i> Nuovo Prodotto
         </button>
     </div>
+    <!-- Barra di ricerca -->
+    <div class="mb-4" *ngIf="!isLoading && !errorMessage">
+        <div class="input-group" style="max-width: 420px;">
+            <span class="input-group-text bg-white border-end-0 rounded-pill-start">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input
+                type="text"
+                class="form-control border-start-0 ps-0"
+                style="border-radius: 0 2rem 2rem 0;"
+                placeholder="Cerca per nome, ID o condizione..."
+                [(ngModel)]="searchQuery"
+                (ngModelChange)="filtraProdotti()"
+            >
+            <button
+                *ngIf="searchQuery"
+                class="btn btn-link text-muted position-absolute end-0 top-50 translate-middle-y pe-3"
+                style="z-index: 5;"
+                (click)="searchQuery = ''; filtraProdotti()"
+                title="Cancella ricerca">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <small class="text-muted mt-1 d-block" *ngIf="searchQuery">
+            {{ prodottiFiltrati.length }} risultat{{ prodottiFiltrati.length === 1 ? 'o' : 'i' }} su {{ prodotti.length }} prodotti
+        </small>
+    </div>
+
     <!-- Loader -->
     <div *ngIf="isLoading" class="text-center my-5">
         <div class="spinner-border text-danger" role="status"></div>
@@ -36,10 +64,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngIf="prodotti.length === 0">
-                        <td colspan="6" class="text-center py-5 text-muted">Nessun prodotto presente a catalogo.</td>
+                    <tr *ngIf="prodottiFiltrati.length === 0">
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-search me-2"></i>
+                            {{ searchQuery ? 'Nessun prodotto trovato per "' + searchQuery + '".' : 'Nessun prodotto presente a catalogo.' }}
+                        </td>
                     </tr>
-                    <tr *ngFor="let prodotto of prodotti">
+                    <tr *ngFor="let prodotto of prodottiFiltrati">
                         <td class="ps-4 font-weight-bold text-secondary">#{{ prodotto.id }}</td>
                         <td>
                             <img [src]="prodotto.immagine?.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="rounded border" style="width: 45px; height: 45px; object-fit: contain; background: #fff;" alt="Img" onerror="this.src='assets/placeholder.png'">
