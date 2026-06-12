@@ -49,6 +49,16 @@ const User = {
         else resolve({ id: userId, changes: this.changes });
       });
     });
+  },
+
+  delete: (id) => {
+    return new Promise((resolve, reject) => {
+      const query = `DELETE FROM utente WHERE id = ?`;
+      db.run(query, [id], (err) => {
+        if (err) reject(err);
+        else resolve({ id });
+      });
+    });
   }
 };
 

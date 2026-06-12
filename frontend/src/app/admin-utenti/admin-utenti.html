@@ -55,6 +55,7 @@
                         <th scope="col">Cognome</th>
                         <th scope="col">Email</th>
                         <th scope="col">Ruolo</th>
+                        <th scope="col" class="text-end pe-4">Azioni</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,6 +74,9 @@
                             <span class="badge rounded-pill" [ngClass]="utente.ruolo === 'admin' ? 'bg-danger' : 'bg-secondary'">
                                 {{ utente.ruolo | uppercase }}
                             </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-danger rounded-circle" title="Elimina" (click)="eliminaUtente(utente)"><i class="bi bi-trash-fill"></i></button>
                         </td>
                     </tr>
                 </tbody>

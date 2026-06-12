@@ -60,4 +60,26 @@ export class AdminUtenti implements OnInit {
       u.ruolo?.toLowerCase().includes(q)
     );
   }
+
+  async eliminaUtente(utente : any) {
+    if (!confirm('Sei sicuro di voler eliminare l\'utente ' + utente.email + '?')) return;
+    
+    const token = localStorage.getItem('token');
+    try{
+      const response = await fetch(`http://localhost:3000/api/auth/${utente.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        this.caricaUtenti(); // Ricarica la lista dopo l'eliminazione
+      } else {
+        this.errorMessage = 'Errore durante l\'eliminazione.';
+      }
+    } catch (error) {
+      console.error('Errore di rete:', error);
+      this.errorMessage = 'Impossibile connettersi al server.';
+    }
+  }
 }

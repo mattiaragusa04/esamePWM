@@ -13,4 +13,6 @@ router.get("/utenti", authController.getAllUsers);
 // esempio route protetta
 router.get("/profilo", authMiddleware, authController.getProfile);
 
+router.delete("/:id", authController.deleteUser);
+
 module.exports = router;

@@ -178,3 +178,13 @@ exports.passwordReset = async (req, res) => {
     return res.status(500).json({ message: "Errore interno durante il reset password." });
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const deletedUser = await User.delete(userId);
+    res.json(deletedUser);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
