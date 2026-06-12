@@ -793,12 +793,15 @@ body.theme-dark .card-prodotto h5,
 body.theme-dark .card-prodotto .card-title {
   color: #ffffff !important;
 }
-body.theme-dark .card-img-top,
+/* FIX #2: sfondo bianco pieno dietro alle immagini per nascondere PNG con alpha bianco */
+body.theme-dark .product-card .card-img-top,
 body.theme-dark .product-card img,
 body.theme-dark .prodotto-card img,
-body.theme-dark .card-prodotto img {
-  background-color: #f8fafc; /* sfondo chiaro dietro alle immagini PNG con bianco */
-  border-radius: 0.5rem;
+body.theme-dark .card-prodotto img,
+body.theme-dark .horizontal-scroll-item .card-img-top,
+body.theme-dark .horizontal-scroll-item img.card-img-top {
+  background-color: #ffffff !important;
+  border-radius: 0.75rem !important;
 }
 
 /* Descrizioni delle card categorie nella home */
@@ -920,4 +923,301 @@ body.theme-dark .btn-outline-info {
 body.theme-dark .btn-outline-info:hover {
   background-color: var(--main-color) !important;
   color: #fff !important;
+}
+
+/* ============================================================
+   DARK MODE POLISH — fix specifici (8 issue)
+   ============================================================ */
+
+/* FIX #1 — Pannello filtri card (prodotti.html: .col-lg-3 > .card.shadow-sm)
+   Bootstrap .card di base ha bg bianco e text muted, qui forziamo dark */
+body.theme-dark .col-lg-3 > .card.shadow-sm,
+body.theme-dark .col-lg-3 > .card {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #e5e7eb !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+body.theme-dark .col-lg-3 > .card h5,
+body.theme-dark .col-lg-3 > .card h6 {
+  color: #ffffff !important;
+  border-color: rgba(148, 163, 184, 0.3) !important;
+}
+body.theme-dark .col-lg-3 > .card .form-check-label,
+body.theme-dark .col-lg-3 > .card label {
+  color: #e5e7eb !important;
+}
+/* Etichette colorate "Immediata"/"Non disponibile"/"Nuovo"/"Usato" nei filtri */
+body.theme-dark .col-lg-3 > .card .form-check-label.text-success {
+  color: #5ee08a !important;
+}
+body.theme-dark .col-lg-3 > .card .form-check-label.text-danger {
+  color: #f87171 !important;
+}
+body.theme-dark .col-lg-3 > .card .form-check-label.text-muted {
+  color: #cbd5e1 !important;
+}
+/* Input numerici "Min €"/"Max €" — overridano bg-light */
+body.theme-dark .col-lg-3 > .card input.form-control.bg-light,
+body.theme-dark .col-lg-3 > .card input.bg-light {
+  background-color: rgba(2, 6, 23, 0.85) !important;
+  color: #e5e7eb !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+}
+body.theme-dark .col-lg-3 > .card input.form-control::placeholder {
+  color: #94a3b8 !important;
+}
+/* Bottone "Resetta Filtri" */
+body.theme-dark .col-lg-3 > .card .btn-outline-secondary {
+  background: rgba(148, 163, 184, 0.12) !important;
+  border-color: rgba(148, 163, 184, 0.45) !important;
+  color: #e5e7eb !important;
+}
+body.theme-dark .col-lg-3 > .card .btn-outline-secondary:hover {
+  background: var(--main-color) !important;
+  border-color: var(--main-color) !important;
+  color: #fff !important;
+}
+
+/* FIX #3 — Card filtro categoria (Tutte/PS5/PS4/Switch/Xbox/Retrogaming) */
+body.theme-dark .category-filter-card {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #e5e7eb !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+body.theme-dark .category-filter-card .text-muted {
+  color: #cbd5e1 !important;
+}
+body.theme-dark .category-filter-card .bi {
+  color: #e5e7eb !important;
+}
+body.theme-dark .category-filter-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(248, 109, 237, 0.55) !important;
+  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.25) !important;
+}
+body.theme-dark .category-filter-card.active-filter {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  border-color: var(--main-color) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.45) !important;
+}
+body.theme-dark .category-filter-card.active-filter .text-muted,
+body.theme-dark .category-filter-card.active-filter .bi {
+  color: #fff !important;
+}
+/* Label "Tutte/PS5/..." sotto la card */
+body.theme-dark .text-info {
+  color: var(--main-color) !important;
+}
+
+/* FIX #4 — Icona carrello in navbar visibile in dark */
+body.theme-dark .cart-nav-item,
+body.theme-dark .cart-nav-item .bi,
+body.theme-dark .cart-nav-item i {
+  color: #f1f5f9 !important;
+}
+body.theme-dark .cart-nav-item:hover .bi,
+body.theme-dark .cart-nav-item:hover i {
+  color: var(--main-color) !important;
+}
+/* Anche heart e person nella stessa zona */
+body.theme-dark .navbar .nav-link.text-dark,
+body.theme-dark .navbar .nav-link.text-dark .bi,
+body.theme-dark .navbar .nav-link.text-dark svg {
+  color: #f1f5f9 !important;
+  fill: #f1f5f9 !important;
+}
+body.theme-dark .navbar .nav-link.text-dark:hover .bi,
+body.theme-dark .navbar .nav-link.text-dark:hover svg {
+  color: var(--main-color) !important;
+  fill: var(--main-color) !important;
+}
+/* Cart total preview tooltip box */
+body.theme-dark .cart-total-preview {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #e5e7eb !important;
+}
+body.theme-dark .cart-total-preview .text-muted {
+  color: #cbd5e1 !important;
+}
+
+/* FIX #5 — Sidebar /profilo in dark mode (sidebar.html usa .sidebar-container + text-bg-white) */
+body.theme-dark .sidebar-container {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  color: #e5e7eb !important;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+body.theme-dark .sidebar-container.text-bg-white {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  color: #e5e7eb !important;
+}
+body.theme-dark .sidebar-container .brand-text,
+body.theme-dark .sidebar-container .brand-text .fs-4,
+body.theme-dark .sidebar-container .brand-text .bi {
+  color: #ffffff !important;
+}
+body.theme-dark .sidebar-container hr {
+  border-color: rgba(148, 163, 184, 0.25);
+  opacity: 1;
+}
+body.theme-dark .sidebar-container .nav-link {
+  color: #e5e7eb !important;
+}
+body.theme-dark .sidebar-container .nav-link .bi {
+  color: #e5e7eb !important;
+}
+body.theme-dark .sidebar-container .nav-link:hover:not(.active) {
+  background-color: rgba(248, 109, 237, 0.12) !important;
+  color: var(--main-color) !important;
+}
+body.theme-dark .sidebar-container .nav-link:hover:not(.active) .bi {
+  color: var(--main-color) !important;
+}
+body.theme-dark .sidebar-container .nav-link.active,
+body.theme-dark .sidebar-container .nav-link.active .bi {
+  color: #fff !important;
+}
+body.theme-dark .sidebar-container .menu-toggler-btn,
+body.theme-dark .sidebar-container .menu-toggler-btn .bi {
+  color: #e5e7eb !important;
+  border-color: rgba(148, 163, 184, 0.45);
+}
+body.theme-dark .sidebar-container .menu-toggler-btn:hover {
+  background: rgba(248, 109, 237, 0.15);
+  border-color: var(--main-color);
+}
+/* Bottone logout dentro la sidebar */
+body.theme-dark .sidebar-container .btn-outline-danger {
+  color: #f87171 !important;
+  border-color: #f87171 !important;
+  background: transparent !important;
+}
+body.theme-dark .sidebar-container .btn-outline-danger:hover {
+  background: #f87171 !important;
+  color: #fff !important;
+}
+
+/* FIX #6 — Titolo "Consigliati per te" in home: <h2 class="text-white"> già bianco,
+   ma "per te" usa .text-info che era ciano. Forziamo tutto bianco/rosa coerente. */
+body.theme-dark h2.text-white {
+  color: #ffffff !important;
+}
+body.theme-dark h2.text-white .text-info,
+body.theme-dark h2 .text-info {
+  color: var(--main-color) !important;
+}
+
+/* FIX #7 — Card categorie nella home (.category-card)
+   Sono <div class="card h-100 shadow-sm border-0 category-card"> */
+body.theme-dark .category-card {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #e5e7eb !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+body.theme-dark .category-card .card-body {
+  color: #e5e7eb !important;
+}
+body.theme-dark .category-card h4,
+body.theme-dark .category-card .card-title {
+  color: #ffffff !important;
+}
+body.theme-dark .category-card .card-text,
+body.theme-dark .category-card .text-muted {
+  color: #cbd5e1 !important;
+}
+body.theme-dark .category-card .bi {
+  color: var(--main-color) !important;
+}
+body.theme-dark .category-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(248, 109, 237, 0.55) !important;
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.25) !important;
+}
+
+/* FIX #8 — Applica il gradient rosa (stile sidebar .nav-link.active) a TUTTI
+   i bottoni che si "accendono" di rosa nell'app, in entrambi i temi.
+   Target principali: .btn-info, .btn-primary, .nav-link.active, .page-item.active,
+   .active-condition, .badge.bg-info, .badge.bg-primary. */
+
+/* Bottoni primary/info ovunque (light + dark) */
+.btn-info,
+.btn-primary {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.32) !important;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.btn-info:hover,
+.btn-primary:hover,
+.btn-info:focus,
+.btn-primary:focus {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  filter: brightness(1.08);
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.5) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+.btn-info:disabled,
+.btn-primary:disabled {
+  opacity: 0.55;
+  box-shadow: none !important;
+}
+
+/* Bottoni circle scroll della home: il gradient rosa rotondo si vede già bene */
+.scroll-btn {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+/* Badge "Nuovo" attivo (active-condition) e badge bg-info/bg-primary */
+.active-condition,
+.btn.active-condition,
+.badge.bg-info,
+.badge.bg-primary {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 6px 14px rgba(248, 109, 237, 0.35) !important;
+}
+
+/* Paginazione attiva — il dot rosa */
+.page-item.active .page-link,
+.pagination-dot.active {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(248, 109, 237, 0.4) !important;
+}
+
+/* Utility per qualunque "active pink" custom futuro */
+.btn-pink-active,
+.btn-pink {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.4) !important;
+}
+
+/* In dark mode, dare ancora più presenza */
+body.theme-dark .btn-info,
+body.theme-dark .btn-primary,
+body.theme-dark .active-condition,
+body.theme-dark .btn.active-condition,
+body.theme-dark .page-item.active .page-link {
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.55) !important;
+}
+
+/* Nav-link "categoria" della navbar in dark mode */
+body.theme-dark .nav-category-link {
+  color: #f1f5f9 !important;
+}
+body.theme-dark .nav-category-link:hover {
+  color: var(--main-color) !important;
 }
