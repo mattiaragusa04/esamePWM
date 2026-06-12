@@ -56,6 +56,11 @@ export class Prodotti implements OnInit, OnDestroy {
   disponibilita: string = '';
   condizione: string = '';
 
+  // Per ogni "prodotto logico" (chiave = nome normalizzato) memorizziamo il
+  // prezzo della riga DB Nuovo, se esiste. Serve per mostrare il prezzo barrato
+  // sulla card Usato quando esistono entrambe le condizioni nel DB.
+  private prezzoNuovoPerNome: Map<string, number> = new Map();
+
 
   sottoCategorie: any[] = [];
 
@@ -114,11 +119,29 @@ export class Prodotti implements OnInit, OnDestroy {
       const response = await fetch(`http://localhost:3000/api/prodotti/categoria/${categoriaId}`);
       if (response.ok) {
         const data = await response.json();
-        // Espandiamo ogni prodotto del DB in 1 o 2 varianti (Nuovo + Usato)
+        // Normalizza eventuali refusi nel campo condizione
+        data.forEach((raw: Prodotto) => {
+          if ((raw.condizione as any) === 'Usata') raw.condizione = 'Usato';
+        });
+        // Mappa: per ogni "prodotto logico" (raggruppato per nome normalizzato)
+        // tracciamo quali condizioni esistono realmente nel DB e il prezzo Nuovo (se presente).
+        const condizioniPerNome = new Map<string, Set<string>>();
+        this.prezzoNuovoPerNome = new Map();
+        data.forEach((raw: Prodotto) => {
+          const key = (raw.nome || '').trim().toLowerCase();
+          if (!condizioniPerNome.has(key)) condizioniPerNome.set(key, new Set());
+          condizioniPerNome.get(key)!.add(raw.condizione);
+          if (raw.condizione === 'Nuovo') {
+            this.prezzoNuovoPerNome.set(key, Number(raw.prezzoUnitarioVendita));
+          }
+        });
+        // Costruiamo le varianti mostrando SOLO le condizioni realmente presenti nel DB.
+        // Se per uno stesso nome esiste sia Nuovo che Usato, l'Usato avrà comunque il -25%
+        // calcolato dal prezzo del Nuovo (per coerenza visiva); altrimenti viene usato
+        // il prezzo della riga DB corrispondente.
         const varianti: Prodotto[] = [];
         data.forEach((raw: Prodotto) => {
-          if (raw.condizione === 'Usata') raw.condizione = 'Usato'; // normalizza refusi DB
-          varianti.push(...this.espandiInVarianti(raw));
+          varianti.push(...this.espandiInVarianti(raw, condizioniPerNome));
         });
         this.prodotti = varianti;
         this.prodottiFiltrati = [...this.prodotti];
@@ -183,12 +206,19 @@ export class Prodotti implements OnInit, OnDestroy {
   }
 
   /**
-   * Espande un prodotto del DB nelle varianti visualizzabili (Nuovo / Usato).
-   * - Retrogaming  -> SOLO variante Usato
-   * - DB Usato     -> SOLO variante Usato (prezzo DB)
-   * - DB Nuovo     -> entrambe le varianti: Nuovo (prezzo DB) + Usato (-25%)
+   * Costruisce le varianti visualizzabili a partire da una riga del DB.
+   * Regola: si mostrano SOLO le condizioni effettivamente presenti nel DB
+   * (raggruppando i record per nome). Nessuna variante “fantasma” viene generata.
+   *
+   * - Retrogaming      -> SOLO variante Usato (prezzo DB)
+   * - Riga DB Usato    -> variante Usato col prezzo della riga DB Usato
+   * - Riga DB Nuovo    -> variante Nuovo col prezzo della riga DB Nuovo
+   *
+   * Per evitare di duplicare l’elenco quando per lo stesso nome esistono sia
+   * il record Nuovo sia il record Usato, ogni riga DB genera SOLO la variante
+   * della propria condizione.
    */
-  private espandiInVarianti(raw: Prodotto): Prodotto[] {
+  private espandiInVarianti(raw: Prodotto, condizioniPerNome: Map<string, Set<string>>): Prodotto[] {
     const result: Prodotto[] = [];
     const prezzoDB = Number(raw.prezzoUnitarioVendita);
 
@@ -202,28 +232,12 @@ export class Prodotti implements OnInit, OnDestroy {
       return result;
     }
 
-    if (raw.condizione === 'Usato') {
-      result.push({
-        ...raw,
-        condizioneVariante: 'Usato',
-        variantKey: `${raw.id}-Usato`,
-        prezzoVariante: prezzoDB,
-      });
-      return result;
-    }
-
-    // DB Nuovo -> due card: Nuovo prezzo pieno + Usato -25%
+    const cond: 'Nuovo' | 'Usato' = raw.condizione === 'Usato' ? 'Usato' : 'Nuovo';
     result.push({
       ...raw,
-      condizioneVariante: 'Nuovo',
-      variantKey: `${raw.id}-Nuovo`,
+      condizioneVariante: cond,
+      variantKey: `${raw.id}-${cond}`,
       prezzoVariante: prezzoDB,
-    });
-    result.push({
-      ...raw,
-      condizioneVariante: 'Usato',
-      variantKey: `${raw.id}-Usato`,
-      prezzoVariante: Math.round(prezzoDB * 0.75 * 100) / 100,
     });
     return result;
   }
@@ -389,14 +403,19 @@ export class Prodotti implements OnInit, OnDestroy {
   }
 
   /**
-   * Prezzo "originale" (solo per varianti Usato non-retro): serve per mostrare il prezzo barrato.
-   * Ritorna null quando non c'è uno sconto applicato (cioè per Nuovo o per retrogaming).
+   * Prezzo "originale" usato per il barrato sulla card Usato.
+   * Lo mostriamo SOLO quando per lo stesso prodotto (stesso nome) esiste anche
+   * il record Nuovo nel DB, ed il suo prezzo è superiore al prezzo Usato.
+   * Negli altri casi (retrogaming, oppure Usato “standalone” senza Nuovo) ritorna null.
    */
   getPrezzoOriginale(p: Prodotto): number | null {
-    if (p.condizioneVariante === 'Usato' && !this.isRetrogaming(p) && p.condizione === 'Nuovo') {
-      return Number(p.prezzoUnitarioVendita);
-    }
-    return null;
+    if (p.condizioneVariante !== 'Usato') return null;
+    if (this.isRetrogaming(p)) return null;
+    const key = (p.nome || '').trim().toLowerCase();
+    const prezzoNuovo = this.prezzoNuovoPerNome.get(key);
+    if (prezzoNuovo === undefined) return null;
+    const prezzoUsato = this.getPrezzoVisualizzato(p);
+    return prezzoNuovo > prezzoUsato ? prezzoNuovo : null;
   }
 
   isVariantUsato(p: Prodotto): boolean {
