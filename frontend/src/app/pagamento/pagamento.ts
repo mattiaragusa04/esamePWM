@@ -113,7 +113,15 @@ export class Pagamento implements OnInit {
       });
       if (response.ok) {
         const carrello = await response.json();
-        this.totale = carrello.reduce((acc: number, item: any) => acc + (item.prezzoUnitarioVendita * item.quantita), 0);
+        // Allineamento alla logica del backend (ordineControllers): per gli Usati
+        // applichiamo il 25% di sconto sul prezzo del prodotto (Nuovo) restituito dal DB.
+        this.totale = carrello.reduce((acc: number, item: any) => {
+          const base = Number(item.prezzoUnitarioVendita ?? 0);
+          const prezzoEff = item.condizione === 'Usato'
+            ? Math.round(base * 0.75 * 100) / 100
+            : base;
+          return acc + prezzoEff * item.quantita;
+        }, 0);
       }
     } catch (error) {
       console.error('Errore di rete:', error);
