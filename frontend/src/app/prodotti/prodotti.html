@@ -121,14 +121,19 @@
 
       <div class="row" *ngIf="prodottiFiltrati.length > 0" [class.filter-animation]="isAnimating">
         <div class="col-md-6 col-lg-4 mb-4" *ngFor="let prodotto of getProdottiPaginati(); trackBy: trackByVariant">
-          <div class="card h-100 shadow-lg product-card position-relative" [class.usato-variant]="isVariantUsato(prodotto)">
+          <div class="card h-100 shadow-lg product-card position-relative"
+               [class.usato-variant]="isVariantUsato(prodotto) && prodotto.giacenza > 0"
+               [class.is-sold-out]="prodotto.giacenza <= 0">
             <!-- Pulsante Preferiti -->
             <button class="btn btn-link position-absolute p-2 shadow-none" style="top: 5px; right: 5px; z-index: 10;" (click)="togglePreferito(prodotto)">
               <i style="font-size: 1.5rem;" [class]="isPreferito(prodotto.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"></i>
             </button>
 
             <!-- Badge sconto in alto a sinistra (solo varianti Usato non-retro con sconto) -->
-            <div *ngIf="getPrezzoOriginale(prodotto) !== null" class="discount-corner-badge">-25%</div>
+            <div *ngIf="getPrezzoOriginale(prodotto) !== null && prodotto.giacenza > 0" class="discount-corner-badge">-25%</div>
+
+            <!-- Badge ESAURITO in alto a sinistra quando giacenza = 0 (sostituisce -25%) -->
+            <div *ngIf="prodotto.giacenza <= 0" class="out-of-stock-corner-badge">ESAURITO</div>
 
             <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
             <div class="card-body text-center d-flex flex-column justify-content-between">
@@ -139,12 +144,16 @@
                 <span class="badge badge-light border text-muted px-2 py-1">{{ subCat }}</span>
               </div>
 
-              <!-- Label condizione (Nuovo / Usato) -->
-              <div class="mb-2">
+              <!-- Label condizione (Nuovo / Usato) + Esaurito se giacenza = 0 -->
+              <div class="mb-2 d-flex flex-wrap justify-content-center gap-2">
                 <span class="badge-condizione"
                       [ngClass]="prodotto.condizioneVariante === 'Nuovo' ? 'badge-nuovo' : 'badge-usato'">
                   <i class="bi" [ngClass]="prodotto.condizioneVariante === 'Nuovo' ? 'bi-stars' : 'bi-recycle'"></i>
                   {{ prodotto.condizioneVariante }}
+                </span>
+                <span *ngIf="prodotto.giacenza <= 0" class="badge-condizione badge-esaurito">
+                  <i class="bi bi-x-octagon-fill"></i>
+                  Esaurito
                 </span>
               </div>
 
@@ -172,9 +181,6 @@
               <div class="d-flex flex-column align-items-center gap-2">
                 <a class="btn btn-info rounded-pill w-100" [routerLink]="['/dettagli-prodotto', prodotto.id]" [queryParams]="{ cond: prodotto.condizioneVariante }">Dettagli</a>
                 <button type="button" class="btn btn-outline-info rounded-pill w-100" [ngClass]="{'retro-slash': prodotto.giacenza <= 0}" (click)="aggiungiAlCarrello(prodotto)" [disabled]="prodotto.giacenza <= 0">Aggiungi al Carrello</button>
-                <div *ngIf="prodotto.giacenza <= 0" class="text-danger fw-bold small mt-1">
-                  Prodotto esaurito
-                </div>
               </div>
             </div>
           </div>

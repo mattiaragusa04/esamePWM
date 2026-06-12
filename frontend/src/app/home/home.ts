@@ -79,17 +79,20 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
           }
         });
 
+        // Escludiamo dalle vetrine della home i prodotti esauriti (giacenza <= 0)
+        const disponibili = tuttiIProdotti.filter((p: any) => Number(p.giacenza) > 0);
+
         // ---- Consigliati per te ----
         // Mostra una variante per riga DB (la condizione effettiva del record).
         // Le card Usato qui sono "semplici" (senza barrato + -25%, come ora).
-        let selezione = tuttiIProdotti.sort(() => 0.5 - Math.random()).slice(0, 12);
-        selezione = this.applyCustomReplacements(selezione, tuttiIProdotti);
+        let selezione = disponibili.sort(() => 0.5 - Math.random()).slice(0, 12);
+        selezione = this.applyCustomReplacements(selezione, disponibili);
         this.prodottiConsigliati = selezione.map((raw: any) => this.preferredVariant(raw));
 
         // ---- Guarda il nostro Usato ----
         // Prende SOLO le righe DB con condizione = 'Usato' (oppure retrogaming
         // anche se nel DB risultano 'Nuovo'), shuffle, max 12 elementi.
-        const usati = tuttiIProdotti
+        const usati = disponibili
           .filter((p: any) => p.condizione === 'Usato' || this.isRetrogaming(p))
           .sort(() => 0.5 - Math.random())
           .slice(0, 12);

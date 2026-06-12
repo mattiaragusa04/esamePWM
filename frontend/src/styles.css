@@ -1353,3 +1353,47 @@ body.theme-dark .product-card .discount-corner-badge {
   box-shadow: 0 6px 22px rgba(220, 53, 69, 0.6);
 }
 
+/* === Stato ESAURITO (giacenza = 0) ============================== */
+
+/* Badge label "Esaurito" mostrato accanto al badge condizione */
+.badge-condizione.badge-esaurito {
+  background-color: rgba(148, 163, 184, 0.18);
+  color: #475569;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+/* Corner badge angolare grigio per prodotti esauriti (sostituisce il -25%) */
+.product-card .out-of-stock-corner-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: linear-gradient(135deg, #64748b, #334155);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(51, 65, 85, 0.45);
+  text-transform: uppercase;
+}
+
+/* Le card esaurite vengono leggermente "spente" per dare un segnale visivo */
+.product-card.is-sold-out {
+  opacity: 0.78;
+}
+.product-card.is-sold-out img {
+  filter: grayscale(0.4);
+}
+
+/* Dark mode */
+body.theme-dark .badge-condizione.badge-esaurito {
+  background-color: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.35);
+}
+body.theme-dark .product-card .out-of-stock-corner-badge {
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.6);
+}
+
