@@ -67,3 +67,12 @@ exports.update = async (req, res) => {
     } 
 
 };
+
+exports.getAllProdottiInviati = async (req, res) => {
+    try {
+        const vendi = await vendiModel.findAll();
+        res.json(vendi);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

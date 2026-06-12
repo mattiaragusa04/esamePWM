@@ -24,6 +24,7 @@ import { AdminProdotti } from './admin-prodotti/admin-prodotti';
 import { AdminUtenti } from './admin-utenti/admin-utenti';
 import { AdminOrdini } from './admin-ordini/admin-ordini';
 import { ImpostazioniComponent } from './impostazioni/impostazioni.component';
+import { AdminAcquisti } from './admin-acquisti/admin-acquisti';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -58,7 +59,8 @@ export const routes: Routes = [
              { path: '', component: AdminDashboard  , pathMatch: 'full' },
              { path: 'prodotti', component: AdminProdotti },
              { path: 'utenti', component: AdminUtenti },
-             { path: 'ordini', component: AdminOrdini }
+             { path: 'ordini', component: AdminOrdini },
+             { path: 'acquisti', component: AdminAcquisti },
 
 
          ]

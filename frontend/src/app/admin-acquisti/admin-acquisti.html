@@ -1,0 +1,199 @@
+<div class="container-fluid py-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="font-weight-bold m-0"><i class="bi bi-bag-check-fill text-danger me-2"></i> Gestione <span class="text-danger">Acquisti PAwerUP</span></h2>
+            <p class="text-muted mt-1 mb-0">Gestisci le offerte di vendita inviate dagli utenti.</p>
+        </div>
+    </div>
+
+    <!-- Barra di ricerca + filtro stato -->
+    <div class="d-flex flex-wrap gap-3 align-items-center mb-4" *ngIf="!isLoading && !errorMessage">
+        <div class="input-group" style="max-width: 380px;">
+            <span class="input-group-text bg-white border-end-0 rounded-pill-start">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input
+                type="text"
+                class="form-control border-start-0 ps-0"
+                style="border-radius: 0 2rem 2rem 0;"
+                placeholder="Cerca per ID offerta o utente..."
+                [(ngModel)]="searchQuery"
+                (ngModelChange)="filtraOfferte()"
+            >
+            <button
+                *ngIf="searchQuery"
+                class="btn btn-link text-muted position-absolute end-0 top-50 translate-middle-y pe-3"
+                style="z-index: 5;"
+                (click)="searchQuery = ''; filtraOfferte()"
+                title="Cancella ricerca">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Filtro per stato -->
+        <div class="btn-group" role="group">
+            <button class="btn btn-sm rounded-pill me-1 font-weight-bold"
+                [ngClass]="filtroStato === '' ? 'btn-danger' : 'btn-outline-secondary'"
+                (click)="filtroStato = ''; filtraOfferte()">Tutte</button>
+            <button class="btn btn-sm rounded-pill me-1 font-weight-bold"
+                [ngClass]="filtroStato === 'In attesa' ? 'btn-warning text-dark' : 'btn-outline-secondary'"
+                (click)="filtroStato = 'In attesa'; filtraOfferte()">In attesa</button>
+            <button class="btn btn-sm rounded-pill me-1 font-weight-bold"
+                [ngClass]="filtroStato === 'Accettata' ? 'btn-success' : 'btn-outline-secondary'"
+                (click)="filtroStato = 'Accettata'; filtraOfferte()">Accettata</button>
+            <button class="btn btn-sm rounded-pill font-weight-bold"
+                [ngClass]="filtroStato === 'Rifiutata' ? 'btn-danger' : 'btn-outline-secondary'"
+                (click)="filtroStato = 'Rifiutata'; filtraOfferte()">Rifiutata</button>
+        </div>
+
+        <small class="text-muted" *ngIf="searchQuery || filtroStato">
+            {{ offerteFiltrate.length }} risultat{{ offerteFiltrate.length === 1 ? 'o' : 'i' }} su {{ offerte.length }} offerte
+        </small>
+    </div>
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="text-center my-5">
+        <div class="spinner-border text-danger" role="status"></div>
+    </div>
+
+    <!-- Messaggio di errore -->
+    <div *ngIf="errorMessage" class="alert alert-danger text-center shadow-sm rounded-4 border-0">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+    </div>
+
+    <!-- Tabella Offerte -->
+    <div class="card shadow-sm border-0" style="border-radius: 1rem; overflow: hidden;" *ngIf="!isLoading && !errorMessage">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 bg-white">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th scope="col" class="ps-4">ID</th>
+                        <th scope="col">Utente</th>
+                        <th scope="col">Prodotto</th>
+                        <th scope="col">Prezzo Stimato</th>
+                        <th scope="col">Data Offerta</th>
+                        <th scope="col">Stato</th>
+                        <th scope="col" class="text-center">Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="offerteFiltrate.length === 0">
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox me-2"></i>
+                            {{ searchQuery || filtroStato ? 'Nessuna offerta trovata.' : 'Nessuna offerta di vendita ricevuta.' }}
+                        </td>
+                    </tr>
+                    <tr *ngFor="let offerta of offerteFiltrate">
+                        <td class="ps-4 font-weight-bold text-secondary">#{{ offerta.id }}</td>
+                        <td><span class="badge bg-light text-dark border">Utente #{{ offerta.utente_id }}</span></td>
+                        <td><span class="badge bg-light text-dark border">Prodotto #{{ offerta.prodotto_id }}</span></td>
+                        <td class="font-weight-bold text-danger">{{ offerta.prezzo_stimato | currency:'EUR':'symbol' }}</td>
+                        <td class="text-muted small">{{ offerta.data_offerta | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td>
+                            <span class="badge rounded-pill"
+                                [ngClass]="{
+                                    'bg-warning text-dark': offerta.stato_offerta === 'In attesa',
+                                    'bg-success': offerta.stato_offerta === 'Accettata',
+                                    'bg-danger': offerta.stato_offerta === 'Rifiutata'
+                                }">
+                                {{ offerta.stato_offerta | uppercase }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Dettaglio" (click)="apriDettaglio(offerta)">
+                                <i class="bi bi-eye-fill me-1"></i> Dettaglio
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Dettaglio Offerta -->
+    <div class="modal fade" [class.show]="mostraModale" [style.display]="mostraModale ? 'block' : 'none'" [style.background]="'rgba(0,0,0,0.5)'" tabindex="-1" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow" style="border-radius: 1rem;" *ngIf="offertaSelezionata">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="bi bi-bag-check-fill text-danger me-2"></i>
+                        Offerta #{{ offertaSelezionata.id }}
+                    </h5>
+                    <button type="button" class="btn-close" (click)="chiudiModale()"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light rounded-3 p-3 text-center">
+                                <small class="text-muted">Utente</small>
+                                <div class="font-weight-bold">#{{ offertaSelezionata.utente_id }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light rounded-3 p-3 text-center">
+                                <small class="text-muted">Prodotto</small>
+                                <div class="font-weight-bold">#{{ offertaSelezionata.prodotto_id }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light rounded-3 p-3 text-center">
+                                <small class="text-muted">Prezzo Stimato</small>
+                                <div class="font-weight-bold text-danger">{{ offertaSelezionata.prezzo_stimato | currency:'EUR':'symbol' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Condizioni -->
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold border-bottom pb-2">Condizioni dichiarate</h6>
+                        <div class="bg-light rounded-3 p-3">
+                            <ng-container *ngIf="condizioniParsed as c">
+                                <div *ngFor="let item of c | keyvalue" class="d-flex justify-content-between py-1 border-bottom">
+                                    <span class="text-muted">{{ item.key }}</span>
+                                    <span class="font-weight-bold">{{ item.value }}</span>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+
+                    <!-- Foto allegate -->
+                    <div class="mb-4" *ngIf="fotoParsed && fotoParsed.length > 0">
+                        <h6 class="font-weight-bold border-bottom pb-2">Foto allegate</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <img *ngFor="let foto of fotoParsed"
+                                 [src]="'http://localhost:3000' + foto"
+                                 class="rounded border"
+                                 style="width: 90px; height: 90px; object-fit: cover; cursor: pointer;"
+                                 alt="Foto allegata">
+                        </div>
+                    </div>
+
+                    <!-- Cambio stato -->
+                    <div>
+                        <h6 class="font-weight-bold border-bottom pb-2">Aggiorna Stato</h6>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-warning text-dark rounded-pill font-weight-bold px-4"
+                                [disabled]="offertaSelezionata.stato_offerta === 'In attesa'"
+                                (click)="aggiornaStato('In attesa')">
+                                <i class="bi bi-hourglass-split me-1"></i> In attesa
+                            </button>
+                            <button class="btn btn-success rounded-pill font-weight-bold px-4"
+                                [disabled]="offertaSelezionata.stato_offerta === 'Accettata'"
+                                (click)="aggiornaStato('Accettata')">
+                                <i class="bi bi-check-circle-fill me-1"></i> Accetta
+                            </button>
+                            <button class="btn btn-danger rounded-pill font-weight-bold px-4"
+                                [disabled]="offertaSelezionata.stato_offerta === 'Rifiutata'"
+                                (click)="aggiornaStato('Rifiutata')">
+                                <i class="bi bi-x-circle-fill me-1"></i> Rifiuta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="chiudiModale()">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

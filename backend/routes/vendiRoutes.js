@@ -24,9 +24,13 @@ router.get('/utente', vendiController.getProdottoForSellingByUserId);
 
 router.post('/offerta', upload.array('images', 5), vendiController.submitSellOffer);
 
+router.get('/inviati', vendiController.getAllProdottiInviati);
+
+router.put('/:id', vendiController.update);
+
 router.get('/:id', vendiController.getProdottoForSellingById);
 
-router.post('/:id', vendiController.update);
+
 
 
 
