@@ -1,0 +1,106 @@
+/* ====================================================
+   Stili specifici della HomePage
+   (gli stili globali — incluse le regole dark mode per
+   .category-card, .scroll-btn e .product-card — sono in
+   src/styles.css)
+   ==================================================== */
+
+/* Hero animata con canvas di particelle */
+.hero-box {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a, #2d1b4e, #1e2d4a);
+  border-radius: 1rem;
+  min-height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.particle-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: white;
+}
+
+/* Scroll orizzontale dei prodotti consigliati */
+.horizontal-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch; /* Scroll fluido su iOS */
+  padding-bottom: 1rem; /* Spazio per la scrollbar */
+}
+
+/* Nasconde la scrollbar lasciandola funzionante */
+.horizontal-scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+.horizontal-scroll-wrapper {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.horizontal-scroll-item {
+  display: inline-block;
+  width: 250px; /* Larghezza fissa per ogni card */
+  margin-right: 1.5rem;
+  vertical-align: top;
+  white-space: normal; /* Ripristina il wrapping del testo dentro la card */
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.horizontal-scroll-item:last-child {
+  margin-right: 0;
+}
+
+/* Card categorie home — transition di base.
+   Lo stile di superficie (background, bordo, colore) e gli override
+   per il tema dark sono definiti in styles.css. */
+.category-card {
+  border-radius: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(248, 109, 237, 0.18);
+}
+
+/* Contenitore relativo per posizionare i bottoni di scroll ai lati */
+.scroll-wrapper-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Bottoni scroll left/right (lo sfondo gradient rosa è in styles.css) */
+.scroll-btn {
+  z-index: 1000;
+  width: 45px;
+  height: 45px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.scroll-btn.left-btn {
+  left: -15px;
+}
+
+.scroll-btn.right-btn {
+  right: -15px;
+}
