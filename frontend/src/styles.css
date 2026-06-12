@@ -727,31 +727,68 @@ body.theme-dark .footer .text-white {
   color: #ffffff !important;
 }
 
-/* Footer in dark mode */
+/* Footer in dark mode — copre TUTTI gli elementi del <footer class="footer"> in app.html */
 body.theme-dark .footer {
-  background-color: #020617 !important;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.85), #020617) !important;
+  backdrop-filter: blur(10px);
   color: #e5e7eb !important;
-  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  border-top: 1px solid rgba(248, 109, 237, 0.25) !important;
 }
+/* Titoli (h4, h5, h6, text-uppercase) */
 body.theme-dark .footer h4,
 body.theme-dark .footer h5,
 body.theme-dark .footer h6,
 body.theme-dark .footer .text-uppercase {
   color: #ffffff !important;
 }
+/* Logo PA(rosa) + werUP(bianco) */
+body.theme-dark .footer h4 .text-info {
+  color: var(--main-color) !important;
+}
+body.theme-dark .footer h4 .text-white {
+  color: #ffffff !important;
+}
+/* Copyright e altre <p>/<small> */
 body.theme-dark .footer p,
 body.theme-dark .footer small,
 body.theme-dark .footer .text-muted {
   color: #cbd5e1 !important;
 }
+/* Card mappa */
+body.theme-dark .footer .card {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+}
+/* Link telefono e altri link colorati (.text-info) */
+body.theme-dark .footer a.text-info,
+body.theme-dark .footer .text-info {
+  color: var(--main-color) !important;
+}
+body.theme-dark .footer a.text-info:hover {
+  color: #fb7185 !important;
+}
+/* Bottone "Contattaci" (.btn-outline-info) */
+body.theme-dark .footer .btn-outline-info {
+  border-color: var(--main-color) !important;
+  color: var(--main-color) !important;
+  background: transparent !important;
+}
+body.theme-dark .footer .btn-outline-info:hover {
+  background: var(--main-color) !important;
+  color: #fff !important;
+}
+/* Social icons: in light usano background rgba(0,0,0,0.05) — invisibile in dark */
 body.theme-dark .footer .social-icon {
-  color: #e5e7eb;
+  color: #e5e7eb !important;
   font-size: 1.4rem;
-  transition: color 0.2s ease, transform 0.2s ease;
+  background: rgba(148, 163, 184, 0.15) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  transition: color 0.2s ease, transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 body.theme-dark .footer .social-icon:hover {
-  color: var(--main-color);
-  transform: translateY(-2px);
+  background: rgba(248, 109, 237, 0.15) !important;
+  box-shadow: 0 0 18px rgba(248, 109, 237, 0.45);
+  transform: translateY(-3px);
 }
 
 /* Titoli di pagina (es. "PRODOTTI CONSOLE", "CONSIGLIATI PER TE") */
