@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { CarrelloService } from './carrello.service';
 import { ToastService } from './shared/toast.service';
 import { ToastContainerComponent } from './shared/toast-container.component';
+import { ThemeService } from './shared/theme.service';
+import { AuthInterceptorService } from './shared/auth-interceptor.service';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +26,7 @@ export class App implements OnInit {
   @ViewChild('searchInput') searchInput!: ElementRef;
 
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object, public carrelloService: CarrelloService, private toast: ToastService) {
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object, public carrelloService: CarrelloService, private toast: ToastService, private themeService: ThemeService, private authInterceptor: AuthInterceptorService) {
     // Questo permette alla navbar di aggiornarsi automaticamente
     // ogni volta che si cambia pagina (ad esempio dopo la registrazione)
     this.router.events.subscribe((event) => {

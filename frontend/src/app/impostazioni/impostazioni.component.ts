@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 import { ToastService } from '../shared/toast.service';
+import { ThemeService, Theme } from '../shared/theme.service';
 @Component({
   selector: 'app-impostazioni',
   standalone: true,
@@ -30,7 +31,10 @@ export class ImpostazioniComponent implements OnInit {
   constructor(
     private router: Router,
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object, private toast: ToastService) {}
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private toast: ToastService,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -41,12 +45,8 @@ export class ImpostazioniComponent implements OnInit {
       this.utente = JSON.parse(userString);
     }
 
-    // Tema
-    const temaSalvato = localStorage.getItem('tema');
-    if (temaSalvato === 'dark' || temaSalvato === 'light') {
-      this.tema = temaSalvato as 'light' | 'dark';
-    }
-    this.applyTheme(this.tema);
+    // Tema: legge dal service centralizzato (già applicato all'avvio dell'app)
+    this.tema = this.themeService.theme();
 
     // Notifiche
     const notifPromo = localStorage.getItem('notifPromozioni');
@@ -65,20 +65,9 @@ export class ImpostazioniComponent implements OnInit {
   }
 
   // === TEMA ===
-  cambiaTema(theme: 'light' | 'dark'): void {
+  cambiaTema(theme: Theme): void {
     this.tema = theme;
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    localStorage.setItem('tema', theme);
-    this.applyTheme(theme);
-  }
-
-  private applyTheme(theme: 'light' | 'dark'): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    const body = document.body;
-    body.classList.remove('theme-light', 'theme-dark');
-    body.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light');
+    this.themeService.setTheme(theme);
   }
 
   // === NOTIFICHE ===
