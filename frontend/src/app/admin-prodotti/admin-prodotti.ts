@@ -207,7 +207,7 @@ export class AdminProdotti implements OnInit {
         form.resetForm();
         this.nuovoProdotto = { nome: '', categoria_id: '', descrizione: '', prezzoUnitarioVendita: 0, giacenza: 0, condizione: 'Nuovo', genere: '', immagine: '' };
         this.rimuoviImmagine();
-        
+        this.toast.success('Prodotto salvato con successo!');
         this.chiudiModale();
       } else {
         const errorData = await response.json();
