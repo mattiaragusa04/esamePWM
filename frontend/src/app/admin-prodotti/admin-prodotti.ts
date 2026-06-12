@@ -11,6 +11,8 @@ import { ToastService } from '../shared/toast.service';
 })
 export class AdminProdotti implements OnInit {
   prodotti: any[] = [];
+  prodottiFiltrati: any[] = [];
+  searchQuery: string = '';
   isLoading: boolean = true;
   errorMessage: string = '';
   mostraModale: boolean = false;
@@ -47,6 +49,7 @@ export class AdminProdotti implements OnInit {
       const response = await fetch('http://localhost:3000/api/prodotti');
       if (response.ok) {
         this.prodotti = await response.json();
+        this.prodottiFiltrati = [...this.prodotti];
       } else {
         this.errorMessage = 'Errore nel caricamento dei prodotti.';
       }
@@ -57,6 +60,19 @@ export class AdminProdotti implements OnInit {
       this.isLoading = false;
       this.cdr.detectChanges();
     }
+  }
+
+  filtraProdotti() {
+    const q = this.searchQuery.toLowerCase().trim();
+    if (!q) {
+      this.prodottiFiltrati = [...this.prodotti];
+      return;
+    }
+    this.prodottiFiltrati = this.prodotti.filter(p =>
+      p.nome?.toLowerCase().includes(q) ||
+      p.condizione?.toLowerCase().includes(q) ||
+      p.id?.toString().includes(q)
+    );
   }
 
   async eliminaProdotto(id: number) {
