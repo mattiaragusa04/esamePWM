@@ -56,6 +56,7 @@ export class Pagamento implements OnInit {
   totale: number = 0;
   isLoading: boolean = true;
   isProcessing: boolean = false;
+  submitted: boolean = false;
   
   carteSalvate: any[] = [];
   indirizziSalvati: any[] = [];
@@ -216,6 +217,8 @@ export class Pagamento implements OnInit {
   }
 
   async confermaEPaga() {
+    this.submitted = true;
+    this.cdr.detectChanges();
     if (this.checkoutForm.invalid) {
       this.toast.warning('Per favore, compila tutti i campi del form correttamente.');
       return;

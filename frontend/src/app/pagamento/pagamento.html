@@ -18,7 +18,8 @@
         <div formGroupName="spedizione" class="row g-3" *ngIf="selectedIndirizzoId == 0">
           <div class="col-sm-6">
             <label for="addressType" class="form-label text-muted">Tipo di Indirizzo</label>
-            <select formControlName="tipo" class="form-select rounded-3" id="addressType">
+            <select formControlName="tipo" class="form-select rounded-3" id="addressType"
+              [class.field-error]="submitted && checkoutForm.get('spedizione.tipo')?.invalid">
               <option value="Casa">Casa</option>
               <option value="Lavoro">Lavoro</option>
               <option value="Altro">Altro</option>
@@ -27,17 +28,22 @@
 
           <div class="col-sm-6">
             <label for="address" class="form-label text-muted">Via/Piazza</label>
-            <input type="text" formControlName="via" class="form-control rounded-3" id="address" placeholder="Via Roma" (input)="checkoutForm.get('spedizione.via')?.setValue($any($event.target).value.replace(/[^a-zA-ZÀ-ÿ\s\']/g, ''))">
+            <input type="text" formControlName="via" class="form-control rounded-3" id="address" placeholder="Via Roma"
+              [class.field-error]="submitted && checkoutForm.get('spedizione.via')?.invalid" (input)="checkoutForm.get('spedizione.via')?.setValue($any($event.target).value.replace(/[^a-zA-ZÀ-ÿ\s\']/g, ''))">
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('spedizione.via')?.invalid"><i class="bi bi-exclamation-circle me-1"></i>Campo obbligatorio.</span>
           </div>
 
           <div class="col-md-4">
             <label for="civico" class="form-label text-muted">Numero Civico</label>
-            <input type="text" formControlName="numero_civico" class="form-control rounded-3" id="civico" placeholder="123" maxlength="4" (input)="checkoutForm.get('spedizione.numero_civico')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
+            <input type="text" formControlName="numero_civico" class="form-control rounded-3" id="civico" placeholder="123" maxlength="4"
+              [class.field-error]="submitted && checkoutForm.get('spedizione.numero_civico')?.invalid" (input)="checkoutForm.get('spedizione.numero_civico')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('spedizione.numero_civico')?.invalid"><i class="bi bi-exclamation-circle me-1"></i>Campo obbligatorio.</span>
           </div>
 
           <div class="col-md-4">
             <label for="provincia" class="form-label text-muted">Provincia</label>
-            <select formControlName="provincia" class="form-select rounded-3" id="provincia">
+            <select formControlName="provincia" class="form-select rounded-3" id="provincia"
+              [class.field-error]="submitted && checkoutForm.get('spedizione.provincia')?.invalid">
               <option value="" disabled selected>Seleziona una città</option>
               <option value="Agrigento">Agrigento</option>
               <option value="Alessandria">Alessandria</option>
@@ -150,19 +156,24 @@
               <option value="Vicenza">Vicenza</option>
               <option value="Viterbo">Viterbo</option>
             </select>
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('spedizione.provincia')?.invalid"><i class="bi bi-exclamation-circle me-1"></i>Seleziona una provincia.</span>
           </div>
 
           <div class="col-md-4">
             <label for="country" class="form-label text-muted">Paese</label>
-            <select formControlName="paese" class="form-select rounded-3" id="country">
+            <select formControlName="paese" class="form-select rounded-3" id="country"
+              [class.field-error]="submitted && checkoutForm.get('spedizione.paese')?.invalid">
               <option value="">Scegli...</option>
               <option value="Italia">Italia</option>
             </select>
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('spedizione.paese')?.invalid"><i class="bi bi-exclamation-circle me-1"></i>Seleziona il paese.</span>
           </div>
 
           <div class="col-md-4 mt-3">
             <label for="zip" class="form-label text-muted">CAP</label>
-            <input type="text" formControlName="cap" class="form-control rounded-3" id="zip" maxlength="5" (input)="checkoutForm.get('spedizione.cap')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
+            <input type="text" formControlName="cap" class="form-control rounded-3" id="zip" maxlength="5"
+              [class.field-error]="submitted && checkoutForm.get('spedizione.cap')?.invalid" (input)="checkoutForm.get('spedizione.cap')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('spedizione.cap')?.invalid"><i class="bi bi-exclamation-circle me-1"></i>Campo obbligatorio.</span>
           </div>
 
           <div class="col-12 mt-2">
@@ -191,7 +202,10 @@
         <div formGroupName="pagamento" class="row gy-3" *ngIf="selectedCartaId == 0">
           <div class="col-md-6">
             <label for="cc-name" class="form-label text-muted">Nome sulla carta</label>
-            <input type="text" formControlName="nomeCarta" class="form-control rounded-3" id="cc-name" placeholder="Es. MARIO ROSSI" (input)="formatNome($event)" style="text-transform: uppercase;">
+            <input type="text" formControlName="nomeCarta" class="form-control rounded-3" id="cc-name" placeholder="Es. MARIO ROSSI"
+              [class.field-error]="submitted && checkoutForm.get('pagamento.nomeCarta')?.invalid"
+              (input)="formatNome($event)" style="text-transform: uppercase;">
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('pagamento.nomeCarta')?.invalid"><i class="bi bi-exclamation-circle me-1"></i>Campo obbligatorio.</span>
             <small class="text-muted d-block mt-1">Nome completo come mostrato sulla carta</small>
           </div>
 
@@ -207,16 +221,21 @@
                      'bi-credit-card-fill text-success': cardType() === 'amex'
                    }"></i>
               </span>
-              <input type="text" formControlName="numeroCarta" class="form-control border-start-0" style="border-top-right-radius: 0.3rem; border-bottom-right-radius: 0.3rem;" id="cc-number" placeholder="0000 0000 0000 0000" (input)="formatNumeroCarta($event)">
+              <input type="text" formControlName="numeroCarta" class="form-control border-start-0"
+                [class.field-error]="submitted && checkoutForm.get('pagamento.numeroCarta')?.invalid"
+                style="border-top-right-radius: 0.3rem; border-bottom-right-radius: 0.3rem;" id="cc-number" placeholder="0000 0000 0000 0000" (input)="formatNumeroCarta($event)">
             </div>
-            <small *ngIf="checkoutForm.get('pagamento.numeroCarta')?.hasError('luhnInvalid') && checkoutForm.get('pagamento.numeroCarta')?.touched" class="text-danger mt-1 d-block">Il numero della carta non è valido.</small>
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('pagamento.numeroCarta')?.invalid"><i class="bi bi-exclamation-circle me-1"></i>Numero carta non valido (16 cifre).</span>
           </div>
 
           <div class="col-md-3">
             <label for="cc-expiration" class="form-label text-muted">Scadenza</label>
-            <input type="text" formControlName="scadenza" class="form-control rounded-3" id="cc-expiration" placeholder="MM/YY" (input)="formatScadenza($event)">
-            <small *ngIf="checkoutForm.get('pagamento.scadenza')?.hasError('cartaScaduta') && checkoutForm.get('pagamento.scadenza')?.touched" class="text-danger mt-1 d-block">Carta scaduta.</small>
-            <small *ngIf="checkoutForm.get('pagamento.scadenza')?.hasError('meseNonValido') && checkoutForm.get('pagamento.scadenza')?.touched" class="text-danger mt-1 d-block">Mese errato.</small>
+            <input type="text" formControlName="scadenza" class="form-control rounded-3" id="cc-expiration" placeholder="MM/YY"
+              [class.field-error]="submitted && checkoutForm.get('pagamento.scadenza')?.invalid"
+              (input)="formatScadenza($event)">
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('pagamento.scadenza')?.hasError('cartaScaduta')"><i class="bi bi-exclamation-circle me-1"></i>Carta scaduta.</span>
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('pagamento.scadenza')?.hasError('meseNonValido')"><i class="bi bi-exclamation-circle me-1"></i>Mese non valido.</span>
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('pagamento.scadenza')?.hasError('required')"><i class="bi bi-exclamation-circle me-1"></i>Campo obbligatorio.</span>
           </div>
 
           <div class="col-md-3">
@@ -224,11 +243,14 @@
                CVV <i class="bi bi-info-circle ms-1 text-info" title="Ultime 3 cifre sul retro della carta. Per American Express, sono 4 cifre sul fronte."></i>
             </label>
             <div class="input-group shadow-sm">
-              <input [type]="mostraCvv ? 'text' : 'password'" formControlName="cvv" class="form-control border-end-0" style="border-top-left-radius: 0.3rem; border-bottom-left-radius: 0.3rem;" id="cc-cvv" placeholder="123" (input)="formatCVV($event)">
+              <input [type]="mostraCvv ? 'text' : 'password'" formControlName="cvv" class="form-control border-end-0"
+                [class.field-error]="submitted && checkoutForm.get('pagamento.cvv')?.invalid"
+                style="border-top-left-radius: 0.3rem; border-bottom-left-radius: 0.3rem;" id="cc-cvv" placeholder="123" (input)="formatCVV($event)">
               <button class="btn btn-outline-secondary bg-white text-muted" type="button" style="border-top-right-radius: 0.3rem; border-bottom-right-radius: 0.3rem; border-color: #ced4da;" (click)="toggleCvv()">
                 <i class="bi" [ngClass]="mostraCvv ? 'bi-eye-slash' : 'bi-eye'"></i>
               </button>
             </div>
+            <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('pagamento.cvv')?.invalid"><i class="bi bi-exclamation-circle me-1"></i>CVV non valido (3 cifre).</span>
           </div>
 
           <div class="col-12 mt-2">
