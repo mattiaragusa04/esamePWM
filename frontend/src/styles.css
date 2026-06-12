@@ -715,3 +715,209 @@ body.theme-dark .settings-label {
 body.theme-dark .hero-box {
   background: linear-gradient(135deg, #020617, #111827, #0f172a);
 }
+
+/* ============================================================
+   FIX DARK MODE — leggibilità generale
+   ============================================================ */
+
+/* Logo PAWERUP: in dark mode la parte "werUP" deve essere bianca */
+body.theme-dark .navbar-brand .text-black,
+body.theme-dark .navbar-brand span:not(.text-info),
+body.theme-dark .footer .text-white {
+  color: #ffffff !important;
+}
+
+/* Footer in dark mode */
+body.theme-dark .footer {
+  background-color: #020617 !important;
+  color: #e5e7eb !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+body.theme-dark .footer h4,
+body.theme-dark .footer h5,
+body.theme-dark .footer h6,
+body.theme-dark .footer .text-uppercase {
+  color: #ffffff !important;
+}
+body.theme-dark .footer p,
+body.theme-dark .footer small,
+body.theme-dark .footer .text-muted {
+  color: #cbd5e1 !important;
+}
+body.theme-dark .footer .social-icon {
+  color: #e5e7eb;
+  font-size: 1.4rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+body.theme-dark .footer .social-icon:hover {
+  color: var(--main-color);
+  transform: translateY(-2px);
+}
+
+/* Titoli di pagina (es. "PRODOTTI CONSOLE", "CONSIGLIATI PER TE") */
+body.theme-dark .section-title,
+body.theme-dark .page-title,
+body.theme-dark .titolo-pagina,
+body.theme-dark .titolo-sezione,
+body.theme-dark .categoria-title,
+body.theme-dark .display-1,
+body.theme-dark .display-2,
+body.theme-dark .display-3,
+body.theme-dark .display-4,
+body.theme-dark .display-5,
+body.theme-dark .display-6 {
+  color: #ffffff !important;
+}
+
+/* Forza titoli grandi opachi a essere bianchi (es. "PRODOTTI") */
+body.theme-dark h1.text-secondary,
+body.theme-dark h2.text-secondary,
+body.theme-dark .text-secondary {
+  color: #cbd5e1 !important;
+}
+
+/* Card prodotti */
+body.theme-dark .product-card,
+body.theme-dark .prodotto-card,
+body.theme-dark .card-prodotto {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #e5e7eb !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+body.theme-dark .product-card h5,
+body.theme-dark .product-card .card-title,
+body.theme-dark .prodotto-card h5,
+body.theme-dark .prodotto-card .card-title,
+body.theme-dark .card-prodotto h5,
+body.theme-dark .card-prodotto .card-title {
+  color: #ffffff !important;
+}
+body.theme-dark .card-img-top,
+body.theme-dark .product-card img,
+body.theme-dark .prodotto-card img,
+body.theme-dark .card-prodotto img {
+  background-color: #f8fafc; /* sfondo chiaro dietro alle immagini PNG con bianco */
+  border-radius: 0.5rem;
+}
+
+/* Descrizioni delle card categorie nella home */
+body.theme-dark .card .card-body p,
+body.theme-dark .card .card-text {
+  color: #cbd5e1 !important;
+}
+
+/* Pannello Filtri */
+body.theme-dark .filtri,
+body.theme-dark .filters-panel,
+body.theme-dark .panel-filtri,
+body.theme-dark aside .filtri,
+body.theme-dark .sidebar-filtri {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #e5e7eb !important;
+}
+
+/* Form-check (radio/checkbox) e label dei filtri in dark */
+body.theme-dark .form-check-label,
+body.theme-dark .filter-label,
+body.theme-dark label {
+  color: #e5e7eb !important;
+}
+
+/* Override classi colorate Bootstrap (text-success / text-danger / text-primary)
+   nei filtri: in dark vanno comunque in colori chiari */
+body.theme-dark .filtri .text-success,
+body.theme-dark .filtri .text-danger,
+body.theme-dark .filtri .text-primary,
+body.theme-dark .filtri .text-info,
+body.theme-dark .filtri .text-warning,
+body.theme-dark .filters-panel .text-success,
+body.theme-dark .filters-panel .text-danger,
+body.theme-dark .filters-panel .text-primary,
+body.theme-dark .filters-panel .text-info,
+body.theme-dark .filters-panel .text-warning {
+  filter: brightness(1.5) saturate(0.85);
+}
+body.theme-dark .form-check label.text-success {
+  color: #34d399 !important;
+}
+body.theme-dark .form-check label.text-danger {
+  color: #f87171 !important;
+}
+body.theme-dark .form-check label.text-primary,
+body.theme-dark .form-check label.text-info {
+  color: #93c5fd !important;
+}
+
+/* Input range prezzo nei filtri */
+body.theme-dark .filtri input,
+body.theme-dark .filters-panel input,
+body.theme-dark .panel-filtri input {
+  background-color: #020617 !important;
+  color: #e5e7eb !important;
+  border-color: rgba(148, 163, 184, 0.4) !important;
+}
+
+/* Bottoni piccoli/secondary nei filtri */
+body.theme-dark .filtri .btn-secondary,
+body.theme-dark .filtri .btn-outline-secondary,
+body.theme-dark .filters-panel .btn-secondary,
+body.theme-dark .filters-panel .btn-outline-secondary {
+  background-color: rgba(148, 163, 184, 0.15) !important;
+  border-color: rgba(148, 163, 184, 0.45) !important;
+  color: #e5e7eb !important;
+}
+
+/* Navbar pillole categorie selezionate (PS5, PS4, Switch) e card categorie */
+body.theme-dark .categoria-pill,
+body.theme-dark .categoria-card {
+  background: rgba(30, 41, 59, 0.85) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #e5e7eb !important;
+}
+body.theme-dark .categoria-pill.active,
+body.theme-dark .categoria-card.active {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.45);
+}
+
+/* Badge "Nuovo" e "Usato" sulle card */
+body.theme-dark .badge.bg-success,
+body.theme-dark .badge-nuovo {
+  background-color: rgba(46, 204, 113, 0.25) !important;
+  color: #5ee08a !important;
+  border: 1px solid rgba(46, 204, 113, 0.5) !important;
+}
+body.theme-dark .badge.bg-secondary,
+body.theme-dark .badge-usato {
+  background-color: rgba(148, 163, 184, 0.25) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(148, 163, 184, 0.5) !important;
+}
+
+/* Prezzo prodotto */
+body.theme-dark .price-current,
+body.theme-dark .prezzo,
+body.theme-dark .product-price {
+  color: var(--main-color) !important;
+}
+
+/* "CENTRO IMPOSTAZIONI" e altre pill informative */
+body.theme-dark .badge.bg-light,
+body.theme-dark .info-pill {
+  background: rgba(248, 109, 237, 0.18) !important;
+  color: #f9a8e0 !important;
+  border: 1px solid rgba(248, 109, 237, 0.35);
+}
+
+/* Bottoni outline-info usati in molte card/footer */
+body.theme-dark .btn-outline-info {
+  border-color: var(--main-color) !important;
+  color: var(--main-color) !important;
+}
+body.theme-dark .btn-outline-info:hover {
+  background-color: var(--main-color) !important;
+  color: #fff !important;
+}
