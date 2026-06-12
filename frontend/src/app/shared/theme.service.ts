@@ -23,9 +23,9 @@ export class ThemeService {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    const initial: Theme = stored === 'dark' || stored === 'light' ? stored : 'light';
-    this.applyTheme(initial);
+    // Forza sempre il tema chiaro all'avvio (ignorando i vecchi salvataggi)
+    this.applyTheme('light');
+    localStorage.setItem(STORAGE_KEY, 'light');
   }
 
   setTheme(theme: Theme): void {

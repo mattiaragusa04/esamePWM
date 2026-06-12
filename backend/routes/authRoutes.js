@@ -17,4 +17,7 @@ router.get("/profilo", authMiddleware, authController.getProfile);
 router.get("/conferma/:token", authController.confermaRegistrazione);
 router.delete("/:id", authController.deleteUser);
 
+router.post('/password-reset', authControllers.passwordReset);
+router.post('/update-password', authControllers.updatePassword);
+
 module.exports = router;

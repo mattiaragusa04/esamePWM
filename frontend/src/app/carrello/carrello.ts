@@ -18,7 +18,6 @@ export class Carrello implements OnInit, OnDestroy {
   totale: number = 0;
 
   private itemsSub?: Subscription;
-  private totalSub?: Subscription;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -34,11 +33,15 @@ export class Carrello implements OnInit, OnDestroy {
     // Sottoscrizione reattiva al carrello: ogni cambio aggiorna la UI
     this.itemsSub = this.carrelloService.cartItems$.subscribe(items => {
       this.carrello = items;
+      
+      // Calcolo locale e dinamico del totale per includere correttamente gli sconti per l'Usato
+      this.totale = this.carrello.reduce((acc: number, item: any) => {
+        const base = Number(item.prezzoUnitarioVendita ?? 0);
+        const prezzoEff = item.condizione === 'Usato' ? Math.round(base * 0.75 * 100) / 100 : base;
+        return acc + prezzoEff * item.quantita;
+      }, 0);
+
       this.isLoading = false;
-      this.cdr.detectChanges();
-    });
-    this.totalSub = this.carrelloService.cartTotal$.subscribe(total => {
-      this.totale = total;
       this.cdr.detectChanges();
     });
 
@@ -48,7 +51,6 @@ export class Carrello implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.itemsSub?.unsubscribe();
-    this.totalSub?.unsubscribe();
   }
 
   async aggiornaQuantita(item: any, delta: number) {

@@ -3,6 +3,9 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const nodemailer = require('nodemailer');
 const { bootId } = require("../utils/serverBoot");
+const db = require('../db/database');
+const authControllers = require('../controllers/authControllers');
+
 
 const SECRET = process.env.JWT_SECRET || "supersecretkey";
 
@@ -99,6 +102,44 @@ exports.inviaEmailBenvenuto = function(emailUtente, nomeUtente, cognomeUtente) {
             console.log('Email di benvenuto inviata con successo a: ' + emailUtente);
         }
     });
+}
+
+// 4. Funzione per inviare l'email di reset password
+exports.inviaEmailResetPassword = async function(emailUtente, token) {
+    const linkReset = `http://localhost:4200/#/reset-password/${token}`;
+    const mailOptions = {
+        from: '"PAwerUP Store" <pawerupecommerce@gmail.com>',
+        to: emailUtente,
+        subject: 'Reset della tua password su PAwerUP',
+        html: `
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 15px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.05); background-color: #f8fafc;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="color: #f86ded; margin: 0; font-size: 32px;">PAwerUP</h1>
+                </div>
+                <div style="background-color: #ffffff; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    <h2 style="color: #0f172a; margin-top: 0;">Richiesta di reset password</h2>
+                    <p style="font-size: 16px; line-height: 1.6; color: #475569;">Hai richiesto il reset della tua password su <strong>PAwerUP</strong>. Clicca sul pulsante qui sotto per impostare una nuova password:</p>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${linkReset}" style="background: linear-gradient(135deg, #f86ded, #fb7185); color: white; padding: 14px 28px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 10px rgba(248, 109, 237, 0.3);">Reimposta Password</a>
+                </div>
+                
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                
+                <p style="font-size: 14px; color: #64748b; text-align: center;">Se non hai richiesto tu il reset, ignora questa email. Il link scadrà tra 15 minuti.</p>
+            </div>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email di reset password inviata con successo a: ' + emailUtente);
+        return true;
+    } catch (error) {
+        console.error('Errore durante l\'invio dell\'email di reset password:', error);
+        throw error;
+    }
 }
 
 exports.register = async (req, res) => {
@@ -243,10 +284,9 @@ exports.passwordReset = async (req, res) => {
 
     console.log(`Richiesta reset password per utente: ${email} (id: ${user.id})`);
 
-    // Qui potresti:
-    // - generare un token di reset e salvarlo su DB
-    // - inviare una mail con il link di reset
-    // Per l'esame basta la risposta generica
+    // Generiamo un token valido per 15 minuti e inviamo l'email
+    const token = jwt.sign({ email: user.email }, SECRET, { expiresIn: "15m" });
+    await exports.inviaEmailResetPassword(email, token);
 
     return res.status(200).json({
       message: "Se l’email è corretta, riceverai a breve le istruzioni per il reset."
@@ -254,6 +294,41 @@ exports.passwordReset = async (req, res) => {
   } catch (err) {
     console.error("Errore passwordReset:", err);
     return res.status(500).json({ message: "Errore interno durante il reset password." });
+  }
+};
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Dati mancanti per il reset della password." });
+    }
+
+    // Verifica il token (se è scaduto o alterato scatterà un'eccezione finendo nel blocco catch)
+    const decoded = jwt.verify(token, SECRET);
+    const email = decoded.email;
+
+    const user = await User.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato." });
+    }
+
+    // Hash della nuova password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Aggiorniamo la password nel DB
+    db.run("UPDATE utente SET password = ? WHERE email = ?", [hashedPassword, email], function(err) {
+        if (err) {
+            console.error("Errore durante l'aggiornamento della password:", err);
+            return res.status(500).json({ message: "Errore durante l'aggiornamento della password." });
+        }
+        res.status(200).json({ message: "Password aggiornata con successo. Ora puoi effettuare l'accesso." });
+    });
+
+  } catch (err) {
+    console.error("Errore updatePassword:", err);
+    return res.status(400).json({ message: "Il link di reset non è valido o è scaduto." });
   }
 };
 

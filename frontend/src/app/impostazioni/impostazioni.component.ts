@@ -90,7 +90,7 @@ export class ImpostazioniComponent implements OnInit {
 
     this.isRichiestaResetInCorso = true;
 
-    this.http.post('/api/auth/password-reset', { email: this.emailResetPassword })
+    this.http.post('http://localhost:3000/api/auth/password-reset', { email: this.emailResetPassword })
       .subscribe({
         next: () => {
           this.toast.info('Se l’email è corretta, riceverai a breve le istruzioni per il reset.');
@@ -107,8 +107,10 @@ export class ImpostazioniComponent implements OnInit {
   ripristinaPagina(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // cancella preferenze di UI
-    localStorage.removeItem('tema');
+    // Resetta il tema tramite service (gestisce sia localStorage che DOM)
+    this.themeService.setTheme('light');
+
+    // Cancella altre preferenze di UI
     localStorage.removeItem('notifPromozioni');
     localStorage.removeItem('notifOrdini');
     localStorage.removeItem('notifVendite');
