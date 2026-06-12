@@ -132,52 +132,85 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      const canvas = this.canvasRef.nativeElement;
-      const box = this.heroBoxRef.nativeElement;
-      this.ctx = canvas.getContext('2d')!;
+    if (!isPlatformBrowser(this.platformId)) return;
 
-      // Resize canvas al box
-      this.resizeListener = () => {
-        canvas.width = box.offsetWidth;
-        canvas.height = box.offsetHeight;
-        this.initParticles();
-      };
-      this.resizeListener();
-      window.addEventListener('resize', this.resizeListener);
-
-      box.addEventListener('mousemove', (e: MouseEvent) => {
-        const rect = box.getBoundingClientRect();
-        this.mouse.x = e.clientX - rect.left;
-        this.mouse.y = e.clientY - rect.top;
-      });
-
-      box.addEventListener('mouseleave', () => {
-        this.mouse = { x: -999, y: -999 };
-      });
-
-      this.animate();
-    }
+    // Diamo al browser un frame per applicare CSS/layout prima di leggere offsetWidth
+    requestAnimationFrame(() => this.setupCanvas());
   }
 
-  private initParticles() {
+  private setupCanvas() {
+    const canvas = this.canvasRef?.nativeElement;
+    const box = this.heroBoxRef?.nativeElement;
+    if (!canvas || !box) {
+      console.warn('[Home] canvas o hero-box non trovati');
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.warn('[Home] impossibile ottenere il context 2D');
+      return;
+    }
+    this.ctx = ctx;
+
+    // Resize canvas al box (con device pixel ratio per nitidezza su retina)
+    this.resizeListener = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const w = box.offsetWidth;
+      const h = box.offsetHeight;
+      if (w === 0 || h === 0) {
+        // Layout non ancora pronto: ritenta al frame successivo
+        requestAnimationFrame(() => this.resizeListener && this.resizeListener());
+        return;
+      }
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      this.ctx.scale(dpr, dpr);
+      this.initParticles(w, h);
+    };
+    this.resizeListener();
+    window.addEventListener('resize', this.resizeListener);
+
+    box.addEventListener('mousemove', (e: MouseEvent) => {
+      const rect = box.getBoundingClientRect();
+      this.mouse.x = e.clientX - rect.left;
+      this.mouse.y = e.clientY - rect.top;
+    });
+
+    box.addEventListener('mouseleave', () => {
+      this.mouse = { x: -999, y: -999 };
+    });
+
+    this.animate();
+  }
+
+  private initParticles(width?: number, height?: number) {
     const canvas = this.canvasRef.nativeElement;
+    // Lavoriamo in pixel CSS (lo scale dpr è applicato al context)
+    const w = width ?? canvas.width;
+    const h = height ?? canvas.height;
     this.particles = [];
     for (let i = 0; i < this.numParticles; i++) {
       this.particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+        x: Math.random() * w,
+        y: Math.random() * h,
         vx: (Math.random() - 0.5) * 0.6,
         vy: (Math.random() - 0.5) * 0.6,
-        size: Math.random() * 1.5 + 0.5,
+        size: Math.random() * 1.5 + 0.8,
         color: this.COLORS[Math.floor(Math.random() * this.COLORS.length)]
       });
     }
   }
 
   private animate() {
-    const canvas = this.canvasRef.nativeElement;
-    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!this.ctx) return;
+    const box = this.heroBoxRef.nativeElement;
+    const w = box.offsetWidth;
+    const h = box.offsetHeight;
+    this.ctx.clearRect(0, 0, w, h);
 
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
@@ -196,9 +229,9 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
         p.y -= Math.sin(angle) * force * 2;
       }
 
-      // Bounce sui bordi
-      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      // Bounce sui bordi (usiamo le dimensioni CSS del box)
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
 
       // Disegno particella
       this.ctx.fillStyle = p.color;
