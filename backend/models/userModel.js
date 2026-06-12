@@ -53,11 +53,29 @@ const User = {
 
   delete: (id) => {
     return new Promise((resolve, reject) => {
-      const query = `DELETE FROM utente WHERE id = ?`;
-      db.run(query, [id], (err) => {
-        if (err) reject(err);
-        else resolve({ id });
-      });
+      // Prima di eliminare l'utente, cancella tutte le righe collegate
+      // rispettando l'ordine dei vincoli di foreign key
+      const queries = [
+        `DELETE FROM contiene WHERE carrello_id IN (SELECT id FROM carrello WHERE utente_id = ?)`,
+        `DELETE FROM carrello WHERE utente_id = ?`,
+        `DELETE FROM composto WHERE ordine_id IN (SELECT id FROM ordine WHERE utente_id = ?)`,
+        `DELETE FROM ordine WHERE utente_id = ?`,
+        `DELETE FROM indirizzo WHERE utente_id = ?`,
+        `DELETE FROM carta_di_credito WHERE utente_id = ?`,
+        `DELETE FROM recensione WHERE utente_id = ?`,
+        `DELETE FROM vendi WHERE utente_id = ?`,
+        `DELETE FROM utente WHERE id = ?`
+      ];
+
+      const runNext = (index) => {
+        if (index >= queries.length) return resolve({ id });
+        db.run(queries[index], [id], (err) => {
+          if (err) return reject(err);
+          runNext(index + 1);
+        });
+      };
+
+      runNext(0);
     });
   }
 };
