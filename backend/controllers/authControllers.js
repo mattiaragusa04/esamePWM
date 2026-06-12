@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt"); // per criptare le informazioni
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const nodemailer = require('nodemailer');
+const { bootId } = require("../utils/serverBoot");
 
 const SECRET = process.env.JWT_SECRET || "supersecretkey";
 
@@ -94,7 +95,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Credenziali non valide" });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email, ruolo: user.ruolo }, SECRET, {
+    const token = jwt.sign({ id: user.id, email: user.email, ruolo: user.ruolo, bootId }, SECRET, {
       expiresIn: "1h"
     });
 

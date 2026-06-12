@@ -1,10 +1,9 @@
 const jwt = require("jsonwebtoken");
+const { bootId } = require("../utils/serverBoot");
 
 const SECRET = process.env.JWT_SECRET || "supersecretkey";
 
 module.exports = (req, res, next) => {
-
-
     const authHeader = req.headers["authorization"];
 
     if (!authHeader) {
@@ -14,11 +13,13 @@ module.exports = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     try {
-
-        console.log("Token ricevuto:", token);
-        console.log("SECRET usata per la verifica:", SECRET);
-
         const verified = jwt.verify(token, SECRET);
+
+        // Controllo bootId: se il server e' stato riavviato dopo l'emissione
+        // di questo token, il bootId non combacia piu' -> sloggare l'utente.
+        if (verified.bootId && verified.bootId !== bootId) {
+            return res.status(401).json({ message: "Sessione scaduta. Effettua nuovamente il login.", code: "SERVER_RESTARTED" });
+        }
 
         req.user = verified;
         next();
