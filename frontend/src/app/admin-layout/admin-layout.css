@@ -1,22 +1,32 @@
-/* Sidebar Admin — fix testo attivo */
+/* Sidebar Admin */
 
-/* Link base */
 .admin-sidebar-link {
   color: #0f172a !important;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Hover */
 .admin-sidebar-link:hover:not(.active) {
   background-color: rgba(220, 53, 69, 0.07) !important;
   color: #dc3545 !important;
 }
 
-/* Link attivo: testo SEMPRE bianco, sfondo rosso */
-.admin-sidebar-link.active,
-.admin-sidebar-link.active span,
-.admin-sidebar-link.active i {
+/* Fix: forza testo e icone bianchi su link attivo.
+   Il problema era che Bootstrap .list-group-item-action.active
+   sovrascriveva il colore con color: #fff ma poi .bg-transparent
+   lo reimpostava in modo confuso. Qui sovrascriviamo tutto esplicitamente. */
+.admin-sidebar-link.active {
   background-color: #dc3545 !important;
+  color: #ffffff !important;
+  border-radius: 0.5rem;
+}
+
+.admin-sidebar-link.active span {
+  color: #ffffff !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.admin-sidebar-link.active i {
   color: #ffffff !important;
 }
 
@@ -24,13 +34,17 @@
 body.theme-dark .admin-sidebar-link {
   color: #e5e7eb !important;
 }
+
 body.theme-dark .admin-sidebar-link:hover:not(.active) {
   background-color: rgba(220, 53, 69, 0.15) !important;
   color: #f87171 !important;
 }
+
 body.theme-dark .admin-sidebar-link.active,
 body.theme-dark .admin-sidebar-link.active span,
 body.theme-dark .admin-sidebar-link.active i {
   background-color: #dc3545 !important;
   color: #ffffff !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }

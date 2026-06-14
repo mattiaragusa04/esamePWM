@@ -1,21 +1,144 @@
-@keyframes shake {
-  0%   { transform: translateX(0); }
-  20%  { transform: translateX(-6px); }
-  40%  { transform: translateX(6px); }
-  60%  { transform: translateX(-4px); }
-  80%  { transform: translateX(4px); }
-  100% { transform: translateX(0); }
+/* ── Sezioni form ─────────────────────────────────────────────── */
+.form-section {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0dcaf0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* Input & select migliorati */
+.form-control,
+.form-select {
+  border-radius: 0.5rem !important;
+  border: 1.5px solid #dee2e6;
+  padding: 0.6rem 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #0dcaf0;
+  box-shadow: 0 0 0 3px rgba(13, 202, 240, 0.15);
+  outline: none;
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.35rem;
+}
+
+/* Card visuale numero carta */
+.card-preview {
+  background: linear-gradient(135deg, #0dcaf0 0%, #0a9ec2 100%);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 16px rgba(13, 202, 240, 0.3);
+}
+
+.card-preview::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+  top: -60px;
+  right: -40px;
+}
+
+.card-preview .card-number-display {
+  font-size: 1.3rem;
+  letter-spacing: 0.2em;
+  font-family: 'Courier New', monospace;
+  margin: 1rem 0 0.5rem;
+}
+
+.card-preview .card-name-display {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.card-preview .card-expiry-display {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+/* Badge tipo carta */
+.card-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.25);
+  letter-spacing: 0.04em;
+}
+
+/* Carta salvata selezionata */
+.carta-salvata-card {
+  border: 2px solid #e9ecef;
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.carta-salvata-card.selected {
+  border-color: #0dcaf0;
+  background: #f0feff;
+}
+
+/* Error field */
 .field-error {
-  animation: shake 0.4s ease;
   border-color: #dc3545 !important;
-  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.2) !important;
 }
 
 .invalid-feedback-custom {
   color: #dc3545;
-  font-size: 0.85rem;
-  margin-top: 4px;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
   display: block;
+}
+
+/* Checkbox personalizzata */
+.form-check-input:checked {
+  background-color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+
+/* Sticky sidebar */
+@media (min-width: 768px) {
+  .riepilogo-sticky {
+    position: sticky;
+    top: 1.5rem;
+  }
 }

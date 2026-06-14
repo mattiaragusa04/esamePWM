@@ -15,6 +15,11 @@ export class Ordini implements OnInit {
   isLoading: boolean = true;
   utente: any = null;
 
+  // Dettaglio ordine
+  ordineSelezionato: any = null;
+  dettagliOrdine: any[] = [];
+  isLoadingDettagli: boolean = false;
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
@@ -34,22 +39,14 @@ export class Ordini implements OnInit {
   async caricaOrdini() {
     this.isLoading = true;
     const token = localStorage.getItem('token');
-
-    if (!token) {
-      this.isLoading = false;
-      return;
-    }
-
+    if (!token) { this.isLoading = false; return; }
     try {
       const response = await fetch('http://localhost:3000/api/ordine/utente', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
         this.ordini = await response.json();
-        // Ordiniamo la lista per mostrare gli acquisti più recenti in alto
         this.ordini.sort((a, b) => b.id - a.id);
-      } else {
-        console.error('Errore nel caricamento degli ordini');
       }
     } catch (error) {
       console.error('Errore di rete:', error);
@@ -59,5 +56,38 @@ export class Ordini implements OnInit {
     }
   }
 
+  async apriDettaglio(ordine: any) {
+    this.ordineSelezionato = ordine;
+    this.dettagliOrdine = [];
+    this.isLoadingDettagli = true;
+    this.cdr.detectChanges();
 
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`http://localhost:3000/api/ordine/${ordine.id}/prodotti`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        this.dettagliOrdine = await res.json();
+      }
+    } catch (e) {
+      console.error('Errore caricamento dettagli:', e);
+    } finally {
+      this.isLoadingDettagli = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  chiudiDettaglio() {
+    this.ordineSelezionato = null;
+    this.dettagliOrdine = [];
+  }
+
+  get puntiFedeltaOrdine(): number {
+    return this.dettagliOrdine.reduce((acc, item) => acc + ((item.puntiFedelta || 0) * item.quantita), 0);
+  }
+
+  get subtotaleDettaglio(): number {
+    return this.dettagliOrdine.reduce((acc, item) => acc + (item.prezzoUnitario * item.quantita), 0);
+  }
 }
