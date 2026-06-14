@@ -27,7 +27,7 @@ const  Ordine = {
 
     findByUserId : (userId) => {
         return new Promise((res, rej) => {
-            const query = `SELECT * FROM ordine WHERE utente_id = ?`;
+            const query = `SELECT * FROM ordine WHERE utente_id = ? ORDER BY id DESC`;
             db.all(query, [userId], (err, rows) => {
                 if (err) rej(err);
                 else res(rows);
@@ -37,11 +37,29 @@ const  Ordine = {
     
     create : (ordine) => {
         return new Promise((res, rej) => {
-            const query = `INSERT INTO ordine (carta_id, indirizzo_id, utente_id, data, totale, statoOrdine) VALUES (?, ?, ?, ?, ?, ?)`;
-            db.run(query, [ordine.carta_id, ordine.indirizzo_id, ordine.utente_id, ordine.data, ordine.totale, ordine.statoOrdine], function(err) {
-                if (err) rej(err);
-                else res({ id: this.lastID, ...ordine });
-            });
+            const query = `
+                INSERT INTO ordine 
+                    (carta_id, indirizzo_id, utente_id, coupon_id, data, totale, totale_scontato, sconto_applicato, statoOrdine)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+            db.run(
+                query,
+                [
+                    ordine.carta_id,
+                    ordine.indirizzo_id,
+                    ordine.utente_id,
+                    ordine.coupon_id ?? null,
+                    ordine.data,
+                    ordine.totale,
+                    ordine.totale_scontato ?? ordine.totale,
+                    ordine.sconto_applicato ?? 0,
+                    ordine.statoOrdine
+                ],
+                function(err) {
+                    if (err) rej(err);
+                    else res({ id: this.lastID, ...ordine });
+                }
+            );
         });
     },
 
