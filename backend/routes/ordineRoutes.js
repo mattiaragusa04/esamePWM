@@ -15,6 +15,9 @@ router.get('/utente', ordineController.getOrdiniByUserId);
 // Rotta per aggiornare lo stato dell'ordine
 router.put('/stato', ordineController.updateStatoOrdine);
 
+// *** NUOVA: Rotta per ottenere i prodotti di un ordine specifico ***
+router.get('/:id/prodotti', ordineController.getProdottiOrdine);
+
 // Rotta per ottenere i dettagli di un singolo ordine
 router.get('/:id', ordineController.getOrdineById);
 
