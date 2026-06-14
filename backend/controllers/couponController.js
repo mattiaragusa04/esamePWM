@@ -127,6 +127,7 @@ const validaCoupon = async (req, res) => {
     res.json({
       valido: true,
       coupon_id: coupon.id,
+      codice: coupon.codice,
       tipo: coupon.tipo,
       valore: coupon.valore,
       sconto: Math.round(sconto * 100) / 100,
