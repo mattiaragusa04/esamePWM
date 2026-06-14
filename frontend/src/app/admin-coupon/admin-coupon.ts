@@ -192,9 +192,7 @@ export class AdminCoupon implements OnInit {
   // ─── Modale modifica ────────────────────────────────────────────────────────
 
   apriModifica(coupon: any) {
-    // Copia profonda per non modificare la riga della tabella in diretta
     this.couponInModifica = { ...coupon };
-    // Normalizza la data nel formato YYYY-MM-DD per l'input type="date"
     if (this.couponInModifica.data_scadenza) {
       this.couponInModifica.data_scadenza = this.couponInModifica.data_scadenza.split('T')[0];
     }
@@ -207,6 +205,15 @@ export class AdminCoupon implements OnInit {
     this.isSaving = false;
   }
 
+  generaCodiceModifica() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let codice = '';
+    for (let i = 0; i < 8; i++) {
+      codice += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    this.couponInModifica.codice = codice;
+  }
+
   async salvaModifica(form: any) {
     if (form.invalid || !this.couponInModifica) return;
 
@@ -214,6 +221,7 @@ export class AdminCoupon implements OnInit {
     const token = localStorage.getItem('token');
 
     const payload: any = {
+      codice: this.couponInModifica.codice.toUpperCase().trim(),
       tipo: this.couponInModifica.tipo,
       valore: Number(this.couponInModifica.valore),
       descrizione: this.couponInModifica.descrizione?.trim() || null,
@@ -234,7 +242,7 @@ export class AdminCoupon implements OnInit {
       });
 
       if (res.ok) {
-        this.toast.success(`Coupon "${this.couponInModifica.codice}" aggiornato con successo!`);
+        this.toast.success(`Coupon aggiornato con successo!`);
         this.chiudiModifica();
         await this.caricaCoupon();
       } else {
