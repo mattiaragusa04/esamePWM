@@ -15,7 +15,7 @@ export class AdminCoupon implements OnInit {
   coupon: any[] = [];
   couponFiltrati: any[] = [];
   searchQuery: string = '';
-  filtroStato: string = 'tutti'; // 'tutti' | 'attivi' | 'disattivi'
+  filtroStato: string = 'tutti';
   isLoading: boolean = true;
   errorMessage: string = '';
 
@@ -31,6 +31,10 @@ export class AdminCoupon implements OnInit {
     data_scadenza: '',
     utilizzi_massimi: null
   };
+
+  // Modale modifica
+  mostraModaleModifica: boolean = false;
+  couponInModifica: any = null;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -70,14 +74,12 @@ export class AdminCoupon implements OnInit {
   applicaFiltri() {
     let risultati = [...this.coupon];
 
-    // Filtro per stato
     if (this.filtroStato === 'attivi') {
       risultati = risultati.filter(c => c.attivo === 1);
     } else if (this.filtroStato === 'disattivi') {
       risultati = risultati.filter(c => c.attivo === 0);
     }
 
-    // Filtro per testo
     const q = this.searchQuery.toLowerCase().trim();
     if (q) {
       risultati = risultati.filter(c =>
@@ -97,7 +99,6 @@ export class AdminCoupon implements OnInit {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
-        // Aggiornamento ottimistico locale
         coupon.attivo = coupon.attivo === 1 ? 0 : 1;
         this.applicaFiltri();
         this.toast.success(`Coupon ${coupon.attivo === 1 ? 'attivato' : 'disattivato'} con successo.`);
@@ -109,6 +110,8 @@ export class AdminCoupon implements OnInit {
       this.toast.error('Impossibile connettersi al server.');
     }
   }
+
+  // ─── Modale creazione ───────────────────────────────────────────────────────
 
   apriModale() {
     this.nuovoCoupon = {
@@ -127,7 +130,6 @@ export class AdminCoupon implements OnInit {
     this.isSaving = false;
   }
 
-  // Genera un codice coupon casuale
   generaCodice() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let codice = '';
@@ -137,7 +139,6 @@ export class AdminCoupon implements OnInit {
     this.nuovoCoupon.codice = codice;
   }
 
-  // Validazione client-side prima di inviare
   get formValido(): boolean {
     if (!this.nuovoCoupon.codice?.trim()) return false;
     if (!this.nuovoCoupon.valore || Number(this.nuovoCoupon.valore) <= 0) return false;
@@ -188,7 +189,68 @@ export class AdminCoupon implements OnInit {
     }
   }
 
-  // Helpers per il template
+  // ─── Modale modifica ────────────────────────────────────────────────────────
+
+  apriModifica(coupon: any) {
+    // Copia profonda per non modificare la riga della tabella in diretta
+    this.couponInModifica = { ...coupon };
+    // Normalizza la data nel formato YYYY-MM-DD per l'input type="date"
+    if (this.couponInModifica.data_scadenza) {
+      this.couponInModifica.data_scadenza = this.couponInModifica.data_scadenza.split('T')[0];
+    }
+    this.mostraModaleModifica = true;
+  }
+
+  chiudiModifica() {
+    this.mostraModaleModifica = false;
+    this.couponInModifica = null;
+    this.isSaving = false;
+  }
+
+  async salvaModifica(form: any) {
+    if (form.invalid || !this.couponInModifica) return;
+
+    this.isSaving = true;
+    const token = localStorage.getItem('token');
+
+    const payload: any = {
+      tipo: this.couponInModifica.tipo,
+      valore: Number(this.couponInModifica.valore),
+      descrizione: this.couponInModifica.descrizione?.trim() || null,
+      data_scadenza: this.couponInModifica.data_scadenza || null,
+      utilizzi_massimi: this.couponInModifica.utilizzi_massimi
+        ? Number(this.couponInModifica.utilizzi_massimi)
+        : null
+    };
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/coupon/${this.couponInModifica.id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        this.toast.success(`Coupon "${this.couponInModifica.codice}" aggiornato con successo!`);
+        this.chiudiModifica();
+        await this.caricaCoupon();
+      } else {
+        const err = await res.json();
+        this.toast.error(err.error || 'Errore durante la modifica del coupon.');
+      }
+    } catch {
+      this.toast.error('Impossibile connettersi al server.');
+    } finally {
+      this.isSaving = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  // ─── Helpers ────────────────────────────────────────────────────────────────
+
   isScaduto(coupon: any): boolean {
     if (!coupon.data_scadenza) return false;
     return new Date(coupon.data_scadenza) < new Date();
