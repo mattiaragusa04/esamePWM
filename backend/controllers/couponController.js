@@ -1,16 +1,10 @@
-const db = require('../db/database');
+const Coupon = require('../models/couponModel');
 
 // GET /api/coupon — lista tutti i coupon (admin)
 const getCoupon = async (req, res) => {
   try {
-    const [rows] = await db.query(`
-      SELECT id, codice, tipo, valore, descrizione,
-             data_scadenza, utilizzi_massimi, utilizzi_attuali, attivo,
-             created_at
-      FROM Coupon
-      ORDER BY created_at DESC
-    `);
-    res.json(rows);
+    const coupon = await Coupon.findAll();
+    res.json(coupon);
   } catch (err) {
     console.error('getCoupon error:', err);
     res.status(500).json({ error: 'Errore nel recupero dei coupon.' });
@@ -27,31 +21,21 @@ const creaCoupon = async (req, res) => {
   if (!['percentuale', 'fisso'].includes(tipo)) {
     return res.status(400).json({ error: 'Tipo deve essere "percentuale" o "fisso".' });
   }
-  if (tipo === 'percentuale' && (valore <= 0 || valore > 100)) {
+  if (tipo === 'percentuale' && (Number(valore) <= 0 || Number(valore) > 100)) {
     return res.status(400).json({ error: 'Il valore percentuale deve essere tra 1 e 100.' });
   }
 
   try {
     // Verifica duplicati
-    const [esistente] = await db.query(
-      'SELECT id FROM Coupon WHERE codice = ?', [codice.toUpperCase()]
-    );
-    if (esistente.length > 0) {
+    const esistente = await Coupon.findValidByCodice(codice);
+    // findValidByCodice filtra solo quelli attivi/validi, usiamo findAll per check duplicato assoluto
+    const tutti = await Coupon.findAll();
+    const duplicato = tutti.find(c => c.codice === codice.toUpperCase().trim());
+    if (duplicato) {
       return res.status(409).json({ error: 'Esiste già un coupon con questo codice.' });
     }
 
-    await db.query(
-      `INSERT INTO Coupon (codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, utilizzi_attuali, attivo)
-       VALUES (?, ?, ?, ?, ?, ?, 0, 1)`,
-      [
-        codice.toUpperCase().trim(),
-        tipo,
-        valore,
-        descrizione || null,
-        data_scadenza || null,
-        utilizzi_massimi || null
-      ]
-    );
+    await Coupon.create({ codice, tipo, valore: Number(valore), descrizione, data_scadenza, utilizzi_massimi });
     res.status(201).json({ message: 'Coupon creato con successo.' });
   } catch (err) {
     console.error('creaCoupon error:', err);
@@ -63,12 +47,13 @@ const creaCoupon = async (req, res) => {
 const toggleCoupon = async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query('SELECT attivo FROM Coupon WHERE id = ?', [id]);
-    if (rows.length === 0) return res.status(404).json({ error: 'Coupon non trovato.' });
+    const coupon = await Coupon.findById(id);
+    if (!coupon) return res.status(404).json({ error: 'Coupon non trovato.' });
 
-    const nuovoStato = rows[0].attivo === 1 ? 0 : 1;
-    await db.query('UPDATE Coupon SET attivo = ? WHERE id = ?', [nuovoStato, id]);
-    res.json({ message: 'Stato aggiornato.', attivo: nuovoStato });
+    const result = await Coupon.toggle(id);
+    // dopo il toggle, rileggi lo stato aggiornato
+    const aggiornato = await Coupon.findById(id);
+    res.json({ message: 'Stato aggiornato.', attivo: aggiornato.attivo });
   } catch (err) {
     console.error('toggleCoupon error:', err);
     res.status(500).json({ error: 'Errore nell\'aggiornamento del coupon.' });
@@ -79,44 +64,32 @@ const toggleCoupon = async (req, res) => {
 const validaCoupon = async (req, res) => {
   const { codice, totale } = req.body;
   if (!codice) return res.status(400).json({ error: 'Codice mancante.' });
+  if (!totale || Number(totale) <= 0) return res.status(400).json({ error: 'Totale non valido.' });
 
   try {
-    const [rows] = await db.query(
-      'SELECT * FROM Coupon WHERE codice = ? AND attivo = 1', [codice.toUpperCase()]
-    );
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Coupon non valido o disattivato.' });
+    const coupon = await Coupon.findValidByCodice(codice);
+
+    if (!coupon) {
+      return res.status(404).json({ error: 'Coupon non valido, scaduto o esaurito.' });
     }
 
-    const coupon = rows[0];
-
-    // Controlla scadenza
-    if (coupon.data_scadenza && new Date(coupon.data_scadenza) < new Date()) {
-      return res.status(400).json({ error: 'Coupon scaduto.' });
-    }
-
-    // Controlla utilizzi
-    if (coupon.utilizzi_massimi && coupon.utilizzi_attuali >= coupon.utilizzi_massimi) {
-      return res.status(400).json({ error: 'Coupon esaurito.' });
-    }
-
-    // Calcola sconto
+    const tot = Number(totale);
     let sconto = 0;
     if (coupon.tipo === 'percentuale') {
-      sconto = (totale * coupon.valore) / 100;
+      sconto = (tot * coupon.valore) / 100;
     } else {
-      sconto = Math.min(coupon.valore, totale); // non può superare il totale
+      sconto = Math.min(coupon.valore, tot);
     }
 
-    const totaleFinale = Math.max(0, totale - sconto).toFixed(2);
+    const totaleFinale = Math.max(0, tot - sconto);
 
     res.json({
       valido: true,
       coupon_id: coupon.id,
       tipo: coupon.tipo,
       valore: coupon.valore,
-      sconto: parseFloat(sconto.toFixed(2)),
-      totale_finale: parseFloat(totaleFinale)
+      sconto: Math.round(sconto * 100) / 100,
+      totale_finale: Math.round(totaleFinale * 100) / 100
     });
   } catch (err) {
     console.error('validaCoupon error:', err);
