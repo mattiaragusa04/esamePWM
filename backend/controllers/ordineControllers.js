@@ -16,7 +16,6 @@ exports.createOrdine = async (req, res) => {
         }
 
         let totaleOrdine = 0;
-        let puntiFedeltaTotali = 0;
         const prodottiPerOrdine = [];
 
         for (const item of prodottiInCarrello) {
@@ -24,10 +23,8 @@ exports.createOrdine = async (req, res) => {
             if (item.condizione === 'Usato') {
                 prezzoUnitario = Math.round((prezzoUnitario * 0.75) * 100) / 100;
             }
-            const puntiFedeltaProdotto = item.puntiFedelta || 0;
 
             totaleOrdine += item.quantita * prezzoUnitario;
-            puntiFedeltaTotali += item.quantita * puntiFedeltaProdotto;
 
             prodottiPerOrdine.push({
                 prodottoId: item.id,
@@ -38,7 +35,7 @@ exports.createOrdine = async (req, res) => {
 
         totaleOrdine = Math.round(totaleOrdine * 100) / 100;
 
-        // ─── GESTIONE COUPON ────────────────────────────────────────────────────
+        // ─── GESTIONE COUPON ───────────────────────────────────────────────────
         let couponId = null;
         let scontoApplicato = 0;
         let totaleScontato = totaleOrdine;
@@ -62,16 +59,11 @@ exports.createOrdine = async (req, res) => {
             totaleScontato = Math.round((totaleOrdine - scontoApplicato) * 100) / 100;
             couponId = coupon.id;
         }
-        // ────────────────────────────────────────────────────────────────────────
+        // ──────────────────────────────────────────────────────────────────────
 
-        // ─── PUNTI FEDELTÀ: calcolati sul totale effettivamente pagato ──────────
-        // 1 punto ogni 5€ sul totaleScontato (non sul lordo)
-        const puntiFedeltaDaTotale = Math.floor(totaleScontato / 5);
-        // I punti per prodotto vengono scalati proporzionalmente se c'è uno sconto,
-        // oppure si usa direttamente il calcolo sul totale scontato.
-        // Scelta: usare puntiFedeltaDaTotale come base unica e coerente.
-        const puntiFedeltaFinali = puntiFedeltaDaTotale;
-        // ────────────────────────────────────────────────────────────────────────
+        // ─── PUNTI FEDELTÀ: 1 punto ogni 5€ sul totale effettivamente pagato ──
+        const puntiFedeltaFinali = Math.floor(totaleScontato / 5);
+        // ──────────────────────────────────────────────────────────────────────
 
         // 1. Creare l'ordine principale
         const newOrdine = await Ordine.create({
@@ -111,6 +103,28 @@ exports.createOrdine = async (req, res) => {
     } catch (error) {
         console.error('Errore durante la creazione dell\'ordine:', error);
         res.status(500).json({ error: 'Errore interno del server durante la creazione dell\'ordine.' });
+    }
+};
+
+// *** NUOVO CONTROLLER: restituisce i prodotti di un ordine specifico ***
+exports.getProdottiOrdine = async (req, res) => {
+    try {
+        const ordineId = req.params.id;
+
+        // Sicurezza: verifica che l'ordine appartenga all'utente loggato (o sia admin)
+        const ordine = await Ordine.findById(ordineId);
+        if (!ordine) {
+            return res.status(404).json({ error: 'Ordine non trovato.' });
+        }
+        if (ordine.utente_id !== req.user.id && req.user.ruolo !== 'admin') {
+            return res.status(403).json({ error: 'Accesso non autorizzato.' });
+        }
+
+        const prodotti = await Ordine.getProdottiByOrdineId(ordineId);
+        res.json(prodotti);
+    } catch (err) {
+        console.error('Errore getProdottiOrdine:', err);
+        res.status(500).json({ error: err.message });
     }
 };
 

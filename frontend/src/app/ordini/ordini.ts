@@ -69,6 +69,8 @@ export class Ordini implements OnInit {
       });
       if (res.ok) {
         this.dettagliOrdine = await res.json();
+      } else {
+        console.error('Errore risposta prodotti ordine:', res.status, await res.text());
       }
     } catch (e) {
       console.error('Errore caricamento dettagli:', e);
@@ -83,8 +85,17 @@ export class Ordini implements OnInit {
     this.dettagliOrdine = [];
   }
 
+  /**
+   * Punti fedeltà: usa il valore salvato nell'ordine (calcolato sul totale scontato).
+   * Fallback: ricalcola dal totale scontato se il campo non è presente (ordini vecchi).
+   */
   get puntiFedeltaOrdine(): number {
-    return this.dettagliOrdine.reduce((acc, item) => acc + ((item.puntiFedelta || 0) * item.quantita), 0);
+    if (this.ordineSelezionato?.punti_fedelta != null) {
+      return this.ordineSelezionato.punti_fedelta;
+    }
+    // fallback per ordini precedenti senza punti_fedelta salvato
+    const totale = this.ordineSelezionato?.totale_scontato ?? this.ordineSelezionato?.totale ?? 0;
+    return Math.floor(totale / 5);
   }
 
   get subtotaleDettaglio(): number {
