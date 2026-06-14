@@ -29,7 +29,7 @@
           <div class="col-sm-6">
             <label for="address" class="form-label text-muted">Via/Piazza</label>
             <input type="text" formControlName="via" class="form-control rounded-3" id="address" placeholder="Via Roma"
-              [class.field-error]="submitted && checkoutForm.get('spedizione.via')?.invalid" (input)="checkoutForm.get('spedizione.via')?.setValue($any($event.target).value.replace(/[^a-zA-ZÀ-ÿ\s\']/g, ''))">
+              [class.field-error]="submitted && checkoutForm.get('spedizione.via')?.invalid" (input)="checkoutForm.get('spedizione.via')?.setValue($any($event.target).value.replace(/[^a-zA-Z\u00C0-\u00FF\s\']/g, ''))">
             <span class="invalid-feedback-custom" *ngIf="submitted && checkoutForm.get('spedizione.via')?.invalid"><i class="bi bi-exclamation-circle me-1"></i>Campo obbligatorio.</span>
           </div>
 
@@ -44,7 +44,7 @@
             <label for="provincia" class="form-label text-muted">Provincia</label>
             <select formControlName="provincia" class="form-select rounded-3" id="provincia"
               [class.field-error]="submitted && checkoutForm.get('spedizione.provincia')?.invalid">
-              <option value="" disabled selected>Seleziona una città</option>
+              <option value="" disabled selected>Seleziona una citt&agrave;</option>
               <option value="Agrigento">Agrigento</option>
               <option value="Alessandria">Alessandria</option>
               <option value="Ancona">Ancona</option>
@@ -81,7 +81,7 @@
               <option value="Ferrara">Ferrara</option>
               <option value="Firenze">Firenze</option>
               <option value="Foggia">Foggia</option>
-              <option value="Forlì-Cesena">Forlì-Cesena</option>
+              <option value="Forl&igrave;-Cesena">Forl&igrave;-Cesena</option>
               <option value="Frosinone">Frosinone</option>
               <option value="Genova">Genova</option>
               <option value="Gorizia">Gorizia</option>
@@ -294,6 +294,7 @@
           [class.is-invalid]="couponErrore"
           placeholder="Inserisci il codice coupon"
           [(ngModel)]="codiceCoupon"
+          [ngModelOptions]="{standalone: true}"
           (keyup.enter)="applicaCoupon()"
           maxlength="20"
           autocomplete="off">
@@ -324,7 +325,7 @@
           <span class="ms-2 text-muted small">
             {{ couponApplicato.tipo === 'percentuale'
                ? '(' + couponApplicato.valore + '% di sconto)'
-               : '(€' + couponApplicato.valore + ' di sconto fisso)' }}
+               : '(\u20ac' + couponApplicato.valore + ' di sconto fisso)' }}
           </span>
         </div>
         <button
@@ -339,14 +340,14 @@
   </div>
 </div>
 
-<!-- ═══ RIEPILOGO TOTALE (sostituisce il blocco totale esistente) ════════════ -->
+<!-- ═══ RIEPILOGO TOTALE ════════════════════════════════════════════════════ -->
 <div class="card mb-3 shadow-sm">
   <div class="card-body">
     <h6 class="card-title mb-3">Riepilogo ordine</h6>
 
     <div class="d-flex justify-content-between mb-1">
       <span class="text-muted">Subtotale</span>
-      <span>€ {{ totale | number:'1.2-2' }}</span>
+      <span>&euro; {{ totale | number:'1.2-2' }}</span>
     </div>
 
     @if (couponApplicato) {
@@ -355,23 +356,15 @@
           <i class="bi bi-tag-fill me-1"></i>Sconto coupon
           <small class="text-muted">({{ couponApplicato.codice }})</small>
         </span>
-        <span>- € {{ scontoEuro | number:'1.2-2' }}</span>
+        <span>- &euro; {{ scontoEuro | number:'1.2-2' }}</span>
       </div>
     }
-
-    <!-- Placeholder promozioni (visibile solo quando attive — logica futura) -->
-    <!-- @if (promozioneAttiva) {
-      <div class="d-flex justify-content-between mb-1 text-warning">
-        <span><i class="bi bi-lightning-fill me-1"></i>Promozione attiva</span>
-        <span>- € {{ scontoPromozione | number:'1.2-2' }}</span>
-      </div>
-    } -->
 
     <hr class="my-2">
     <div class="d-flex justify-content-between fw-bold fs-5">
       <span>Totale da pagare</span>
       <span [class.text-success]="couponApplicato">
-        € {{ totaleScontato | number:'1.2-2' }}
+        &euro; {{ totaleScontato | number:'1.2-2' }}
       </span>
     </div>
   </div>
