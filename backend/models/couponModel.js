@@ -45,6 +45,21 @@ const Coupon = {
     });
   },
 
+  // Aggiorna un coupon esistente per id
+  update: (id, { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi }) => {
+    return new Promise((resolve, reject) => {
+      db.run(
+        `UPDATE Coupon
+         SET codice = ?, tipo = ?, valore = ?, descrizione = ?,
+             data_scadenza = ?, utilizzi_massimi = ?
+         WHERE id = ?`,
+        [codice, tipo, valore, descrizione || null, data_scadenza || null,
+         utilizzi_massimi || null, id],
+        function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
+      );
+    });
+  },
+
   toggle: (id) => {
     return new Promise((resolve, reject) => {
       db.run(

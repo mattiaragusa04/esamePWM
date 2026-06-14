@@ -11,6 +11,12 @@ const {
 const verificaToken = require('../middleware/authMiddleware');
 const verificaAdmin = require('../middleware/adminMiddleware');
 
+// IMPORTANTE: le route statiche devono stare PRIMA di quelle con parametri dinamici (:id)
+// altrimenti Express interpreta "valida" come un :id
+
+// Utente: valida un codice coupon (usato nel pagamento) — DEVE stare prima di /:id
+router.post('/valida', verificaToken, validaCoupon);
+
 // Admin: lista tutti i coupon
 router.get('/', verificaToken, verificaAdmin, getCoupon);
 
@@ -22,8 +28,5 @@ router.put('/:id', verificaToken, verificaAdmin, modificaCoupon);
 
 // Admin: attiva/disattiva coupon
 router.patch('/:id/toggle', verificaToken, verificaAdmin, toggleCoupon);
-
-// Utente: valida un codice coupon (usato nel pagamento)
-router.post('/valida', verificaToken, validaCoupon);
 
 module.exports = router;

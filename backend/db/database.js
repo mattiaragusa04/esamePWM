@@ -97,8 +97,7 @@ CREATE TABLE IF NOT EXISTS carrello (
     utente_id INTEGER UNIQUE,
     FOREIGN KEY (utente_id) REFERENCES utente(id)
 );
-DROP TABLE IF EXISTS contiene;
-CREATE TABLE contiene (
+CREATE TABLE IF NOT EXISTS contiene (
     carrello_id INTEGER,
     prodotto_id INTEGER,
     condizione TEXT NOT NULL,
@@ -108,16 +107,16 @@ CREATE TABLE contiene (
     FOREIGN KEY (prodotto_id) REFERENCES prodotto(id)
 );
 CREATE TABLE IF NOT EXISTS Coupon (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, -- id univoco del coupon
-    codice TEXT NOT NULL UNIQUE, -- codice univoco del coupon, case-insensitive
-    tipo TEXT NOT NULL CHECK(tipo IN ('percentuale', 'fisso')), -- 'percentuale' o 'fisso'
-    valore REAL NOT NULL,   -- valore percentuale o fisso a seconda del tipo
-    descrizione TEXT,   -- descrizione opzionale del coupon
-    data_scadenza DATE, -- data di scadenza opzionale del coupon
-    utilizzi_massimi INTEGER,   -- numero massimo di utilizzi del coupon (opzionale)
-    utilizzi_attuali INTEGER DEFAULT 0, -- contatore degli utilizzi attuali del coupon
-    attivo INTEGER DEFAULT 1, -- 1 = attivo, 0 = disattivato scelto integer per compatibilità con SQLite e per eventuale integrazione con altri livelli es. 2 = sospeso, 3 = scaduto, ecc.
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- timestamp di creazione del coupon
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    codice TEXT NOT NULL UNIQUE,
+    tipo TEXT NOT NULL CHECK(tipo IN ('percentuale', 'fisso')),
+    valore REAL NOT NULL,
+    descrizione TEXT,
+    data_scadenza DATE,
+    utilizzi_massimi INTEGER,
+    utilizzi_attuali INTEGER DEFAULT 0,
+    attivo INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS vendi (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
