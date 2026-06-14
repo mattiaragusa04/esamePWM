@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   getCoupon,
   creaCoupon,
+  modificaCoupon,
   toggleCoupon,
   validaCoupon
 } = require('../controllers/couponController');
@@ -15,6 +16,9 @@ router.get('/', verificaToken, verificaAdmin, getCoupon);
 
 // Admin: crea un nuovo coupon
 router.post('/', verificaToken, verificaAdmin, creaCoupon);
+
+// Admin: modifica un coupon esistente
+router.put('/:id', verificaToken, verificaAdmin, modificaCoupon);
 
 // Admin: attiva/disattiva coupon
 router.patch('/:id/toggle', verificaToken, verificaAdmin, toggleCoupon);

@@ -26,9 +26,6 @@ const creaCoupon = async (req, res) => {
   }
 
   try {
-    // Verifica duplicati
-    const esistente = await Coupon.findValidByCodice(codice);
-    // findValidByCodice filtra solo quelli attivi/validi, usiamo findAll per check duplicato assoluto
     const tutti = await Coupon.findAll();
     const duplicato = tutti.find(c => c.codice === codice.toUpperCase().trim());
     if (duplicato) {
@@ -43,6 +40,51 @@ const creaCoupon = async (req, res) => {
   }
 };
 
+// PUT /api/coupon/:id — modifica un coupon esistente (admin)
+const modificaCoupon = async (req, res) => {
+  const { id } = req.params;
+  const { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi } = req.body;
+
+  if (!codice || !tipo || !valore) {
+    return res.status(400).json({ error: 'Codice, tipo e valore sono obbligatori.' });
+  }
+  if (!['percentuale', 'fisso'].includes(tipo)) {
+    return res.status(400).json({ error: 'Tipo deve essere "percentuale" o "fisso".' });
+  }
+  if (tipo === 'percentuale' && (Number(valore) <= 0 || Number(valore) > 100)) {
+    return res.status(400).json({ error: 'Il valore percentuale deve essere tra 1 e 100.' });
+  }
+
+  try {
+    const coupon = await Coupon.findById(id);
+    if (!coupon) return res.status(404).json({ error: 'Coupon non trovato.' });
+
+    // Controlla duplicato codice solo se il codice è cambiato
+    const nuovoCodice = codice.toUpperCase().trim();
+    if (nuovoCodice !== coupon.codice) {
+      const tutti = await Coupon.findAll();
+      const duplicato = tutti.find(c => c.codice === nuovoCodice && c.id !== Number(id));
+      if (duplicato) {
+        return res.status(409).json({ error: 'Esiste già un altro coupon con questo codice.' });
+      }
+    }
+
+    await Coupon.update(id, {
+      codice: nuovoCodice,
+      tipo,
+      valore: Number(valore),
+      descrizione: descrizione || null,
+      data_scadenza: data_scadenza || null,
+      utilizzi_massimi: utilizzi_massimi ? Number(utilizzi_massimi) : null
+    });
+
+    res.json({ message: 'Coupon aggiornato con successo.' });
+  } catch (err) {
+    console.error('modificaCoupon error:', err);
+    res.status(500).json({ error: 'Errore nella modifica del coupon.' });
+  }
+};
+
 // PATCH /api/coupon/:id/toggle — attiva/disattiva (admin)
 const toggleCoupon = async (req, res) => {
   const { id } = req.params;
@@ -50,8 +92,7 @@ const toggleCoupon = async (req, res) => {
     const coupon = await Coupon.findById(id);
     if (!coupon) return res.status(404).json({ error: 'Coupon non trovato.' });
 
-    const result = await Coupon.toggle(id);
-    // dopo il toggle, rileggi lo stato aggiornato
+    await Coupon.toggle(id);
     const aggiornato = await Coupon.findById(id);
     res.json({ message: 'Stato aggiornato.', attivo: aggiornato.attivo });
   } catch (err) {
@@ -97,4 +138,4 @@ const validaCoupon = async (req, res) => {
   }
 };
 
-module.exports = { getCoupon, creaCoupon, toggleCoupon, validaCoupon };
+module.exports = { getCoupon, creaCoupon, modificaCoupon, toggleCoupon, validaCoupon };
