@@ -68,17 +68,17 @@
         </div>
       } @else {
         <div class="table-responsive">
-          <table class="table table-hover align-middle">
+          <table class="table table-hover align-middle" style="min-width: 750px;">
             <thead class="table-light">
               <tr>
-                <th scope="col">#</th>
+                <th scope="col" style="width:50px">#</th>
                 <th scope="col">Codice</th>
-                <th scope="col">Tipo</th>
-                <th scope="col">Valore</th>
-                <th scope="col">Utilizzi</th>
-                <th scope="col">Scadenza</th>
-                <th scope="col">Stato</th>
-                <th scope="col" class="text-end">Azioni</th>
+                <th scope="col" style="width:110px">Tipo</th>
+                <th scope="col" style="width:100px">Valore</th>
+                <th scope="col" style="width:130px">Utilizzi</th>
+                <th scope="col" style="width:110px">Scadenza</th>
+                <th scope="col" style="width:90px">Stato</th>
+                <th scope="col" class="text-end" style="width:170px">Azioni</th>
               </tr>
             </thead>
             <tbody>
@@ -146,15 +146,25 @@
                   </td>
 
                   <td class="text-end">
-                    <button
-                      class="btn btn-sm rounded-3"
-                      [class.btn-outline-success]="!c.attivo"
-                      [class.btn-outline-secondary]="c.attivo"
-                      (click)="toggleCoupon(c)"
-                      [title]="c.attivo ? 'Disattiva coupon' : 'Attiva coupon'">
-                      <i class="bi" [class.bi-toggle-on]="c.attivo" [class.bi-toggle-off]="!c.attivo"></i>
-                      {{ c.attivo ? 'Disattiva' : 'Attiva' }}
-                    </button>
+                    <div class="d-flex justify-content-end gap-1">
+                      <!-- Pulsante Modifica -->
+                      <button
+                        class="btn btn-sm btn-outline-warning rounded-3"
+                        (click)="apriModifica(c)"
+                        title="Modifica coupon">
+                        <i class="bi bi-pencil-fill"></i>
+                      </button>
+                      <!-- Pulsante Attiva/Disattiva -->
+                      <button
+                        class="btn btn-sm rounded-3"
+                        [class.btn-outline-success]="!c.attivo"
+                        [class.btn-outline-secondary]="c.attivo"
+                        (click)="toggleCoupon(c)"
+                        [title]="c.attivo ? 'Disattiva coupon' : 'Attiva coupon'">
+                        <i class="bi" [class.bi-toggle-on]="c.attivo" [class.bi-toggle-off]="!c.attivo"></i>
+                        {{ c.attivo ? 'Disattiva' : 'Attiva' }}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               }
@@ -334,6 +344,140 @@
                   <span class="spinner-border spinner-border-sm me-1"></span>Creazione...
                 } @else {
                   <i class="bi bi-plus-lg me-1"></i>Crea Coupon
+                }
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ═══ MODALE MODIFICA COUPON ════════════════════════════════════════════ -->
+@if (mostraModaleModifica && couponInModifica) {
+  <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-pencil-fill text-warning me-2"></i>
+            Modifica Coupon
+            <span class="font-monospace text-danger ms-2">{{ couponInModifica.codice }}</span>
+          </h5>
+          <button type="button" class="btn-close" (click)="chiudiModifica()"></button>
+        </div>
+
+        <div class="modal-body pt-2">
+          <form #editForm="ngForm" (ngSubmit)="salvaModifica(editForm)">
+
+            <!-- Tipo sconto -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Tipo di sconto</label>
+              <div class="d-flex gap-3">
+                <div class="form-check form-check-inline flex-fill">
+                  <label class="form-check-label w-100">
+                    <input class="form-check-input" type="radio" name="edit_tipo" value="percentuale" [(ngModel)]="couponInModifica.tipo">
+                    <div class="card p-2 text-center mt-1"
+                      [class.border-primary]="couponInModifica.tipo === 'percentuale'"
+                      [class.border-2]="couponInModifica.tipo === 'percentuale'">
+                      <i class="bi bi-percent fs-4 text-primary"></i>
+                      <small class="fw-semibold">Percentuale</small>
+                    </div>
+                  </label>
+                </div>
+                <div class="form-check form-check-inline flex-fill">
+                  <label class="form-check-label w-100">
+                    <input class="form-check-input" type="radio" name="edit_tipo" value="fisso" [(ngModel)]="couponInModifica.tipo">
+                    <div class="card p-2 text-center mt-1"
+                      [class.border-info]="couponInModifica.tipo === 'fisso'"
+                      [class.border-2]="couponInModifica.tipo === 'fisso'">
+                      <i class="bi bi-currency-euro fs-4 text-info"></i>
+                      <small class="fw-semibold">Fisso (€)</small>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Valore -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Valore sconto <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="edit_valore"
+                  [(ngModel)]="couponInModifica.valore"
+                  required
+                  min="1"
+                  [max]="couponInModifica.tipo === 'percentuale' ? 100 : 9999"
+                  step="0.01">
+                <span class="input-group-text">
+                  {{ couponInModifica.tipo === 'percentuale' ? '%' : '€' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Descrizione -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Descrizione <span class="text-muted small">(opzionale)</span></label>
+              <input
+                type="text"
+                class="form-control"
+                name="edit_descrizione"
+                [(ngModel)]="couponInModifica.descrizione"
+                maxlength="100"
+                placeholder="es. Sconto estivo 2026">
+            </div>
+
+            <!-- Data scadenza e utilizzi massimi -->
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-semibold">
+                  Data scadenza <span class="text-muted small">(opzionale)</span>
+                </label>
+                <input
+                  type="date"
+                  class="form-control"
+                  name="edit_data_scadenza"
+                  [(ngModel)]="couponInModifica.data_scadenza">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold">
+                  Utilizzi massimi <span class="text-muted small">(opzionale)</span>
+                </label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="edit_utilizzi_massimi"
+                  [(ngModel)]="couponInModifica.utilizzi_massimi"
+                  min="1"
+                  placeholder="Illimitati">
+              </div>
+            </div>
+
+            <!-- Utilizzi attuali (sola lettura) -->
+            <div class="alert alert-light border rounded-3 mb-3 py-2">
+              <small class="text-muted">Utilizzi attuali (sola lettura):</small>
+              <span class="fw-bold ms-2">{{ couponInModifica.utilizzi_attuali ?? 0 }}</span>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-light rounded-3" (click)="chiudiModifica()">
+                Annulla
+              </button>
+              <button
+                type="submit"
+                class="btn btn-warning rounded-3 fw-bold"
+                [disabled]="isSaving">
+                @if (isSaving) {
+                  <span class="spinner-border spinner-border-sm me-1"></span>Salvataggio...
+                } @else {
+                  <i class="bi bi-check-lg me-1"></i>Salva Modifiche
                 }
               </button>
             </div>
