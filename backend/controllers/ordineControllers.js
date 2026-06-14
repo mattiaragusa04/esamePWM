@@ -1,15 +1,14 @@
 const Ordine = require('../models/ordineModel');
 const Carrello = require('../models/carrelloModel');
-const User = require('../models/userModel'); // Import User model
-const Prodotto = require('../models/prodottoModel'); // Import Prodotto model to get points
-
+const User = require('../models/userModel');
+const Prodotto = require('../models/prodottoModel');
+const Coupon = require('../models/couponModel'); // ← AGGIUNTO
 
 exports.createOrdine = async (req, res) => {
-    const userId = req.user.id; // Assumendo che l'ID utente sia disponibile dal middleware di autenticazione
-    const { carta_id, indirizzo_id } = req.body; 
+    const userId = req.user.id;
+    const { carta_id, indirizzo_id, coupon_codice } = req.body; // ← aggiunto coupon_codice
 
     try {
-        // Recupera i prodotti direttamente dal carrello dell'utente nel database
         const prodottiInCarrello = await Carrello.findByUserId(userId);
 
         if (!prodottiInCarrello || prodottiInCarrello.length === 0) {
@@ -21,7 +20,6 @@ exports.createOrdine = async (req, res) => {
         const prodottiPerOrdine = [];
 
         for (const item of prodottiInCarrello) {
-            // Logica del prezzo: se usato applica lo sconto del 25%
             let prezzoUnitario = item.prezzoUnitarioVendita;
             if (item.condizione === 'Usato') {
                 prezzoUnitario = Math.round((prezzoUnitario * 0.75) * 100) / 100;
@@ -30,21 +28,66 @@ exports.createOrdine = async (req, res) => {
 
             totaleOrdine += item.quantita * prezzoUnitario;
             puntiFedeltaTotali += item.quantita * puntiFedeltaProdotto;
-            
+
             prodottiPerOrdine.push({
-                prodottoId: item.id, // L'ID del prodotto dal JOIN nel carrello
+                prodottoId: item.id,
                 quantita: item.quantita,
                 prezzoUnitario: prezzoUnitario
             });
         }
 
-        // 1. Creare l'ordine principale
+        totaleOrdine = Math.round(totaleOrdine * 100) / 100;
+
+        // ─── GESTIONE COUPON ────────────────────────────────────────────────────
+        let couponId = null;
+        let scontoApplicato = 0;
+        let totaleScontato = totaleOrdine;
+
+        if (coupon_codice) {
+            // ─── FUTURO: controllo promozioni attive ─────────────────────────────
+            // Quando la logica promozioni sarà implementata, decommentare:
+            //
+            // const promozioneAttiva = await Promozione.findActivaByUserId(userId);
+            // if (promozioneAttiva) {
+            //   return res.status(409).json({
+            //     error: 'Non puoi combinare un coupon con una promozione attiva.',
+            //     codice: 'PROMOZIONE_ATTIVA'
+            //   });
+            // }
+            // ─────────────────────────────────────────────────────────────────────
+
+            const coupon = await Coupon.findValidByCodice(coupon_codice);
+
+            if (!coupon) {
+                // Il coupon era valido al momento della validazione ma ora non lo è più
+                // (es. esaurito da un altro utente nel frattempo) → blocchiamo l'ordine
+                return res.status(400).json({
+                    error: 'Il coupon non è più valido. Rimuovilo e riprova.',
+                    codice: 'COUPON_SCADUTO'
+                });
+            }
+
+            if (coupon.tipo === 'percentuale') {
+                scontoApplicato = Math.round(totaleOrdine * (coupon.valore / 100) * 100) / 100;
+            } else {
+                scontoApplicato = Math.min(coupon.valore, totaleOrdine);
+            }
+
+            totaleScontato = Math.round((totaleOrdine - scontoApplicato) * 100) / 100;
+            couponId = coupon.id;
+        }
+        // ────────────────────────────────────────────────────────────────────────
+
+        // 1. Creare l'ordine principale (con campi coupon)
         const newOrdine = await Ordine.create({
             carta_id,
             indirizzo_id,
             utente_id: userId,
             data: new Date().toISOString(),
-            totale: totaleOrdine,
+            totale: totaleOrdine,           // totale lordo (senza sconto)
+            totale_scontato: totaleScontato, // totale finale pagato
+            sconto_applicato: scontoApplicato,
+            coupon_id: couponId,
             statoOrdine: 'In elaborazione'
         });
 
@@ -53,10 +96,21 @@ exports.createOrdine = async (req, res) => {
             await Ordine.addProdottoToOrdine(newOrdine.id, item.prodottoId, item.quantita, item.prezzoUnitario);
         }
 
-        // 3. Svuotare il carrello dell'utente
+        // 3. Svuotare il carrello
         await Carrello.clearCart(userId);
 
-        res.status(201).json({ message: 'Ordine creato con successo!', ordine: newOrdine, puntiGuadagnati: puntiFedeltaTotali });
+        // 4. Incrementare il contatore utilizzi del coupon
+        if (couponId) {
+            await Coupon.incrementaUtilizzi(couponId);
+        }
+
+        res.status(201).json({
+            message: 'Ordine creato con successo!',
+            ordine: newOrdine,
+            puntiGuadagnati: puntiFedeltaTotali,
+            scontoApplicato,
+            totaleScontato
+        });
 
     } catch (error) {
         console.error('Errore durante la creazione dell\'ordine:', error);
@@ -68,15 +122,12 @@ exports.updateStatoOrdine = async (req, res) => {
     const { ordineId, nuovoStato } = req.body;
 
     try {
-        // Recuperiamo l'ordine corrente
         const ordine = await Ordine.findById(ordineId);
         if (!ordine) return res.status(404).json({ error: "Ordine non trovato" });
 
         let puntiDaAccreditare = 0;
 
-        // Se lo stato precedente non era 'Consegnato' e quello nuovo lo è, accreditiamo i punti
         if (ordine.statoOrdine !== 'Consegnato' && nuovoStato === 'Consegnato') {
-            // Calcoliamo i punti fedeltà recuperando i prodotti dell'ordine
             const prodottiOrdine = await Ordine.getProdottiByOrdineId(ordineId);
             for (const p of prodottiOrdine) {
                 puntiDaAccreditare += (p.puntiFedelta || 0) * p.quantita;
@@ -88,12 +139,11 @@ exports.updateStatoOrdine = async (req, res) => {
             }
         }
 
-        // Aggiorniamo lo stato nel database
         await Ordine.updateStatus(ordineId, nuovoStato);
 
-        res.json({ 
-            message: `Stato ordine aggiornato a ${nuovoStato}`, 
-            puntiAccreditati: puntiDaAccreditare 
+        res.json({
+            message: `Stato ordine aggiornato a ${nuovoStato}`,
+            puntiAccreditati: puntiDaAccreditare
         });
 
     } catch (error) {
@@ -106,10 +156,10 @@ exports.getAllOrdini = async (req, res) => {
     try {
         const ordini = await Ordine.findAll();
         res.json(ordini);
-    }catch (err) {
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};
 
 exports.getOrdineById = async (req, res) => {
     try {
@@ -122,15 +172,14 @@ exports.getOrdineById = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};
 
 exports.getOrdiniByUserId = async (req, res) => {
     try {
-        // Usiamo req.user.id per la sicurezza, così ogni utente può vedere solo i propri ordini
         const userId = req.user.id;
         const ordini = await Ordine.findByUserId(userId);
         res.json(ordini);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};

@@ -278,6 +278,105 @@
             <span *ngIf="!isLoading" class="font-weight-bold text-info">{{ totale | currency:'EUR':'symbol' }}</span>
             <span *ngIf="isLoading" class="spinner-border spinner-border-sm text-info"></span>
           </div>
+
+          <!-- ═══ SEZIONE COUPON ═══════════════════════════════════════════════════════ -->
+<div class="card mb-3 shadow-sm">
+  <div class="card-body">
+    <h6 class="card-title mb-3">
+      <i class="bi bi-ticket-perforated-fill me-2 text-primary"></i>Codice sconto
+    </h6>
+
+    @if (!couponApplicato) {
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control text-uppercase"
+          [class.is-invalid]="couponErrore"
+          placeholder="Inserisci il codice coupon"
+          [(ngModel)]="codiceCoupon"
+          (keyup.enter)="applicaCoupon()"
+          maxlength="20"
+          autocomplete="off">
+        <button
+          class="btn btn-outline-primary"
+          type="button"
+          (click)="applicaCoupon()"
+          [disabled]="isValidatingCoupon || !codiceCoupon.trim()">
+          @if (isValidatingCoupon) {
+            <span class="spinner-border spinner-border-sm" role="status"></span>
+          } @else {
+            Applica
+          }
+        </button>
+      </div>
+
+      @if (couponErrore) {
+        <div class="text-danger small mt-2">
+          <i class="bi bi-x-circle-fill me-1"></i>{{ couponErrore }}
+        </div>
+      }
+    } @else {
+      <!-- Coupon applicato con successo -->
+      <div class="alert alert-success d-flex align-items-center justify-content-between py-2 mb-0">
+        <div>
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <strong>{{ couponApplicato.codice }}</strong>
+          <span class="ms-2 text-muted small">
+            {{ couponApplicato.tipo === 'percentuale'
+               ? '(' + couponApplicato.valore + '% di sconto)'
+               : '(€' + couponApplicato.valore + ' di sconto fisso)' }}
+          </span>
+        </div>
+        <button
+          class="btn btn-sm btn-link text-danger p-0 ms-2"
+          type="button"
+          (click)="rimuoviCoupon()"
+          title="Rimuovi coupon">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- ═══ RIEPILOGO TOTALE (sostituisce il blocco totale esistente) ════════════ -->
+<div class="card mb-3 shadow-sm">
+  <div class="card-body">
+    <h6 class="card-title mb-3">Riepilogo ordine</h6>
+
+    <div class="d-flex justify-content-between mb-1">
+      <span class="text-muted">Subtotale</span>
+      <span>€ {{ totale | number:'1.2-2' }}</span>
+    </div>
+
+    @if (couponApplicato) {
+      <div class="d-flex justify-content-between mb-1 text-success">
+        <span>
+          <i class="bi bi-tag-fill me-1"></i>Sconto coupon
+          <small class="text-muted">({{ couponApplicato.codice }})</small>
+        </span>
+        <span>- € {{ scontoEuro | number:'1.2-2' }}</span>
+      </div>
+    }
+
+    <!-- Placeholder promozioni (visibile solo quando attive — logica futura) -->
+    <!-- @if (promozioneAttiva) {
+      <div class="d-flex justify-content-between mb-1 text-warning">
+        <span><i class="bi bi-lightning-fill me-1"></i>Promozione attiva</span>
+        <span>- € {{ scontoPromozione | number:'1.2-2' }}</span>
+      </div>
+    } -->
+
+    <hr class="my-2">
+    <div class="d-flex justify-content-between fw-bold fs-5">
+      <span>Totale da pagare</span>
+      <span [class.text-success]="couponApplicato">
+        € {{ totaleScontato | number:'1.2-2' }}
+      </span>
+    </div>
+  </div>
+</div>
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
           
           <button class="btn btn-info w-100 rounded-pill py-3 font-weight-bold fs-5 shadow-sm mt-3" 
                   type="submit" 

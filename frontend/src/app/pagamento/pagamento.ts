@@ -3,45 +3,29 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CarrelloService } from '../carrello.service';
-
 import { ToastService } from '../shared/toast.service';
-// Validatore Custom per la scadenza
+
+// Validatore Custom scadenza carta
 export function scadenzaValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   if (!value) return null;
-
-  // Controlla che il formato base sia due numeri, slash, due numeri
-  if (!/^\d{2}\/\d{2}$/.test(value)) {
-    return { formatoNonValido: true };
-  }
-
+  if (!/^\d{2}\/\d{2}$/.test(value)) return { formatoNonValido: true };
   const [monthStr, yearStr] = value.split('/');
   const month = parseInt(monthStr, 10);
-  const year = parseInt(yearStr, 10) + 2000; // assumiamo che YY sia 20YY
-
-  if (month < 1 || month > 12) {
-    return { meseNonValido: true };
-  }
-
+  const year = parseInt(yearStr, 10) + 2000;
+  if (month < 1 || month > 12) return { meseNonValido: true };
   const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const currentYear = now.getFullYear();
-
-  // La carta è invalida se l'anno è minore o, se l'anno è uguale, il mese è minore o uguale a quello attuale
-  if (year < currentYear || (year === currentYear && month <= currentMonth)) {
+  if (year < now.getFullYear() || (year === now.getFullYear() && month <= now.getMonth() + 1)) {
     return { cartaScaduta: true };
   }
-
   return null;
 }
 
-// Validatore Custom Luhn per la carta (Matematico)
+// Validatore Luhn (lunghezza 16 cifre)
 export function luhnValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   if (!value) return null;
   const digits = value.replace(/\D/g, '');
-  
-  // Verifica che la lunghezza sia esattamente 16 cifre
   if (digits.length !== 16) return { luhnInvalid: true };
   return null;
 }
@@ -57,21 +41,38 @@ export class Pagamento implements OnInit {
   isLoading: boolean = true;
   isProcessing: boolean = false;
   submitted: boolean = false;
-  
+
   carteSalvate: any[] = [];
   indirizziSalvati: any[] = [];
   selectedCartaId: number = 0;
   selectedIndirizzoId: number = 0;
 
+  // ─── COUPON ────────────────────────────────────────────────────────────────
+  codiceCoupon: string = '';
+  couponApplicato: any = null;    // oggetto coupon validato dal backend
+  couponErrore: string = '';
+  isValidatingCoupon: boolean = false;
+
+  get scontoEuro(): number {
+    return this.couponApplicato ? this.couponApplicato.scontoEuro : 0;
+  }
+
+  get totaleScontato(): number {
+    return this.couponApplicato ? this.couponApplicato.totaleScontato : this.totale;
+  }
+  // ───────────────────────────────────────────────────────────────────────────
+
   checkoutForm: FormGroup;
+  mostraCvv: boolean = false;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
     private router: Router,
     private fb: FormBuilder,
-    private carrelloService: CarrelloService, private toast: ToastService) {
-    // Inizializziamo il Reactive Form
+    private carrelloService: CarrelloService,
+    private toast: ToastService
+  ) {
     this.checkoutForm = this.fb.group({
       spedizione: this.fb.group({
         tipo: ['Casa', Validators.required],
@@ -84,7 +85,7 @@ export class Pagamento implements OnInit {
       }),
       pagamento: this.fb.group({
         nomeCarta: ['', Validators.required],
-        numeroCarta: ['', [Validators.required, luhnValidator]], 
+        numeroCarta: ['', [Validators.required, luhnValidator]],
         scadenza: ['', [Validators.required, scadenzaValidator]],
         cvv: ['', [Validators.required, Validators.pattern(/^\d{3}$/)]],
         salvaCarta: [false]
@@ -102,11 +103,7 @@ export class Pagamento implements OnInit {
   async calcolaTotaleCarrello() {
     this.isLoading = true;
     const token = localStorage.getItem('token');
-
-    if (!token) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    if (!token) { this.router.navigate(['/login']); return; }
 
     try {
       const response = await fetch('http://localhost:3000/api/carrello', {
@@ -114,15 +111,18 @@ export class Pagamento implements OnInit {
       });
       if (response.ok) {
         const carrello = await response.json();
-        // Allineamento alla logica del backend (ordineControllers): per gli Usati
-        // applichiamo il 25% di sconto sul prezzo del prodotto (Nuovo) restituito dal DB.
-        this.totale = carrello.reduce((acc: number, item: any) => {
+        this.totale = Math.round(carrello.reduce((acc: number, item: any) => {
           const base = Number(item.prezzoUnitarioVendita ?? 0);
           const prezzoEff = item.condizione === 'Usato'
             ? Math.round(base * 0.75 * 100) / 100
             : base;
           return acc + prezzoEff * item.quantita;
-        }, 0);
+        }, 0) * 100) / 100;
+
+        // Se c'è già un coupon applicato, ricalcola lo sconto sul nuovo totale
+        if (this.couponApplicato) {
+          await this.applicaCoupon(true);
+        }
       }
     } catch (error) {
       console.error('Errore di rete:', error);
@@ -135,21 +135,17 @@ export class Pagamento implements OnInit {
   async caricaDatiSalvati() {
     const token = localStorage.getItem('token');
     if (!token) return;
-
     try {
-      // Carica carte dell'utente
       const resCarte = await fetch('http://localhost:3000/api/carta/utente', { headers: { 'Authorization': `Bearer ${token}` } });
       if (resCarte.ok) this.carteSalvate = await resCarte.json();
 
-      // Carica indirizzi dell'utente
       const resIndirizzi = await fetch('http://localhost:3000/api/indirizzo/utente', { headers: { 'Authorization': `Bearer ${token}` } });
       if (resIndirizzi.ok) this.indirizziSalvati = await resIndirizzi.json();
     } catch (error) {
-      console.error("Errore nel caricamento dei dati salvati", error);
+      console.error('Errore nel caricamento dei dati salvati', error);
     }
   }
 
-  // Disabilita/Abilita il form di spedizione in base alla selezione
   onIndirizzoChange() {
     if (Number(this.selectedIndirizzoId) === 0) {
       this.checkoutForm.get('spedizione')?.enable();
@@ -158,7 +154,6 @@ export class Pagamento implements OnInit {
     }
   }
 
-  // Disabilita/Abilita il form di pagamento in base alla selezione
   onCartaChange() {
     if (Number(this.selectedCartaId) === 0) {
       this.checkoutForm.get('pagamento')?.enable();
@@ -167,7 +162,6 @@ export class Pagamento implements OnInit {
     }
   }
 
-  // Identifica dinamicamente il circuito della carta
   cardType(): string {
     const num = this.checkoutForm.get('pagamento.numeroCarta')?.value?.replace(/\D/g, '') || '';
     if (num.match(/^4/)) return 'visa';
@@ -176,33 +170,21 @@ export class Pagamento implements OnInit {
     return 'unknown';
   }
 
-  // Formattazione "live" del numero della carta: aggiunge uno spazio ogni 4 cifre
   formatNumeroCarta(event: any) {
-    // Limitiamo l'input a esattamente 16 cifre
     let input = event.target.value.replace(/\D/g, '').substring(0, 16);
-
-    let formatted = '';
     const matches = input.match(/.{1,4}/g);
-    if (matches) {
-      formatted = matches.join(' ');
-    }
-    this.checkoutForm.get('pagamento.numeroCarta')?.setValue(formatted, { emitEvent: false });
+    this.checkoutForm.get('pagamento.numeroCarta')?.setValue(matches ? matches.join(' ') : '', { emitEvent: false });
   }
 
-  // Formattazione "live" della scadenza: aggiunge lo slash dopo i primi 2 numeri
   formatScadenza(event: any) {
     let input = event.target.value.replace(/\D/g, '').substring(0, 4);
-    if (input.length === 1 && parseInt(input, 10) > 1) {
-      input = '0' + input; // Prefisso automatico per i mesi da 2 a 9
-    }
-    if (input.length >= 3) {
-      input = input.substring(0, 2) + '/' + input.substring(2, 4);
-    }
+    if (input.length === 1 && parseInt(input, 10) > 1) input = '0' + input;
+    if (input.length >= 3) input = input.substring(0, 2) + '/' + input.substring(2, 4);
     this.checkoutForm.get('pagamento.scadenza')?.setValue(input, { emitEvent: false });
   }
 
   formatNome(event: any) {
-    let input = event.target.value.replace(/[^a-zA-Z\s\-']/g, '').toUpperCase();
+    const input = event.target.value.replace(/[^a-zA-Z\s\-']/g, '').toUpperCase();
     this.checkoutForm.get('pagamento.nomeCarta')?.setValue(input, { emitEvent: false });
   }
 
@@ -211,14 +193,66 @@ export class Pagamento implements OnInit {
     this.checkoutForm.get('pagamento.cvv')?.setValue(input, { emitEvent: false });
   }
 
-  mostraCvv: boolean = false;
   toggleCvv() {
     this.mostraCvv = !this.mostraCvv;
   }
 
+  // ─── METODI COUPON ──────────────────────────────────────────────────────────
+
+  // silenzioso = true quando viene chiamato internamente (ricalcolo dopo cambio totale)
+  async applicaCoupon(silenzioso = false) {
+    const codice = this.codiceCoupon.trim();
+    if (!codice) return;
+
+    this.isValidatingCoupon = true;
+    this.couponErrore = '';
+
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch('http://localhost:3000/api/coupon/valida', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codice, totale: this.totale })
+      });
+
+      if (res.ok) {
+        this.couponApplicato = await res.json();
+        if (!silenzioso) {
+          const msg = this.couponApplicato.tipo === 'percentuale'
+            ? `Coupon applicato! Sconto del ${this.couponApplicato.valore}% (- €${this.couponApplicato.scontoEuro.toFixed(2)})`
+            : `Coupon applicato! Sconto di €${this.couponApplicato.scontoEuro.toFixed(2)}`;
+          this.toast.success(msg);
+        }
+      } else {
+        const err = await res.json();
+        // Gestione specifica errore promozione attiva (predisposto per il futuro)
+        if (err.codice === 'PROMOZIONE_ATTIVA') {
+          this.couponErrore = 'Non puoi usare un coupon insieme a una promozione attiva.';
+        } else {
+          this.couponErrore = err.error || 'Coupon non valido.';
+        }
+        this.couponApplicato = null;
+      }
+    } catch {
+      this.couponErrore = 'Errore di connessione. Riprova.';
+      this.couponApplicato = null;
+    } finally {
+      this.isValidatingCoupon = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  rimuoviCoupon() {
+    this.couponApplicato = null;
+    this.codiceCoupon = '';
+    this.couponErrore = '';
+  }
+  // ───────────────────────────────────────────────────────────────────────────
+
   async confermaEPaga() {
     this.submitted = true;
     this.cdr.detectChanges();
+
     if (this.checkoutForm.invalid) {
       this.toast.warning('Per favore, compila tutti i campi del form correttamente.');
       return;
@@ -231,81 +265,68 @@ export class Pagamento implements OnInit {
       return;
     }
 
-    // Avvia l'animazione di caricamento sul bottone
     this.isProcessing = true;
     this.cdr.detectChanges();
 
     try {
-      // 1. SALVATAGGIO DELLA CARTA E RECUPERO DELL'ID
+      // 1. Salvataggio carta
       let cartaId = Number(this.selectedCartaId);
-      
-      // Chiama l'API per creare la carta SOLO se si è scelto di inserirne una nuova
       if (cartaId === 0) {
         const resCarta = await fetch('http://localhost:3000/api/carta/create', {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify(this.checkoutForm.getRawValue().pagamento)
         });
-  
         if (resCarta.ok) {
-          const nuovaCarta = await resCarta.json();
-          cartaId = nuovaCarta.id; // Prendiamo il vero ID assegnato dal database!
+          cartaId = (await resCarta.json()).id;
         } else {
           const errData = await resCarta.json();
           throw new Error(`DB Carta: ${errData.error || errData.message}`);
         }
       }
 
-      // 2. SALVATAGGIO DELL'INDIRIZZO E RECUPERO DELL'ID
+      // 2. Salvataggio indirizzo
       let indirizzoId = Number(this.selectedIndirizzoId);
-      
-      // Chiama l'API per creare l'indirizzo SOLO se si è scelto di inserirne uno nuovo
       if (indirizzoId === 0) {
         const resIndirizzo = await fetch('http://localhost:3000/api/indirizzo/create', {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify(this.checkoutForm.getRawValue().spedizione)
         });
-  
         if (resIndirizzo.ok) {
-          const nuovoIndirizzo = await resIndirizzo.json();
-          indirizzoId = nuovoIndirizzo.id; // Prendiamo il vero ID assegnato dal database!
+          indirizzoId = (await resIndirizzo.json()).id;
         } else {
           const errData = await resIndirizzo.json();
           throw new Error(`DB Indirizzo: ${errData.error || errData.message}`);
         }
       }
 
-      // 3. PREPARAZIONE DEL PAYLOAD ORDINE
-      const payloadOrdine = {
+      // 3. Creazione ordine (con coupon se presente)
+      const payloadOrdine: any = {
         carta_id: cartaId,
-        indirizzo_id: indirizzoId
+        indirizzo_id: indirizzoId,
+        coupon_codice: this.couponApplicato?.codice || null // ← AGGIUNTO
       };
 
-      // 4. CREAZIONE DELL'ORDINE
       const response = await fetch('http://localhost:3000/api/ordine/create', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(payloadOrdine)
       });
 
       if (response.ok) {
         this.toast.success('Ordine creato con successo! Grazie per aver acquistato su PAwerUP!');
-        this.carrelloService.refreshCart(); // Svuota il counter dopo il pagamento
-        this.router.navigate(['/profilo/ordini']); // Reindirizza allo storico ordini
+        this.carrelloService.refreshCart();
+        this.router.navigate(['/profilo/ordini']);
       } else {
         const errorData = await response.json();
-        console.error("Dettagli errore backend (Ordine):", errorData);
-        this.toast.error(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+        // Gestione specifica: coupon scaduto nel frattempo
+        if (errorData.codice === 'COUPON_SCADUTO') {
+          this.rimuoviCoupon();
+          this.toast.error('Il coupon non è più disponibile. È stato rimosso, riprova.');
+        } else {
+          this.toast.error(`Errore: ${errorData.error || errorData.message || 'Sconosciuto'}`);
+        }
       }
     } catch (error) {
       console.error('Errore checkout:', error);

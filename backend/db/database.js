@@ -5,11 +5,10 @@ const db = new sqlite3.Database("./database.sqlite",
             console.error(err.message);
         } else {
             console.log("Connected to SQLite DB");
-            db.run("PRAGMA foreign_keys = ON;"); // Abilita il controllo delle foreign keys
+            db.run("PRAGMA foreign_keys = ON;");
         }
     });
 
-//creazione delle tabelle
 db.exec(`
 CREATE TABLE IF NOT EXISTS utente (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,43 +30,60 @@ CREATE TABLE IF NOT EXISTS indirizzo(
     cap TEXT NOT NULL,
     FOREIGN KEY (utente_id) REFERENCES utente(id)
 );
-CREATE TABLE if not exists prodotto (
+CREATE TABLE IF NOT EXISTS categoria (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    denominazione TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS prodotto (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     categoria_id INTEGER,
     nome TEXT NOT NULL,
     descrizione TEXT NOT NULL,
     giacenza INTEGER NOT NULL,
     immagine TEXT NOT NULL,
-    prezzoUnitarioVendita double NOT NULL,
-    pubblicatoVetrina boolean NOT NULL,
+    prezzoUnitarioVendita REAL NOT NULL,
+    pubblicatoVetrina INTEGER NOT NULL,
     genere TEXT,
     condizione TEXT NOT NULL,
     puntiFedelta INTEGER DEFAULT 0,
     FOREIGN KEY (categoria_id) REFERENCES categoria(id)
 );
-CREATE TABLE if not exists ordine (
+CREATE TABLE IF NOT EXISTS carta_di_credito (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    utente_id INTEGER,
+    numero_carta TEXT NOT NULL,
+    nome_titolare TEXT NOT NULL,
+    data_scadenza TEXT NOT NULL,
+    cvv TEXT,
+    FOREIGN KEY (utente_id) REFERENCES utente(id)
+);
+CREATE TABLE IF NOT EXISTS ordine (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     carta_id INTEGER,
     indirizzo_id INTEGER,
     utente_id INTEGER,
+    coupon_id INTEGER,
     data DATE NOT NULL,
-    totale double NOT NULL,
+    totale REAL NOT NULL,
+    totale_scontato REAL,
+    sconto_applicato REAL DEFAULT 0,
     punti_fedelta INTEGER DEFAULT 0,
     statoOrdine TEXT NOT NULL,
     FOREIGN KEY (utente_id) REFERENCES utente(id),
     FOREIGN KEY (carta_id) REFERENCES carta_di_credito(id),
-    FOREIGN KEY (indirizzo_id) REFERENCES indirizzo(id)
+    FOREIGN KEY (indirizzo_id) REFERENCES indirizzo(id),
+    FOREIGN KEY (coupon_id) REFERENCES Coupon(id)
 );
-CREATE TABLE if not exists composto (
+CREATE TABLE IF NOT EXISTS composto (
     ordine_id INTEGER,
     prodotto_id INTEGER,
     quantita INTEGER NOT NULL,
-    prezzoUnitario double NOT NULL,
+    prezzoUnitario REAL NOT NULL,
     PRIMARY KEY (ordine_id, prodotto_id),
     FOREIGN KEY (ordine_id) REFERENCES ordine(id),
     FOREIGN KEY (prodotto_id) REFERENCES prodotto(id)
 );
-CREATE TABLE if not exists recensione (
+CREATE TABLE IF NOT EXISTS recensione (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     utente_id INTEGER,
     testo TEXT NOT NULL,
@@ -75,13 +91,12 @@ CREATE TABLE if not exists recensione (
     data DATE NOT NULL,
     FOREIGN KEY (utente_id) REFERENCES utente(id)
 );
-CREATE TABLE if not exists carrello (
+CREATE TABLE IF NOT EXISTS carrello (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    totale double NOT NULL,
+    totale REAL NOT NULL,
     utente_id INTEGER UNIQUE,
     FOREIGN KEY (utente_id) REFERENCES utente(id)
 );
--- ATTENZIONE: Questo cancellerà i dati attuali della tabella contiene
 DROP TABLE IF EXISTS contiene;
 CREATE TABLE contiene (
     carrello_id INTEGER,
@@ -92,26 +107,17 @@ CREATE TABLE contiene (
     FOREIGN KEY (carrello_id) REFERENCES carrello(id),
     FOREIGN KEY (prodotto_id) REFERENCES prodotto(id)
 );
-
-CREATE TABLE IF NOT EXISTS carta_di_credito (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    utente_id INTEGER,
-    numero_carta TEXT NOT NULL,
-    nome_titolare TEXT NOT NULL,
-    data_scadenza TEXT NOT NULL,
-    cvv TEXT,
-    FOREIGN KEY (utente_id) REFERENCES utente(id)
-);
-CREATE TABLE IF NOT EXISTS categoria (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    denominazione TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS coupon (
-    denominazione TEXT NOT NULL,
-    codice TEXT NOT NULL,
-    sconto DOUBLE NOT NULL,
-    data_scadenza DATE NOT NULL,
-    PRIMARY KEY (codice)
+CREATE TABLE IF NOT EXISTS Coupon (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, -- id univoco del coupon
+    codice TEXT NOT NULL UNIQUE, -- codice univoco del coupon, case-insensitive
+    tipo TEXT NOT NULL CHECK(tipo IN ('percentuale', 'fisso')), -- 'percentuale' o 'fisso'
+    valore REAL NOT NULL,   -- valore percentuale o fisso a seconda del tipo
+    descrizione TEXT,   -- descrizione opzionale del coupon
+    data_scadenza DATE, -- data di scadenza opzionale del coupon
+    utilizzi_massimi INTEGER,   -- numero massimo di utilizzi del coupon (opzionale)
+    utilizzi_attuali INTEGER DEFAULT 0, -- contatore degli utilizzi attuali del coupon
+    attivo INTEGER DEFAULT 1, -- 1 = attivo, 0 = disattivato scelto integer per compatibilità con SQLite e per eventuale integrazione con altri livelli es. 2 = sospeso, 3 = scaduto, ecc.
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- timestamp di creazione del coupon
 );
 CREATE TABLE IF NOT EXISTS vendi (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -139,8 +145,5 @@ CREATE TABLE IF NOT EXISTS messaggio_contatto (
     data TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `);
-
-
-
 
 module.exports = db;

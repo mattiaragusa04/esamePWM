@@ -1,0 +1,347 @@
+<div class="card shadow-sm border-0 rounded-4">
+  <div class="card-body p-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4 class="fw-bold mb-0">
+          <i class="bi bi-ticket-perforated-fill text-danger me-2"></i>Gestione Coupon
+        </h4>
+        <p class="text-muted small mb-0">Crea e gestisci i codici sconto per gli utenti</p>
+      </div>
+      <button class="btn btn-danger rounded-3" (click)="apriModale()">
+        <i class="bi bi-plus-lg me-1"></i>Nuovo Coupon
+      </button>
+    </div>
+
+    <!-- Filtri e Ricerca -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-search text-muted"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control border-start-0 bg-light"
+            placeholder="Cerca per codice o descrizione..."
+            [(ngModel)]="searchQuery"
+            (input)="applicaFiltri()">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select bg-light" [(ngModel)]="filtroStato" (change)="applicaFiltri()">
+          <option value="tutti">Tutti i coupon</option>
+          <option value="attivi">Solo attivi</option>
+          <option value="disattivi">Solo disattivi</option>
+        </select>
+      </div>
+      <div class="col-md-2 text-end">
+        <span class="badge bg-danger rounded-pill fs-6 px-3 py-2">
+          {{ couponFiltrati.length }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    @if (isLoading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-danger" role="status"></div>
+        <p class="text-muted mt-2">Caricamento coupon...</p>
+      </div>
+    }
+
+    <!-- Errore -->
+    @if (!isLoading && errorMessage) {
+      <div class="alert alert-danger rounded-3">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
+      </div>
+    }
+
+    <!-- Tabella Coupon -->
+    @if (!isLoading && !errorMessage) {
+      @if (couponFiltrati.length === 0) {
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-ticket-perforated display-4 d-block mb-3"></i>
+          <p class="fw-semibold">Nessun coupon trovato</p>
+          <p class="small">Crea il primo coupon cliccando su "Nuovo Coupon"</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Codice</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Valore</th>
+                <th scope="col">Utilizzi</th>
+                <th scope="col">Scadenza</th>
+                <th scope="col">Stato</th>
+                <th scope="col" class="text-end">Azioni</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of couponFiltrati; track c.id) {
+                <tr [class.table-secondary]="!c.attivo">
+                  <td class="text-muted small">{{ c.id }}</td>
+
+                  <td>
+                    <span class="fw-bold font-monospace text-danger">{{ c.codice }}</span>
+                    @if (c.descrizione) {
+                      <br>
+                      <small class="text-muted">{{ c.descrizione }}</small>
+                    }
+                  </td>
+
+                  <td>
+                    <span class="badge rounded-pill"
+                      [class.bg-primary]="c.tipo === 'percentuale'"
+                      [class.bg-info]="c.tipo === 'fisso'"
+                      [class.text-dark]="c.tipo === 'fisso'">
+                      <i class="bi me-1"
+                        [class.bi-percent]="c.tipo === 'percentuale'"
+                        [class.bi-currency-euro]="c.tipo === 'fisso'"></i>
+                      {{ c.tipo | titlecase }}
+                    </span>
+                  </td>
+
+                  <td class="fw-semibold">
+                    @if (c.tipo === 'percentuale') {
+                      {{ c.valore }}%
+                    } @else {
+                      € {{ c.valore | number:'1.2-2' }}
+                    }
+                  </td>
+
+                  <td>
+                    @if (c.utilizzi_massimi) {
+                      <span [class.text-danger]="isEsaurito(c)">
+                        {{ c.utilizzi_attuali }} / {{ c.utilizzi_massimi }}
+                      </span>
+                      <div class="progress mt-1" style="height: 4px; width: 80px;">
+                        <div class="progress-bar bg-danger"
+                          [style.width.%]="(c.utilizzi_attuali / c.utilizzi_massimi) * 100">
+                        </div>
+                      </div>
+                    } @else {
+                      <span class="text-muted small">Illimitati</span>
+                    }
+                  </td>
+
+                  <td>
+                    @if (c.data_scadenza) {
+                      <span [class.text-danger]="isScaduto(c)" [class.fw-semibold]="isScaduto(c)">
+                        {{ c.data_scadenza }}
+                      </span>
+                    } @else {
+                      <span class="text-muted small">Nessuna</span>
+                    }
+                  </td>
+
+                  <td>
+                    <span class="badge rounded-pill {{ getBadgeStato(c).classe }}">
+                      {{ getBadgeStato(c).testo }}
+                    </span>
+                  </td>
+
+                  <td class="text-end">
+                    <button
+                      class="btn btn-sm rounded-3"
+                      [class.btn-outline-success]="!c.attivo"
+                      [class.btn-outline-secondary]="c.attivo"
+                      (click)="toggleCoupon(c)"
+                      [title]="c.attivo ? 'Disattiva coupon' : 'Attiva coupon'">
+                      <i class="bi" [class.bi-toggle-on]="c.attivo" [class.bi-toggle-off]="!c.attivo"></i>
+                      {{ c.attivo ? 'Disattiva' : 'Attiva' }}
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+
+  </div>
+</div>
+
+<!-- ═══ MODALE CREAZIONE COUPON ════════════════════════════════════════════ -->
+@if (mostraModale) {
+  <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-ticket-perforated-fill text-danger me-2"></i>Nuovo Coupon
+          </h5>
+          <button type="button" class="btn-close" (click)="chiudiModale()"></button>
+        </div>
+
+        <div class="modal-body pt-2">
+          <form #couponForm="ngForm" (ngSubmit)="salvaCoupon(couponForm)">
+
+            <!-- Codice -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Codice coupon <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control text-uppercase font-monospace fw-bold"
+                  name="codice"
+                  [(ngModel)]="nuovoCoupon.codice"
+                  required
+                  maxlength="20"
+                  placeholder="es. SUMMER25"
+                  style="letter-spacing: 2px;">
+                <button class="btn btn-outline-secondary" type="button" (click)="generaCodice()" title="Genera codice casuale">
+                  <i class="bi bi-shuffle"></i>
+                </button>
+              </div>
+              <div class="form-text">Verrà convertito automaticamente in maiuscolo.</div>
+            </div>
+
+            <!-- Tipo sconto -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Tipo di sconto <span class="text-danger">*</span></label>
+              <div class="d-flex gap-3">
+                <div class="form-check form-check-inline flex-fill">
+                  <label class="form-check-label w-100">
+                    <input class="form-check-input" type="radio" name="tipo" value="percentuale" [(ngModel)]="nuovoCoupon.tipo">
+                    <div class="card p-2 text-center mt-1 cursor-pointer"
+                      [class.border-primary]="nuovoCoupon.tipo === 'percentuale'"
+                      [class.border-2]="nuovoCoupon.tipo === 'percentuale'">
+                      <i class="bi bi-percent fs-4 text-primary"></i>
+                      <small class="fw-semibold">Percentuale</small>
+                    </div>
+                  </label>
+                </div>
+                <div class="form-check form-check-inline flex-fill">
+                  <label class="form-check-label w-100">
+                    <input class="form-check-input" type="radio" name="tipo" value="fisso" [(ngModel)]="nuovoCoupon.tipo">
+                    <div class="card p-2 text-center mt-1"
+                      [class.border-info]="nuovoCoupon.tipo === 'fisso'"
+                      [class.border-2]="nuovoCoupon.tipo === 'fisso'">
+                      <i class="bi bi-currency-euro fs-4 text-info"></i>
+                      <small class="fw-semibold">Fisso (€)</small>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Valore -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">
+                Valore sconto <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="valore"
+                  [(ngModel)]="nuovoCoupon.valore"
+                  required
+                  min="1"
+                  [max]="nuovoCoupon.tipo === 'percentuale' ? 100 : 9999"
+                  step="0.01"
+                  placeholder="es. 10">
+                <span class="input-group-text">
+                  {{ nuovoCoupon.tipo === 'percentuale' ? '%' : '€' }}
+                </span>
+              </div>
+              @if (nuovoCoupon.tipo === 'percentuale') {
+                <div class="form-text">Valore tra 1 e 100.</div>
+              }
+            </div>
+
+            <!-- Descrizione -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Descrizione <span class="text-muted small">(opzionale)</span></label>
+              <input
+                type="text"
+                class="form-control"
+                name="descrizione"
+                [(ngModel)]="nuovoCoupon.descrizione"
+                maxlength="100"
+                placeholder="es. Sconto estivo 2026">
+            </div>
+
+            <!-- Data scadenza e utilizzi massimi -->
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-semibold">
+                  Data scadenza <span class="text-muted small">(opzionale)</span>
+                </label>
+                <input
+                  type="date"
+                  class="form-control"
+                  name="data_scadenza"
+                  [(ngModel)]="nuovoCoupon.data_scadenza"
+                  [min]="dataOggi">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold">
+                  Utilizzi massimi <span class="text-muted small">(opzionale)</span>
+                </label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="utilizzi_massimi"
+                  [(ngModel)]="nuovoCoupon.utilizzi_massimi"
+                  min="1"
+                  placeholder="Illimitati">
+              </div>
+            </div>
+
+            <!-- Anteprima coupon -->
+            @if (nuovoCoupon.codice && nuovoCoupon.valore) {
+              <div class="alert alert-light border rounded-3 mb-3">
+                <small class="text-muted d-block mb-1">Anteprima:</small>
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-ticket-perforated-fill text-danger fs-5"></i>
+                  <span class="font-monospace fw-bold text-danger">{{ nuovoCoupon.codice | uppercase }}</span>
+                  <span class="badge bg-danger rounded-pill">
+                    {{ nuovoCoupon.tipo === 'percentuale' ? '-' + nuovoCoupon.valore + '%' : '-€' + nuovoCoupon.valore }}
+                  </span>
+                  @if (nuovoCoupon.descrizione) {
+                    <small class="text-muted">— {{ nuovoCoupon.descrizione }}</small>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Avviso non cumulabilità -->
+            <div class="alert alert-warning d-flex align-items-start gap-2 py-2 rounded-3 mb-3">
+              <i class="bi bi-info-circle-fill mt-1 flex-shrink-0"></i>
+              <small>
+                I coupon <strong>non sono cumulabili</strong> tra loro né con promozioni attive.
+                Gli utenti potranno applicarne solo uno per ordine.
+              </small>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-light rounded-3" (click)="chiudiModale()">
+                Annulla
+              </button>
+              <button
+                type="submit"
+                class="btn btn-danger rounded-3"
+                [disabled]="isSaving || !formValido">
+                @if (isSaving) {
+                  <span class="spinner-border spinner-border-sm me-1"></span>Creazione...
+                } @else {
+                  <i class="bi bi-plus-lg me-1"></i>Crea Coupon
+                }
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}

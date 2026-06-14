@@ -1,0 +1,19 @@
+.font-monospace {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.progress {
+  border-radius: 999px;
+}
