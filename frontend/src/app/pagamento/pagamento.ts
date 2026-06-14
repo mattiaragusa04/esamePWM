@@ -47,20 +47,22 @@ export class Pagamento implements OnInit {
   selectedCartaId: number = 0;
   selectedIndirizzoId: number = 0;
 
-  // ─── COUPON ────────────────────────────────────────────────────────────────
-  codiceCoupon: string = '';
+  // ─── COUPON ────────────────────────────────────────────────────────────────────────────
+codiceCoupon: string = '';
   couponApplicato: any = null;    // oggetto coupon validato dal backend
   couponErrore: string = '';
   isValidatingCoupon: boolean = false;
 
+  // I campi che arrivano dal backend sono: sconto e totale_finale
+  // Questi getter li mappano ai nomi usati nel template
   get scontoEuro(): number {
-    return this.couponApplicato ? this.couponApplicato.scontoEuro : 0;
+    return this.couponApplicato ? this.couponApplicato.sconto : 0;
   }
 
   get totaleScontato(): number {
-    return this.couponApplicato ? this.couponApplicato.totaleScontato : this.totale;
+    return this.couponApplicato ? this.couponApplicato.totale_finale : this.totale;
   }
-  // ───────────────────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────────────────────────────────────
 
   checkoutForm: FormGroup;
   mostraCvv: boolean = false;
@@ -197,7 +199,7 @@ export class Pagamento implements OnInit {
     this.mostraCvv = !this.mostraCvv;
   }
 
-  // ─── METODI COUPON ──────────────────────────────────────────────────────────
+  // ─── METODI COUPON ────────────────────────────────────────────────────────────────────────
 
   // silenzioso = true quando viene chiamato internamente (ricalcolo dopo cambio totale)
   async applicaCoupon(silenzioso = false) {
@@ -216,16 +218,17 @@ export class Pagamento implements OnInit {
       });
 
       if (res.ok) {
-        this.couponApplicato = await res.json();
+        // Backend risponde con: { valido, coupon_id, tipo, valore, sconto, totale_finale }
+        const data = await res.json();
+        this.couponApplicato = data;
         if (!silenzioso) {
-          const msg = this.couponApplicato.tipo === 'percentuale'
-            ? `Coupon applicato! Sconto del ${this.couponApplicato.valore}% (- €${this.couponApplicato.scontoEuro.toFixed(2)})`
-            : `Coupon applicato! Sconto di €${this.couponApplicato.scontoEuro.toFixed(2)}`;
+          const msg = data.tipo === 'percentuale'
+            ? `Coupon applicato! Sconto del ${data.valore}% (-\u20ac${data.sconto.toFixed(2)})`
+            : `Coupon applicato! Sconto di \u20ac${data.sconto.toFixed(2)}`;
           this.toast.success(msg);
         }
       } else {
         const err = await res.json();
-        // Gestione specifica errore promozione attiva (predisposto per il futuro)
         if (err.codice === 'PROMOZIONE_ATTIVA') {
           this.couponErrore = 'Non puoi usare un coupon insieme a una promozione attiva.';
         } else {
@@ -247,7 +250,7 @@ export class Pagamento implements OnInit {
     this.codiceCoupon = '';
     this.couponErrore = '';
   }
-  // ───────────────────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────────────────────────────────────
 
   async confermaEPaga() {
     this.submitted = true;
@@ -305,7 +308,7 @@ export class Pagamento implements OnInit {
       const payloadOrdine: any = {
         carta_id: cartaId,
         indirizzo_id: indirizzoId,
-        coupon_codice: this.couponApplicato?.codice || null // ← AGGIUNTO
+        coupon_codice: this.couponApplicato?.codice || null
       };
 
       const response = await fetch('http://localhost:3000/api/ordine/create', {
@@ -320,7 +323,6 @@ export class Pagamento implements OnInit {
         this.router.navigate(['/profilo/ordini']);
       } else {
         const errorData = await response.json();
-        // Gestione specifica: coupon scaduto nel frattempo
         if (errorData.codice === 'COUPON_SCADUTO') {
           this.rimuoviCoupon();
           this.toast.error('Il coupon non è più disponibile. È stato rimosso, riprova.');
