@@ -14,84 +14,176 @@
 
 <!-- Sezione Prodotti Consigliati -->
 <div class="mt-5 container">
-  <h2 class="text-center mb-5 text-uppercase font-weight-bold text-white">Consigliati <span class="text-info">per te</span></h2>
-  
-  <p class="text-center text-muted" *ngIf="prodottiConsigliati.length === 0">Nessun prodotto consigliato trovato.</p>
+  <h2 class="text-center mb-5 text-uppercase font-weight-bold text-white">
+    Consigliati <span class="text-info">per te</span>
+  </h2>
 
-  <!-- Contenitore relativo per posizionare i pulsanti ai lati -->
-  <div class="scroll-wrapper-container" *ngIf="prodottiConsigliati.length > 0">
+  <p class="text-center text-muted" *ngIf="prodottiConsigliati.length === 0">
+    Nessun prodotto consigliato trovato.
+  </p>
+
+  <div
+    class="scroll-wrapper-container modern-carousel"
+    *ngIf="prodottiConsigliati.length > 0"
+    (mouseenter)="pauseCarousel('consigliati')"
+    (mouseleave)="resumeCarousel('consigliati')"
+    (touchstart)="pauseCarousel('consigliati')"
+    (touchend)="resumeCarousel('consigliati')"
+  >
     <!-- Bottone Scorrimento Sinistra -->
-    <button class="btn btn-info rounded-circle position-absolute scroll-btn left-btn" (click)="scrollContainer.scrollBy({ left: -300, behavior: 'smooth' })">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
+    <button
+      class="btn btn-info rounded-circle position-absolute scroll-btn left-btn"
+      (click)="manualScroll('consigliati', 'left')"
+      aria-label="Scorri prodotti consigliati a sinistra"
+      type="button"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+      </svg>
     </button>
 
-    <div class="horizontal-scroll-wrapper w-100" #scrollContainer>
+    <div
+      class="horizontal-scroll-wrapper w-100 modern-track"
+      #scrollContainer
+      (scroll)="onCarouselScroll('consigliati')"
+    >
       <div class="horizontal-scroll-content">
-      <!-- card dentro il contenitore scrollabile -->
+        <div class="horizontal-scroll-item" *ngFor="let prodotto of prodottiConsigliatiLoop">
+          <div class="card h-100 shadow-lg product-card position-relative" [class.usato-variant]="isVariantUsato(prodotto)">
+            <!-- Pulsante Preferiti -->
+            <button
+              class="btn btn-link position-absolute p-2 shadow-none"
+              style="top: 5px; right: 5px; z-index: 10;"
+              (click)="togglePreferito(prodotto)"
+              type="button"
+            >
+              <i
+                style="font-size: 1.5rem;"
+                [class]="isPreferito(prodotto.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"
+              ></i>
+            </button>
 
-      <div class="horizontal-scroll-item" *ngFor="let prodotto of prodottiConsigliati">
-        <div class="card h-100 shadow-lg product-card position-relative" [class.usato-variant]="isVariantUsato(prodotto)">
-          <!-- Pulsante Preferiti -->
-          <button class="btn btn-link position-absolute p-2 shadow-none" style="top: 5px; right: 5px; z-index: 10;" (click)="togglePreferito(prodotto)">
-            <i style="font-size: 1.5rem;" [class]="isPreferito(prodotto.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"></i>
-          </button>
-          <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:4200/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
-          <div class="card-body text-center d-flex flex-column justify-content-between">
-            <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
+            <img
+              [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:4200/' + prodotto.immagine"
+              class="card-img-top p-3"
+              [alt]="prodotto.nome"
+              style="height: 200px; object-fit: contain;"
+            >
 
-            <!-- Label condizione (Nuovo / Usato) -->
-            <div class="mb-2">
-              <span class="badge-condizione"
-                    [ngClass]="prodotto.condizioneVariante === 'Nuovo' ? 'badge-nuovo' : 'badge-usato'">
-                <i class="bi" [ngClass]="prodotto.condizioneVariante === 'Nuovo' ? 'bi-stars' : 'bi-recycle'"></i>
-                {{ prodotto.condizioneVariante }}
-              </span>
-            </div>
+            <div class="card-body text-center d-flex flex-column justify-content-between">
+              <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
 
-            <p class="font-weight-bold mb-3 fs-5" [ngClass]="isVariantUsato(prodotto) ? 'text-danger' : 'text-info'">
-              {{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}
-            </p>
-            
-            <!-- Pulsanti Azione -->
-            <div class="d-flex flex-column align-items-center gap-2">
-              <a class="btn btn-info rounded-pill w-100" [routerLink]="['/dettagli-prodotto', prodotto.id]" [queryParams]="{ cond: prodotto.condizioneVariante }">Dettagli</a>
-              <button type="button" class="btn btn-outline-info rounded-pill w-100" (click)="aggiungiAlCarrello(prodotto)">Aggiungi al carrello</button>
+              <!-- Label condizione (Nuovo / Usato) -->
+              <div class="mb-2">
+                <span
+                  class="badge-condizione"
+                  [ngClass]="prodotto.condizioneVariante === 'Nuovo' ? 'badge-nuovo' : 'badge-usato'"
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="prodotto.condizioneVariante === 'Nuovo' ? 'bi-stars' : 'bi-recycle'"
+                  ></i>
+                  {{ prodotto.condizioneVariante }}
+                </span>
+              </div>
+
+              <p class="font-weight-bold mb-3 fs-5" [ngClass]="isVariantUsato(prodotto) ? 'text-danger' : 'text-info'">
+                {{ getPrezzoVisualizzato(prodotto) | currency:'EUR':'symbol' }}
+              </p>
+
+              <!-- Pulsanti Azione -->
+              <div class="d-flex flex-column align-items-center gap-2">
+                <a
+                  class="btn btn-info rounded-pill w-100"
+                  [routerLink]="['/dettagli-prodotto', prodotto.id]"
+                  [queryParams]="{ cond: prodotto.condizioneVariante }"
+                >
+                  Dettagli
+                </a>
+                <button
+                  type="button"
+                  class="btn btn-outline-info rounded-pill w-100"
+                  (click)="aggiungiAlCarrello(prodotto)"
+                >
+                  Aggiungi al carrello
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      </div>
     </div>
 
     <!-- Bottone Scorrimento Destra -->
-    <button class="btn btn-info rounded-circle position-absolute scroll-btn right-btn" (click)="scrollContainer.scrollBy({ left: 300, behavior: 'smooth' })">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+    <button
+      class="btn btn-info rounded-circle position-absolute scroll-btn right-btn"
+      (click)="manualScroll('consigliati', 'right')"
+      aria-label="Scorri prodotti consigliati a destra"
+      type="button"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+      </svg>
     </button>
   </div>
 </div>
 
-<!-- Sezione "Guarda il nostro Usato" - mostra SOLO prodotti Usato con grafica -25% completa -->
+<!-- Sezione "Guarda il nostro Usato" -->
 <div class="mt-5 container" *ngIf="prodottiUsati.length > 0">
-  <h2 class="text-center mb-5 text-uppercase font-weight-bold text-white">Guarda il nostro <span class="text-info">Usato</span></h2>
+  <h2 class="text-center mb-5 text-uppercase font-weight-bold text-white">
+    Guarda il nostro <span class="text-info">Usato</span>
+  </h2>
 
-  <div class="scroll-wrapper-container">
+  <div
+    class="scroll-wrapper-container modern-carousel"
+    (mouseenter)="pauseCarousel('usato')"
+    (mouseleave)="resumeCarousel('usato')"
+    (touchstart)="pauseCarousel('usato')"
+    (touchend)="resumeCarousel('usato')"
+  >
     <!-- Bottone Scorrimento Sinistra -->
-    <button class="btn btn-info rounded-circle position-absolute scroll-btn left-btn" (click)="scrollUsatoContainer.scrollBy({ left: -300, behavior: 'smooth' })">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
+    <button
+      class="btn btn-info rounded-circle position-absolute scroll-btn left-btn"
+      (click)="manualScroll('usato', 'left')"
+      aria-label="Scorri prodotti usati a sinistra"
+      type="button"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+      </svg>
     </button>
 
-    <div class="horizontal-scroll-wrapper w-100" #scrollUsatoContainer>
+    <div
+      class="horizontal-scroll-wrapper w-100 modern-track"
+      #scrollUsatoContainer
+      (scroll)="onCarouselScroll('usato')"
+    >
       <div class="horizontal-scroll-content">
-        <div class="horizontal-scroll-item" *ngFor="let prodotto of prodottiUsati">
+        <div class="horizontal-scroll-item" *ngFor="let prodotto of prodottiUsatiLoop">
           <div class="card h-100 shadow-lg product-card position-relative usato-variant">
             <!-- Corner badge -25% -->
             <div *ngIf="getPrezzoOriginale(prodotto) !== null" class="discount-corner-badge">-25%</div>
 
             <!-- Pulsante Preferiti -->
-            <button class="btn btn-link position-absolute p-2 shadow-none" style="top: 5px; right: 5px; z-index: 10;" (click)="togglePreferito(prodotto)">
-              <i style="font-size: 1.5rem;" [class]="isPreferito(prodotto.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"></i>
+            <button
+              class="btn btn-link position-absolute p-2 shadow-none"
+              style="top: 5px; right: 5px; z-index: 10;"
+              (click)="togglePreferito(prodotto)"
+              type="button"
+            >
+              <i
+                style="font-size: 1.5rem;"
+                [class]="isPreferito(prodotto.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"
+              ></i>
             </button>
-            <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:4200/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
+
+            <img
+              [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:4200/' + prodotto.immagine"
+              class="card-img-top p-3"
+              [alt]="prodotto.nome"
+              style="height: 200px; object-fit: contain;"
+            >
+
             <div class="card-body text-center d-flex flex-column justify-content-between">
               <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
 
@@ -120,8 +212,20 @@
 
               <!-- Pulsanti Azione -->
               <div class="d-flex flex-column align-items-center gap-2">
-                <a class="btn btn-info rounded-pill w-100" [routerLink]="['/dettagli-prodotto', prodotto.id]" [queryParams]="{ cond: 'Usato' }">Dettagli</a>
-                <button type="button" class="btn btn-outline-info rounded-pill w-100" (click)="aggiungiAlCarrello(prodotto)">Aggiungi al carrello</button>
+                <a
+                  class="btn btn-info rounded-pill w-100"
+                  [routerLink]="['/dettagli-prodotto', prodotto.id]"
+                  [queryParams]="{ cond: 'Usato' }"
+                >
+                  Dettagli
+                </a>
+                <button
+                  type="button"
+                  class="btn btn-outline-info rounded-pill w-100"
+                  (click)="aggiungiAlCarrello(prodotto)"
+                >
+                  Aggiungi al carrello
+                </button>
               </div>
             </div>
           </div>
@@ -130,8 +234,15 @@
     </div>
 
     <!-- Bottone Scorrimento Destra -->
-    <button class="btn btn-info rounded-circle position-absolute scroll-btn right-btn" (click)="scrollUsatoContainer.scrollBy({ left: 300, behavior: 'smooth' })">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+    <button
+      class="btn btn-info rounded-circle position-absolute scroll-btn right-btn"
+      (click)="manualScroll('usato', 'right')"
+      aria-label="Scorri prodotti usati a destra"
+      type="button"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+      </svg>
     </button>
   </div>
 </div>
@@ -141,18 +252,24 @@
   <div class="col-md-3 mb-4">
     <div class="card h-100 shadow-sm border-0 category-card">
       <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-controller text-info mb-3" viewBox="0 0 16 16"><path d="M11.5 6.027a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1m2.5-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1M1 5.271c0-1.294 1.048-2.342 2.342-2.342h9.316C13.952 2.929 15 3.977 15 5.271v5.458c0 1.294-1.048 2.342-2.342 2.342H2.342C1.048 13.071 1 11.986 1 10.692zM2.342 3.929c-.74 0-1.342.602-1.342 1.342v5.458c0 .74.602 1.342 1.342 1.342h9.316c.74 0 1.342-.602 1.342-1.342V5.271c0-.74-.602-1.342-1.342-1.342z"/><path d="M7.625 7.927h-1.5v1.5a.5.5 0 0 1-1 0v-1.5h-1.5a.5.5 0 1 1 0-1h1.5v-1.5a.5.5 0 1 1 1 0v1.5h1.5a.5.5 0 1 1 0 1"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-controller text-info mb-3" viewBox="0 0 16 16">
+          <path d="M11.5 6.027a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1m2.5-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1M1 5.271c0-1.294 1.048-2.342 2.342-2.342h9.316C13.952 2.929 15 3.977 15 5.271v5.458c0 1.294-1.048 2.342-2.342 2.342H2.342C1.048 13.071 1 11.986 1 10.692zM2.342 3.929c-.74 0-1.342.602-1.342 1.342v5.458c0 .74.602 1.342 1.342 1.342h9.316c.74 0 1.342-.602 1.342-1.342V5.271c0-.74-.602-1.342-1.342-1.342z"/>
+          <path d="M7.625 7.927h-1.5v1.5a.5.5 0 0 1-1 0v-1.5h-1.5a.5.5 0 1 1 0-1h1.5v-1.5a.5.5 0 1 1 1 0v1.5h1.5a.5.5 0 1 1 0 1"/>
+        </svg>
         <h4 class="card-title font-weight-bold">Console</h4>
         <p class="card-text text-muted">Scopri le ultime novità next-gen e retro console per ogni tipo di videogiocatore.</p>
         <a routerLink="/categoria/console" class="btn btn-info rounded-pill px-4">Vedi Console</a>
       </div>
     </div>
   </div>
-  
+
   <div class="col-md-3 mb-4">
     <div class="card h-100 shadow-sm border-0 category-card">
       <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-disc text-info mb-3" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 4a4 4 0 0 0-4 4 .5.5 0 0 1-1 0 5 5 0 0 1 5-5 .5.5 0 0 1 0 1m4.5 3.5a.5.5 0 0 1 .5.5 5 5 0 0 1-5 5 .5.5 0 0 1 0-1 4 4 0 0 0 4-4 .5.5 0 0 1 .5-.5"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-disc text-info mb-3" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+          <path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 4a4 4 0 0 0-4 4 .5.5 0 0 1-1 0 5 5 0 0 1 5-5 .5.5 0 0 1 0 1m4.5 3.5a.5.5 0 0 1 .5.5 5 5 0 0 1-5 5 .5.5 0 0 1 0-1 4 4 0 0 0 4-4 .5.5 0 0 1 .5-.5"/>
+        </svg>
         <h4 class="card-title font-weight-bold">Videogiochi</h4>
         <p class="card-text text-muted">Migliaia di titoli per tutte le piattaforme. Dai grandi classici alle nuove uscite.</p>
         <a routerLink="/categoria/videogiochi" class="btn btn-info rounded-pill px-4">Sfoglia Giochi</a>
@@ -163,7 +280,10 @@
   <div class="col-md-3 mb-4">
     <div class="card h-100 shadow-sm border-0 category-card">
       <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-cpu text-info mb-3" viewBox="0 0 16 16"><path d="M5 0h2v1h2V0h2v1h1a2 2 0 0 1 2 2v1h1v2h-1v2h1v2h-1v1a2 2 0 0 1-2 2h-1v1h-2v-1h-2v1H5v-1H4a2 2 0 0 1-2-2v-1H1V9h1V7H1V5h1V4a2 2 0 0 1 2-2h1zM4 2a1 1 0 0 0-1 1v1h1v2H3v2h1v2H3v1a1 1 0 0 0 1 1h1v-1h2v1h2v-1h2v1h1a1 1 0 0 0 1-1v-1h-1v-2h1V7h-1V5h1V4a1 1 0 0 0-1-1h-1v1H9V2H7v1H5V2z"/><path d="M5.5 5.5h5v5h-5zM6 6v4h4V6z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-cpu text-info mb-3" viewBox="0 0 16 16">
+          <path d="M5 0h2v1h2V0h2v1h1a2 2 0 0 1 2 2v1h1v2h-1v2h1v2h-1v1a2 2 0 0 1-2 2h-1v1h-2v-1h-2v1H5v-1H4a2 2 0 0 1-2-2v-1H1V9h1V7H1V5h1V4a2 2 0 0 1 2-2h1zM4 2a1 1 0 0 0-1 1v1h1v2H3v2h1v2H3v1a1 1 0 0 0 1 1h1v-1h2v1h2v-1h2v1h1a1 1 0 0 0 1-1v-1h-1v-2h1V7h-1V5h1V4a1 1 0 0 0-1-1h-1v1H9V2H7v1H5V2z"/>
+          <path d="M5.5 5.5h5v5h-5zM6 6v4h4V6z"/>
+        </svg>
         <h4 class="card-title font-weight-bold">Elettronica</h4>
         <p class="card-text text-muted">Hardware, componenti e dispositivi tech per portare le tue performance al top.</p>
         <a routerLink="/categoria/elettronica" class="btn btn-info rounded-pill px-4">Esplora Tech</a>
@@ -174,16 +294,13 @@
   <div class="col-md-3 mb-4">
     <div class="card h-100 shadow-sm border-0 category-card">
       <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-headset text-info mb-3" viewBox="0 0 16 16"><path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-headset text-info mb-3" viewBox="0 0 16 16">
+          <path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5"/>
+        </svg>
         <h4 class="card-title font-weight-bold">Accessori</h4>
         <p class="card-text text-muted">Potenzia il tuo setup con i migliori accessori gaming e periferiche sul mercato.</p>
         <a routerLink="/categoria/accessori" class="btn btn-info rounded-pill px-4">Scopri Accessori</a>
       </div>
     </div>
   </div>
-
-  
-  <!-- Pulsante per andare avanti e indietro nel horizontal scroll item-->
-
-
 </div>

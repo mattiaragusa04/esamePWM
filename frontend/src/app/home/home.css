@@ -1,8 +1,8 @@
 /* ====================================================
    Stili specifici della HomePage
-   (gli stili globali — incluse le regole dark mode per
-   .category-card, .scroll-btn e .product-card — sono in
-   src/styles.css)
+   (gli stili globali — incluse eventuali regole extra
+   di dark mode per .product-card, .scroll-btn e
+   .category-card — restano in src/styles.css)
    ==================================================== */
 
 /* Hero animata con canvas di particelle */
@@ -34,44 +34,95 @@
   color: white;
 }
 
-/* Scroll orizzontale dei prodotti consigliati */
-.horizontal-scroll-wrapper {
-  overflow-x: auto;
-  overflow-y: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch; /* Scroll fluido su iOS */
-  padding-bottom: 1rem; /* Spazio per la scrollbar */
+/* ====================================================
+   CAROSELLO MODERNO
+   ==================================================== */
+
+.scroll-wrapper-container {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-/* Nasconde la scrollbar lasciandola funzionante */
+.modern-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.horizontal-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 0.5rem 1.2rem;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+
 .horizontal-scroll-wrapper::-webkit-scrollbar {
   display: none;
 }
+
 .horizontal-scroll-wrapper {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
+.horizontal-scroll-content {
+  display: inline-flex;
+  align-items: stretch;
+}
+
 .horizontal-scroll-item {
   display: inline-block;
-  width: 250px; /* Larghezza fissa per ogni card */
+  width: 250px;
+  min-width: 250px;
   margin-right: 1.5rem;
   vertical-align: top;
-  white-space: normal; /* Ripristina il wrapping del testo dentro la card */
+  white-space: normal;
   margin-bottom: 1rem;
   margin-top: 1rem;
+  scroll-snap-align: start;
 }
 
 .horizontal-scroll-item:last-child {
   margin-right: 0;
 }
 
-/* Card categorie home — transition di base.
-   Lo stile di superficie (background, bordo, colore) e gli override
-   per il tema dark sono definiti in styles.css. */
+.modern-track {
+  mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
+}
+
+/* ====================================================
+   PRODUCT CARDS
+   ==================================================== */
+
+.product-card {
+  border-radius: 1.35rem;
+  overflow: hidden;
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    filter 0.35s ease;
+}
+
+.horizontal-scroll-item:hover .product-card {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.14);
+}
+
+/* ====================================================
+   CATEGORY CARDS
+   ==================================================== */
+
 .category-card {
   border-radius: 1.5rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .category-card:hover {
@@ -79,28 +130,121 @@
   box-shadow: 0 10px 25px rgba(248, 109, 237, 0.18);
 }
 
-/* Contenitore relativo per posizionare i bottoni di scroll ai lati */
-.scroll-wrapper-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
+/* ====================================================
+   BOTTONI FRECCE CAROSELLO
+   ==================================================== */
 
-/* Bottoni scroll left/right (lo sfondo gradient rosa è in styles.css) */
 .scroll-btn {
   z-index: 1000;
-  width: 45px;
-  height: 45px;
+  width: 48px;
+  height: 48px;
   display: flex !important;
   align-items: center;
   justify-content: center;
   padding: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.28);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.scroll-btn:hover {
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 14px 28px rgba(248, 109, 237, 0.36);
 }
 
 .scroll-btn.left-btn {
-  left: -15px;
+  left: -22px;
 }
 
 .scroll-btn.right-btn {
-  right: -15px;
+  right: -22px;
+}
+
+/* ====================================================
+   DARK MODE
+   Il tuo progetto usa body.theme-dark
+   ==================================================== */
+
+body.theme-dark .horizontal-scroll-item:hover .product-card {
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.10);
+}
+
+body.theme-dark .scroll-btn {
+  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.18);
+}
+
+body.theme-dark .scroll-btn:hover {
+  box-shadow: 0 14px 28px rgba(248, 109, 237, 0.24);
+}
+
+/* Manteniamo la sfumatura ai lati anche in dark */
+body.theme-dark .modern-track {
+  mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
+}
+
+/* ====================================================
+   RESPONSIVE
+   ==================================================== */
+
+@media (max-width: 992px) {
+  .horizontal-scroll-item {
+    width: 230px;
+    min-width: 230px;
+    margin-right: 1rem;
+  }
+
+  .scroll-btn.left-btn {
+    left: -14px;
+  }
+
+  .scroll-btn.right-btn {
+    right: -14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .horizontal-scroll-wrapper {
+    padding: 1rem 0.25rem 1rem;
+  }
+
+  .horizontal-scroll-item {
+    width: 220px;
+    min-width: 220px;
+    margin-right: 0.9rem;
+  }
+
+  .scroll-btn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .scroll-btn.left-btn {
+    left: -10px;
+  }
+
+  .scroll-btn.right-btn {
+    right: -10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .horizontal-scroll-item {
+    width: 205px;
+    min-width: 205px;
+  }
+
+  .modern-track {
+    mask-image: linear-gradient(to right, transparent 0, black 2%, black 98%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 2%, black 98%, transparent 100%);
+  }
+
+  body.theme-dark .modern-track {
+    mask-image: linear-gradient(to right, transparent 0, black 2%, black 98%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 2%, black 98%, transparent 100%);
+  }
 }
