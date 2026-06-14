@@ -2,11 +2,11 @@ const Ordine = require('../models/ordineModel');
 const Carrello = require('../models/carrelloModel');
 const User = require('../models/userModel');
 const Prodotto = require('../models/prodottoModel');
-const Coupon = require('../models/couponModel'); // ← AGGIUNTO
+const Coupon = require('../models/couponModel');
 
 exports.createOrdine = async (req, res) => {
     const userId = req.user.id;
-    const { carta_id, indirizzo_id, coupon_codice } = req.body; // ← aggiunto coupon_codice
+    const { carta_id, indirizzo_id, coupon_codice } = req.body;
 
     try {
         const prodottiInCarrello = await Carrello.findByUserId(userId);
@@ -44,23 +44,9 @@ exports.createOrdine = async (req, res) => {
         let totaleScontato = totaleOrdine;
 
         if (coupon_codice) {
-            // ─── FUTURO: controllo promozioni attive ─────────────────────────────
-            // Quando la logica promozioni sarà implementata, decommentare:
-            //
-            // const promozioneAttiva = await Promozione.findActivaByUserId(userId);
-            // if (promozioneAttiva) {
-            //   return res.status(409).json({
-            //     error: 'Non puoi combinare un coupon con una promozione attiva.',
-            //     codice: 'PROMOZIONE_ATTIVA'
-            //   });
-            // }
-            // ─────────────────────────────────────────────────────────────────────
-
             const coupon = await Coupon.findValidByCodice(coupon_codice);
 
             if (!coupon) {
-                // Il coupon era valido al momento della validazione ma ora non lo è più
-                // (es. esaurito da un altro utente nel frattempo) → blocchiamo l'ordine
                 return res.status(400).json({
                     error: 'Il coupon non è più valido. Rimuovilo e riprova.',
                     codice: 'COUPON_SCADUTO'
@@ -78,16 +64,26 @@ exports.createOrdine = async (req, res) => {
         }
         // ────────────────────────────────────────────────────────────────────────
 
-        // 1. Creare l'ordine principale (con campi coupon)
+        // ─── PUNTI FEDELTÀ: calcolati sul totale effettivamente pagato ──────────
+        // 1 punto ogni 5€ sul totaleScontato (non sul lordo)
+        const puntiFedeltaDaTotale = Math.floor(totaleScontato / 5);
+        // I punti per prodotto vengono scalati proporzionalmente se c'è uno sconto,
+        // oppure si usa direttamente il calcolo sul totale scontato.
+        // Scelta: usare puntiFedeltaDaTotale come base unica e coerente.
+        const puntiFedeltaFinali = puntiFedeltaDaTotale;
+        // ────────────────────────────────────────────────────────────────────────
+
+        // 1. Creare l'ordine principale
         const newOrdine = await Ordine.create({
             carta_id,
             indirizzo_id,
             utente_id: userId,
             data: new Date().toISOString(),
-            totale: totaleOrdine,           // totale lordo (senza sconto)
-            totale_scontato: totaleScontato, // totale finale pagato
+            totale: totaleOrdine,
+            totale_scontato: totaleScontato,
             sconto_applicato: scontoApplicato,
             coupon_id: couponId,
+            punti_fedelta: puntiFedeltaFinali,
             statoOrdine: 'In elaborazione'
         });
 
@@ -107,7 +103,7 @@ exports.createOrdine = async (req, res) => {
         res.status(201).json({
             message: 'Ordine creato con successo!',
             ordine: newOrdine,
-            puntiGuadagnati: puntiFedeltaTotali,
+            puntiGuadagnati: puntiFedeltaFinali,
             scontoApplicato,
             totaleScontato
         });
@@ -128,10 +124,8 @@ exports.updateStatoOrdine = async (req, res) => {
         let puntiDaAccreditare = 0;
 
         if (ordine.statoOrdine !== 'Consegnato' && nuovoStato === 'Consegnato') {
-            const prodottiOrdine = await Ordine.getProdottiByOrdineId(ordineId);
-            for (const p of prodottiOrdine) {
-                puntiDaAccreditare += (p.puntiFedelta || 0) * p.quantita;
-            }
+            // Usa i punti già salvati nell'ordine (calcolati sul totale scontato)
+            puntiDaAccreditare = ordine.punti_fedelta || 0;
 
             if (puntiDaAccreditare > 0) {
                 await User.updatePuntiFedelta(ordine.utente_id, puntiDaAccreditare);

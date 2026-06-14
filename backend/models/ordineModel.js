@@ -1,6 +1,6 @@
 const db = require("../db/database");
 
-const  Ordine = {
+const Ordine = {
     findAll : () => {
         return new Promise((res, rej) => {
             const query = `
@@ -15,6 +15,7 @@ const  Ordine = {
             });
         });
     },
+
     findById : (id) => {
         return new Promise((res, rej) => {
             const query = `SELECT * FROM ordine WHERE id = ?`;
@@ -34,13 +35,13 @@ const  Ordine = {
             });
         });
     },
-    
+
     create : (ordine) => {
         return new Promise((res, rej) => {
             const query = `
                 INSERT INTO ordine 
-                    (carta_id, indirizzo_id, utente_id, coupon_id, data, totale, totale_scontato, sconto_applicato, statoOrdine)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    (carta_id, indirizzo_id, utente_id, coupon_id, data, totale, totale_scontato, sconto_applicato, punti_fedelta, statoOrdine)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
             db.run(
                 query,
@@ -53,6 +54,7 @@ const  Ordine = {
                     ordine.totale,
                     ordine.totale_scontato ?? ordine.totale,
                     ordine.sconto_applicato ?? 0,
+                    ordine.punti_fedelta ?? 0,
                     ordine.statoOrdine
                 ],
                 function(err) {
@@ -76,7 +78,7 @@ const  Ordine = {
     getProdottiByOrdineId: (ordineId) => {
         return new Promise((res, rej) => {
             const query = `
-                SELECT c.quantita, p.puntiFedelta
+                SELECT c.quantita, c.prezzoUnitario, p.id, p.nome, p.immagine, p.condizione, p.puntiFedelta
                 FROM composto c
                 JOIN prodotto p ON c.prodotto_id = p.id
                 WHERE c.ordine_id = ?
@@ -97,6 +99,6 @@ const  Ordine = {
             });
         });
     }
-
 }
+
 module.exports = Ordine;

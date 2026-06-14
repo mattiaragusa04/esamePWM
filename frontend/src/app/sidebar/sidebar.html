@@ -4,48 +4,55 @@
         <i class="bi bi-person-circle fs-2 pe-none me-2 bi"></i>
         <span class="fs-4 text-nowrap">Il mio Profilo</span>
       </a>
-      <!-- Bottone per il toggle dell'animazione -->
-    <button class="btn btn-sm btn-outline-secondary border-0 menu-toggler-btn" (click)="toggleMenu()">
-      <i class="bi bi-list fs-3 menu-toggler-icon"></i>
+      <button class="btn btn-sm btn-outline-secondary border-0 menu-toggler-btn" (click)="toggleMenu()">
+        <i class="bi bi-list fs-3 menu-toggler-icon"></i>
       </button>
     </div>
     <hr />
-    <ul class="nav nav-pills flex-column mb-4">
+    <ul class="nav nav-pills flex-column mb-2">
       <li class="nav-item">
         <a routerLink="/profilo" class="nav-link d-flex align-items-center" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" title="Dati Personali">
-          <i class="bi bi-house pe-none me-2 bi"></i>
+          <i class="bi bi-house pe-none me-2"></i>
           <span class="nav-text text-nowrap">Dati Personali</span>
         </a>
       </li>
       <li class="nav-item">
         <a routerLink="/profilo/ordini" class="nav-link d-flex align-items-center" routerLinkActive="active" title="I miei Ordini">
-          <i class="bi bi-table pe-none me-2 bi"></i>
+          <i class="bi bi-table pe-none me-2"></i>
           <span class="nav-text text-nowrap">I miei Ordini</span>
         </a>
       </li>
       <li class="nav-item">
         <a routerLink="/profilo/vendite" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Le mie Vendite">
-          <i class="bi bi-cash-coin pe-none me-2 bi"></i>
+          <i class="bi bi-cash-coin pe-none me-2"></i>
           <span class="nav-text text-nowrap">Le mie Vendite</span>
         </a>
       </li>
       <li class="nav-item">
         <a routerLink="/profilo/carte-di-credito" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Metodi di Pagamento">
-          <i class="bi bi-credit-card pe-none me-2 bi"></i>
+          <i class="bi bi-credit-card pe-none me-2"></i>
           <span class="nav-text text-nowrap">Metodi di Pagamento</span>
         </a>
       </li>
       <li class="nav-item">
         <a routerLink="/profilo/indirizzi" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Indirizzi Salvati">
-          <i class="bi bi-pin-map pe-none me-2 bi"></i>
+          <i class="bi bi-pin-map pe-none me-2"></i>
           <span class="nav-text text-nowrap">Indirizzi Salvati</span>
         </a>
       </li>
       <li class="nav-item">
         <a routerLink="/profilo/impostazioni" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Impostazioni">
-          <i class="bi bi-speedometer2 pe-none me-2 bi"></i>
+          <i class="bi bi-speedometer2 pe-none me-2"></i>
           <span class="nav-text text-nowrap">Impostazioni</span>
         </a>
       </li>
     </ul>
+
+    <hr />
+
+    <!-- Bottone Logout -->
+    <button class="btn btn-outline-danger d-flex align-items-center logout-btn" (click)="logout()" title="Logout">
+      <i class="bi bi-box-arrow-right pe-none me-2 fs-5"></i>
+      <span class="nav-text text-nowrap">Esci dall'account</span>
+    </button>
 </div>

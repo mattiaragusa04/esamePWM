@@ -1,38 +1,44 @@
-/* Sidebar Admin */
-
+/* Sidebar Admin — stile base */
 .admin-sidebar-link {
-  color: #0f172a !important;
+  font-weight: 600;
+  color: #0f172a;
+  background-color: transparent;
+  border-radius: 0.5rem;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Hover (solo su link non attivi) */
 .admin-sidebar-link:hover:not(.active) {
-  background-color: rgba(220, 53, 69, 0.07) !important;
+  background-color: rgba(220, 53, 69, 0.08) !important;
   color: #dc3545 !important;
 }
 
-/* Fix: forza testo e icone bianchi su link attivo.
-   Il problema era che Bootstrap .list-group-item-action.active
-   sovrascriveva il colore con color: #fff ma poi .bg-transparent
-   lo reimpostava in modo confuso. Qui sovrascriviamo tutto esplicitamente. */
+/* Icone — default rosse */
+.admin-sidebar-link i {
+  color: #dc3545;
+  transition: color 0.2s ease;
+}
+
+/* Link attivo: sfondo rosso, TUTTO bianco.
+   Rimosse le classi Bootstrap problematiche (list-group-item-action, bg-transparent)
+   che causavano il conflitto che rendeva il testo invisibile. */
 .admin-sidebar-link.active {
   background-color: #dc3545 !important;
   color: #ffffff !important;
   border-radius: 0.5rem;
 }
 
-.admin-sidebar-link.active span {
+.admin-sidebar-link.active i {
   color: #ffffff !important;
-  visibility: visible !important;
-  opacity: 1 !important;
 }
 
-.admin-sidebar-link.active i {
+.admin-sidebar-link.active span {
   color: #ffffff !important;
 }
 
 /* Dark mode */
 body.theme-dark .admin-sidebar-link {
-  color: #e5e7eb !important;
+  color: #e5e7eb;
 }
 
 body.theme-dark .admin-sidebar-link:hover:not(.active) {
@@ -41,10 +47,8 @@ body.theme-dark .admin-sidebar-link:hover:not(.active) {
 }
 
 body.theme-dark .admin-sidebar-link.active,
-body.theme-dark .admin-sidebar-link.active span,
-body.theme-dark .admin-sidebar-link.active i {
+body.theme-dark .admin-sidebar-link.active i,
+body.theme-dark .admin-sidebar-link.active span {
   background-color: #dc3545 !important;
   color: #ffffff !important;
-  visibility: visible !important;
-  opacity: 1 !important;
 }
