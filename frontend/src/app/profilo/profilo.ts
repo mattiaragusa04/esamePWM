@@ -1,82 +1,70 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Router, NavigationEnd } from '@angular/router';
-import { Subscription } from 'rxjs';
-
-export interface Utente {
-  id: number;
-  nome: string;
-  cognome: string;
-  email: string;
-  telefono?: string;
-  indirizzo?: string;
-  data_iscrizione?: string;
-  puntiFedelta?: number; // Modificato per corrispondere al backend
-}
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../shared/auth.service';
 
 @Component({
   selector: 'app-profilo',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './profilo.html',
-  styleUrl: './profilo.css',
+  styleUrls: ['./profilo.css']
 })
-export class Profilo implements OnInit, OnDestroy {
-  utente: Utente | null = null;
-  private routerSub!: Subscription;
+export class ProfiloComponent implements OnInit {
+  utente: any = null;
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {
-    this.routerSub = this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.caricaUtente(); 
-      }
+  // Placeholder: in futuro collegare a servizi reali
+  totalOrdini   = 0;
+  totalVendite  = 0;
+  totalPreferiti = 0;
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.authService.utenteCorrente$.subscribe(u => {
+      this.utente = u;
     });
   }
 
-  ngOnInit() {
-    this.caricaUtente();
-    this.caricaDatiProfilo();
+  getInitials(): string {
+    if (!this.utente) return '?';
+    const n = (this.utente.nome   || '').charAt(0).toUpperCase();
+    const c = (this.utente.cognome || '').charAt(0).toUpperCase();
+    return n + c || '?';
   }
 
-  ngOnDestroy() {
-    if (this.routerSub) {
-      this.routerSub.unsubscribe();
-    }
+  getLevelName(): string {
+    const p = this.utente?.puntiFedelta || 0;
+    if (p >= 1000) return 'Leggenda';
+    if (p >= 500)  return 'Gold';
+    if (p >= 200)  return 'Silver';
+    if (p >= 50)   return 'Bronze';
+    return 'Starter';
   }
 
-  caricaUtente() {
-    if (isPlatformBrowser(this.platformId)) {
-      const userString = localStorage.getItem('user');
-      if (userString) {
-        this.utente = JSON.parse(userString);
-      } else {
-        this.utente = null;
-      }
-    }
+  getLevelThreshold(): number {
+    const p = this.utente?.puntiFedelta || 0;
+    if (p >= 1000) return 1000;
+    if (p >= 500)  return 500;
+    if (p >= 200)  return 200;
+    if (p >= 50)   return 50;
+    return 0;
   }
 
+  getLevelNextThreshold(): number {
+    const p = this.utente?.puntiFedelta || 0;
+    if (p >= 1000) return 1000;
+    if (p >= 500)  return 1000;
+    if (p >= 200)  return 500;
+    if (p >= 50)   return 200;
+    return 50;
+  }
 
-  async caricaDatiProfilo(){
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
-      if (!token) return; // Se non c'è il token, non facciamo la chiamata
-
-      try {
-        const response = await fetch('http://localhost:3000/api/auth/profilo', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (response.ok) {
-          this.utente = await response.json();
-          // Aggiorna anche il localStorage per mantenere la sessione sincronizzata ovunque
-          localStorage.setItem('user', JSON.stringify(this.utente));
-        } else {
-          console.error('Errore nel caricamento del profilo');
-        }
-      } catch (error) {
-        console.error('Errore di rete:', error);
-      }
-    }
+  getLevelPercent(): number {
+    const p    = this.utente?.puntiFedelta || 0;
+    const from = this.getLevelThreshold();
+    const to   = this.getLevelNextThreshold();
+    if (to === from) return 100;
+    return Math.min(100, Math.round(((p - from) / (to - from)) * 100));
   }
 }

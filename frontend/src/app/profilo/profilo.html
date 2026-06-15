@@ -1,39 +1,184 @@
-<div class="profile-content">
-  <div class="profile-header-card shadow-sm mb-4">
-    <h2 class="mb-1">Benvenuto, <span class="fw-bold">{{ utente?.nome }}</span>!</h2>
-    <p class="opacity-75 mb-0">Gestisci le tue informazioni e monitora le tue attività su PAwerUP.</p>
-  </div>
-  
-  <p class="lead mb-4 text-muted">Seleziona una voce dal menu a sinistra per gestire i tuoi dati o i tuoi ordini.</p>
-  
-  <div class="personal-info-card shadow-sm" *ngIf="utente">
-    <div class="info-group">
-      <div class="info-group-title">
-        <i class="bi bi-person-badge text-info"></i>
-        <span>Informazioni Account</span>
-      </div>
-      
-      <div class="info-grid">
-        <div class="info-field">
-          <span class="info-label">Nome</span>
-          <span class="info-data">{{ utente.nome }}</span>
-        </div>
-        
-        <div class="info-field">
-          <span class="info-label">Cognome</span>
-          <span class="info-data">{{ utente.cognome }}</span>
-        </div>
-        
-        <div class="info-field">
-          <span class="info-label">Indirizzo Email</span>
-          <span class="info-data">{{ utente.email }}</span>
-        </div>
+<div class="profilo-page">
 
-        <div class="info-field">
-          <span class="info-label">Punti Fedeltà</span>
-          <span class="info-data"><span class="badge-status badge-success">{{ utente.puntiFedelta || 0 }} Punti</span></span>
+  <!-- ═══ HERO BANNER ═══ -->
+  <div class="profilo-hero">
+    <!-- Orb decorativi animati -->
+    <div class="profilo-hero-orb orb-1"></div>
+    <div class="profilo-hero-orb orb-2"></div>
+    <div class="profilo-hero-orb orb-3"></div>
+
+    <div class="profilo-hero-inner">
+      <!-- Avatar grande con glow -->
+      <div class="profilo-hero-avatar">
+        <span>{{ getInitials() }}</span>
+        <div class="profilo-hero-avatar-ring"></div>
+      </div>
+
+      <div class="profilo-hero-text">
+        <div class="profilo-hero-greeting">Bentornato 👋</div>
+        <h1 class="profilo-hero-name" *ngIf="utente">
+          {{ utente.nome }} <span class="profilo-hero-surname">{{ utente.cognome }}</span>
+        </h1>
+        <div class="profilo-hero-email" *ngIf="utente">
+          <i class="bi bi-envelope-fill"></i> {{ utente.email }}
+        </div>
+      </div>
+
+      <!-- Badge livello -->
+      <div class="profilo-hero-level" *ngIf="utente">
+        <div class="profilo-level-badge">
+          <i class="bi bi-star-fill"></i>
+          <span>{{ getLevelName() }}</span>
+        </div>
+        <div class="profilo-level-progress-wrap">
+          <div class="profilo-level-bar">
+            <div class="profilo-level-fill" [style.width]="getLevelPercent() + '%'"></div>
+          </div>
+          <div class="profilo-level-meta">
+            <span>{{ utente?.puntiFedelta || 0 }} pt</span>
+            <span>{{ getLevelNextThreshold() }} pt</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- ═══ STAT CARDS ═══ -->
+  <div class="profilo-stats-row" *ngIf="utente">
+    <div class="profilo-stat-card">
+      <div class="profilo-stat-icon icon-pink">
+        <i class="bi bi-trophy-fill"></i>
+      </div>
+      <div class="profilo-stat-body">
+        <div class="profilo-stat-value">{{ utente.puntiFedelta || 0 }}</div>
+        <div class="profilo-stat-label">Punti Fedeltà</div>
+      </div>
+    </div>
+
+    <div class="profilo-stat-card">
+      <div class="profilo-stat-icon icon-orange">
+        <i class="bi bi-box-seam-fill"></i>
+      </div>
+      <div class="profilo-stat-body">
+        <div class="profilo-stat-value">{{ totalOrdini }}</div>
+        <div class="profilo-stat-label">Ordini Totali</div>
+      </div>
+    </div>
+
+    <div class="profilo-stat-card">
+      <div class="profilo-stat-icon icon-green">
+        <i class="bi bi-tags-fill"></i>
+      </div>
+      <div class="profilo-stat-body">
+        <div class="profilo-stat-value">{{ totalVendite }}</div>
+        <div class="profilo-stat-label">Articoli Venduti</div>
+      </div>
+    </div>
+
+    <div class="profilo-stat-card">
+      <div class="profilo-stat-icon icon-purple">
+        <i class="bi bi-heart-fill"></i>
+      </div>
+      <div class="profilo-stat-body">
+        <div class="profilo-stat-value">{{ totalPreferiti }}</div>
+        <div class="profilo-stat-label">Preferiti</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DATI ACCOUNT + QUICK ACTIONS ═══ -->
+  <div class="profilo-bottom-grid" *ngIf="utente">
+
+    <!-- Card dati personali -->
+    <div class="profilo-info-card">
+      <div class="profilo-card-header">
+        <div class="profilo-card-icon">
+          <i class="bi bi-person-badge-fill"></i>
+        </div>
+        <h2 class="profilo-card-title">Il tuo Account</h2>
+      </div>
+
+      <div class="profilo-fields-grid">
+        <div class="profilo-field">
+          <span class="profilo-field-label"><i class="bi bi-person"></i> Nome</span>
+          <span class="profilo-field-value">{{ utente.nome }}</span>
+        </div>
+        <div class="profilo-field">
+          <span class="profilo-field-label"><i class="bi bi-person"></i> Cognome</span>
+          <span class="profilo-field-value">{{ utente.cognome }}</span>
+        </div>
+        <div class="profilo-field full-width">
+          <span class="profilo-field-label"><i class="bi bi-envelope"></i> Email</span>
+          <span class="profilo-field-value">{{ utente.email }}</span>
+        </div>
+        <div class="profilo-field">
+          <span class="profilo-field-label"><i class="bi bi-star"></i> Livello</span>
+          <span class="profilo-field-value">
+            <span class="profilo-inline-badge">{{ getLevelName() }}</span>
+          </span>
+        </div>
+        <div class="profilo-field">
+          <span class="profilo-field-label"><i class="bi bi-trophy"></i> Punti</span>
+          <span class="profilo-field-value punti-value">{{ utente.puntiFedelta || 0 }} pt</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="profilo-actions-card">
+      <div class="profilo-card-header">
+        <div class="profilo-card-icon">
+          <i class="bi bi-lightning-charge-fill"></i>
+        </div>
+        <h2 class="profilo-card-title">Azioni Rapide</h2>
+      </div>
+
+      <div class="profilo-quick-actions">
+        <a routerLink="/profilo/ordini" class="profilo-action-btn">
+          <div class="profilo-action-icon">
+            <i class="bi bi-box-seam"></i>
+          </div>
+          <span>I miei Ordini</span>
+          <i class="bi bi-chevron-right profilo-action-arrow"></i>
+        </a>
+        <a routerLink="/profilo/vendite" class="profilo-action-btn">
+          <div class="profilo-action-icon">
+            <i class="bi bi-tags"></i>
+          </div>
+          <span>Le mie Vendite</span>
+          <i class="bi bi-chevron-right profilo-action-arrow"></i>
+        </a>
+        <a routerLink="/profilo/preferiti" class="profilo-action-btn">
+          <div class="profilo-action-icon">
+            <i class="bi bi-heart"></i>
+          </div>
+          <span>Preferiti</span>
+          <i class="bi bi-chevron-right profilo-action-arrow"></i>
+        </a>
+        <a routerLink="/profilo/indirizzi" class="profilo-action-btn">
+          <div class="profilo-action-icon">
+            <i class="bi bi-geo-alt"></i>
+          </div>
+          <span>Indirizzi</span>
+          <i class="bi bi-chevron-right profilo-action-arrow"></i>
+        </a>
+        <a routerLink="/profilo/carte-di-credito" class="profilo-action-btn">
+          <div class="profilo-action-icon">
+            <i class="bi bi-credit-card"></i>
+          </div>
+          <span>Carte di Credito</span>
+          <i class="bi bi-chevron-right profilo-action-arrow"></i>
+        </a>
+        <a routerLink="/profilo/impostazioni" class="profilo-action-btn">
+          <div class="profilo-action-icon">
+            <i class="bi bi-gear"></i>
+          </div>
+          <span>Impostazioni</span>
+          <i class="bi bi-chevron-right profilo-action-arrow"></i>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
 </div>
