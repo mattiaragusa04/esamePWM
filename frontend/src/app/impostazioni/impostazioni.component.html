@@ -1,214 +1,149 @@
-<div class="settings-page">
-  <div class="settings-shell">
-    <div class="settings-header">
-      <span class="settings-kicker">
-        <i class="bi bi-gear"></i>
-        Centro impostazioni
-      </span>
+<div class="imp-page">
 
-      <h1 class="settings-title">Impostazioni account</h1>
-      <p class="settings-subtitle">
-        Gestisci preferenze, comportamento dell’interfaccia e strumenti di recupero in un unico punto.
-      </p>
+  <!-- ╔═ HERO ═╗ -->
+  <div class="imp-hero">
+    <div class="imp-hero-orb orb-1"></div>
+    <div class="imp-hero-orb orb-2"></div>
+    <div class="imp-hero-inner">
+      <div class="imp-hero-left">
+        <div class="imp-hero-icon">
+          <i class="bi bi-gear-fill"></i>
+        </div>
+        <div>
+          <h1 class="imp-hero-title">Impostazioni</h1>
+          <p class="imp-hero-sub">Gestisci tema, notifiche e sicurezza del tuo account PAwerUP.</p>
+        </div>
+      </div>
     </div>
-
-    <div class="settings-content">
-
-      <!-- ASPETTO -->
-      <div class="settings-section">
-        <div class="settings-section-head">
-          <div>
-            <h2 class="settings-section-title">Aspetto</h2>
-            <p class="settings-section-desc">
-              Seleziona il tema dell’interfaccia e mantieni una visualizzazione coerente.
-            </p>
-          </div>
-        </div>
-
-        <div class="settings-inline">
-          <div>
-            <div class="settings-label">Tema attivo</div>
-            <p class="settings-note">
-              La preferenza viene salvata localmente sul dispositivo.
-            </p>
-          </div>
-
-          <div class="settings-actions settings-toggle-group">
-            <button
-              type="button"
-              class="btn settings-btn settings-btn-outline"
-              [ngClass]="{ 'active': tema === 'light' }"
-              (click)="cambiaTema('light')">
-              Tema chiaro
-            </button>
-
-            <button
-              type="button"
-              class="btn settings-btn settings-btn-outline"
-              [ngClass]="{ 'active': tema === 'dark' }"
-              (click)="cambiaTema('dark')">
-              Tema scuro
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- NOTIFICHE -->
-      <div class="settings-section">
-        <div class="settings-section-head">
-          <div>
-            <h2 class="settings-section-title">Notifiche</h2>
-            <p class="settings-section-desc">
-              Scegli quali comunicazioni ricevere via email.
-            </p>
-          </div>
-        </div>
-
-        <div class="settings-section-body">
-          <div class="settings-muted-box">
-            <div class="mb-3">
-              <div class="settings-label">Tipologie di notifiche</div>
-              <p class="settings-note mb-0">
-                Puoi modificare queste preferenze in qualsiasi momento. Alcune email di servizio potrebbero rimanere attive.
-              </p>
-            </div>
-
-            <div class="settings-checkbox-group">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="notifPromozioni"
-                  [(ngModel)]="notifichePromozioni">
-                <label class="form-check-label" for="notifPromozioni">
-                  Ricevi email per promozioni e offerte
-                </label>
-              </div>
-
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="notifOrdini"
-                  [(ngModel)]="notificheOrdini">
-                <label class="form-check-label" for="notifOrdini">
-                  Ricevi email per aggiornamenti sui tuoi ordini
-                </label>
-              </div>
-
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="notifVendite"
-                  [(ngModel)]="notificheVendite">
-                <label class="form-check-label" for="notifVendite">
-                  Ricevi email per notifiche sulle tue vendite
-                </label>
-              </div>
-
-              <div class="mt-2">
-                <button
-                  class="btn settings-btn settings-btn-primary btn-sm"
-                  (click)="salvaImpostazioniNotifiche()">
-                  Salva preferenze notifiche
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIPRISTINO UI -->
-      <div class="settings-section">
-        <div class="settings-section-head">
-          <div>
-            <h2 class="settings-section-title">Ripristino</h2>
-            <p class="settings-section-desc">
-              Riporta la pagina e le preferenze dell’interfaccia allo stato iniziale.
-            </p>
-          </div>
-        </div>
-
-        <div class="settings-inline">
-          <div>
-            <div class="settings-label">Reset UI</div>
-            <p class="settings-note">
-              Elimina le preferenze salvate nel browser e ricarica la pagina.
-            </p>
-          </div>
-
-          <div class="settings-actions">
-            <button
-              class="btn settings-btn settings-btn-primary"
-              (click)="ripristinaPagina()">
-              Ripristina pagina
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIPRISTINO PASSWORD -->
-      <div class="settings-section">
-        <div class="settings-section-head">
-          <div>
-            <h2 class="settings-section-title">Ripristino password</h2>
-            <p class="settings-section-desc">
-              Richiedi il reset della password del tuo account PAwerUP.
-            </p>
-          </div>
-        </div>
-
-        <div class="settings-inline">
-          <div>
-            <div class="settings-label">Email account</div>
-            <p class="settings-note">
-              Inserisci l’indirizzo email con cui ti sei registrato. Riceverai istruzioni per creare una nuova password.
-            </p>
-          </div>
-
-          <div class="settings-actions flex-column flex-sm-row settings-reset-password-actions">
-            <input
-              type="email"
-              class="form-control mb-2 mb-sm-0"
-              placeholder="nome@esempio.it"
-              [(ngModel)]="emailResetPassword" />
-
-            <button
-              class="btn settings-btn settings-btn-primary"
-              (click)="richiediResetPassword()"
-              [disabled]="isRichiestaResetInCorso">
-              Invia richiesta
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- SESSIONE -->
-      <div class="settings-section">
-        <div class="settings-section-head">
-          <div>
-            <h2 class="settings-section-title">Sessione</h2>
-            <p class="settings-section-desc">
-              Esci in modo sicuro da questo dispositivo.
-            </p>
-          </div>
-        </div>
-
-        <div class="settings-inline">
-          <div>
-            <div class="settings-label">Logout</div>
-            <p class="settings-note">
-              Termina la sessione corrente. Potrai accedere nuovamente in qualsiasi momento.
-            </p>
-          
-
-          <button class="btn btn-outline-danger rounded-pill font-weight-bold d-flex align-items-center justify-content-center mt-3" (click)="logout()" title="Logout">
-            <i class="bi bi-box-arrow-left pe-none me-2" style="font-size: 1.2rem;"></i>
-            <span class="text-nowrap">Logout</span>
-          </button>
-          </div>
-      
-        </div>
   </div>
+
+  <!-- ╔═ SEZIONI ═╗ -->
+
+  <!-- ASPETTO -->
+  <div class="imp-section">
+    <div class="imp-section-icon"><i class="bi bi-palette-fill"></i></div>
+    <div class="imp-section-body">
+      <div class="imp-section-head">
+        <div>
+          <h2 class="imp-section-title">Aspetto</h2>
+          <p class="imp-section-desc">Seleziona il tema dell'interfaccia. La preferenza viene salvata localmente.</p>
+        </div>
+      </div>
+      <div class="imp-row">
+        <span class="imp-label">Tema attivo</span>
+        <div class="imp-toggle-group">
+          <button type="button" class="imp-toggle-btn" [class.active]="tema === 'light'" (click)="cambiaTema('light')">
+            <i class="bi bi-sun-fill"></i> Chiaro
+          </button>
+          <button type="button" class="imp-toggle-btn" [class.active]="tema === 'dark'" (click)="cambiaTema('dark')">
+            <i class="bi bi-moon-fill"></i> Scuro
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICHE -->
+  <div class="imp-section">
+    <div class="imp-section-icon"><i class="bi bi-bell-fill"></i></div>
+    <div class="imp-section-body">
+      <div class="imp-section-head">
+        <div>
+          <h2 class="imp-section-title">Notifiche</h2>
+          <p class="imp-section-desc">Scegli quali comunicazioni ricevere via email.</p>
+        </div>
+      </div>
+      <div class="imp-checkbox-group">
+        <label class="imp-checkbox-item">
+          <input type="checkbox" [(ngModel)]="notifichePromozioni">
+          <span class="imp-checkbox-box"><i class="bi bi-check"></i></span>
+          <span class="imp-checkbox-label">
+            <span class="imp-checkbox-title">Promozioni e offerte</span>
+            <span class="imp-checkbox-sub">Ricevi email per sconti ed offerte speciali</span>
+          </span>
+        </label>
+        <label class="imp-checkbox-item">
+          <input type="checkbox" [(ngModel)]="notificheOrdini">
+          <span class="imp-checkbox-box"><i class="bi bi-check"></i></span>
+          <span class="imp-checkbox-label">
+            <span class="imp-checkbox-title">Aggiornamenti ordini</span>
+            <span class="imp-checkbox-sub">Ricevi email per lo stato dei tuoi ordini</span>
+          </span>
+        </label>
+        <label class="imp-checkbox-item">
+          <input type="checkbox" [(ngModel)]="notificheVendite">
+          <span class="imp-checkbox-box"><i class="bi bi-check"></i></span>
+          <span class="imp-checkbox-label">
+            <span class="imp-checkbox-title">Notifiche vendite</span>
+            <span class="imp-checkbox-sub">Ricevi email per aggiornamenti sulle tue vendite</span>
+          </span>
+        </label>
+      </div>
+      <div class="imp-section-footer">
+        <button class="imp-btn-primary" (click)="salvaImpostazioniNotifiche()">
+          <i class="bi bi-check-circle me-1"></i> Salva preferenze
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIPRISTINO UI -->
+  <div class="imp-section">
+    <div class="imp-section-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+    <div class="imp-section-body">
+      <div class="imp-section-head">
+        <div>
+          <h2 class="imp-section-title">Ripristino UI</h2>
+          <p class="imp-section-desc">Elimina le preferenze salvate nel browser e ricarica la pagina.</p>
+        </div>
+      </div>
+      <div class="imp-row">
+        <p class="imp-note">Riporta tema e impostazioni dell'interfaccia allo stato iniziale.</p>
+        <button class="imp-btn-secondary" (click)="ripristinaPagina()">
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Ripristina pagina
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET PASSWORD -->
+  <div class="imp-section">
+    <div class="imp-section-icon"><i class="bi bi-shield-lock-fill"></i></div>
+    <div class="imp-section-body">
+      <div class="imp-section-head">
+        <div>
+          <h2 class="imp-section-title">Ripristino password</h2>
+          <p class="imp-section-desc">Inserisci la tua email per ricevere le istruzioni di reset.</p>
+        </div>
+      </div>
+      <div class="imp-row imp-row-wrap">
+        <input type="email" class="imp-input" placeholder="nome@esempio.it" [(ngModel)]="emailResetPassword">
+        <button class="imp-btn-primary" (click)="richiediResetPassword()" [disabled]="isRichiestaResetInCorso">
+          <span *ngIf="isRichiestaResetInCorso" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!isRichiestaResetInCorso" class="bi bi-send me-1"></i>
+          Invia richiesta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSIONE / LOGOUT -->
+  <div class="imp-section imp-section-danger">
+    <div class="imp-section-icon danger"><i class="bi bi-box-arrow-left"></i></div>
+    <div class="imp-section-body">
+      <div class="imp-section-head">
+        <div>
+          <h2 class="imp-section-title">Sessione</h2>
+          <p class="imp-section-desc">Termina la sessione corrente su questo dispositivo.</p>
+        </div>
+      </div>
+      <div class="imp-row">
+        <p class="imp-note">Potrai accedere nuovamente in qualsiasi momento.</p>
+        <button class="imp-btn-danger" (click)="logout()">
+          <i class="bi bi-box-arrow-left me-1"></i> Logout
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>
