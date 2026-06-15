@@ -1,35 +1,80 @@
-<div>
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="d-flex align-items-center">
-      <i class="bi bi-cash-coin text-info fs-1 me-3"></i>
-      <h2 class="font-weight-bold m-0">Le mie <span class="text-info">vendite</span></h2>
+<div class="vendite-page">
+
+  <!-- ╔═══ HERO ═══════════════════════════════════════════════════════╗ -->
+  <div class="vendite-hero">
+    <div class="vendite-hero-orb orb-1"></div>
+    <div class="vendite-hero-orb orb-2"></div>
+    <div class="vendite-hero-inner">
+      <div class="vendite-hero-left">
+        <div class="vendite-hero-icon">
+          <i class="bi bi-tags-fill"></i>
+        </div>
+        <div>
+          <h1 class="vendite-hero-title">Le mie Vendite</h1>
+          <p class="vendite-hero-sub">Consulta lo storico delle tue offerte di vendita su PAwerUP.</p>
+        </div>
+      </div>
+      <a routerLink="/vendi" class="vendite-hero-btn">
+        <i class="bi bi-tags-fill"></i> Vendi un prodotto
+      </a>
     </div>
-    <a routerLink="/vendi" class="btn btn-info rounded-pill font-weight-bold px-4 text-white">
-      <i class="bi bi-tags-fill me-2"></i> Vendi un prodotto
-    </a>
-  </div>  
-  <p class="lead mb-4 text-muted">Consulta lo storico delle tue offerte di vendita inviate a PAwerUP.</p>
-  
+  </div>
+
   <!-- Loader -->
   <div *ngIf="isLoading" class="text-center my-5">
-    <div class="spinner-border text-info" role="status"></div>
+    <div class="spinner-border spinner-pink" role="status"></div>
   </div>
 
-  <!-- Nessuna vendita effettuata -->
-  <div *ngIf="!isLoading && vendite.length === 0" class="card shadow-sm p-5 text-center border-0 mt-2">
-    <h4 class="text-muted">Non hai ancora venduto nulla.</h4>
-    <p class="mb-4">Il tuo storico vendite è vuoto. Hai giochi o console che non usi più? Vendili a noi!</p>
+  <!-- Empty state -->
+  <div *ngIf="!isLoading && vendite.length === 0" class="vendite-empty">
+    <div class="vendite-empty-icon"><i class="bi bi-tags"></i></div>
+    <h4>Non hai ancora venduto nulla.</h4>
+    <p>Il tuo storico vendite è vuoto. Hai giochi o console che non usi più? Vendili a noi!</p>
+    <a routerLink="/vendi" class="vendite-hero-btn" style="background:#f86ded; border-color:#f86ded;">
+      <i class="bi bi-tags-fill"></i> Vendi ora
+    </a>
   </div>
 
-  <!-- Lista Vendite effettuate -->
-  <div *ngIf="!isLoading && vendite.length > 0">
-    <div class="card mb-4 shadow-sm border-0" *ngFor="let vendita of vendite">
-      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 border-bottom">
-        <div><span class="text-muted small">Data Offerta:</span><br><strong>{{ vendita.data | date:'dd/MM/yyyy' }}</strong></div>
-        <div><span class="text-muted small">Valore Stimato:</span><br><strong class="text-info fs-5">{{ vendita.prezzo_stimato | currency:'EUR':'symbol':'1.2-2' }}</strong></div>
-        <div><span class="text-muted small">Prodotto:</span><br><strong>{{ vendita.nome_prodotto || 'Prodotto in valutazione' }}</strong></div>
-        <div><span class="badge fs-6 rounded-pill" [ngClass]="{'bg-success': vendita.stato === 'Accettata', 'bg-warning text-dark': vendita.stato === 'In valutazione', 'bg-danger': vendita.stato === 'Rifiutata'}">{{ vendita.stato || 'In valutazione' }}</span></div>
+  <!-- Lista Vendite -->
+  <div *ngIf="!isLoading && vendite.length > 0" class="d-flex flex-column gap-3">
+    <div class="vendita-card" *ngFor="let vendita of vendite">
+      <div class="vendita-card-body">
+
+        <div class="text-center">
+          <span class="vendita-col-label">Prodotto</span>
+          <span class="vendita-col-value">{{ vendita.nome_prodotto || 'In valutazione' }}</span>
+        </div>
+
+        <div class="text-center">
+          <span class="vendita-col-label">Data Offerta</span>
+          <span class="vendita-col-value">{{ vendita.data | date:'dd/MM/yyyy' }}</span>
+        </div>
+
+        <div class="text-center">
+          <span class="vendita-col-label">Valore Stimato</span>
+          <span class="vendita-col-value text-pink">{{ vendita.prezzo_stimato | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+
+        <div class="text-center">
+          <span class="vendita-col-label">Stato</span>
+          <span class="badge-stato"
+            [ngClass]="{
+              'badge-accettata':   vendita.stato === 'Accettata',
+              'badge-valutazione': vendita.stato === 'In valutazione' || !vendita.stato,
+              'badge-rifiutata':   vendita.stato === 'Rifiutata'
+            }">
+            <i class="bi"
+              [ngClass]="{
+                'bi-check-circle-fill': vendita.stato === 'Accettata',
+                'bi-clock-fill':        vendita.stato === 'In valutazione' || !vendita.stato,
+                'bi-x-circle-fill':     vendita.stato === 'Rifiutata'
+              }"></i>
+            {{ vendita.stato || 'In valutazione' }}
+          </span>
+        </div>
+
       </div>
     </div>
   </div>
+
 </div>
