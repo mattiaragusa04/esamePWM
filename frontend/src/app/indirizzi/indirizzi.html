@@ -1,208 +1,257 @@
-<div>
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="d-flex align-items-center">
-      <i class="bi bi-geo-alt text-info fs-1 me-3"></i>
-      <h2 class="font-weight-bold m-0">I miei <span class="text-info">indirizzi</span></h2>
-    </div>
-    <button class="btn btn-info rounded-pill font-weight-bold px-4 text-white" (click)="toggleForm()" *ngIf="!mostraForm">
-      <i class="bi bi-plus-circle me-2"></i> Aggiungi Nuovo Indirizzo
-    </button>
-  </div>
+<div class="indirizzi-page">
 
-  <p class="lead mb-4 text-muted">Gestisci i tuoi indirizzi salvati su PAwerUP.</p>
+  <!-- ╔═══ HERO ═════════════════════════════════════════╗ -->
+  <div class="indirizzi-hero">
+    <div class="indirizzi-hero-orb orb-1"></div>
+    <div class="indirizzi-hero-orb orb-2"></div>
+    <div class="indirizzi-hero-inner">
+      <div class="indirizzi-hero-left">
+        <div class="indirizzi-hero-icon">
+          <i class="bi bi-geo-alt-fill"></i>
+        </div>
+        <div>
+          <h1 class="indirizzi-hero-title">I miei Indirizzi</h1>
+          <p class="indirizzi-hero-sub">Gestisci gli indirizzi salvati per spedizioni e fatturazione su PAwerUP.</p>
+        </div>
+      </div>
+      <button class="indirizzi-hero-btn" (click)="toggleForm()" *ngIf="!mostraForm">
+        <i class="bi bi-plus-circle"></i> Aggiungi Indirizzo
+      </button>
+    </div>
+  </div>
 
   <!-- Loader -->
   <div *ngIf="isLoading" class="text-center my-5">
-    <div class="spinner-border text-info" role="status"></div>
+    <div class="spinner-border spinner-green" role="status"></div>
   </div>
 
-  <!-- Elenco degli indirizzi salvati -->
-  <div *ngIf="!isLoading && !mostraForm">
-    <div *ngIf="indirizzi.length === 0" class="card shadow-sm p-5 text-center border-0 mt-2">
-      <h4 class="text-muted">Nessun indirizzo salvato.</h4>
-      <p class="mb-4">Aggiungi un indirizzo per velocizzare i tuoi futuri acquisti.</p>
+  <!-- ╔═══ FORM ═════════════════════════════════════════╗ -->
+  <div class="indirizzi-form-card" *ngIf="mostraForm">
+    <div class="indirizzi-form-header">
+      <div class="indirizzi-form-header-icon">
+        <i class="bi bi-pin-map-fill"></i>
+      </div>
+      <h4 class="indirizzi-form-title">Nuovo Indirizzo</h4>
     </div>
 
-    <div class="row g-4" *ngIf="indirizzi.length > 0">
-      <div class="col-md-6 col-lg-4 mb-4" *ngFor="let indirizzo of indirizzi">
-        <div class="card h-100 shadow-sm border-0 position-relative" style="border-radius: 1rem;">
-          <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <span class="badge bg-info text-white rounded-pill px-3 py-2 text-uppercase">{{ indirizzo.tipo }}</span>
-              <button class="btn btn-sm btn-outline-danger border-0 rounded-circle" (click)="eliminaIndirizzo(indirizzo.id)" title="Elimina indirizzo">
-                <i class="bi bi-trash"></i>
-              </button>
-            </div>
-            <h5 class="card-title font-weight-bold mb-1">{{ indirizzo.via }}, {{ indirizzo.numero_civico }}</h5>
-            <p class="card-text text-muted mb-0">{{ indirizzo.cap }} - {{ indirizzo.provincia }}</p>
-            <p class="card-text text-muted font-weight-bold">{{ indirizzo.paese }}</p>
-          </div>
+    <form [formGroup]="indirizzoForm" (ngSubmit)="salvaIndirizzo()">
+      <div class="indirizzi-form-grid">
+
+        <div class="indirizzi-form-group">
+          <label class="indirizzi-form-label">Tipo di Indirizzo</label>
+          <select class="indirizzi-form-select" formControlName="tipo">
+            <option value="Casa">Spedizione</option>
+            <option value="Lavoro">Fatturazione</option>
+            <option value="Altro">Altro</option>
+          </select>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Form per aggiungere un nuovo indirizzo -->
-  <div *ngIf="mostraForm" class="card shadow-lg border-0 p-4 p-md-5 mx-auto" style="border-radius: 1.5rem; max-width: 800px;">
-    <h4 class="mb-4 text-center font-weight-bold">Aggiungi nuovo indirizzo</h4>
-    
-    <form [formGroup]="indirizzoForm" (ngSubmit)="salvaIndirizzo()" class="row g-4">
-      
-      <div class="col-md-6">
-        <label class="form-label text-muted font-weight-bold">Tipo di Indirizzo</label>
-        <select class="form-select rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="tipo">
-          <option value="Casa">Spedizione</option>
-          <option value="Lavoro">Fatturazione</option>
-          <option value="Altro">Altro</option>
-        </select>
-      </div>
+        <div class="indirizzi-form-group">
+          <label class="indirizzi-form-label">Paese</label>
+          <select class="indirizzi-form-select" formControlName="paese">
+            <option value="Italia">Italia</option>
+          </select>
+        </div>
 
-      <div class="col-md-6">
-        <label class="form-label text-muted font-weight-bold">Paese</label>
-        <select class="form-select rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="paese">
-          <option value="Italia">Italia</option>
-        </select>
-      </div>
+        <div class="indirizzi-form-group col-span-2">
+          <label class="indirizzi-form-label">Via / Piazza</label>
+          <input type="text" class="indirizzi-form-input" formControlName="via"
+                 placeholder="Es. Via Roma"
+                 (input)="indirizzoForm.get('via')?.setValue($any($event.target).value.replace(/[^a-zA-Z\u00C0-\u00FF\s\']/g, ''))">
+        </div>
 
-      <div class="col-md-8 mt-3">
-        <label class="form-label text-muted font-weight-bold">Via / Piazza</label>
-        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="via" placeholder="Es. Via Roma" (input)="indirizzoForm.get('via')?.setValue($any($event.target).value.replace(/[^a-zA-ZÀ-ÿ\s\']/g, ''))">
-      </div>
+        <div class="indirizzi-form-group">
+          <label class="indirizzi-form-label">N° Civico</label>
+          <input type="text" class="indirizzi-form-input" formControlName="numero_civico"
+                 placeholder="Es. 12" maxlength="4"
+                 (input)="indirizzoForm.get('numero_civico')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
+        </div>
 
-      <div class="col-md-4 mt-3">
-        <label class="form-label text-muted font-weight-bold">N° Civico</label>
-        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="numero_civico" placeholder="Es. 123" maxlength="4" (input)="indirizzoForm.get('numero_civico')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
-      </div>
+        <div class="indirizzi-form-group">
+          <label class="indirizzi-form-label">Provincia / Città</label>
+          <select class="indirizzi-form-select" formControlName="provincia">
+            <option value="" disabled selected>Seleziona una città</option>
+            <option value="Agrigento">Agrigento</option>
+            <option value="Alessandria">Alessandria</option>
+            <option value="Ancona">Ancona</option>
+            <option value="Aosta">Aosta</option>
+            <option value="Arezzo">Arezzo</option>
+            <option value="Ascoli Piceno">Ascoli Piceno</option>
+            <option value="Asti">Asti</option>
+            <option value="Avellino">Avellino</option>
+            <option value="Bari">Bari</option>
+            <option value="Barletta-Andria-Trani">Barletta-Andria-Trani</option>
+            <option value="Belluno">Belluno</option>
+            <option value="Benevento">Benevento</option>
+            <option value="Bergamo">Bergamo</option>
+            <option value="Biella">Biella</option>
+            <option value="Bologna">Bologna</option>
+            <option value="Bolzano">Bolzano</option>
+            <option value="Brescia">Brescia</option>
+            <option value="Brindisi">Brindisi</option>
+            <option value="Cagliari">Cagliari</option>
+            <option value="Caltanissetta">Caltanissetta</option>
+            <option value="Campobasso">Campobasso</option>
+            <option value="Carbonia-Iglesias">Carbonia-Iglesias</option>
+            <option value="Caserta">Caserta</option>
+            <option value="Catania">Catania</option>
+            <option value="Catanzaro">Catanzaro</option>
+            <option value="Chieti">Chieti</option>
+            <option value="Como">Como</option>
+            <option value="Cosenza">Cosenza</option>
+            <option value="Cremona">Cremona</option>
+            <option value="Crotone">Crotone</option>
+            <option value="Cuneo">Cuneo</option>
+            <option value="Enna">Enna</option>
+            <option value="Fermo">Fermo</option>
+            <option value="Ferrara">Ferrara</option>
+            <option value="Firenze">Firenze</option>
+            <option value="Foggia">Foggia</option>
+            <option value="Forlì-Cesena">Forlì-Cesena</option>
+            <option value="Frosinone">Frosinone</option>
+            <option value="Genova">Genova</option>
+            <option value="Gorizia">Gorizia</option>
+            <option value="Grosseto">Grosseto</option>
+            <option value="Imperia">Imperia</option>
+            <option value="Isernia">Isernia</option>
+            <option value="L'Aquila">L'Aquila</option>
+            <option value="La Spezia">La Spezia</option>
+            <option value="Latina">Latina</option>
+            <option value="Lecce">Lecce</option>
+            <option value="Lecco">Lecco</option>
+            <option value="Livorno">Livorno</option>
+            <option value="Lodi">Lodi</option>
+            <option value="Lucca">Lucca</option>
+            <option value="Macerata">Macerata</option>
+            <option value="Mantova">Mantova</option>
+            <option value="Massa-Carrara">Massa-Carrara</option>
+            <option value="Matera">Matera</option>
+            <option value="Medio Campidano">Medio Campidano</option>
+            <option value="Messina">Messina</option>
+            <option value="Milano">Milano</option>
+            <option value="Modena">Modena</option>
+            <option value="Monza e della Brianza">Monza e della Brianza</option>
+            <option value="Napoli">Napoli</option>
+            <option value="Novara">Novara</option>
+            <option value="Nuoro">Nuoro</option>
+            <option value="Ogliastra">Ogliastra</option>
+            <option value="Olbia-Tempio">Olbia-Tempio</option>
+            <option value="Oristano">Oristano</option>
+            <option value="Padova">Padova</option>
+            <option value="Palermo">Palermo</option>
+            <option value="Parma">Parma</option>
+            <option value="Pavia">Pavia</option>
+            <option value="Perugia">Perugia</option>
+            <option value="Pesaro e Urbino">Pesaro e Urbino</option>
+            <option value="Pescara">Pescara</option>
+            <option value="Piacenza">Piacenza</option>
+            <option value="Pisa">Pisa</option>
+            <option value="Pistoia">Pistoia</option>
+            <option value="Pordenone">Pordenone</option>
+            <option value="Potenza">Potenza</option>
+            <option value="Prato">Prato</option>
+            <option value="Ragusa">Ragusa</option>
+            <option value="Ravenna">Ravenna</option>
+            <option value="Reggio Calabria">Reggio Calabria</option>
+            <option value="Reggio Emilia">Reggio Emilia</option>
+            <option value="Rieti">Rieti</option>
+            <option value="Rimini">Rimini</option>
+            <option value="Roma">Roma</option>
+            <option value="Rovigo">Rovigo</option>
+            <option value="Salerno">Salerno</option>
+            <option value="Sassari">Sassari</option>
+            <option value="Savona">Savona</option>
+            <option value="Siena">Siena</option>
+            <option value="Siracusa">Siracusa</option>
+            <option value="Sondrio">Sondrio</option>
+            <option value="Taranto">Taranto</option>
+            <option value="Teramo">Teramo</option>
+            <option value="Terni">Terni</option>
+            <option value="Torino">Torino</option>
+            <option value="Trapani">Trapani</option>
+            <option value="Trento">Trento</option>
+            <option value="Treviso">Treviso</option>
+            <option value="Trieste">Trieste</option>
+            <option value="Udine">Udine</option>
+            <option value="Varese">Varese</option>
+            <option value="Venezia">Venezia</option>
+            <option value="Verbano-Cusio-Ossola">Verbano-Cusio-Ossola</option>
+            <option value="Vercelli">Vercelli</option>
+            <option value="Verona">Verona</option>
+            <option value="Vibo Valentia">Vibo Valentia</option>
+            <option value="Vicenza">Vicenza</option>
+            <option value="Viterbo">Viterbo</option>
+          </select>
+        </div>
 
-      <div class="col-md-6 mt-3">
-        <label class="form-label text-muted font-weight-bold">Provincia / Città</label>
-        <select class="form-select rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="provincia">
-          <option value="" disabled selected>Seleziona una città</option>
-          <option value="Agrigento">Agrigento</option>
-          <option value="Alessandria">Alessandria</option>
-          <option value="Ancona">Ancona</option>
-          <option value="Aosta">Aosta</option>
-          <option value="Arezzo">Arezzo</option>
-          <option value="Ascoli Piceno">Ascoli Piceno</option>
-          <option value="Asti">Asti</option>
-          <option value="Avellino">Avellino</option>
-          <option value="Bari">Bari</option>
-          <option value="Barletta-Andria-Trani">Barletta-Andria-Trani</option>
-          <option value="Belluno">Belluno</option>
-          <option value="Benevento">Benevento</option>
-          <option value="Bergamo">Bergamo</option>
-          <option value="Biella">Biella</option>
-          <option value="Bologna">Bologna</option>
-          <option value="Bolzano">Bolzano</option>
-          <option value="Brescia">Brescia</option>
-          <option value="Brindisi">Brindisi</option>
-          <option value="Cagliari">Cagliari</option>
-          <option value="Caltanissetta">Caltanissetta</option>
-          <option value="Campobasso">Campobasso</option>
-          <option value="Carbonia-Iglesias">Carbonia-Iglesias</option>
-          <option value="Caserta">Caserta</option>
-          <option value="Catania">Catania</option>
-          <option value="Catanzaro">Catanzaro</option>
-          <option value="Chieti">Chieti</option>
-          <option value="Como">Como</option>
-          <option value="Cosenza">Cosenza</option>
-          <option value="Cremona">Cremona</option>
-          <option value="Crotone">Crotone</option>
-          <option value="Cuneo">Cuneo</option>
-          <option value="Enna">Enna</option>
-          <option value="Fermo">Fermo</option>
-          <option value="Ferrara">Ferrara</option>
-          <option value="Firenze">Firenze</option>
-          <option value="Foggia">Foggia</option>
-          <option value="Forlì-Cesena">Forlì-Cesena</option>
-          <option value="Frosinone">Frosinone</option>
-          <option value="Genova">Genova</option>
-          <option value="Gorizia">Gorizia</option>
-          <option value="Grosseto">Grosseto</option>
-          <option value="Imperia">Imperia</option>
-          <option value="Isernia">Isernia</option>
-          <option value="L'Aquila">L'Aquila</option>
-          <option value="La Spezia">La Spezia</option>
-          <option value="Latina">Latina</option>
-          <option value="Lecce">Lecce</option>
-          <option value="Lecco">Lecco</option>
-          <option value="Livorno">Livorno</option>
-          <option value="Lodi">Lodi</option>
-          <option value="Lucca">Lucca</option>
-          <option value="Macerata">Macerata</option>
-          <option value="Mantova">Mantova</option>
-          <option value="Massa-Carrara">Massa-Carrara</option>
-          <option value="Matera">Matera</option>
-          <option value="Medio Campidano">Medio Campidano</option>
-          <option value="Messina">Messina</option>
-          <option value="Milano">Milano</option>
-          <option value="Modena">Modena</option>
-          <option value="Monza e della Brianza">Monza e della Brianza</option>
-          <option value="Napoli">Napoli</option>
-          <option value="Novara">Novara</option>
-          <option value="Nuoro">Nuoro</option>
-          <option value="Ogliastra">Ogliastra</option>
-          <option value="Olbia-Tempio">Olbia-Tempio</option>
-          <option value="Oristano">Oristano</option>
-          <option value="Padova">Padova</option>
-          <option value="Palermo">Palermo</option>
-          <option value="Parma">Parma</option>
-          <option value="Pavia">Pavia</option>
-          <option value="Perugia">Perugia</option>
-          <option value="Pesaro e Urbino">Pesaro e Urbino</option>
-          <option value="Pescara">Pescara</option>
-          <option value="Piacenza">Piacenza</option>
-          <option value="Pisa">Pisa</option>
-          <option value="Pistoia">Pistoia</option>
-          <option value="Pordenone">Pordenone</option>
-          <option value="Potenza">Potenza</option>
-          <option value="Prato">Prato</option>
-          <option value="Ragusa">Ragusa</option>
-          <option value="Ravenna">Ravenna</option>
-          <option value="Reggio Calabria">Reggio Calabria</option>
-          <option value="Reggio Emilia">Reggio Emilia</option>
-          <option value="Rieti">Rieti</option>
-          <option value="Rimini">Rimini</option>
-          <option value="Roma">Roma</option>
-          <option value="Rovigo">Rovigo</option>
-          <option value="Salerno">Salerno</option>
-          <option value="Sassari">Sassari</option>
-          <option value="Savona">Savona</option>
-          <option value="Siena">Siena</option>
-          <option value="Siracusa">Siracusa</option>
-          <option value="Sondrio">Sondrio</option>
-          <option value="Taranto">Taranto</option>
-          <option value="Teramo">Teramo</option>
-          <option value="Terni">Terni</option>
-          <option value="Torino">Torino</option>
-          <option value="Trapani">Trapani</option>
-          <option value="Trento">Trento</option>
-          <option value="Treviso">Treviso</option>
-          <option value="Trieste">Trieste</option>
-          <option value="Udine">Udine</option>
-          <option value="Varese">Varese</option>
-          <option value="Venezia">Venezia</option>
-          <option value="Verbano-Cusio-Ossola">Verbano-Cusio-Ossola</option>
-          <option value="Vercelli">Vercelli</option>
-          <option value="Verona">Verona</option>
-          <option value="Vibo Valentia">Vibo Valentia</option>
-          <option value="Vicenza">Vicenza</option>
-          <option value="Viterbo">Viterbo</option>
-        </select>
+        <div class="indirizzi-form-group">
+          <label class="indirizzi-form-label">CAP</label>
+          <input type="text" class="indirizzi-form-input" formControlName="cap"
+                 placeholder="Es. 90100" maxlength="5"
+                 (input)="indirizzoForm.get('cap')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
+        </div>
+
       </div>
 
-      <div class="col-md-6 mt-3">
-        <label class="form-label text-muted font-weight-bold">CAP</label>
-        <input type="text" class="form-control rounded-pill px-4 py-2 border-0 bg-light w-100" formControlName="cap" placeholder="Es. 00100" maxlength="5" (input)="indirizzoForm.get('cap')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
-      </div>
-
-      <div class="col-12 mt-5 d-flex gap-3 justify-content-end">
-        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="toggleForm()" [disabled]="isSaving">Annulla</button>
-        <button type="submit" class="btn btn-info rounded-pill px-5 font-weight-bold shadow-sm" [disabled]="indirizzoForm.invalid || isSaving">
-          <span *ngIf="!isSaving">Salva Indirizzo</span>
-          <span *ngIf="isSaving" class="spinner-border spinner-border-sm"></span>
+      <div class="indirizzi-form-actions">
+        <button type="button" class="ind-btn-secondary" (click)="toggleForm()" [disabled]="isSaving">Annulla</button>
+        <button type="submit" class="ind-btn-primary" [disabled]="indirizzoForm.invalid || isSaving">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          <i *ngIf="!isSaving" class="bi bi-check-circle me-1"></i>
+          Salva Indirizzo
         </button>
       </div>
     </form>
   </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!isLoading && indirizzi.length === 0 && !mostraForm" class="indirizzi-empty">
+    <div class="indirizzi-empty-icon"><i class="bi bi-geo-alt"></i></div>
+    <h4>Nessun indirizzo salvato</h4>
+    <p>Aggiungi un indirizzo per velocizzare i tuoi futuri acquisti.</p>
+    <button class="indirizzi-hero-btn" style="background:#10b981; border-color:#10b981;" (click)="toggleForm()">
+      <i class="bi bi-plus-circle"></i> Aggiungi il primo indirizzo
+    </button>
+  </div>
+
+  <!-- ╔═══ GRIGLIA INDIRIZZI ═══════════════════════════════╗ -->
+  <div *ngIf="!isLoading && indirizzi.length > 0 && !mostraForm" class="indirizzi-grid">
+    <div class="indirizzo-card" *ngFor="let indirizzo of indirizzi">
+
+      <!-- Icona tipo indirizzo -->
+      <div class="indirizzo-card-top">
+        <div class="indirizzo-tipo-badge">
+          <i class="bi"
+             [ngClass]="{
+               'bi-house-fill':  indirizzo.tipo === 'Casa',
+               'bi-briefcase-fill': indirizzo.tipo === 'Lavoro',
+               'bi-geo-alt-fill': indirizzo.tipo === 'Altro'
+             }"></i>
+          {{ indirizzo.tipo }}
+        </div>
+        <button class="indirizzo-delete-btn" (click)="eliminaIndirizzo(indirizzo.id)" title="Elimina indirizzo">
+          <i class="bi bi-trash3"></i>
+        </button>
+      </div>
+
+      <!-- Contenuto indirizzo -->
+      <div class="indirizzo-card-body">
+        <div class="indirizzo-via">
+          <i class="bi bi-signpost-2-fill indirizzo-via-icon"></i>
+          <span>{{ indirizzo.via }}, {{ indirizzo.numero_civico }}</span>
+        </div>
+        <div class="indirizzo-dettagli">
+          <span class="indirizzo-cap">{{ indirizzo.cap }}</span>
+          <span class="indirizzo-sep">—</span>
+          <span class="indirizzo-provincia">{{ indirizzo.provincia }}</span>
+        </div>
+        <div class="indirizzo-paese">
+          <i class="bi bi-flag-fill"></i>
+          {{ indirizzo.paese }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
