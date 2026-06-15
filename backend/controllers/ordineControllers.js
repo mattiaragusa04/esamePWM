@@ -4,6 +4,14 @@ const User = require('../models/userModel');
 const Prodotto = require('../models/prodottoModel');
 const Coupon = require('../models/couponModel');
 
+/**
+ * Arrotondamento commerciale: .50 o più -> su, meno di .50 -> giù.
+ * Esempi: 59.99 -> 60  |  59.01 -> 59  |  59.50 -> 60  |  59.49 -> 59
+ */
+function arrotondaCommerciale(valore) {
+    return Math.floor(valore + 0.5);
+}
+
 exports.createOrdine = async (req, res) => {
     const userId = req.user.id;
     const { carta_id, indirizzo_id, coupon_codice } = req.body;
@@ -35,7 +43,7 @@ exports.createOrdine = async (req, res) => {
 
         totaleOrdine = Math.round(totaleOrdine * 100) / 100;
 
-        // ─── GESTIONE COUPON ───────────────────────────────────────────────────
+        // ─── GESTIONE COUPON ────────────────────────────────────────────────
         let couponId = null;
         let scontoApplicato = 0;
         let totaleScontato = totaleOrdine;
@@ -59,11 +67,15 @@ exports.createOrdine = async (req, res) => {
             totaleScontato = Math.round((totaleOrdine - scontoApplicato) * 100) / 100;
             couponId = coupon.id;
         }
-        // ──────────────────────────────────────────────────────────────────────
+        // ────────────────────────────────────────────────────────────────────
 
-        // ─── PUNTI FEDELTÀ: 1 punto ogni 5€ sul totale effettivamente pagato ──
-        const puntiFedeltaFinali = Math.floor(totaleScontato / 5);
-        // ──────────────────────────────────────────────────────────────────────
+        // ─── PUNTI FEDELTÀ ────────────────────────────────────────────────
+        // 1) Arrotondamento commerciale del totale scontato:
+        //    59.99 → 60, 59.01 → 59, 59.50 → 60, 59.49 → 59
+        const totaleArrotondato = arrotondaCommerciale(totaleScontato);
+        // 2) 1 punto ogni 5€ (sempre intero perché totaleArrotondato è già intero)
+        const puntiFedeltaFinali = Math.floor(totaleArrotondato / 5);
+        // ───────────────────────────────────────────────────────────────────
 
         // 1. Creare l'ordine principale
         const newOrdine = await Ordine.create({
@@ -106,12 +118,11 @@ exports.createOrdine = async (req, res) => {
     }
 };
 
-// *** NUOVO CONTROLLER: restituisce i prodotti di un ordine specifico ***
+// Restituisce i prodotti di un ordine specifico
 exports.getProdottiOrdine = async (req, res) => {
     try {
         const ordineId = req.params.id;
 
-        // Sicurezza: verifica che l'ordine appartenga all'utente loggato (o sia admin)
         const ordine = await Ordine.findById(ordineId);
         if (!ordine) {
             return res.status(404).json({ error: 'Ordine non trovato.' });
@@ -138,7 +149,6 @@ exports.updateStatoOrdine = async (req, res) => {
         let puntiDaAccreditare = 0;
 
         if (ordine.statoOrdine !== 'Consegnato' && nuovoStato === 'Consegnato') {
-            // Usa i punti già salvati nell'ordine (calcolati sul totale scontato)
             puntiDaAccreditare = ordine.punti_fedelta || 0;
 
             if (puntiDaAccreditare > 0) {
