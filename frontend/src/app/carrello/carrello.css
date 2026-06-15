@@ -1,4 +1,8 @@
-/* Badge stato giacenza */
+/* ============================================================
+   carrello.css — dark mode completo
+   ============================================================ */
+
+/* ---------- Badge stato giacenza ---------- */
 .giacenza-badge {
   display: inline-flex;
   align-items: center;
@@ -43,25 +47,353 @@
 
 @keyframes pulse-danger {
   0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.0); }
-  50%      { box-shadow: 0 0 0 6px rgba(220, 53, 69, 0.12); }
+  50%       { box-shadow: 0 0 0 6px rgba(220, 53, 69, 0.12); }
 }
 
-/* Tema scuro */
+/* ---------- Header pagina ---------- */
+.carrello-header {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+}
+
+.carrello-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.carrello-header h2 .text-info {
+  color: #f86ded !important;
+}
+
+.carrello-header i {
+  color: #f86ded;
+}
+
+/* ---------- Card articolo ---------- */
+.cart-items-list .card {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+.cart-items-list .card:hover {
+  box-shadow: 0 4px 20px rgba(248,109,237,0.1);
+}
+
+.cart-items-list h5 {
+  color: #1e293b;
+}
+
+.cart-items-list .text-muted {
+  color: #64748b !important;
+}
+
+/* Badge condizione */
+.badge-condizione {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.badge-nuovo {
+  background: rgba(248,109,237,0.1);
+  color: #f86ded;
+  border-color: rgba(248,109,237,0.3);
+}
+
+.badge-usato {
+  background: rgba(100,116,139,0.1);
+  color: #64748b;
+  border-color: rgba(100,116,139,0.3);
+}
+
+/* Prezzo */
+.price-current {
+  color: #f86ded;
+  font-weight: 700;
+}
+
+.price-old {
+  text-decoration: line-through;
+  color: #94a3b8;
+  font-size: 0.85em;
+}
+
+.price-current.is-discount {
+  color: #16a34a;
+}
+
+/* Badge sconto */
+.sconto-badge {
+  background: rgba(22,163,74,0.1);
+  color: #16a34a;
+  border: 1px solid rgba(22,163,74,0.25);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Controlli quantità */
+.input-group .btn-outline-secondary {
+  border-color: rgba(0,0,0,0.15);
+  color: #475569;
+  background: #f8fafc;
+}
+
+.input-group .btn-outline-secondary:hover {
+  background: rgba(248,109,237,0.08);
+  border-color: #f86ded;
+  color: #f86ded;
+}
+
+.input-group input[readonly] {
+  background: #f8fafc;
+  color: #1e293b;
+  border-color: rgba(0,0,0,0.1);
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Prezzo totale articolo */
+.cart-item-total {
+  color: #f86ded;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+/* Bottone elimina */
+.btn-outline-danger {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.btn-outline-danger:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* Bottone svuota tutto */
+.btn-link.text-danger {
+  color: #ef4444 !important;
+}
+
+/* ---------- Riepilogo ordine ---------- */
+.riepilogo-card {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 1.25rem;
+}
+
+.riepilogo-card h4 {
+  color: #1e293b;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.riepilogo-item-nome {
+  color: #1e293b;
+  font-size: 0.92rem;
+}
+
+.riepilogo-item-prezzo {
+  color: #f86ded;
+  font-weight: 600;
+}
+
+.riepilogo-item-cad {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.riepilogo-divider {
+  border-color: rgba(0,0,0,0.07);
+}
+
+.totale-label {
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+.totale-valore {
+  color: #f86ded;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+/* Bottone cassa */
+.btn-cassa {
+  background: linear-gradient(135deg, #f86ded, #fb7185);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(248,109,237,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-cassa:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(248,109,237,0.45);
+  color: #fff;
+}
+
+/* Pagamenti sicuri */
+.pagamenti-sicuri {
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+.pagamenti-sicuri i {
+  color: #16a34a;
+}
+
+/* Carrello vuoto */
+.carrello-vuoto p {
+  color: #64748b;
+}
+
+.carrello-vuoto .btn-info {
+  background: linear-gradient(135deg, #f86ded, #fb7185);
+  border: none;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.6rem 1.8rem;
+  font-weight: 600;
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+
+/* Header */
+:host-context(body.theme-dark) .carrello-header h2 {
+  color: #f1f5f9;
+}
+
+/* Card articoli */
+:host-context(body.theme-dark) .cart-items-list .card {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(248,109,237,0.12);
+  color: #e2e8f0;
+}
+
+:host-context(body.theme-dark) .cart-items-list h5 {
+  color: #f1f5f9;
+}
+
+:host-context(body.theme-dark) .cart-items-list .text-muted {
+  color: #94a3b8 !important;
+}
+
+/* Input quantità dark */
+:host-context(body.theme-dark) .input-group input[readonly] {
+  background: rgba(15, 23, 42, 0.6);
+  color: #f1f5f9;
+  border-color: rgba(248,109,237,0.2);
+}
+
+:host-context(body.theme-dark) .input-group .btn-outline-secondary {
+  background: rgba(30,41,59,0.8);
+  border-color: rgba(248,109,237,0.2);
+  color: #94a3b8;
+}
+
+:host-context(body.theme-dark) .input-group .btn-outline-secondary:hover {
+  background: rgba(248,109,237,0.12);
+  border-color: #f86ded;
+  color: #f86ded;
+}
+
+/* Badge condizione dark */
+:host-context(body.theme-dark) .badge-nuovo {
+  background: rgba(248,109,237,0.15);
+  color: #f9a8d4;
+  border-color: rgba(248,109,237,0.3);
+}
+
+:host-context(body.theme-dark) .badge-usato {
+  background: rgba(100,116,139,0.2);
+  color: #94a3b8;
+  border-color: rgba(100,116,139,0.35);
+}
+
+/* Badge sconto dark */
+:host-context(body.theme-dark) .sconto-badge {
+  background: rgba(22,163,74,0.15);
+  color: #4ade80;
+  border-color: rgba(22,163,74,0.3);
+}
+
+/* Riepilogo dark */
+:host-context(body.theme-dark) .riepilogo-card {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(248,109,237,0.15);
+}
+
+:host-context(body.theme-dark) .riepilogo-card h4 {
+  color: #f1f5f9;
+  border-bottom-color: rgba(248,109,237,0.12);
+}
+
+:host-context(body.theme-dark) .riepilogo-item-nome {
+  color: #e2e8f0;
+}
+
+:host-context(body.theme-dark) .riepilogo-item-cad {
+  color: #64748b;
+}
+
+:host-context(body.theme-dark) .totale-label {
+  color: #94a3b8;
+}
+
+:host-context(body.theme-dark) .riepilogo-divider {
+  border-color: rgba(248,109,237,0.1);
+}
+
+:host-context(body.theme-dark) .pagamenti-sicuri {
+  color: #64748b;
+}
+
+/* Carrello vuoto dark */
+:host-context(body.theme-dark) .carrello-vuoto p {
+  color: #94a3b8;
+}
+
+/* Giacenza badges dark */
 :host-context(body.theme-dark) .giacenza-ok {
   background: rgba(46, 204, 113, 0.18);
   color: #5ee08a;
   border-color: rgba(46, 204, 113, 0.4);
 }
+
 :host-context(body.theme-dark) .giacenza-warning {
   background: rgba(245, 166, 35, 0.18);
   color: #ffce6a;
   border-color: rgba(245, 166, 35, 0.4);
 }
+
 :host-context(body.theme-dark) .giacenza-danger {
   background: rgba(231, 76, 60, 0.18);
   color: #ff8b80;
   border-color: rgba(231, 76, 60, 0.4);
 }
+
 :host-context(body.theme-dark) .giacenza-out {
   background: #1a1a1a;
   color: #eee;
