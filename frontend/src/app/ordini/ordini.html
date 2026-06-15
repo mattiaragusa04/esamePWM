@@ -1,109 +1,123 @@
-<div>
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="d-flex align-items-center">
-      <i class="bi bi-box-seam text-info fs-1 me-3"></i>
-      <h2 class="font-weight-bold m-0">I miei <span class="text-info">ordini</span></h2>
+<div class="ordini-page">
+
+  <!-- ╔═══ HERO ═════════════════════════════════════════════════════════╗ -->
+  <div class="ordini-hero">
+    <div class="ordini-hero-orb orb-1"></div>
+    <div class="ordini-hero-orb orb-2"></div>
+    <div class="ordini-hero-inner">
+      <div class="ordini-hero-left">
+        <div class="ordini-hero-icon">
+          <i class="bi bi-box-seam-fill"></i>
+        </div>
+        <div>
+          <h1 class="ordini-hero-title">I miei Ordini</h1>
+          <p class="ordini-hero-sub">Consulta lo storico dei tuoi acquisti su PAwerUP.</p>
+        </div>
+      </div>
+      <a routerLink="/" class="ordini-hero-btn">
+        <i class="bi bi-cart3"></i> Vai allo Shopping
+      </a>
     </div>
-    <a routerLink="/" class="btn btn-info rounded-pill font-weight-bold px-4 text-white">
-      <i class="bi bi-cart3 me-2"></i> Vai allo Shopping
-    </a>
   </div>
-  <p class="lead mb-4 text-muted">Consulta lo storico dei tuoi acquisti su PAwerUP.</p>
 
   <!-- Loader -->
   <div *ngIf="isLoading" class="text-center my-5">
-    <div class="spinner-border text-info" role="status"></div>
+    <div class="spinner-border spinner-pink" role="status"></div>
   </div>
 
-  <!-- Nessun ordine -->
-  <div *ngIf="!isLoading && ordini.length === 0" class="card shadow-sm p-5 text-center border-0 mt-2">
-    <i class="bi bi-bag-x text-muted" style="font-size:3rem"></i>
-    <h4 class="text-muted mt-3">Non hai ancora effettuato nessun ordine.</h4>
-    <p class="mb-4">Il tuo storico acquisti è vuoto, inizia a esplorare il nostro catalogo!</p>
+  <!-- Empty state -->
+  <div *ngIf="!isLoading && ordini.length === 0" class="ordini-empty">
+    <div class="ordini-empty-icon"><i class="bi bi-bag-x"></i></div>
+    <h4>Non hai ancora effettuato nessun ordine.</h4>
+    <p>Il tuo storico acquisti è vuoto, inizia a esplorare il nostro catalogo!</p>
+    <a routerLink="/" class="ordini-hero-btn" style="background:#f86ded; border-color:#f86ded;">
+      <i class="bi bi-shop"></i> Esplora il catalogo
+    </a>
   </div>
 
   <!-- Lista Ordini -->
-  <div *ngIf="!isLoading && ordini.length > 0">
-    <div class="card mb-3 shadow-sm border-0 ordine-card" *ngFor="let ordine of ordini">
-      <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3 py-3 px-4">
+  <div *ngIf="!isLoading && ordini.length > 0" class="d-flex flex-column gap-3">
+    <div class="ordine-card" *ngFor="let ordine of ordini">
+      <div class="ordine-card-body">
 
-        <!-- N. Ordine -->
         <div class="text-center">
-          <span class="text-muted small d-block">N. Ordine</span>
-          <strong class="text-info">#{{ ordine.id }}</strong>
+          <span class="ordine-col-label">N. Ordine</span>
+          <span class="ordine-col-value text-pink">#{{ ordine.id }}</span>
         </div>
 
-        <!-- Data -->
         <div class="text-center">
-          <span class="text-muted small d-block">Data</span>
-          <strong>{{ ordine.data | date:'dd/MM/yyyy' }}</strong>
+          <span class="ordine-col-label">Data</span>
+          <span class="ordine-col-value">{{ ordine.data | date:'dd/MM/yyyy' }}</span>
         </div>
 
-        <!-- Totale -->
         <div class="text-center">
-          <span class="text-muted small d-block">Totale</span>
+          <span class="ordine-col-label">Totale</span>
           <ng-container *ngIf="ordine.totale_scontato != null && ordine.totale_scontato < ordine.totale; else soloTotale">
             <span class="text-muted text-decoration-line-through small me-1">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
             <strong class="text-success">{{ ordine.totale_scontato | currency:'EUR':'symbol':'1.2-2' }}</strong>
             <span class="badge bg-success ms-1 small"><i class="bi bi-tag-fill"></i></span>
           </ng-container>
           <ng-template #soloTotale>
-            <strong class="text-info">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</strong>
+            <span class="ordine-col-value text-pink">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
           </ng-template>
         </div>
 
-        <!-- Stato -->
         <div class="text-center">
-          <span class="text-muted small d-block">Stato</span>
-          <span class="badge rounded-pill fs-6"
+          <span class="ordine-col-label">Stato</span>
+          <span class="badge-stato"
             [ngClass]="{
-              'bg-success': ordine.statoOrdine === 'Consegnato',
-              'bg-warning text-dark': ordine.statoOrdine === 'In elaborazione',
-              'bg-info text-white': ordine.statoOrdine === 'Spedito',
-              'bg-secondary': ordine.statoOrdine !== 'Consegnato' && ordine.statoOrdine !== 'In elaborazione' && ordine.statoOrdine !== 'Spedito'
-            }">{{ ordine.statoOrdine }}</span>
+              'badge-consegnato':   ordine.statoOrdine === 'Consegnato',
+              'badge-elaborazione': ordine.statoOrdine === 'In elaborazione',
+              'badge-spedito':      ordine.statoOrdine === 'Spedito',
+              'badge-altro':        ordine.statoOrdine !== 'Consegnato' && ordine.statoOrdine !== 'In elaborazione' && ordine.statoOrdine !== 'Spedito'
+            }">
+            <i class="bi"
+              [ngClass]="{
+                'bi-check-circle-fill': ordine.statoOrdine === 'Consegnato',
+                'bi-clock-fill':        ordine.statoOrdine === 'In elaborazione',
+                'bi-truck':             ordine.statoOrdine === 'Spedito'
+              }"></i>
+            {{ ordine.statoOrdine }}
+          </span>
         </div>
 
-        <!-- Bottone dettaglio -->
         <div>
-          <button class="btn btn-outline-info rounded-pill px-3" (click)="apriDettaglio(ordine)" title="Vedi dettaglio">
-            <i class="bi bi-eye me-1"></i> Dettaglio
+          <button class="btn-dettaglio" (click)="apriDettaglio(ordine)">
+            <i class="bi bi-eye"></i> Dettaglio
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ═══ MODALE DETTAGLIO ORDINE ═══════════════════════════════════════════ -->
+  <!-- ╔═══ MODALE DETTAGLIO ORDINE ═══════════════════════════════╗ -->
   <div class="modal-overlay" *ngIf="ordineSelezionato" (click)="chiudiDettaglio()">
     <div class="modal-box" (click)="$event.stopPropagation()">
 
-      <!-- Header modale -->
       <div class="modal-header-custom d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h4 class="font-weight-bold m-0">Riepilogo Ordine <span class="text-info">#{{ ordineSelezionato.id }}</span></h4>
+          <h4 class="m-0">Riepilogo Ordine <span class="testo-pink">#{{ ordineSelezionato.id }}</span></h4>
           <small class="text-muted">{{ ordineSelezionato.data | date:'dd MMMM yyyy' }}</small>
         </div>
-        <button class="btn btn-sm btn-outline-secondary rounded-circle" (click)="chiudiDettaglio()">
+        <button class="btn-close-modal" (click)="chiudiDettaglio()">
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
 
-      <!-- Loader dettagli -->
       <div *ngIf="isLoadingDettagli" class="text-center py-4">
-        <div class="spinner-border text-info"></div>
+        <div class="spinner-border spinner-pink"></div>
       </div>
 
-      <!-- Contenuto dettaglio -->
       <div *ngIf="!isLoadingDettagli">
 
-        <!-- Prodotti -->
         <div class="mb-4">
           <h6 class="text-muted text-uppercase small mb-3"><i class="bi bi-bag me-1"></i>Prodotti acquistati</h6>
           <div *ngIf="dettagliOrdine.length === 0" class="text-muted text-center py-3">Nessun prodotto trovato.</div>
-          <div class="prodotto-row d-flex align-items-center justify-content-between py-2 border-bottom" *ngFor="let item of dettagliOrdine">
+          <div class="prodotto-row d-flex align-items-center justify-content-between py-2 border-bottom"
+               *ngFor="let item of dettagliOrdine">
             <div class="d-flex align-items-center gap-3">
-              <img *ngIf="item.immagine" [src]="'http://localhost:3000' + item.immagine" class="prodotto-thumb" alt="{{ item.nome }}" onerror="this.style.display='none'">
+              <img *ngIf="item.immagine" [src]="'http://localhost:3000' + item.immagine"
+                   class="prodotto-thumb" alt="{{ item.nome }}" onerror="this.style.display='none'">
               <div>
                 <strong class="d-block">{{ item.nome }}</strong>
                 <small class="text-muted">{{ item.condizione }} · Qtà: {{ item.quantita }}</small>
@@ -116,8 +130,7 @@
           </div>
         </div>
 
-        <!-- Riepilogo economico -->
-        <div class="riepilogo-box p-3 rounded-3 mb-3">
+        <div class="riepilogo-box p-3 mb-3">
           <div class="d-flex justify-content-between mb-2">
             <span class="text-muted">Subtotale</span>
             <span>{{ ordineSelezionato.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
@@ -131,14 +144,15 @@
           <hr class="my-2">
           <div class="d-flex justify-content-between fw-bold fs-5">
             <span>Totale pagato</span>
-            <span [class.text-success]="ordineSelezionato.sconto_applicato > 0" [class.text-info]="!(ordineSelezionato.sconto_applicato > 0)">
+            <span [class.text-success]="ordineSelezionato.sconto_applicato > 0"
+                  [style.color]="!(ordineSelezionato.sconto_applicato > 0) ? '#f86ded' : ''">
               {{ (ordineSelezionato.totale_scontato ?? ordineSelezionato.totale) | currency:'EUR':'symbol':'1.2-2' }}
             </span>
           </div>
         </div>
 
-        <!-- Punti fedeltà -->
-        <div class="punti-box d-flex align-items-center gap-2 p-3 rounded-3 mb-3" *ngIf="puntiFedeltaOrdine > 0">
+        <div class="punti-box d-flex align-items-center gap-2 p-3 mb-3"
+             *ngIf="puntiFedeltaOrdine > 0">
           <i class="bi bi-star-fill text-warning fs-4"></i>
           <div>
             <strong>{{ puntiFedeltaOrdine }} punti fedeltà</strong>
@@ -146,21 +160,19 @@
           </div>
         </div>
 
-        <!-- Stato ordine -->
         <div class="d-flex align-items-center justify-content-between">
           <span class="text-muted small">Stato ordine</span>
-          <span class="badge rounded-pill fs-6"
+          <span class="badge-stato"
             [ngClass]="{
-              'bg-success': ordineSelezionato.statoOrdine === 'Consegnato',
-              'bg-warning text-dark': ordineSelezionato.statoOrdine === 'In elaborazione',
-              'bg-info text-white': ordineSelezionato.statoOrdine === 'Spedito',
-              'bg-secondary': ordineSelezionato.statoOrdine !== 'Consegnato' && ordineSelezionato.statoOrdine !== 'In elaborazione' && ordineSelezionato.statoOrdine !== 'Spedito'
+              'badge-consegnato':   ordineSelezionato.statoOrdine === 'Consegnato',
+              'badge-elaborazione': ordineSelezionato.statoOrdine === 'In elaborazione',
+              'badge-spedito':      ordineSelezionato.statoOrdine === 'Spedito',
+              'badge-altro':        ordineSelezionato.statoOrdine !== 'Consegnato' && ordineSelezionato.statoOrdine !== 'In elaborazione' && ordineSelezionato.statoOrdine !== 'Spedito'
             }">{{ ordineSelezionato.statoOrdine }}</span>
         </div>
 
-      </div><!-- fine !isLoadingDettagli -->
+      </div>
     </div>
   </div>
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
 
 </div>
