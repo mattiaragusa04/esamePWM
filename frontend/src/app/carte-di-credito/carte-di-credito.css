@@ -1,0 +1,430 @@
+/* ═══════════════════════════════════════════════════════
+   PAGINA CARTE DI CREDITO — coerente con ordini/vendite
+   Palette: #f86ded (rosa), gradient 135deg
+   ═══════════════════════════════════════════════════════ */
+
+.carte-page {
+  padding: 0.5rem 0 2rem;
+  animation: carteFadeIn 0.45s ease-out both;
+}
+
+@keyframes carteFadeIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── HERO ───────────────────────────────────────────── */
+.carte-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f86ded 0%, #fb7185 55%, #fda4af 100%);
+  border-radius: 1.5rem;
+  padding: 2rem 2rem 1.8rem;
+  margin-bottom: 1.8rem;
+  box-shadow: 0 4px 6px rgba(248,109,237,0.2), 0 20px 40px rgba(248,109,237,0.3);
+}
+
+.carte-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.22;
+  animation: orbFloat 6s ease-in-out infinite;
+}
+.carte-hero-orb.orb-1 {
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, #fff 0%, transparent 70%);
+  top: -80px; right: -60px;
+}
+.carte-hero-orb.orb-2 {
+  width: 140px; height: 140px;
+  background: radial-gradient(circle, #ffe4f9 0%, transparent 70%);
+  bottom: -50px; left: 20px;
+  animation-delay: 2.5s;
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-16px) scale(1.05); }
+}
+
+.carte-hero-inner {
+  position: relative; z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.carte-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+.carte-hero-icon {
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(6px);
+  border: 2px solid rgba(255,255,255,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.7rem; color: #fff;
+  flex-shrink: 0;
+}
+.carte-hero-title {
+  color: #fff; font-size: 1.65rem; font-weight: 800;
+  margin: 0 0 0.2rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.carte-hero-sub {
+  color: rgba(255,255,255,0.88);
+  font-size: 0.92rem; margin: 0;
+}
+.carte-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(6px);
+  border: 1.5px solid rgba(255,255,255,0.5);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.55rem 1.4rem;
+  border-radius: 50rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+.carte-hero-btn:hover {
+  background: rgba(255,255,255,0.35);
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+/* ─── FORM ───────────────────────────────────────────── */
+.carte-form-card {
+  background: #fff;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(248,109,237,0.15);
+  box-shadow: 0 4px 20px rgba(248,109,237,0.12);
+  padding: 1.75rem;
+  margin-bottom: 1.8rem;
+  animation: carteFadeIn 0.3s ease both;
+}
+
+body.theme-dark .carte-form-card {
+  background: linear-gradient(160deg, #1e293b, #0f172a);
+  border-color: rgba(148,163,184,0.2);
+}
+
+.carte-form-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(248,109,237,0.15);
+}
+.carte-form-header-icon {
+  width: 38px; height: 38px;
+  border-radius: 0.6rem;
+  background: rgba(248,109,237,0.1);
+  color: #f86ded;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.05rem;
+}
+.carte-form-title {
+  font-size: 1rem; font-weight: 700;
+  color: #0f172a; margin: 0;
+}
+body.theme-dark .carte-form-title { color: #f1f5f9; }
+
+.carte-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 600px) {
+  .carte-form-grid { grid-template-columns: 1fr; }
+}
+
+.carte-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.carte-form-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+body.theme-dark .carte-form-label { color: #94a3b8; }
+
+.carte-form-input {
+  padding: 0.6rem 0.95rem;
+  border-radius: 0.65rem;
+  border: 1.5px solid rgba(0,0,0,0.09);
+  background: #f8fafc;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  width: 100%;
+}
+.carte-form-input:focus {
+  border-color: #f86ded;
+  box-shadow: 0 0 0 3px rgba(248,109,237,0.15);
+  background: #fff;
+}
+body.theme-dark .carte-form-input {
+  background: rgba(15,23,42,0.7);
+  border-color: rgba(148,163,184,0.2);
+  color: #e5e7eb;
+}
+
+.carte-input-icon-wrap {
+  position: relative;
+}
+.carte-card-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  pointer-events: none;
+  z-index: 1;
+}
+.carte-form-input.with-icon {
+  padding-left: 2.5rem;
+}
+.carte-form-input.with-toggle {
+  padding-right: 2.8rem;
+}
+.carte-cvv-toggle {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  transition: color 0.15s;
+}
+.carte-cvv-toggle:hover { color: #f86ded; }
+
+.carte-form-error {
+  color: #e11d48;
+  font-size: 0.75rem;
+  margin-top: 0.1rem;
+}
+
+.carte-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.carte-btn-secondary {
+  padding: 0.55rem 1.4rem;
+  border-radius: 50rem;
+  border: 1.5px solid #e2e8f0;
+  background: transparent;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.carte-btn-secondary:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.carte-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 1.6rem;
+  border-radius: 50rem;
+  border: none;
+  background: linear-gradient(135deg, #f86ded, #fb7185);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.18s;
+  box-shadow: 0 4px 12px rgba(248,109,237,0.35);
+}
+.carte-btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.carte-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── GRIGLIA CARTE VISUALE ─────────────────────────── */
+.carte-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+/* La carta vera e propria */
+.carta-visual {
+  position: relative;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, #f86ded 0%, #c026d3 60%, #7c3aed 100%);
+  color: #fff;
+  padding: 1.4rem 1.5rem 1.2rem;
+  min-height: 175px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(248,109,237,0.35), 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: carteFadeIn 0.4s ease both;
+}
+.carta-visual:hover {
+  transform: translateY(-5px) rotate(-0.5deg);
+  box-shadow: 0 16px 40px rgba(248,109,237,0.45), 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Cerchi decorativi trasparenti sfondo */
+.carta-visual-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.carta-visual-bg::before,
+.carta-visual-bg::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+.carta-visual-bg::before {
+  width: 200px; height: 200px;
+  top: -60px; right: -60px;
+}
+.carta-visual-bg::after {
+  width: 140px; height: 140px;
+  bottom: -50px; left: -30px;
+}
+
+/* Chip */
+.carta-chip {
+  width: 38px; height: 28px;
+  border-radius: 0.35rem;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.35);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 0.8rem;
+}
+
+/* Logo circuito (due cerchi sovrapposti) */
+.carta-network {
+  position: absolute;
+  top: 1.2rem; right: 1.2rem;
+}
+.carta-network-circles {
+  display: flex;
+  position: relative;
+}
+.circle-left, .circle-right {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+}
+.circle-left  { background: rgba(255,220,50,0.8); }
+.circle-right { background: rgba(255,100,50,0.7); margin-left: -10px; }
+
+/* Numero carta */
+.carta-number {
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 1rem;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Footer carta */
+.carta-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.carta-footer-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 0.15rem;
+}
+.carta-footer-value {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Pulsante elimina */
+.carta-delete-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+}
+.carta-delete-btn:hover {
+  background: rgba(239,68,68,0.7);
+  border-color: rgba(239,68,68,0.5);
+  color: #fff;
+}
+
+/* ─── EMPTY STATE ──────────────────────────────────────── */
+.carte-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3.5rem 2rem;
+  background: #fff;
+  border-radius: 1.3rem;
+  border: 1.5px dashed rgba(248,109,237,0.3);
+}
+.carte-empty-icon {
+  font-size: 3.2rem;
+  color: rgba(248,109,237,0.45);
+  margin-bottom: 1rem;
+}
+.carte-empty h4 { color: #555; margin-bottom: 0.5rem; }
+.carte-empty p  { color: #999; max-width: 36ch; margin-bottom: 1.5rem; }
+
+body.theme-dark .carte-empty {
+  background: linear-gradient(160deg, #1e293b, #0f172a);
+  border-color: rgba(248,109,237,0.2);
+}
+
+/* Loader */
+.spinner-border.spinner-pink { color: #f86ded; }
