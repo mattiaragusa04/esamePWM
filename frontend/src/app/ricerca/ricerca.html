@@ -1,30 +1,64 @@
-<div class="mt-4">
-  <h2 class="mb-4 text-center">Risultati della ricerca per: <span class="text-info">"{{ termineRicerca }}"</span></h2>
+<div class="ricerca-page">
 
-  <!-- Stato di caricamento -->
-  <div *ngIf="isLoading" class="text-center my-5">
-    <div class="spinner-border text-info" role="status">
-      <span class="visually-hidden">Caricamento...</span>
-    </div>
-  </div>
-
-  <!-- Nessun risultato trovato -->
-  <div *ngIf="!isLoading && prodottiTrovati.length === 0" class="alert alert-light text-center py-5 shadow-sm rounded-4 border-0">
-    <h4 class="text-muted">Nessun prodotto trovato.</h4>
-    <p class="text-muted mb-0">Prova a cercare con parole chiave diverse o controlla l'ortografia.</p>
-  </div>
-
-  <!-- Griglia dei risultati -->
-  <div class="row" *ngIf="!isLoading && prodottiTrovati.length > 0">
-    <div class="col-md-3 mb-4" *ngFor="let prodotto of prodottiTrovati">
-      <div class="card h-100 shadow-sm product-card">
-        <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
-        <div class="card-body text-center d-flex flex-column justify-content-between">
-          <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
-          <p class="text-info font-weight-bold mb-3">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
-          <a class="btn btn-info rounded-pill px-4" [routerLink]="['/dettagli-prodotto', prodotto.id]">Dettagli</a>
-        </div>
+  <!-- ─── HEADER RICERCA ────────────────────────────────── -->
+  <div class="ricerca-hero">
+    <div class="ricerca-hero-orb orb-a"></div>
+    <div class="ricerca-hero-orb orb-b"></div>
+    <div class="ricerca-hero-inner">
+      <div class="ricerca-hero-icon">
+        <i class="bi bi-search"></i>
+      </div>
+      <div class="ricerca-hero-text">
+        <p class="ricerca-hero-label">Risultati per</p>
+        <h1 class="ricerca-hero-query">&ldquo;{{ termineRicerca }}&rdquo;</h1>
+      </div>
+      <div class="ricerca-hero-count" *ngIf="!isLoading">
+        <span class="ricerca-count-num">{{ prodottiTrovati.length }}</span>
+        <span class="ricerca-count-label">prodott{{ prodottiTrovati.length === 1 ? 'o' : 'i' }}</span>
       </div>
     </div>
   </div>
+
+  <!-- ─── LOADING ──────────────────────────────────────── -->
+  <div *ngIf="isLoading" class="ricerca-loading">
+    <div class="ricerca-spinner"></div>
+    <p class="ricerca-loading-text">Ricerca in corso&hellip;</p>
+    <!-- Skeleton cards -->
+    <div class="ricerca-grid">
+      <div class="ricerca-skeleton" *ngFor="let s of [1,2,3,4,5,6,7,8]"></div>
+    </div>
+  </div>
+
+  <!-- ─── EMPTY STATE ───────────────────────────────────── -->
+  <div *ngIf="!isLoading && prodottiTrovati.length === 0" class="ricerca-empty">
+    <div class="ricerca-empty-icon"><i class="bi bi-box-seam"></i></div>
+    <h3 class="ricerca-empty-title">Nessun prodotto trovato</h3>
+    <p class="ricerca-empty-sub">Prova con parole chiave diverse o controlla l&apos;ortografia.</p>
+    <a routerLink="/" class="ricerca-empty-cta"><i class="bi bi-house-heart-fill"></i> Torna alla Home</a>
+  </div>
+
+  <!-- ─── GRIGLIA RISULTATI ─────────────────────────────── -->
+  <div class="ricerca-grid" *ngIf="!isLoading && prodottiTrovati.length > 0">
+    <a class="ricerca-card" *ngFor="let prodotto of prodottiTrovati; let i = index"
+       [routerLink]="['/dettagli-prodotto', prodotto.id]"
+       [style.animation-delay]="(i * 0.05) + 's'">
+
+      <div class="ricerca-card-img-wrap">
+        <img
+          [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine"
+          [alt]="prodotto.nome"
+          class="ricerca-card-img"
+          loading="lazy"
+        />
+      </div>
+
+      <div class="ricerca-card-body">
+        <p class="ricerca-card-name">{{ prodotto.nome }}</p>
+        <p class="ricerca-card-price">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</p>
+        <span class="ricerca-card-cta">Vedi dettagli <i class="bi bi-arrow-right-short"></i></span>
+      </div>
+
+    </a>
+  </div>
+
 </div>

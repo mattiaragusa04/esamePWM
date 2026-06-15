@@ -1,0 +1,347 @@
+/* ═══════════════════════════════════════════════════════
+   RICERCA.CSS
+   Palette & token: identici a profilo.css + app.css
+   Rosa primario:   #f86ded  |  hover: #ff9ef8
+   Gradient hero:   135deg #f86ded → #fb7185 → #fda4af
+   ═══════════════════════════════════════════════════════ */
+
+.ricerca-page {
+  padding: 0.5rem 0 3rem;
+  animation: ricercaFadeIn 0.4s ease-out both;
+}
+
+@keyframes ricercaFadeIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── HERO ────────────────────────────────────────────── */
+.ricerca-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f86ded 0%, #fb7185 55%, #fda4af 100%);
+  border-radius: 1.5rem;
+  padding: 2rem 2rem;
+  margin-bottom: 1.75rem;
+  box-shadow:
+    0 4px 6px rgba(248,109,237,0.2),
+    0 20px 40px rgba(248,109,237,0.3);
+}
+
+/* Orb come in profilo-hero */
+.ricerca-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.22;
+  animation: orbFloat 6s ease-in-out infinite;
+}
+.orb-a {
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, #fff 0%, transparent 70%);
+  top: -90px; right: -60px;
+  animation-delay: 0s;
+}
+.orb-b {
+  width: 140px; height: 140px;
+  background: radial-gradient(circle, #ffe4f9 0%, transparent 70%);
+  bottom: -60px; left: 5%;
+  animation-delay: 2.5s;
+}
+@keyframes orbFloat {
+  0%,100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-16px) scale(1.05); }
+}
+
+.ricerca-hero-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.ricerca-hero-icon {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(6px);
+  border: 2px solid rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.ricerca-hero-text { flex: 1; min-width: 0; }
+
+.ricerca-hero-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255,255,255,0.72);
+  margin: 0 0 0.2rem;
+}
+
+.ricerca-hero-query {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  line-height: 1.15;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Badge contatore */
+.ricerca-hero-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 1rem;
+  padding: 0.6rem 1.1rem;
+  flex-shrink: 0;
+}
+.ricerca-count-num {
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+.ricerca-count-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ─── LOADING ────────────────────────────────────────── */
+.ricerca-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ricerca-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(248,109,237,0.15);
+  border-top-color: #f86ded;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.ricerca-loading-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  margin-bottom: 1rem;
+}
+
+/* Skeleton cards */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.ricerca-skeleton {
+  border-radius: 1.1rem;
+  height: 280px;
+  background: linear-gradient(
+    90deg,
+    rgba(248,109,237,0.05) 25%,
+    rgba(248,109,237,0.1)  50%,
+    rgba(248,109,237,0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* ─── EMPTY STATE ─────────────────────────────────────── */
+.ricerca-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 1.5rem;
+  animation: ricercaFadeIn 0.4s ease-out both;
+}
+
+.ricerca-empty-icon {
+  width: 72px; height: 72px;
+  border-radius: 1.25rem;
+  background: rgba(248,109,237,0.08);
+  color: #f86ded;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1.1rem;
+}
+
+.ricerca-empty-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-main, #0f172a);
+  margin-bottom: 0.4rem;
+}
+
+.ricerca-empty-sub {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #64748b);
+  max-width: 360px;
+  margin-bottom: 1.5rem;
+}
+
+.ricerca-empty-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(248,109,237,0.08);
+  color: #f86ded;
+  border: 1.5px solid rgba(248,109,237,0.3);
+  border-radius: 999px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.18s, box-shadow 0.18s, transform 0.16s;
+}
+.ricerca-empty-cta:hover {
+  background: rgba(248,109,237,0.16);
+  box-shadow: 0 0 14px rgba(248,109,237,0.25);
+  transform: translateY(-1px);
+  color: #f86ded;
+}
+
+body.theme-dark .ricerca-empty-title { color: #f1f5f9; }
+
+/* ─── GRIGLIA PRODOTTI ───────────────────────────────── */
+.ricerca-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+  gap: 1.1rem;
+}
+
+/* ─── CARD PRODOTTO ──────────────────────────────────── */
+.ricerca-card {
+  background: var(--card-bg, #fff);
+  border-radius: 1.15rem;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  animation: cardSlideIn 0.4s ease both;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ricerca-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 28px rgba(248,109,237,0.2);
+  border-color: rgba(248,109,237,0.3);
+}
+
+body.theme-dark .ricerca-card {
+  background: linear-gradient(160deg, #1e293b, #0f172a);
+  border-color: rgba(148,163,184,0.2);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+body.theme-dark .ricerca-card:hover {
+  border-color: rgba(248,109,237,0.35);
+  box-shadow: 0 12px 32px rgba(248,109,237,0.18);
+}
+
+/* Immagine prodotto */
+.ricerca-card-img-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--bg-light, #f8fafc);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.ricerca-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+.ricerca-card:hover .ricerca-card-img {
+  transform: scale(1.06);
+}
+body.theme-dark .ricerca-card-img-wrap { background: rgba(15,23,42,0.6); }
+
+/* Body card */
+.ricerca-card-body {
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.ricerca-card-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main, #0f172a);
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+body.theme-dark .ricerca-card-name { color: #f1f5f9; }
+
+.ricerca-card-price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #f86ded;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.ricerca-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+  margin-top: auto;
+  padding-top: 0.4rem;
+  transition: color 0.18s;
+}
+.ricerca-card:hover .ricerca-card-cta {
+  color: #f86ded;
+}
+.ricerca-card-cta i { font-size: 1rem; transition: transform 0.18s; }
+.ricerca-card:hover .ricerca-card-cta i { transform: translateX(3px); }
+
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 576px) {
+  .ricerca-hero { padding: 1.5rem 1.1rem; }
+  .ricerca-hero-query { font-size: 1.2rem; }
+  .ricerca-count-num  { font-size: 1.4rem; }
+  .ricerca-grid { gap: 0.75rem; }
+}
