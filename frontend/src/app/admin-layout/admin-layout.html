@@ -1,57 +1,99 @@
-<div class="container my-5">
-  <div class="row gx-5">
+<div class="admin-wrapper">
+  <div class="row gx-0 gx-lg-4 align-items-start">
 
-    <!-- Sidebar Admin -->
-    <div class="col-lg-3 mb-4">
-      <div class="card shadow-sm border-0 rounded-4" style="background-color: #fffafb; border: 1px solid #ffccd5 !important;">
-        <div class="card-body p-4 text-center border-bottom">
-          <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-            <i class="bi bi-shield-lock-fill fs-1"></i>
+    <!-- ═══ SIDEBAR ADMIN ═══════════════════════════════════════════════════ -->
+    <div class="col-lg-3 mb-4 mb-lg-0">
+      <div class="admin-sidebar">
+
+        <!-- Header sidebar -->
+        <div class="admin-sidebar-header">
+          <!-- Sfondo decorativo -->
+          <div class="admin-sidebar-bg-deco"></div>
+
+          <!-- Icona scudo -->
+          <div class="admin-shield-wrap">
+            <div class="admin-shield">
+              <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <span class="admin-badge-pill">ADMIN</span>
           </div>
-          <h4 class="font-weight-bold mb-0">Portale Admin</h4>
-          <p class="text-muted small">Gestione PAwerUP</p>
+
+          <!-- Nome e ruolo -->
+          <h5 class="admin-sidebar-name">{{ adminNome }}</h5>
+          <p class="admin-sidebar-role">
+            <i class="bi bi-circle-fill admin-online-dot"></i>
+            Portale di Gestione
+          </p>
+
+          <!-- Ora live -->
+          <div class="admin-ora">{{ oraCorrente }}</div>
         </div>
-        <div class="list-group list-group-flush rounded-bottom-4">
+
+        <!-- Divider -->
+        <div class="admin-sidebar-divider">
+          <span>NAVIGAZIONE</span>
+        </div>
+
+        <!-- Voci di menu -->
+        <nav class="admin-nav">
           <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-            class="admin-sidebar-link list-group-item d-flex align-items-center p-3 border-0">
-            <i class="bi bi-speedometer2 me-3 fs-5"></i>
-            <span>Dashboard</span>
+            class="admin-nav-link">
+            <span class="admin-nav-icon"><i class="bi bi-speedometer2"></i></span>
+            <span class="admin-nav-label">Dashboard</span>
+            <i class="bi bi-chevron-right admin-nav-arrow"></i>
           </a>
-          <a routerLink="/admin/prodotti" routerLinkActive="active"
-            class="admin-sidebar-link list-group-item d-flex align-items-center p-3 border-0">
-            <i class="bi bi-box-seam me-3 fs-5"></i>
-            <span>Gestione Prodotti</span>
+          <a routerLink="/admin/prodotti" routerLinkActive="active" class="admin-nav-link">
+            <span class="admin-nav-icon"><i class="bi bi-box-seam"></i></span>
+            <span class="admin-nav-label">Prodotti</span>
+            <i class="bi bi-chevron-right admin-nav-arrow"></i>
           </a>
-          <a routerLink="/admin/utenti" routerLinkActive="active"
-            class="admin-sidebar-link list-group-item d-flex align-items-center p-3 border-0">
-            <i class="bi bi-people me-3 fs-5"></i>
-            <span>Gestione Utenti</span>
+          <a routerLink="/admin/utenti" routerLinkActive="active" class="admin-nav-link">
+            <span class="admin-nav-icon"><i class="bi bi-people"></i></span>
+            <span class="admin-nav-label">Utenti</span>
+            <i class="bi bi-chevron-right admin-nav-arrow"></i>
           </a>
-          <a routerLink="/admin/ordini" routerLinkActive="active"
-            class="admin-sidebar-link list-group-item d-flex align-items-center p-3 border-0">
-            <i class="bi bi-receipt me-3 fs-5"></i>
-            <span>Gestione Ordini</span>
+          <a routerLink="/admin/ordini" routerLinkActive="active" class="admin-nav-link">
+            <span class="admin-nav-icon"><i class="bi bi-receipt"></i></span>
+            <span class="admin-nav-label">Ordini</span>
+            <i class="bi bi-chevron-right admin-nav-arrow"></i>
           </a>
-          <a routerLink="/admin/acquisti" routerLinkActive="active"
-            class="admin-sidebar-link list-group-item d-flex align-items-center p-3 border-0">
-            <i class="bi bi-bag-check me-3 fs-5"></i>
-            <span>Gestione Acquisti PAwerUP</span>
+          <a routerLink="/admin/acquisti" routerLinkActive="active" class="admin-nav-link">
+            <span class="admin-nav-icon"><i class="bi bi-bag-check"></i></span>
+            <span class="admin-nav-label">Acquisti PAwerUP</span>
+            <i class="bi bi-chevron-right admin-nav-arrow"></i>
           </a>
-          <a routerLink="/admin/coupon" routerLinkActive="active"
-            class="admin-sidebar-link list-group-item d-flex align-items-center p-3 border-0">
-            <i class="bi bi-ticket-perforated-fill me-3 fs-5"></i>
-            <span>Gestione Coupon</span>
+          <a routerLink="/admin/coupon" routerLinkActive="active" class="admin-nav-link">
+            <span class="admin-nav-icon"><i class="bi bi-ticket-perforated-fill"></i></span>
+            <span class="admin-nav-label">Coupon</span>
+            <i class="bi bi-chevron-right admin-nav-arrow"></i>
           </a>
-          <a routerLink="/" class="admin-sidebar-link list-group-item d-flex align-items-center p-3 border-0 mt-2 text-secondary">
-            <i class="bi bi-arrow-left-circle me-3 fs-5"></i>
-            <span>Torna al Sito</span>
+        </nav>
+
+        <!-- Footer sidebar -->
+        <div class="admin-sidebar-footer">
+          <a routerLink="/" class="admin-back-link">
+            <i class="bi bi-arrow-left-circle me-2"></i>
+            Torna al Sito
           </a>
         </div>
+
       </div>
     </div>
 
-    <!-- Contenuto Principale -->
+    <!-- ═══ CONTENUTO PRINCIPALE ════════════════════════════════════════════ -->
     <div class="col-lg-9">
+      <!-- Banner area protetta -->
+      <div class="admin-area-banner mb-4">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-shield-exclamation fs-5"></i>
+          <div>
+            <strong>Area riservata agli amministratori</strong>
+            <span class="d-none d-md-inline text-muted ms-2">— Le modifiche qui hanno effetto immediato sul sito.</span>
+          </div>
+        </div>
+        <span class="admin-area-badge">ACCESSO PRIVILEGIATO</span>
+      </div>
+
       <router-outlet></router-outlet>
     </div>
 
