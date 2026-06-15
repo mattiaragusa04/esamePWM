@@ -3,10 +3,10 @@
   <div class="container">
     <nav class="pw-navbar">
 
-      <!-- 1. Toggler + Logo -->
+      <!-- SINISTRA: Toggler + Logo -->
       <div class="pw-navbar-left">
-        <button class="pw-nav-icon-btn" type="button" (click)="toggleMenu()" aria-label="Toggle menu">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <button class="pw-nav-icon-btn" type="button" (click)="toggleMenu()" aria-label="Apri menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
           </svg>
         </button>
@@ -15,46 +15,42 @@
         </a>
       </div>
 
-      <!-- 2. Barra di ricerca Desktop -->
+      <!-- CENTRO: Search bar (solo desktop) -->
       <div class="pw-search-bar d-none d-lg-flex">
+        <i class="bi bi-search pw-search-icon"></i>
         <input
           type="text"
           class="pw-search-input"
-          placeholder="Cerca su PAwerUP..."
+          placeholder="Cerca prodotti, categorie..."
           [(ngModel)]="termineRicerca"
           (keyup.enter)="cerca()"
         />
-        <button class="pw-search-btn" type="button" (click)="cerca()" aria-label="Cerca">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-          </svg>
-        </button>
+        <kbd class="pw-search-kbd" (click)="cerca()">↵</kbd>
       </div>
 
-      <!-- 3. Azioni destra -->
+      <!-- DESTRA: Chip Vendi + icone -->
       <div class="pw-navbar-right">
-        <!-- Vendi (solo desktop md+) -->
-        <button class="pw-btn-sell d-none d-md-inline-flex" (click)="vaiAVendi()">
+
+        <!-- Chip "Vendi" — solo md+ -->
+        <button class="pw-chip-vendi d-none d-md-inline-flex" (click)="vaiAVendi()" title="Vendi a PAwerUP">
           <i class="bi bi-tags-fill"></i>
-          <span>Vendi a PAwerUP</span>
+          <span>Vendi</span>
         </button>
 
-        <!-- Icona Ricerca mobile -->
+        <!-- Icona Ricerca (solo mobile) -->
         <button class="pw-nav-icon-btn d-lg-none" type="button" (click)="toggleRicerca($event)" aria-label="Cerca">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-          </svg>
+          <i class="bi bi-search" style="font-size:1.15rem"></i>
         </button>
 
         <!-- Preferiti -->
         <a class="pw-nav-icon-btn" [routerLink]="['/preferiti']" title="Preferiti">
-          <i class="bi bi-heart" style="font-size: 1.3rem;"></i>
+          <i class="bi bi-heart" style="font-size:1.25rem"></i>
         </a>
 
         <!-- Carrello -->
-        <div class="pw-cart-wrapper" routerLink="/carrello">
+        <div class="pw-cart-wrapper" routerLink="/carrello" style="cursor:pointer">
           <button class="pw-nav-icon-btn" aria-label="Carrello">
-            <i class="bi bi-cart3" style="font-size: 1.4rem;"></i>
+            <i class="bi bi-bag" style="font-size:1.25rem"></i>
             <span class="pw-cart-badge" *ngIf="((carrelloService.cartCount$ | async) ?? 0) > 0">
               {{ carrelloService.cartCount$ | async }}
             </span>
@@ -65,24 +61,24 @@
           </div>
         </div>
 
+        <!-- Divider -->
+        <div class="pw-nav-divider d-none d-md-block"></div>
+
         <!-- Utente non loggato -->
         <ng-container *ngIf="!utenteLoggato">
           <a class="pw-nav-icon-btn" [routerLink]="['/login']" title="Accedi">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
-            </svg>
+            <i class="bi bi-person" style="font-size:1.3rem"></i>
           </a>
         </ng-container>
 
-        <!-- Utente loggato -->
+        <!-- Utente loggato: avatar pill -->
         <ng-container *ngIf="utenteLoggato">
-          <a class="pw-nav-icon-btn pw-nav-icon-btn--active" [routerLink]="['/profilo']" title="Il mio Profilo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-              <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-            </svg>
+          <a class="pw-avatar-pill" [routerLink]="['/profilo']" title="Il mio Profilo">
+            <span class="pw-avatar-dot"></span>
+            <span class="pw-avatar-label d-none d-md-inline">{{ utenteLoggato.nome || 'Profilo' }}</span>
           </a>
         </ng-container>
+
       </div>
     </nav>
 
@@ -97,6 +93,7 @@
     <!-- Ricerca Mobile -->
     <div class="pw-search-mobile d-lg-none" [class.show]="mostraRicerca">
       <div class="pw-search-bar pw-search-bar--mobile">
+        <i class="bi bi-search pw-search-icon"></i>
         <input
           type="text"
           class="pw-search-input"
@@ -104,11 +101,7 @@
           [(ngModel)]="termineRicerca"
           (keyup.enter)="cerca()"
         />
-        <button class="pw-search-btn" type="button" (click)="cerca()" aria-label="Cerca">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-          </svg>
-        </button>
+        <button class="pw-search-btn-inline" type="button" (click)="cerca()" aria-label="Cerca">Vai</button>
       </div>
     </div>
   </div>
@@ -117,55 +110,64 @@
 <!-- Overlay + Side Menu -->
 <div class="side-menu-overlay" [class.open]="!isMenuCollapsed" (click)="toggleMenu()"></div>
 <div class="pw-side-menu" [class.open]="!isMenuCollapsed">
+
+  <!-- Header side menu -->
   <div class="pw-side-menu-header">
     <a class="pw-logo pw-logo--lg" routerLink="/" (click)="toggleMenu()">
       <span class="pw-logo-accent">PA</span><span class="pw-logo-main">werUP</span>
     </a>
     <button class="pw-nav-icon-btn" (click)="toggleMenu()" aria-label="Chiudi menu">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
       </svg>
     </button>
   </div>
 
+  <!-- Chip vendi nel menu laterale -->
+  <div class="pw-side-vendi-wrap">
+    <button class="pw-side-vendi-btn" (click)="vaiAVendi(); toggleMenu()">
+      <span class="pw-side-vendi-icon"><i class="bi bi-tags-fill"></i></span>
+      <span class="pw-side-vendi-text">
+        <strong>Vendi a PAwerUP</strong>
+        <small>Svuota i cassetti, guadagna</small>
+      </span>
+      <i class="bi bi-arrow-right-short pw-side-vendi-arrow"></i>
+    </button>
+  </div>
+
   <div class="pw-side-menu-body">
-    <p class="pw-side-section-label">Categorie Prodotti</p>
+    <p class="pw-side-section-label">Categorie</p>
     <ul class="pw-side-nav">
-      <li><a class="pw-side-link" [routerLink]="['/categoria', 'console']" (click)="toggleMenu()">Console <i class="bi bi-chevron-right"></i></a></li>
-      <li><a class="pw-side-link" [routerLink]="['/categoria', 'videogiochi']" (click)="toggleMenu()">Videogiochi <i class="bi bi-chevron-right"></i></a></li>
-      <li><a class="pw-side-link" [routerLink]="['/categoria', 'elettronica']" (click)="toggleMenu()">Elettronica <i class="bi bi-chevron-right"></i></a></li>
-      <li><a class="pw-side-link" [routerLink]="['/categoria', 'accessori']" (click)="toggleMenu()">Accessori <i class="bi bi-chevron-right"></i></a></li>
+      <li><a class="pw-side-link" [routerLink]="['/categoria', 'console']" (click)="toggleMenu()"><i class="bi bi-controller pw-side-icon"></i>Console<i class="bi bi-chevron-right ms-auto"></i></a></li>
+      <li><a class="pw-side-link" [routerLink]="['/categoria', 'videogiochi']" (click)="toggleMenu()"><i class="bi bi-joystick pw-side-icon"></i>Videogiochi<i class="bi bi-chevron-right ms-auto"></i></a></li>
+      <li><a class="pw-side-link" [routerLink]="['/categoria', 'elettronica']" (click)="toggleMenu()"><i class="bi bi-cpu pw-side-icon"></i>Elettronica<i class="bi bi-chevron-right ms-auto"></i></a></li>
+      <li><a class="pw-side-link" [routerLink]="['/categoria', 'accessori']" (click)="toggleMenu()"><i class="bi bi-headset pw-side-icon"></i>Accessori<i class="bi bi-chevron-right ms-auto"></i></a></li>
     </ul>
 
     <hr class="pw-side-divider">
 
-    <p class="pw-side-section-label">Il Mio Account</p>
+    <p class="pw-side-section-label">Account</p>
     <ul class="pw-side-nav">
       <li>
         <a class="pw-side-link" [routerLink]="['/preferiti']" (click)="toggleMenu()">
-          <i class="bi bi-heart pw-side-icon pw-side-icon--red"></i> Preferiti
+          <i class="bi bi-heart pw-side-icon pw-side-icon--red"></i>Preferiti<i class="bi bi-chevron-right ms-auto"></i>
         </a>
       </li>
       <li>
         <a class="pw-side-link" [routerLink]="['/carrello']" (click)="toggleMenu()">
-          <i class="bi bi-cart3 pw-side-icon"></i> Carrello
-        </a>
-      </li>
-      <li>
-        <a class="pw-side-link" style="cursor:pointer" (click)="vaiAVendi(); toggleMenu()">
-          <i class="bi bi-tags-fill pw-side-icon pw-side-icon--accent"></i> Vendi a PAwerUP
+          <i class="bi bi-bag pw-side-icon"></i>Carrello<i class="bi bi-chevron-right ms-auto"></i>
         </a>
       </li>
       <li *ngIf="utenteLoggato?.ruolo === 'admin'">
         <a class="pw-side-link pw-side-link--danger" [routerLink]="['/admin']" (click)="toggleMenu()">
-          <i class="bi bi-shield-lock-fill pw-side-icon"></i> Dashboard Admin
+          <i class="bi bi-shield-lock-fill pw-side-icon"></i>Dashboard Admin<i class="bi bi-chevron-right ms-auto"></i>
         </a>
       </li>
 
       <ng-container *ngIf="!utenteLoggato">
         <li>
-          <a class="pw-side-link" [routerLink]="['/login']" (click)="toggleMenu()">
-            <i class="bi bi-box-arrow-in-right pw-side-icon"></i> Accedi o Registrati
+          <a class="pw-side-link pw-side-link--accent" [routerLink]="['/login']" (click)="toggleMenu()">
+            <i class="bi bi-box-arrow-in-right pw-side-icon"></i>Accedi o Registrati<i class="bi bi-chevron-right ms-auto"></i>
           </a>
         </li>
       </ng-container>
@@ -173,7 +175,7 @@
       <ng-container *ngIf="utenteLoggato">
         <li>
           <a class="pw-side-link" [routerLink]="['/profilo']" (click)="toggleMenu()">
-            <i class="bi bi-person-circle pw-side-icon"></i> Il mio Profilo
+            <i class="bi bi-person-circle pw-side-icon"></i>Il mio Profilo<i class="bi bi-chevron-right ms-auto"></i>
           </a>
         </li>
         <li class="mt-3">
@@ -191,7 +193,6 @@
   <router-outlet></router-outlet>
 </div>
 
-
 <!-- FOOTER -->
 <footer class="footer mt-5 py-5">
   <div class="container">
@@ -201,13 +202,12 @@
           <span class="pw-logo-accent">PA</span><span class="text-white">werUP</span>
         </h4>
         <p class="small text-muted mb-3">© 2026 PAwerUP. Tutti i diritti riservati.</p>
-        <div class="card shadow-sm p-1" style="width: 100%; max-width: 280px; height: 160px; border-radius: 1rem; overflow: hidden;">
+        <div class="card shadow-sm p-1" style="width:100%;max-width:280px;height:160px;border-radius:1rem;overflow:hidden">
           <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500.0!2d13.345459476526447!3d38.10511167190416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1319ef7a64574f1b%3A0x71cf1abd2ffb0f1!2sDICAM%20-%20Edificio%208!5e1!3m2!1sit!2sit!4v1780992757670!5m2!1sit!2sit"
-            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            width="100%" height="100%" style="border:0" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
           </iframe>
         </div>
       </div>
-
       <div class="col-md-4 text-center mb-4 mb-md-0">
         <h6 class="text-uppercase font-weight-bold text-white mb-3">Supporto Tecnico</h6>
         <p class="h5 mb-2">
@@ -216,7 +216,6 @@
         <small class="text-muted d-block mb-3">Lunedì - Venerdì, 9:00 - 18:00</small>
         <a [routerLink]="['contattaci']" class="btn btn-outline-info btn-sm">Contattaci</a>
       </div>
-
       <div class="col-md-4 text-center text-md-end">
         <h6 class="text-uppercase font-weight-bold text-white mb-3">Seguici sui Social</h6>
         <div class="d-flex justify-content-center justify-content-md-end gap-3">
@@ -229,5 +228,4 @@
   </div>
 </footer>
 
-<!-- Toast container -->
 <app-toast-container></app-toast-container>
