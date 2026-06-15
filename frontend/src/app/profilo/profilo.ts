@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../shared/auth.service';
 
 @Component({
   selector: 'app-profilo',
@@ -10,25 +9,28 @@ import { AuthService } from '../shared/auth.service';
   templateUrl: './profilo.html',
   styleUrls: ['./profilo.css']
 })
-export class ProfiloComponent implements OnInit {
+export class Profilo implements OnInit {
   utente: any = null;
 
-  // Placeholder: in futuro collegare a servizi reali
-  totalOrdini   = 0;
-  totalVendite  = 0;
+  // Placeholder: collegare ai servizi reali
+  totalOrdini    = 0;
+  totalVendite   = 0;
   totalPreferiti = 0;
 
-  constructor(private authService: AuthService) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit(): void {
-    this.authService.utenteCorrente$.subscribe(u => {
-      this.utente = u;
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      const raw = localStorage.getItem('user');
+      if (raw) {
+        this.utente = JSON.parse(raw);
+      }
+    }
   }
 
   getInitials(): string {
     if (!this.utente) return '?';
-    const n = (this.utente.nome   || '').charAt(0).toUpperCase();
+    const n = (this.utente.nome    || '').charAt(0).toUpperCase();
     const c = (this.utente.cognome || '').charAt(0).toUpperCase();
     return n + c || '?';
   }
