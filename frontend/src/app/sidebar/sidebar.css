@@ -1,15 +1,21 @@
 /* ═══════════════════════════════════════════════════════
-   SIDEBAR PROFILO UTENTE
+   SIDEBAR PROFILO UTENTE — palette rosa PAwerUP
+   Colori dal styles.css globale:
+     --main-color:       #f86ded
+     --main-color-hover: #ff9ef8
+     gradient active:    135deg, #f86ded → #fb7185
+     dark bg:            #020617
    ═══════════════════════════════════════════════════════ */
 
 /* ── Container ──────────────────────────────────────────── */
 .profilo-sidebar {
-  background: linear-gradient(160deg, #0a1628 0%, #0f2044 40%, #132952 100%);
+  /* Gradiente scuro caldo che richiama il rosa del brand */
+  background: linear-gradient(160deg, #1a0820 0%, #2d0d2a 45%, #3a1035 100%);
   border-radius: 1.25rem;
   overflow: hidden;
   box-shadow:
-    0 4px 6px rgba(0,0,0,0.15),
-    0 12px 32px rgba(10, 60, 160, 0.18),
+    0 4px 6px rgba(0,0,0,0.18),
+    0 12px 32px rgba(248, 109, 237, 0.18),
     inset 0 1px 0 rgba(255,255,255,0.06);
   position: sticky;
   top: 1.5rem;
@@ -20,32 +26,26 @@
   transition: none !important;
 }
 
-/* Quando collapsed nasciamo i testi ma teniamo le icone */
+/* Quando collapsed nascondi i testi ma tieni le icone */
 .profilo-sidebar.collapsed .nav-text {
   display: none;
 }
-
 .profilo-sidebar.collapsed .profilo-points-card {
   display: none;
 }
-
 .profilo-sidebar.collapsed .profilo-header-info {
   display: none;
 }
-
 .profilo-sidebar.collapsed .profilo-sidebar-divider {
   display: none;
 }
-
 .profilo-sidebar.collapsed .profilo-nav-link {
   justify-content: center;
   padding: 0.7rem;
 }
-
 .profilo-sidebar.collapsed .profilo-nav-icon {
   margin: 0;
 }
-
 .profilo-sidebar.collapsed .profilo-logout-btn {
   justify-content: center;
   padding: 0.6rem;
@@ -59,26 +59,26 @@
   overflow: hidden;
 }
 
-/* Cerchi decorativi sfondo */
+/* Cerchi decorativi di sfondo con il rosa del sito */
 .profilo-sidebar-bg-deco::before,
 .profilo-sidebar-bg-deco::after {
   content: '';
   position: absolute;
   border-radius: 50%;
-  opacity: 0.1;
+  opacity: 0.13;
   pointer-events: none;
 }
 .profilo-sidebar-bg-deco::before {
   width: 200px;
   height: 200px;
-  background: #3b82f6;
+  background: #f86ded;
   top: -70px;
   left: -50px;
 }
 .profilo-sidebar-bg-deco::after {
   width: 130px;
   height: 130px;
-  background: #06b6d4;
+  background: #ff9ef8;
   bottom: -30px;
   right: -30px;
 }
@@ -102,11 +102,11 @@
   transition: background 0.2s, color 0.2s;
 }
 .profilo-toggle-btn:hover {
-  background: rgba(255,255,255,0.14);
-  color: #fff;
+  background: rgba(248, 109, 237, 0.18);
+  color: #f86ded;
 }
 
-/* Avatar iniziali */
+/* Avatar con iniziali */
 .profilo-avatar-wrap {
   display: inline-block;
   margin-bottom: 0.8rem;
@@ -116,7 +116,7 @@
   width: 68px;
   height: 68px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb, #0891b2);
+  background: linear-gradient(135deg, #f86ded, #fb7185);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -125,14 +125,18 @@
   color: #fff;
   letter-spacing: 0.03em;
   box-shadow:
-    0 0 0 3px rgba(37, 99, 235, 0.3),
-    0 0 18px rgba(37, 99, 235, 0.35);
-  animation: avatarPulse 3.5s ease-in-out infinite;
+    0 0 0 3px rgba(248, 109, 237, 0.3),
+    0 0 18px rgba(248, 109, 237, 0.4);
+  animation: avatarPulsePink 3.5s ease-in-out infinite;
 }
 
-@keyframes avatarPulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(37,99,235,0.3), 0 0 18px rgba(37,99,235,0.35); }
-  50%       { box-shadow: 0 0 0 6px rgba(37,99,235,0.12), 0 0 28px rgba(37,99,235,0.55); }
+@keyframes avatarPulsePink {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(248,109,237,0.3), 0 0 18px rgba(248,109,237,0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(248,109,237,0.12), 0 0 28px rgba(248,109,237,0.6);
+  }
 }
 
 /* Nome e email */
@@ -152,8 +156,8 @@
 
 /* Card punti fedeltà */
 .profilo-points-card {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(248, 109, 237, 0.1);
+  border: 1px solid rgba(248, 109, 237, 0.2);
   border-radius: 0.85rem;
   padding: 0.75rem 1rem;
   text-align: left;
@@ -187,8 +191,6 @@
 }
 
 /* Barra livello */
-.profilo-level-bar-wrap { }
-
 .profilo-level-bar {
   height: 5px;
   background: rgba(255,255,255,0.12);
@@ -199,7 +201,7 @@
 
 .profilo-level-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  background: linear-gradient(90deg, #f86ded, #fb7185);
   border-radius: 99px;
   transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -258,15 +260,16 @@
 }
 
 .profilo-nav-link:hover {
-  background: rgba(255,255,255,0.07);
-  color: #fff;
+  background: rgba(248, 109, 237, 0.1);
+  color: #ff9ef8;
   transform: translateX(3px);
 }
 
+/* Voce attiva: stesso gradiente rosa usato ovunque nel sito */
 .profilo-nav-link.active {
-  background: linear-gradient(90deg, rgba(37,99,235,0.8), rgba(8,145,178,0.65));
+  background: linear-gradient(135deg, rgba(248,109,237,0.85), rgba(251,113,133,0.7));
   color: #fff !important;
-  box-shadow: 0 2px 10px rgba(37,99,235,0.35);
+  box-shadow: 0 2px 10px rgba(248, 109, 237, 0.4);
 }
 
 .profilo-nav-link.active .profilo-nav-icon,
@@ -286,6 +289,10 @@
   font-size: 0.95rem;
   flex-shrink: 0;
   transition: background 0.18s ease;
+}
+
+.profilo-nav-link:hover .profilo-nav-icon {
+  background: rgba(248, 109, 237, 0.15);
 }
 
 .profilo-nav-link.active .profilo-nav-icon {
@@ -308,7 +315,7 @@
   opacity: 1;
 }
 
-/* ── Footer / Logout ────────────────────────────────────── */
+/* ── Footer / Logout ───────────────────────────────────── */
 .profilo-sidebar-footer {
   padding: 0.9rem 1.25rem 1.5rem;
   border-top: 1px solid rgba(255,255,255,0.07);
@@ -319,7 +326,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  background: rgba(239,68,68,0.12);
+  background: rgba(239,68,68,0.1);
   border: 1px solid rgba(239,68,68,0.2);
   color: rgba(239,68,68,0.85);
   font-size: 0.85rem;
@@ -330,9 +337,8 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
-
 .profilo-logout-btn:hover {
-  background: rgba(239,68,68,0.22);
+  background: rgba(239,68,68,0.2);
   color: #ef4444;
   border-color: rgba(239,68,68,0.4);
 }
