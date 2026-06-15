@@ -1,8 +1,8 @@
 import { Component, OnInit, Inject, PLATFORM_ID, HostListener } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-
 import { ToastService } from '../shared/toast.service';
+
 @Component({
   selector: 'app-sidebar',
   imports: [CommonModule, RouterLink, RouterLinkActive],
@@ -11,55 +11,75 @@ import { ToastService } from '../shared/toast.service';
 })
 export class Sidebar implements OnInit {
   utente: any = null;
-  menuItems = [
-    { label: 'Il mio Profilo', link: '/profilo', icon: 'bi-person-circle' },
-    { label: 'I miei Ordini', link: '/profilo/ordini', icon: 'bi-box-seam' },
-    { label: 'I miei Indirizzi', link: '/profilo/indirizzi', icon: 'bi-geo-alt'},
-    { label: 'I miei metodi di pagamento', link: '/profilo/carte-di-credito', icon: 'bi-credit-card'},
-    { label: 'Impostazioni', link: '/profilo/impostazioni', icon: 'bi-gear' },
-    { label: 'Assistenza', link: '/contattaci', icon: 'bi-headset' }
-  ];
   isMenuCollapsed: boolean = false;
   isAnimationEnabled: boolean = false;
-  /* Breakpoint sotto al quale la sidebar si chiude da sola */
-  private readonly COLLAPSE_BREAKPOINT = 992; // <= Bootstrap lg
-  /* Memorizza se l'utente ha aperto manualmente la sidebar mentre era "piccola";
-     in tal caso non la richiudiamo automaticamente fino al prossimo passaggio sopra al breakpoint. */
+  private readonly COLLAPSE_BREAKPOINT = 992;
   private autoCollapsed: boolean = false;
 
   constructor(
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object, private toast: ToastService) {}
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private toast: ToastService
+  ) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       const userString = localStorage.getItem('user');
-      if (userString) {
-        this.utente = JSON.parse(userString);
-      }
+      if (userString) this.utente = JSON.parse(userString);
 
-      // Recupera lo stato salvato della sidebar (se esiste)
       const savedState = localStorage.getItem('isSidebarCollapsed');
-      if (savedState !== null) {
-        this.isMenuCollapsed = savedState === 'true';
-      }
+      if (savedState !== null) this.isMenuCollapsed = savedState === 'true';
 
-      // Se la viewport è già stretta al primo render, forziamo collapsed
       if (window.innerWidth < this.COLLAPSE_BREAKPOINT && !this.isMenuCollapsed) {
         this.isMenuCollapsed = true;
         this.autoCollapsed = true;
       }
 
-      // Abilita le animazioni solo dopo il rendering iniziale per evitare scatti
-      setTimeout(() => {
-        this.isAnimationEnabled = true;
-      }, 50);
+      setTimeout(() => { this.isAnimationEnabled = true; }, 50);
     }
   }
 
-  /** Chiude automaticamente la sidebar se la finestra diventa stretta,
-   *  e la riapre se l'utente torna su uno schermo grande (solo se era stata
-   *  chiusa automaticamente, per rispettare la scelta manuale dell'utente). */
+  // ── Proprietà derivate ─────────────────────────────────────
+
+  get iniziali(): string {
+    if (!this.utente) return '?';
+    const n = (this.utente.nome?.[0] || '').toUpperCase();
+    const c = (this.utente.cognome?.[0] || '').toUpperCase();
+    return n + c || '?';
+  }
+
+  /** Livelli fedeltà: Bronze 0-99, Silver 100-299, Gold 300-699, Platinum 700+ */
+  private get livelli() {
+    return [
+      { nome: 'Bronze',   min: 0,   max: 99  },
+      { nome: 'Silver',   min: 100, max: 299 },
+      { nome: 'Gold',     min: 300, max: 699 },
+      { nome: 'Platinum', min: 700, max: 9999 },
+    ];
+  }
+
+  private get punti(): number {
+    return this.utente?.puntiFedelta || 0;
+  }
+
+  get livelloCorrente(): string {
+    const l = this.livelli.find(l => this.punti >= l.min && this.punti <= l.max);
+    return l ? l.nome : 'Platinum';
+  }
+
+  get livelloSuccessivo(): string {
+    const idx = this.livelli.findIndex(l => this.punti >= l.min && this.punti <= l.max);
+    return idx < this.livelli.length - 1 ? this.livelli[idx + 1].nome : 'MAX';
+  }
+
+  get progressoPunti(): number {
+    const l = this.livelli.find(l => this.punti >= l.min && this.punti <= l.max);
+    if (!l || l.max === 9999) return 100;
+    return Math.round(((this.punti - l.min) / (l.max - l.min + 1)) * 100);
+  }
+
+  // ── Resize / toggle / logout ──────────────────────────────
+
   @HostListener('window:resize')
   onWindowResize(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -77,7 +97,6 @@ export class Sidebar implements OnInit {
 
   toggleMenu(): void {
     this.isMenuCollapsed = !this.isMenuCollapsed;
-    // Click manuale = override dell'auto-collapse
     this.autoCollapsed = false;
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('isSidebarCollapsed', String(this.isMenuCollapsed));
