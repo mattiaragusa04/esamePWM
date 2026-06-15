@@ -1,49 +1,229 @@
-/* ====================================================
-   Stili specifici della HomePage
-   (gli stili globali — incluse eventuali regole extra
-   di dark mode per .product-card, .scroll-btn e
-   .category-card — restano in src/styles.css)
-   ==================================================== */
+/* ══════════════════════════════════════════════════════════
+   HOME PAGE — PAwerUP
+   Palette: #f86ded rosa (luce) / canvas scuro per hero
+   Dark-mode: body.theme-dark  (hook già presenti, grafica
+   da perfezionare in futuro)
+   ══════════════════════════════════════════════════════════ */
 
-/* Hero animata con canvas di particelle */
-.hero-box {
+/* ── HERO ─────────────────────────────────────────────────── */
+
+.home-hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a, #2d1b4e, #1e2d4a);
-  border-radius: 1rem;
-  min-height: 340px;
+  border-radius: 1.5rem;
+  min-height: 360px;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* sfondo scuro che fa risaltare sia la rete neurale
+     sia i glow rosa degli orb */
+  background: linear-gradient(135deg, #0f172a 0%, #1e103a 50%, #0f1e32 100%);
+  box-shadow: 0 8px 40px rgba(248, 109, 237, 0.18), 0 2px 8px rgba(0,0,0,0.3);
+  margin-bottom: 0;
 }
 
+/* Canvas rete neurale — stili critici ANCHE nel CSS del
+   componente per garantire che funzionino sempre */
 .particle-canvas {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
   z-index: 0;
 }
 
-.hero-content {
+/* Orb decorativi: glow rosa che si integrano con i nodi */
+.home-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: heroOrbFloat 7s ease-in-out infinite;
+}
+.home-hero-orb.orb-a {
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(248,109,237,0.22) 0%, transparent 70%);
+  top: -80px; right: -60px;
+}
+.home-hero-orb.orb-b {
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(251,113,133,0.18) 0%, transparent 70%);
+  bottom: -60px; left: 30px;
+  animation-delay: 3s;
+}
+@keyframes heroOrbFloat {
+  0%,100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-18px) scale(1.06); }
+}
+
+/* Contenuto hero */
+.home-hero-inner {
   position: relative;
   z-index: 1;
   text-align: center;
-  color: white;
-}
-
-/* ====================================================
-   CAROSELLO MODERNO
-   ==================================================== */
-
-.scroll-wrapper-container {
-  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 0.85rem;
+  padding: 2.5rem 1.5rem;
 }
 
+.home-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(248,109,237,0.18);
+  border: 1px solid rgba(248,109,237,0.45);
+  color: #fda4af;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 1rem;
+  border-radius: 50rem;
+  backdrop-filter: blur(4px);
+}
+
+.home-hero-title {
+  color: #fff;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0;
+  /* glow rosa leggero sul titolo */
+  text-shadow: 0 0 40px rgba(248,109,237,0.4), 0 2px 12px rgba(0,0,0,0.4);
+  line-height: 1.1;
+}
+
+.home-hero-sub {
+  color: rgba(255,255,255,0.72);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  max-width: 54ch;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.home-hero-actions {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.home-hero-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.8rem;
+  border-radius: 50rem;
+  background: linear-gradient(135deg, #f86ded, #fb7185);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(248,109,237,0.5);
+  transition: opacity 0.2s, transform 0.2s;
+  border: none;
+}
+.home-hero-btn-primary:hover {
+  opacity: 0.88;
+  transform: translateY(-2px);
+  color: #fff;
+  text-decoration: none;
+}
+
+.home-hero-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.8rem;
+  border-radius: 50rem;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(6px);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+.home-hero-btn-ghost:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(248,109,237,0.5);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Dark mode: la hero è già scura, aggiusto solo glow */
+body.theme-dark .home-hero {
+  /* TODO: rafforzare rete neurale e orb in dark mode */
+  box-shadow: 0 8px 40px rgba(248, 109, 237, 0.12), 0 2px 8px rgba(0,0,0,0.5);
+}
+
+
+/* ── SEZIONI (titolo + label pill) ───────────────────────── */
+
+.home-section {
+  padding: 0.25rem 0;
+  animation: homeFadeIn 0.45s ease-out both;
+}
+
+@keyframes homeFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.home-section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.home-section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #f86ded;
+  background: rgba(248,109,237,0.1);
+  border: 1px solid rgba(248,109,237,0.2);
+  padding: 0.25rem 0.8rem;
+  border-radius: 50rem;
+}
+body.theme-dark .home-section-label {
+  background: rgba(248,109,237,0.12);
+  border-color: rgba(248,109,237,0.25);
+  /* TODO: testo label in dark mode */
+}
+
+.home-section-title {
+  font-size: clamp(1.3rem, 3vw, 1.85rem);
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+body.theme-dark .home-section-title {
+  /* TODO: colore titolo dark */
+  color: #f1f5f9;
+}
+
+.home-accent {
+  background: linear-gradient(135deg, #f86ded, #fb7185);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+
+/* ── CAROSELLO (invariato, solo pulizia) ─────────────────── */
+
+.scroll-wrapper-container,
 .modern-carousel {
   position: relative;
   display: flex;
@@ -58,16 +238,10 @@
   padding: 1rem 0.5rem 1.2rem;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
-}
-
-.horizontal-scroll-wrapper::-webkit-scrollbar {
-  display: none;
-}
-
-.horizontal-scroll-wrapper {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+.horizontal-scroll-wrapper::-webkit-scrollbar { display: none; }
 
 .horizontal-scroll-content {
   display: inline-flex;
@@ -85,166 +259,169 @@
   margin-top: 1rem;
   scroll-snap-align: start;
 }
-
-.horizontal-scroll-item:last-child {
-  margin-right: 0;
-}
+.horizontal-scroll-item:last-child { margin-right: 0; }
 
 .modern-track {
   mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
 }
+body.theme-dark .modern-track {
+  mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
+}
 
-/* ====================================================
-   PRODUCT CARDS
-   ==================================================== */
+
+/* ── PRODUCT CARDS ───────────────────────────────────────── */
 
 .product-card {
   border-radius: 1.35rem;
   overflow: hidden;
-  transition:
-    transform 0.35s ease,
-    box-shadow 0.35s ease,
-    filter 0.35s ease;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
-
 .horizontal-scroll-item:hover .product-card {
   transform: translateY(-6px) scale(1.01);
-  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.14);
+  box-shadow: 0 14px 30px rgba(248,109,237,0.14);
+}
+body.theme-dark .horizontal-scroll-item:hover .product-card {
+  box-shadow: 0 14px 30px rgba(248,109,237,0.10);
 }
 
-/* ====================================================
-   CATEGORY CARDS
-   ==================================================== */
 
-.category-card {
-  border-radius: 1.5rem;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
-}
-
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(248, 109, 237, 0.18);
-}
-
-/* ====================================================
-   BOTTONI FRECCE CAROSELLO
-   ==================================================== */
+/* ── BOTTONI FRECCE CAROSELLO ────────────────────────────── */
 
 .scroll-btn {
   z-index: 1000;
-  width: 48px;
-  height: 48px;
+  width: 48px; height: 48px;
   display: flex !important;
   align-items: center;
   justify-content: center;
   padding: 0;
   top: 50%;
   transform: translateY(-50%);
-  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.28);
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    opacity 0.25s ease;
+  box-shadow: 0 10px 24px rgba(248,109,237,0.28);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-
 .scroll-btn:hover {
   transform: translateY(-50%) scale(1.08);
-  box-shadow: 0 14px 28px rgba(248, 109, 237, 0.36);
+  box-shadow: 0 14px 28px rgba(248,109,237,0.36);
+}
+.scroll-btn.left-btn  { left: -22px; }
+.scroll-btn.right-btn { right: -22px; }
+
+body.theme-dark .scroll-btn       { box-shadow: 0 10px 24px rgba(248,109,237,0.18); }
+body.theme-dark .scroll-btn:hover { box-shadow: 0 14px 28px rgba(248,109,237,0.24); }
+
+
+/* ── CATEGORIE (lista orizzontale card) ──────────────────── */
+
+.home-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
 }
 
-.scroll-btn.left-btn {
-  left: -22px;
+.home-cat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 1.1rem;
+  background: #fff;
+  border: 1.5px solid rgba(248,109,237,0.12);
+  box-shadow: 0 2px 10px rgba(248,109,237,0.07);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.home-cat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(248,109,237,0.18);
+  border-color: rgba(248,109,237,0.35);
+  text-decoration: none;
+  color: inherit;
+}
+body.theme-dark .home-cat-card {
+  background: linear-gradient(160deg, #1e293b, #0f172a);
+  border-color: rgba(248,109,237,0.15);
+  /* TODO: hover dark */
 }
 
-.scroll-btn.right-btn {
-  right: -22px;
+.home-cat-icon {
+  width: 50px; height: 50px;
+  flex-shrink: 0;
+  border-radius: 0.85rem;
+  background: rgba(248,109,237,0.1);
+  color: #f86ded;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.home-cat-card:hover .home-cat-icon {
+  background: rgba(248,109,237,0.18);
 }
 
-/* ====================================================
-   DARK MODE
-   Il tuo progetto usa body.theme-dark
-   ==================================================== */
+.home-cat-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.home-cat-title {
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.theme-dark .home-cat-title { color: #f1f5f9; /* TODO */ }
+.home-cat-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.theme-dark .home-cat-desc { color: #94a3b8; /* TODO */ }
 
-body.theme-dark .horizontal-scroll-item:hover .product-card {
-  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.10);
+.home-cat-arrow {
+  font-size: 1rem;
+  color: rgba(248,109,237,0.5);
+  transition: transform 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+.home-cat-card:hover .home-cat-arrow {
+  transform: translateX(4px);
+  color: #f86ded;
 }
 
-body.theme-dark .scroll-btn {
-  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.18);
-}
 
-body.theme-dark .scroll-btn:hover {
-  box-shadow: 0 14px 28px rgba(248, 109, 237, 0.24);
-}
-
-/* Manteniamo la sfumatura ai lati anche in dark */
-body.theme-dark .modern-track {
-  mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%);
-}
-
-/* ====================================================
-   RESPONSIVE
-   ==================================================== */
+/* ── RESPONSIVE ──────────────────────────────────────────── */
 
 @media (max-width: 992px) {
-  .horizontal-scroll-item {
-    width: 230px;
-    min-width: 230px;
-    margin-right: 1rem;
-  }
-
-  .scroll-btn.left-btn {
-    left: -14px;
-  }
-
-  .scroll-btn.right-btn {
-    right: -14px;
-  }
+  .horizontal-scroll-item { width: 230px; min-width: 230px; margin-right: 1rem; }
+  .scroll-btn.left-btn  { left: -14px; }
+  .scroll-btn.right-btn { right: -14px; }
 }
 
 @media (max-width: 768px) {
-  .horizontal-scroll-wrapper {
-    padding: 1rem 0.25rem 1rem;
-  }
-
-  .horizontal-scroll-item {
-    width: 220px;
-    min-width: 220px;
-    margin-right: 0.9rem;
-  }
-
-  .scroll-btn {
-    width: 42px;
-    height: 42px;
-  }
-
-  .scroll-btn.left-btn {
-    left: -10px;
-  }
-
-  .scroll-btn.right-btn {
-    right: -10px;
-  }
+  .horizontal-scroll-wrapper { padding: 1rem 0.25rem 1rem; }
+  .horizontal-scroll-item { width: 220px; min-width: 220px; margin-right: 0.9rem; }
+  .scroll-btn { width: 42px; height: 42px; }
+  .scroll-btn.left-btn  { left: -10px; }
+  .scroll-btn.right-btn { right: -10px; }
+  .home-categories-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 576px) {
-  .horizontal-scroll-item {
-    width: 205px;
-    min-width: 205px;
-  }
-
-  .modern-track {
-    mask-image: linear-gradient(to right, transparent 0, black 2%, black 98%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black 2%, black 98%, transparent 100%);
-  }
-
+  .horizontal-scroll-item { width: 205px; min-width: 205px; }
+  .modern-track,
   body.theme-dark .modern-track {
     mask-image: linear-gradient(to right, transparent 0, black 2%, black 98%, transparent 100%);
     -webkit-mask-image: linear-gradient(to right, transparent 0, black 2%, black 98%, transparent 100%);
   }
+  .home-categories-grid { grid-template-columns: 1fr; }
+  .home-hero-actions { flex-direction: column; align-items: center; }
 }
