@@ -240,3 +240,83 @@ body.theme-dark .imp-input { background: rgba(15,23,42,0.7); border-color: rgba(
   .imp-row { flex-direction: column; align-items: flex-start; }
   .imp-toggle-group { flex-wrap: wrap; }
 }
+
+
+/* ============================================================
+   DARK MODE — fix aggiuntivi impostazioni
+   ============================================================ */
+
+/* Sfondo pagina dark */
+:host-context(body.theme-dark) .imp-page {
+  color: #e2e8f0;
+}
+
+/* Input focus dark */
+:host-context(body.theme-dark) .imp-input:focus {
+  border-color: #f86ded;
+  box-shadow: 0 0 0 3px rgba(248,109,237,0.15);
+  background: rgba(15,23,42,0.9);
+  color: #f1f5f9;
+}
+
+:host-context(body.theme-dark) .imp-input::placeholder {
+  color: #475569;
+}
+
+/* Toggle tema dark */
+:host-context(body.theme-dark) .imp-toggle-btn:not(.active) {
+  border-color: rgba(248,109,237,0.2);
+  color: #94a3b8;
+  background: rgba(15,23,42,0.4);
+}
+
+:host-context(body.theme-dark) .imp-toggle-btn:not(.active):hover {
+  border-color: rgba(248,109,237,0.45);
+  color: #f9a8d4;
+  background: rgba(248,109,237,0.08);
+}
+
+/* Checkbox hover dark */
+:host-context(body.theme-dark) .imp-checkbox-item:hover {
+  border-color: rgba(248,109,237,0.3);
+  background: rgba(248,109,237,0.06);
+}
+
+/* Bottone secondary dark */
+:host-context(body.theme-dark) .imp-btn-secondary {
+  background: rgba(248,109,237,0.08);
+  border-color: rgba(248,109,237,0.25);
+  color: #f9a8d4;
+}
+
+:host-context(body.theme-dark) .imp-btn-secondary:hover {
+  background: rgba(248,109,237,0.15);
+  border-color: rgba(248,109,237,0.45);
+}
+
+/* Bottone danger dark */
+:host-context(body.theme-dark) .imp-btn-danger {
+  background: rgba(239,68,68,0.08);
+  border-color: rgba(239,68,68,0.25);
+  color: #fca5a5;
+}
+
+:host-context(body.theme-dark) .imp-btn-danger:hover {
+  background: rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.45);
+}
+
+/* Sezione danger border dark */
+:host-context(body.theme-dark) .imp-section-danger {
+  border-color: rgba(239,68,68,0.18);
+}
+
+/* Note testo dark */
+:host-context(body.theme-dark) .imp-note {
+  color: #64748b;
+}
+
+/* Label dark */
+:host-context(body.theme-dark) .imp-label {
+  color: #94a3b8;
+}
