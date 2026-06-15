@@ -3,7 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { ToastService } from '../shared/toast.service';
-// Riutilizziamo lo stesso validatore custom presente in pagamento.ts
+
 export function scadenzaValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   if (!value) return null;
@@ -30,8 +30,6 @@ export function luhnValidator(control: AbstractControl): ValidationErrors | null
   const value = control.value;
   if (!value) return null;
   const digits = value.replace(/\D/g, '');
-  
-  // Verifica che la lunghezza sia esattamente 16 cifre
   if (digits.length !== 16) return { luhnInvalid: true };
   return null;
 }
@@ -40,7 +38,8 @@ export function luhnValidator(control: AbstractControl): ValidationErrors | null
   selector: 'app-carte-di-credito',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './carte-di-credito.html'
+  templateUrl: './carte-di-credito.html',
+  styleUrl: './carte-di-credito.css'
 })
 export class CarteDiCredito implements OnInit {
   carte: any[] = [];
@@ -96,30 +95,21 @@ export class CarteDiCredito implements OnInit {
     return 'unknown';
   }
 
-  // --- Funzioni per la formattazione live dell'input ---
   formatNumeroCarta(event: any) {
-    // Limitiamo l'input a esattamente 12 cifre
     let input = event.target.value.replace(/\D/g, '').substring(0, 16);
-
     let formatted = '';
     const matches = input.match(/.{1,4}/g);
-    if (matches) {
-      formatted = matches.join(' ');
-    }
+    if (matches) { formatted = matches.join(' '); }
     this.cartaForm.get('numeroCarta')?.setValue(formatted, { emitEvent: false });
   }
 
   formatScadenza(event: any) {
     let input = event.target.value.replace(/\D/g, '').substring(0, 4);
-    if (input.length === 1 && parseInt(input, 10) > 1) {
-      input = '0' + input;
-    }
-    if (input.length >= 3) {
-      input = input.substring(0, 2) + '/' + input.substring(2, 4);
-    }
+    if (input.length === 1 && parseInt(input, 10) > 1) { input = '0' + input; }
+    if (input.length >= 3) { input = input.substring(0, 2) + '/' + input.substring(2, 4); }
     this.cartaForm.get('scadenza')?.setValue(input, { emitEvent: false });
   }
-  
+
   formatNome(event: any) {
     let input = event.target.value.replace(/[^a-zA-Z\s\-']/g, '').toUpperCase();
     this.cartaForm.get('nomeCarta')?.setValue(input, { emitEvent: false });
@@ -131,41 +121,30 @@ export class CarteDiCredito implements OnInit {
   }
 
   mostraCvv: boolean = false;
-  toggleCvv() {
-    this.mostraCvv = !this.mostraCvv;
-  }
+  toggleCvv() { this.mostraCvv = !this.mostraCvv; }
 
   toggleForm() {
     this.mostraForm = !this.mostraForm;
-    if (!this.mostraForm) {
-      this.cartaForm.reset();
-    }
+    if (!this.mostraForm) { this.cartaForm.reset(); }
   }
 
-  // --- Salvataggio ---
   async salvaCarta() {
     if (this.cartaForm.invalid) {
       this.toast.warning("Compila correttamente tutti i campi.");
       return;
     }
-
     this.isSaving = true;
     const token = localStorage.getItem('token');
-    
     try {
       const response = await fetch('http://localhost:3000/api/carta/create', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(this.cartaForm.getRawValue())
       });
-
       if (response.ok) {
         this.toast.success("Carta salvata con successo!");
         this.toggleForm();
-        this.caricaCarte(); // Ricarica la lista aggiornata
+        this.caricaCarte();
       } else {
         const errData = await response.json();
         this.toast.error(`Errore: ${errData.error || errData.message}`);
@@ -179,16 +158,13 @@ export class CarteDiCredito implements OnInit {
     }
   }
 
-  // --- Eliminazione ---
   async eliminaCarta(id: number) {
     if (!confirm('Vuoi davvero rimuovere questa carta dal tuo account?')) return;
-    
     const token = localStorage.getItem('token');
     const response = await fetch(`http://localhost:3000/api/carta/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    
     if (response.ok) {
       this.carte = this.carte.filter(c => c.id !== id);
       this.cdr.detectChanges();
