@@ -56,7 +56,10 @@
                         <th scope="col">Cognome</th>
                         <th scope="col">Email</th>
                         <th scope="col">Ruolo</th>
-                        <th scope="col" class="text-end pe-4">Azioni</th>
+                        <th scope="col" class="text-end pe-4">Elimina Utente</th>
+                        <th scope="col" class="text-end pe-4">Rendi Admin</th>
+                        <th scope="col" class="text-end pe-4">Rendi Utente</th>
+                        <th scope="col" class="text-end pe-4">Rendi Operatore</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,6 +81,15 @@
                         </td>
                         <td class="text-end pe-4">
                             <button class="btn btn-sm btn-outline-danger rounded-circle" title="Elimina" (click)="eliminaUtente(utente)"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-danger rounded-circle" title="Rendi Admin" (click)="rendiAdmin(utente)"><i class="bi bi-person-gear"></i></button>
+                        </td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-danger rounded-circle" title="Rendi Utente" (click)="rendiUtente(utente)"><i class="bi bi-person"></i></button>
+                        </td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-danger rounded-circle" title="Elimina" (click)="rendiOperatore(utente)"><i class="bi bi-headset"></i></button>
                         </td>
                     </tr>
                 </tbody>

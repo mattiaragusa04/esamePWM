@@ -41,8 +41,9 @@ export class AuthInterceptorService {
     const originalFetch = window.fetch.bind(window);
     const self = this;
 
-    window.fetch = async function (input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-      const response = await originalFetch(input, init);
+    window.fetch = async function (...args: Parameters<typeof window.fetch>): Promise<Response> {
+      const response = await originalFetch(...args);
+      const init = args[1];
 
       // Sloggare solo se:
       // 1. la risposta è 401

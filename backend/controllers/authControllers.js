@@ -340,4 +340,42 @@ exports.deleteUser = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+
+
+}
+
+exports.admin = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const adminUser = await User.rendiAdmin(userId);
+    res.json(adminUser);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
+  
+}
+
+exports.user = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const adminUser = await User.rendiUser(userId);
+    res.json(adminUser);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
+  
+}
+
+exports.operatore = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const adminUser = await User.rendiOperatore(userId);
+    res.json(adminUser);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
+  
 }

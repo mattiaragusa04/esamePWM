@@ -1,1 +1,21 @@
-/* In questo file puoi aggiungere stili specifici per il layout della sezione profilo, se necessario. */
+/* ═══════════════════════════════════════════════════════
+   LAYOUT PROFILO — Animazione Responsiva
+   ═══════════════════════════════════════════════════════ */
+
+/* Contenitore flessibile che sostituisce il comportamento rigido di .row */
+.profilo-layout-wrapper {
+  display: flex;
+  gap: 1.5rem; /* Spazio tra sidebar e contenuto */
+  align-items: flex-start;
+}
+
+/* La colonna della sidebar si adatta automaticamente alla larghezza della sidebar stessa */
+.profilo-sidebar-col {
+  flex: 0 0 auto; 
+}
+
+/* La colonna del contenuto occupa elasticamente tutto lo spazio rimanente */
+.profilo-content-col {
+  flex: 1;
+  min-width: 0; /* Evita che i contenuti troppo larghi "sfondino" il layout */
+}

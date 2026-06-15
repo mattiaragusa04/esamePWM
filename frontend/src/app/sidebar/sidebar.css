@@ -19,36 +19,9 @@
     inset 0 1px 0 rgba(255,255,255,0.06);
   position: sticky;
   top: 1.5rem;
-  transition: width 0.3s ease;
-}
-
-.profilo-sidebar.no-transition * {
-  transition: none !important;
-}
-
-/* Quando collapsed nascondi i testi ma tieni le icone */
-.profilo-sidebar.collapsed .nav-text {
-  display: none;
-}
-.profilo-sidebar.collapsed .profilo-points-card {
-  display: none;
-}
-.profilo-sidebar.collapsed .profilo-header-info {
-  display: none;
-}
-.profilo-sidebar.collapsed .profilo-sidebar-divider {
-  display: none;
-}
-.profilo-sidebar.collapsed .profilo-nav-link {
-  justify-content: center;
-  padding: 0.7rem;
-}
-.profilo-sidebar.collapsed .profilo-nav-icon {
-  margin: 0;
-}
-.profilo-sidebar.collapsed .profilo-logout-btn {
-  justify-content: center;
-  padding: 0.6rem;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  width: 280px; /* Larghezza fissa base della sidebar */
+  min-width: 80px;
 }
 
 /* ── Header ───────────────────────────────────────────── */
@@ -99,7 +72,7 @@
   justify-content: center;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Aggiunta transizione fluida */
 }
 .profilo-toggle-btn:hover {
   background: rgba(248, 109, 237, 0.18);
@@ -110,6 +83,7 @@
 .profilo-avatar-wrap {
   display: inline-block;
   margin-bottom: 0.8rem;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Assicura lo spostamento fluido */
 }
 
 .profilo-avatar {
@@ -124,6 +98,7 @@
   font-weight: 800;
   color: #fff;
   letter-spacing: 0.03em;
+  transition: all 0.3s ease;
   box-shadow:
     0 0 0 3px rgba(248, 109, 237, 0.3),
     0 0 18px rgba(248, 109, 237, 0.4);
@@ -146,12 +121,16 @@
   font-size: 0.95rem;
   margin: 0 0 0.15rem;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 .profilo-sidebar-email {
   color: rgba(255,255,255,0.45);
   font-size: 0.75rem;
   margin-bottom: 1rem;
   word-break: break-all;
+  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
 /* Card punti fedeltà */
@@ -161,6 +140,8 @@
   border-radius: 0.85rem;
   padding: 0.75rem 1rem;
   text-align: left;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .profilo-points-top {
@@ -236,6 +217,7 @@
   letter-spacing: 0.15em;
   padding: 0 0.6rem;
   white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
 /* ── Navigazione ───────────────────────────────────────── */
@@ -302,6 +284,8 @@
 .profilo-nav-label {
   flex: 1;
   font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
 .profilo-nav-arrow {
@@ -335,12 +319,71 @@
   border-radius: 0.65rem;
   width: 100%;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .profilo-logout-btn:hover {
   background: rgba(239,68,68,0.2);
   color: #ef4444;
   border-color: rgba(239,68,68,0.4);
+}
+
+/* ── STATO CHIUSO (COLLAPSED) ──────────────────────────── */
+.profilo-sidebar.collapsed {
+  width: 80px; /* Larghezza ridotta, mostra solo le icone */
+}
+
+/* Ridimensionamento dell'avatar per evitare che stoni */
+.profilo-sidebar.collapsed .profilo-avatar {
+  width: 42px;
+  height: 42px;
+  font-size: 1.1rem;
+}
+
+/* 1. Spingiamo l'avatar verso il basso per fare spazio al bottone menù */
+.profilo-sidebar.collapsed .profilo-avatar-wrap {
+  margin-top: 2rem;
+}
+
+/* 2. Centriamo il pulsante in alto e lo ruotiamo per indicare l'apertura */
+.profilo-sidebar.collapsed .profilo-toggle-btn {
+  right: calc(50% - 16px); /* 16px è la metà esatta della larghezza (32px) */
+  transform: rotate(180deg);
+}
+/* Nascondi i testi scivolando via delicatamente */
+.profilo-sidebar.collapsed .profilo-sidebar-name,
+.profilo-sidebar.collapsed .profilo-sidebar-email,
+.profilo-sidebar.collapsed .profilo-nav-label,
+.profilo-sidebar.collapsed .profilo-nav-arrow,
+.profilo-sidebar.collapsed .profilo-sidebar-divider span,
+.profilo-sidebar.collapsed .profilo-logout-btn span {
+  opacity: 0;
+  visibility: hidden;
+  width: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Riduciamo il padding del footer per non schiacciare troppo l'icona del logout */
+.profilo-sidebar.collapsed .profilo-sidebar-footer {
+  padding: 0.9rem 0.5rem 1.5rem;
+}
+
+/* Nascondi la card dei punti (rimuove anche l'ingombro verticale) */
+.profilo-sidebar.collapsed .profilo-points-card {
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+/* Adatta il bottone di logout in modo che mostri solo l'icona centrata */
+.profilo-sidebar.collapsed .profilo-logout-btn {
+  padding: 0.55rem 0;
+  justify-content: center;
 }
 
 /* ── Responsive ───────────────────────────────────────── */

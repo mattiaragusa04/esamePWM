@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const db = require('./db/database');
-const seedDatabase = require('./db/seeding');
 const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
@@ -43,7 +42,6 @@ app.get('/', (req, res) => {
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server avviato sulla porta ${PORT}`);
-  seedDatabase();
 
   db.run("UPDATE prodotto SET giacenza = ABS(RANDOM() % 100) + 1 WHERE giacenza = 20", function(err) {
     if (!err && this.changes > 0) {

@@ -77,7 +77,37 @@ const User = {
 
       runNext(0);
     });
-  }
+  },
+
+  rendiAdmin: (userId) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE utente SET ruolo = 'admin' WHERE id = ?`;
+      db.run(query, [userId], function (err) {
+        if (err) reject(err);
+        else resolve({ id: userId, changes: this.changes });
+      });
+    });
+  },
+
+  rendiUser: (userId) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE utente SET ruolo = 'user' WHERE id = ?`;
+      db.run(query, [userId], function (err) {
+        if (err) reject(err);
+        else resolve({ id: userId, changes: this.changes });
+      });
+    });
+  },
+
+  rendiOperatore: (userId) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE utente SET ruolo = 'operatore' WHERE id = ?`;
+      db.run(query, [userId], function (err) {
+        if (err) reject(err);
+        else resolve({ id: userId, changes: this.changes });
+      });
+    });
+  },
 };
 
 module.exports = User;
