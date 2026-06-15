@@ -193,38 +193,114 @@
   <router-outlet></router-outlet>
 </div>
 
-<!-- FOOTER -->
-<footer class="footer mt-5 py-5">
+<!-- ═══════════════════════════════════════════
+     FOOTER REDESIGN
+═══════════════════════════════════════════ -->
+<footer class="pw-footer">
+
+  <!-- Banda superiore con glow -->
+  <div class="pw-footer-glow"></div>
+
   <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-4 text-center text-md-start mb-4 mb-md-0 d-flex flex-column align-items-center align-items-md-start">
-        <h4 class="text-uppercase font-weight-bold mb-2">
-          <span class="pw-logo-accent">PA</span><span class="text-white">werUP</span>
-        </h4>
-        <p class="small text-muted mb-3">© 2026 PAwerUP. Tutti i diritti riservati.</p>
-        <div class="card shadow-sm p-1" style="width:100%;max-width:280px;height:160px;border-radius:1rem;overflow:hidden">
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500.0!2d13.345459476526447!3d38.10511167190416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1319ef7a64574f1b%3A0x71cf1abd2ffb0f1!2sDICAM%20-%20Edificio%208!5e1!3m2!1sit!2sit!4v1780992757670!5m2!1sit!2sit"
+
+    <!-- GRID PRINCIPALE: 4 colonne -->
+    <div class="pw-footer-grid">
+
+      <!-- COL 1: Brand + mappa -->
+      <div class="pw-footer-col pw-footer-col--brand">
+        <a class="pw-logo pw-footer-logo" routerLink="/">
+          <span class="pw-logo-accent">PA</span><span class="pw-logo-main">werUP</span>
+        </a>
+        <p class="pw-footer-tagline">Il marketplace gaming di nuova generazione.</p>
+        <div class="pw-footer-map">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500.0!2d13.345459476526447!3d38.10511167190416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1319ef7a64574f1b%3A0x71cf1abd2ffb0f1!2sDICAM%20-%20Edificio%208!5e1!3m2!1sit!2sit!4v1780992757670!5m2!1sit!2sit"
             width="100%" height="100%" style="border:0" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
           </iframe>
         </div>
       </div>
-      <div class="col-md-4 text-center mb-4 mb-md-0">
-        <h6 class="text-uppercase font-weight-bold text-white mb-3">Supporto Tecnico</h6>
-        <p class="h5 mb-2">
-          <a href="tel:+397777777777" class="text-info text-decoration-none"><i class="bi bi-telephone-fill me-2"></i>+39 777 777 7777</a>
-        </p>
-        <small class="text-muted d-block mb-3">Lunedì - Venerdì, 9:00 - 18:00</small>
-        <a [routerLink]="['contattaci']" class="btn btn-outline-info btn-sm">Contattaci</a>
+
+      <!-- COL 2: Navigazione -->
+      <div class="pw-footer-col">
+        <h6 class="pw-footer-heading">Esplora</h6>
+        <ul class="pw-footer-links">
+          <li><a [routerLink]="['/categoria', 'console']"><i class="bi bi-controller"></i>Console</a></li>
+          <li><a [routerLink]="['/categoria', 'videogiochi']"><i class="bi bi-joystick"></i>Videogiochi</a></li>
+          <li><a [routerLink]="['/categoria', 'elettronica']"><i class="bi bi-cpu"></i>Elettronica</a></li>
+          <li><a [routerLink]="['/categoria', 'accessori']"><i class="bi bi-headset"></i>Accessori</a></li>
+          <li><a routerLink="/vendi"><i class="bi bi-tags-fill"></i>Vendi a PAwerUP</a></li>
+        </ul>
       </div>
-      <div class="col-md-4 text-center text-md-end">
-        <h6 class="text-uppercase font-weight-bold text-white mb-3">Seguici sui Social</h6>
-        <div class="d-flex justify-content-center justify-content-md-end gap-3">
-          <a href="https://www.instagram.com/dipartimentoingegneria/" target="_blank" rel="noopener" class="social-icon instagram" title="Instagram"><i class="bi bi-instagram"></i></a>
-          <a href="https://www.tiktok.com/@unipalermo" target="_blank" rel="noopener" class="social-icon tiktok" title="TikTok"><i class="bi bi-tiktok"></i></a>
-          <a href="https://www.facebook.com/profile.php?id=100051988934013&locale=it_IT" target="_blank" rel="noopener" class="social-icon facebook" title="Facebook"><i class="bi bi-facebook"></i></a>
+
+      <!-- COL 3: Account + Supporto -->
+      <div class="pw-footer-col">
+        <h6 class="pw-footer-heading">Account</h6>
+        <ul class="pw-footer-links">
+          <li><a [routerLink]="['/profilo']"><i class="bi bi-person-circle"></i>Il mio Profilo</a></li>
+          <li><a [routerLink]="['/ordini']"><i class="bi bi-bag-check"></i>I miei Ordini</a></li>
+          <li><a [routerLink]="['/preferiti']"><i class="bi bi-heart"></i>Preferiti</a></li>
+          <li><a [routerLink]="['/carrello']"><i class="bi bi-cart3"></i>Carrello</a></li>
+        </ul>
+        <h6 class="pw-footer-heading mt-4">Supporto</h6>
+        <ul class="pw-footer-links">
+          <li><a [routerLink]="['contattaci']"><i class="bi bi-envelope"></i>Contattaci</a></li>
+          <li><a href="tel:+397777777777"><i class="bi bi-telephone-fill"></i>+39 777 777 7777</a></li>
+          <li><span class="pw-footer-hours"><i class="bi bi-clock"></i>Lun–Ven, 9:00–18:00</span></li>
+        </ul>
+      </div>
+
+      <!-- COL 4: Social -->
+      <div class="pw-footer-col">
+        <h6 class="pw-footer-heading">Seguici</h6>
+        <div class="pw-footer-socials">
+          <a href="https://www.instagram.com/dipartimentoingegneria/" target="_blank" rel="noopener" class="pw-social-btn pw-social-btn--instagram" title="Instagram">
+            <i class="bi bi-instagram"></i>
+            <span>Instagram</span>
+          </a>
+          <a href="https://www.tiktok.com/@unipalermo" target="_blank" rel="noopener" class="pw-social-btn pw-social-btn--tiktok" title="TikTok">
+            <i class="bi bi-tiktok"></i>
+            <span>TikTok</span>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=100051988934013&locale=it_IT" target="_blank" rel="noopener" class="pw-social-btn pw-social-btn--facebook" title="Facebook">
+            <i class="bi bi-facebook"></i>
+            <span>Facebook</span>
+          </a>
+        </div>
+
+        <!-- Badge trust -->
+        <div class="pw-footer-badges">
+          <div class="pw-footer-badge">
+            <i class="bi bi-shield-check"></i>
+            <span>Pagamenti Sicuri</span>
+          </div>
+          <div class="pw-footer-badge">
+            <i class="bi bi-arrow-repeat"></i>
+            <span>Resi Facili</span>
+          </div>
+          <div class="pw-footer-badge">
+            <i class="bi bi-truck"></i>
+            <span>Spedizione Rapida</span>
+          </div>
         </div>
       </div>
+
     </div>
+
+    <!-- DIVIDER -->
+    <div class="pw-footer-divider"></div>
+
+    <!-- BOTTOM BAR -->
+    <div class="pw-footer-bottom">
+      <p class="pw-footer-copy">© 2026 <strong>PAwerUP</strong>. Tutti i diritti riservati.</p>
+      <div class="pw-footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <span>·</span>
+        <a href="#">Termini di Servizio</a>
+        <span>·</span>
+        <a href="#">Cookie</a>
+      </div>
+    </div>
+
   </div>
 </footer>
 
