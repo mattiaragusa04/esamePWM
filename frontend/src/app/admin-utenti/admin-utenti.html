@@ -58,28 +58,29 @@
       <table class="table table-hover align-middle mb-0 bg-white">
         <thead class="bg-light text-muted">
           <tr>
-            <th class="ps-4">ID</th>
-            <th>Nome</th>
-            <th>Cognome</th>
-            <th>Email</th>
-            <th>Ruolo</th>
-            <th class="text-center">Azioni</th>
+            <th scope="col" class="ps-4">ID</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Cognome</th>
+            <th scope="col">Email</th>
+            <th scope="col">Ruolo</th>
+            <th scope="col" class="text-end pe-4">Elimina Utente</th>
+            <th scope="col" class="text-end pe-4">Rendi Admin</th>
+            <th scope="col" class="text-end pe-4">Rendi Utente</th>
+            <th scope="col" class="text-end pe-4">Rendi Operatore</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngIf="utentiFiltrati.length === 0">
-            <td colspan="6" class="text-center py-5 text-muted">
+            <td colspan="9" class="text-center py-5 text-muted">
               <i class="bi bi-search me-2"></i>
               {{ searchQuery ? 'Nessun utente trovato per "' + searchQuery + '".' : 'Nessun utente trovato.' }}
             </td>
           </tr>
           <tr *ngFor="let utente of utentiFiltrati">
-            <td class="ps-4 text-secondary fw-bold">#{{ utente.id }}</td>
-            <td class="fw-bold">{{ utente.nome }}</td>
+            <td class="ps-4 font-weight-bold text-secondary">#{{ utente.id }}</td>
+            <td class="font-weight-bold">{{ utente.nome }}</td>
             <td>{{ utente.cognome }}</td>
-            <td>
-              <a href="mailto:{{ utente.email }}" class="text-decoration-none text-info">{{ utente.email }}</a>
-            </td>
+            <td><a href="mailto:{{ utente.email }}" class="text-decoration-none text-info">{{ utente.email }}</a></td>
             <td>
               <span class="badge rounded-pill"
                 [ngClass]="{
@@ -90,40 +91,36 @@
                 {{ utente.ruolo | uppercase }}
               </span>
             </td>
-            <td class="text-center">
-              <div class="d-flex justify-content-center gap-2 flex-wrap">
-                <!-- Elimina -->
-                <button
-                  class="btn btn-sm btn-outline-danger"
-                  title="Elimina utente"
-                  (click)="apriModale(utente, 'elimina')">
-                  <i class="bi bi-trash-fill me-1"></i>Elimina
-                </button>
-                <!-- Rendi Admin -->
-                <button
-                  class="btn btn-sm btn-outline-warning"
-                  title="Rendi Amministratore"
-                  [disabled]="utente.ruolo === 'admin'"
-                  (click)="apriModale(utente, 'admin')">
-                  <i class="bi bi-person-gear me-1"></i>Admin
-                </button>
-                <!-- Rendi Utente -->
-                <button
-                  class="btn btn-sm btn-outline-secondary"
-                  title="Imposta come Utente"
-                  [disabled]="utente.ruolo === 'utente'"
-                  (click)="apriModale(utente, 'utente')">
-                  <i class="bi bi-person me-1"></i>Utente
-                </button>
-                <!-- Rendi Operatore -->
-                <button
-                  class="btn btn-sm btn-outline-info"
-                  title="Rendi Operatore"
-                  [disabled]="utente.ruolo === 'operatore'"
-                  (click)="apriModale(utente, 'operatore')">
-                  <i class="bi bi-headset me-1"></i>Operatore
-                </button>
-              </div>
+            <!-- Elimina -->
+            <td class="text-end pe-4">
+              <button class="btn btn-sm btn-outline-danger rounded-circle" title="Elimina"
+                (click)="apriModale(utente, 'elimina')">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </td>
+            <!-- Rendi Admin -->
+            <td class="text-end pe-4">
+              <button class="btn btn-sm btn-outline-danger rounded-circle" title="Rendi Admin"
+                [disabled]="utente.ruolo === 'admin'"
+                (click)="apriModale(utente, 'admin')">
+                <i class="bi bi-person-gear"></i>
+              </button>
+            </td>
+            <!-- Rendi Utente -->
+            <td class="text-end pe-4">
+              <button class="btn btn-sm btn-outline-danger rounded-circle" title="Rendi Utente"
+                [disabled]="utente.ruolo === 'utente'"
+                (click)="apriModale(utente, 'utente')">
+                <i class="bi bi-person"></i>
+              </button>
+            </td>
+            <!-- Rendi Operatore -->
+            <td class="text-end pe-4">
+              <button class="btn btn-sm btn-outline-danger rounded-circle" title="Rendi Operatore"
+                [disabled]="utente.ruolo === 'operatore'"
+                (click)="apriModale(utente, 'operatore')">
+                <i class="bi bi-headset"></i>
+              </button>
             </td>
           </tr>
         </tbody>
