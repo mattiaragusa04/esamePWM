@@ -63,6 +63,7 @@
             <th scope="col">Cognome</th>
             <th scope="col">Email</th>
             <th scope="col">Ruolo</th>
+            <th scope="col" class="text-center">Dettaglio</th>
             <th scope="col" class="text-end pe-4">Elimina Utente</th>
             <th scope="col" class="text-end pe-4">Rendi Admin</th>
             <th scope="col" class="text-end pe-4">Rendi Utente</th>
@@ -71,7 +72,7 @@
         </thead>
         <tbody>
           <tr *ngIf="utentiFiltrati.length === 0">
-            <td colspan="9" class="text-center py-5 text-muted">
+            <td colspan="10" class="text-center py-5 text-muted">
               <i class="bi bi-search me-2"></i>
               {{ searchQuery ? 'Nessun utente trovato per "' + searchQuery + '".' : 'Nessun utente trovato.' }}
             </td>
@@ -90,6 +91,13 @@
                 }">
                 {{ utente.ruolo | uppercase }}
               </span>
+            </td>
+            <!-- Dettaglio 👁 -->
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary rounded-circle" title="Visualizza dettaglio"
+                (click)="apriPannello(utente)">
+                <i class="bi bi-eye-fill"></i>
+              </button>
             </td>
             <!-- Elimina -->
             <td class="text-end pe-4">
@@ -135,8 +143,6 @@
 <div class="au-overlay" *ngIf="modaleVisible" (click)="chiudiModale()"></div>
 
 <div class="au-modal" *ngIf="modaleVisible" role="dialog" aria-modal="true">
-
-  <!-- Header -->
   <div class="au-modal-header">
     <div class="au-modal-icon" [ngClass]="{
       'au-modal-icon--danger':    modaleAzione === 'elimina',
@@ -151,8 +157,6 @@
       <i class="bi bi-x-lg"></i>
     </button>
   </div>
-
-  <!-- Body -->
   <div class="au-modal-body">
     <p [innerHTML]="modaleConfig.testo"></p>
     <div class="au-modal-user-chip" *ngIf="modaleUtente">
@@ -161,20 +165,162 @@
       <span class="au-chip-email">{{ modaleUtente.email }}</span>
     </div>
   </div>
-
-  <!-- Footer -->
   <div class="au-modal-footer">
-    <button class="btn btn-light" (click)="chiudiModale()" [disabled]="modaleLoading">
-      Annulla
-    </button>
-    <button
-      class="btn {{ modaleConfig.btnClass }}"
-      (click)="confermaAzione()"
-      [disabled]="modaleLoading">
+    <button class="btn btn-light" (click)="chiudiModale()" [disabled]="modaleLoading">Annulla</button>
+    <button class="btn {{ modaleConfig.btnClass }}" (click)="confermaAzione()" [disabled]="modaleLoading">
       <span *ngIf="modaleLoading" class="spinner-border spinner-border-sm me-1" role="status"></span>
       <i *ngIf="!modaleLoading" class="bi {{ modaleConfig.icon }} me-1"></i>
       {{ modaleConfig.btnLabel }}
     </button>
   </div>
-
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PANNELLO LATERALE DETTAGLIO UTENTE (offcanvas-style)
+═══════════════════════════════════════════════════════════ -->
+<div class="au-panel-overlay" *ngIf="panelloVisible" (click)="chiudiPannello()"></div>
+
+<aside class="au-panel" [class.au-panel--open]="panelloVisible" role="complementary" aria-label="Dettaglio utente">
+
+  <!-- Header pannello -->
+  <div class="au-panel-header">
+    <div class="au-panel-avatar" *ngIf="panelloUtente">
+      <i class="bi bi-person-circle"></i>
+    </div>
+    <div class="au-panel-header-info" *ngIf="panelloUtente">
+      <h5 class="au-panel-name">{{ panelloUtente.nome }} {{ panelloUtente.cognome }}</h5>
+      <span class="au-panel-email">{{ panelloUtente.email }}</span>
+      <span class="badge rounded-pill ms-2"
+        [ngClass]="{
+          'bg-danger':    panelloUtente.ruolo === 'admin',
+          'bg-info':      panelloUtente.ruolo === 'operatore',
+          'bg-secondary': panelloUtente.ruolo !== 'admin' && panelloUtente.ruolo !== 'operatore'
+        }">
+        {{ panelloUtente.ruolo | uppercase }}
+      </span>
+    </div>
+    <button class="au-panel-close" (click)="chiudiPannello()" aria-label="Chiudi pannello">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- Loader pannello -->
+  <div *ngIf="panelloLoading" class="text-center py-5">
+    <div class="spinner-border text-danger" role="status"></div>
+    <p class="text-muted mt-2 small">Caricamento dettagli...</p>
+  </div>
+
+  <!-- Errore pannello -->
+  <div *ngIf="panelloErrore && !panelloLoading" class="alert alert-danger m-3 rounded-3">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ panelloErrore }}
+  </div>
+
+  <!-- Contenuto pannello -->
+  <div class="au-panel-body" *ngIf="!panelloLoading && !panelloErrore && panelloDettaglio">
+
+    <!-- ── Punti fedeltà ── -->
+    <div class="au-panel-section">
+      <h6 class="au-panel-section-title"><i class="bi bi-star-fill text-warning me-2"></i>Punti fedeltà</h6>
+      <div class="au-panel-punti-row">
+        <span class="au-panel-punti-value">{{ panelloUtente.punti_fedelta ?? 0 }}</span>
+        <span class="text-muted small ms-1">punti attuali</span>
+      </div>
+      <div class="d-flex gap-2 align-items-center mt-2 flex-wrap">
+        <input type="number" class="form-control form-control-sm au-panel-input-punti"
+          [(ngModel)]="deltaPunti" placeholder="es. +50 o -20">
+        <input type="text" class="form-control form-control-sm flex-grow-1"
+          [(ngModel)]="notaPunti" placeholder="Nota (opzionale)">
+        <button class="btn btn-sm btn-success" [disabled]="puntiLoading || deltaPunti === 0"
+          (click)="modificaPunti(deltaPunti)">
+          <span *ngIf="puntiLoading" class="spinner-border spinner-border-sm" role="status"></span>
+          <i *ngIf="!puntiLoading" class="bi bi-check-lg"></i>
+        </button>
+      </div>
+      <small class="text-success mt-1 d-block" *ngIf="puntiMessaggio">{{ puntiMessaggio }}</small>
+    </div>
+
+    <!-- ── Reset password ── -->
+    <div class="au-panel-section">
+      <h6 class="au-panel-section-title"><i class="bi bi-key-fill text-secondary me-2"></i>Reset password</h6>
+      <p class="text-muted small mb-2">Invia un'email di reset password all'utente (link valido 15 min).</p>
+      <button class="btn btn-sm btn-outline-secondary" [disabled]="resetLoading"
+        (click)="inviaResetPassword()">
+        <span *ngIf="resetLoading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+        <i *ngIf="!resetLoading" class="bi bi-envelope-fill me-1"></i>
+        Invia email di reset
+      </button>
+      <small class="text-success mt-1 d-block" *ngIf="resetMessaggio">{{ resetMessaggio }}</small>
+    </div>
+
+    <!-- ── Indirizzi ── -->
+    <div class="au-panel-section">
+      <h6 class="au-panel-section-title"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Indirizzi salvati</h6>
+      <div *ngIf="panelloDettaglio.indirizzi.length === 0" class="text-muted small">Nessun indirizzo salvato.</div>
+      <div class="au-panel-indirizzo" *ngFor="let ind of panelloDettaglio.indirizzi">
+        <!-- Vista normale -->
+        <div *ngIf="editIndirizzoId !== ind.id">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <span class="badge bg-light text-dark border me-1">{{ ind.tipo }}</span>
+              <span class="fw-semibold">{{ ind.via }}, {{ ind.numero_civico }}</span><br>
+              <small class="text-muted">{{ ind.cap }} {{ ind.provincia }}, {{ ind.paese }}</small>
+            </div>
+            <button class="btn btn-xs btn-outline-secondary ms-2" (click)="avviaEditIndirizzo(ind)" title="Modifica">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Form modifica -->
+        <div *ngIf="editIndirizzoId === ind.id" class="au-panel-indirizzo-form">
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-label small mb-1">Tipo</label>
+              <select class="form-select form-select-sm" [(ngModel)]="editIndirizzo.tipo">
+                <option value="spedizione">Spedizione</option>
+                <option value="fatturazione">Fatturazione</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1">CAP</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="editIndirizzo.cap">
+            </div>
+            <div class="col-8">
+              <label class="form-label small mb-1">Via</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="editIndirizzo.via">
+            </div>
+            <div class="col-4">
+              <label class="form-label small mb-1">N. civico</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="editIndirizzo.numero_civico">
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1">Provincia</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="editIndirizzo.provincia">
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1">Paese</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="editIndirizzo.paese">
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-success" (click)="salvaIndirizzo()"><i class="bi bi-check-lg"></i> Salva</button>
+            <button class="btn btn-sm btn-light" (click)="annullaEditIndirizzo()">Annulla</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Carte di credito (oscurate) ── -->
+    <div class="au-panel-section">
+      <h6 class="au-panel-section-title"><i class="bi bi-credit-card-fill text-primary me-2"></i>Carte salvate</h6>
+      <div *ngIf="panelloDettaglio.carte.length === 0" class="text-muted small">Nessuna carta salvata.</div>
+      <div class="au-panel-carta" *ngFor="let carta of panelloDettaglio.carte">
+        <i class="bi bi-credit-card me-2 text-primary"></i>
+        <div>
+          <div class="fw-semibold small">{{ carta.numero_carta }}</div>
+          <div class="text-muted" style="font-size: 0.78rem;">{{ carta.nome_titolare }} — scad. {{ carta.data_scadenza }} — CVV: {{ carta.cvv }}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</aside>
