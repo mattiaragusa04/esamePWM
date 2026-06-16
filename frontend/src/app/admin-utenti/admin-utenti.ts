@@ -2,6 +2,8 @@ import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angu
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+type AzioneConferma = 'elimina' | 'admin' | 'utente' | 'operatore';
+
 @Component({
   selector: 'app-admin-utenti',
   standalone: true,
@@ -15,6 +17,12 @@ export class AdminUtenti implements OnInit {
   isLoading = true;
   errorMessage = '';
   searchQuery = '';
+
+  // --- Stato modale conferma ---
+  modaleVisible = false;
+  modaleUtente: any = null;
+  modaleAzione: AzioneConferma | null = null;
+  modaleLoading = false;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -61,21 +69,91 @@ export class AdminUtenti implements OnInit {
     );
   }
 
-  async eliminaUtente(utente : any) {
-    if (!confirm('Sei sicuro di voler eliminare l\'utente ' + utente.email + '?')) return;
-    
+  // ── Apre il modale senza bloccare il browser ──────────────────────────────
+  apriModale(utente: any, azione: AzioneConferma) {
+    this.modaleUtente = utente;
+    this.modaleAzione = azione;
+    this.modaleVisible = true;
+    this.cdr.detectChanges();
+  }
+
+  chiudiModale() {
+    this.modaleVisible = false;
+    this.modaleUtente = null;
+    this.modaleAzione = null;
+    this.modaleLoading = false;
+    this.cdr.detectChanges();
+  }
+
+  // Testo e varianti visive per il modale in base all'azione
+  get modaleConfig(): { titolo: string; testo: string; btnLabel: string; btnClass: string; icon: string } {
+    const email = this.modaleUtente?.email ?? '';
+    switch (this.modaleAzione) {
+      case 'elimina':
+        return {
+          titolo: 'Elimina utente',
+          testo: `Stai per eliminare definitivamente l'account di <strong>${email}</strong>. L'operazione non è reversibile.`,
+          btnLabel: 'Elimina',
+          btnClass: 'btn-danger',
+          icon: 'bi-trash-fill',
+        };
+      case 'admin':
+        return {
+          titolo: 'Promuovi ad Amministratore',
+          testo: `Stai per assegnare i privilegi di <strong>Amministratore</strong> a <strong>${email}</strong>.`,
+          btnLabel: 'Promuovi',
+          btnClass: 'btn-warning',
+          icon: 'bi-person-gear',
+        };
+      case 'utente':
+        return {
+          titolo: 'Imposta come Utente',
+          testo: `Stai per rimuovere eventuali privilegi speciali da <strong>${email}</strong> impostando il ruolo a <strong>Utente</strong>.`,
+          btnLabel: 'Conferma',
+          btnClass: 'btn-secondary',
+          icon: 'bi-person',
+        };
+      case 'operatore':
+        return {
+          titolo: 'Promuovi ad Operatore',
+          testo: `Stai per assegnare il ruolo di <strong>Operatore</strong> a <strong>${email}</strong>.`,
+          btnLabel: 'Promuovi',
+          btnClass: 'btn-info',
+          icon: 'bi-headset',
+        };
+      default:
+        return { titolo: '', testo: '', btnLabel: 'Conferma', btnClass: 'btn-primary', icon: 'bi-check' };
+    }
+  }
+
+  // ── Esecuzione dell'azione dopo conferma nel modale ───────────────────────
+  async confermaAzione() {
+    if (!this.modaleUtente || !this.modaleAzione) return;
+    this.modaleLoading = true;
+    this.cdr.detectChanges();
+
+    switch (this.modaleAzione) {
+      case 'elimina': await this._eliminaUtente(this.modaleUtente); break;
+      case 'admin':   await this._rendiAdmin(this.modaleUtente);    break;
+      case 'utente':  await this._rendiUtente(this.modaleUtente);   break;
+      case 'operatore': await this._rendiOperatore(this.modaleUtente); break;
+    }
+
+    this.chiudiModale();
+  }
+
+  // ── Azioni private (logica HTTP invariata) ────────────────────────────────
+  private async _eliminaUtente(utente: any) {
     const token = localStorage.getItem('token');
-    try{
+    try {
       const response = await fetch(`http://localhost:3000/api/auth/${utente.id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` },
       });
       if (response.ok) {
-        this.caricaUtenti(); // Ricarica la lista dopo l'eliminazione
+        await this.caricaUtenti();
       } else {
-        this.errorMessage = 'Errore durante l\'eliminazione.';
+        this.errorMessage = "Errore durante l'eliminazione.";
       }
     } catch (error) {
       console.error('Errore di rete:', error);
@@ -83,76 +161,58 @@ export class AdminUtenti implements OnInit {
     }
   }
 
-  async rendiAdmin(utente : any){
-    if (!confirm('Sei sicuro di voler rendere amministratore l\'utente ' + utente.email + '?')) return;
-    
+  private async _rendiAdmin(utente: any) {
     const token = localStorage.getItem('token');
-    try{
+    try {
       const response = await fetch(`http://localhost:3000/api/auth/${utente.id}/admin`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ ruolo: 'admin' }) // Invia il dato nel caso il backend lo richieda
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ ruolo: 'admin' }),
       });
-      
       if (response.ok) {
-        this.caricaUtenti(); // Ricarica la lista per mostrare il nuovo ruolo "admin"
+        await this.caricaUtenti();
       } else {
-        this.errorMessage = 'Errore durante l\'aggiornamento del ruolo.';
+        this.errorMessage = "Errore durante l'aggiornamento del ruolo.";
       }
-    }catch(error){
+    } catch (error) {
       console.error('Errore di rete:', error);
       this.errorMessage = 'Impossibile connettersi al server.';
     }
   }
 
-  async rendiUtente(utente : any){
-    if (!confirm('Sei sicuro di voler rendere utente l\'utente ' + utente.email + '?')) return;
-    
+  private async _rendiUtente(utente: any) {
     const token = localStorage.getItem('token');
-    try{
+    try {
       const response = await fetch(`http://localhost:3000/api/auth/${utente.id}/user`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ ruolo: 'utente' }) // Invia il dato nel caso il backend lo richieda
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ ruolo: 'utente' }),
       });
-      
       if (response.ok) {
-        this.caricaUtenti(); // Ricarica la lista per mostrare il nuovo ruolo "utente"
+        await this.caricaUtenti();
       } else {
-        this.errorMessage = 'Errore durante l\'aggiornamento del ruolo.';
+        this.errorMessage = "Errore durante l'aggiornamento del ruolo.";
       }
-    }catch(error){
+    } catch (error) {
       console.error('Errore di rete:', error);
       this.errorMessage = 'Impossibile connettersi al server.';
     }
   }
 
-  async rendiOperatore(utente: any){
-    if (!confirm('Sei sicuro di voler rendere operatore l\'utente ' + utente.email + '?')) return;
-    
+  private async _rendiOperatore(utente: any) {
     const token = localStorage.getItem('token');
-    try{
+    try {
       const response = await fetch(`http://localhost:3000/api/auth/${utente.id}/operatore`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ ruolo: 'operatore' }) // Invia il dato nel caso il backend lo richieda
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ ruolo: 'operatore' }),
       });
-      
       if (response.ok) {
-        this.caricaUtenti(); // Ricarica la lista per mostrare il nuovo ruolo "operatore"
+        await this.caricaUtenti();
       } else {
-        this.errorMessage = 'Errore durante l\'aggiornamento del ruolo.';
+        this.errorMessage = "Errore durante l'aggiornamento del ruolo.";
       }
-    }catch(error){
+    } catch (error) {
       console.error('Errore di rete:', error);
       this.errorMessage = 'Impossibile connettersi al server.';
     }
