@@ -37,6 +37,15 @@ const Indirizzo = {
             });
         });
     },
+    update : (id, dati) => {
+        return new Promise((res, rej) => {
+            const query = `UPDATE indirizzo SET tipo = ?, via = ?, numero_civico = ?, provincia = ?, paese = ?, cap = ? WHERE id = ?`;
+            db.run(query, [dati.tipo, dati.via, dati.numero_civico, dati.provincia, dati.paese, dati.cap, id], function(err) {
+                if (err) rej(err);
+                else res({ id, changes: this.changes });
+            });
+        });
+    },
     delete : (id) => {
         return new Promise((res, rej) => {
             const query = `DELETE FROM indirizzo WHERE id = ?`;
