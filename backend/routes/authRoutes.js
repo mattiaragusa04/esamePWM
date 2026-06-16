@@ -1,30 +1,34 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const authController = require("../controllers/authControllers");
-const authMiddleware = require("../middleware/authMiddleware");
+const authController = require('../controllers/authControllers');
+const authMiddleware = require('../middlewares/authMiddleware');
+const adminMiddleware = require('../middlewares/adminMiddleware');
 
-router.post("/register", authController.register);
-router.post("/login", authController.login);
+// Auth base
+router.post('/register', authController.register);
+router.get('/conferma/:token', authController.confermaRegistrazione);
+router.post('/login', authController.login);
 router.post('/password-reset', authController.passwordReset);
-
-// rotta per ottenere tutti gli utenti
-router.get("/utenti", authController.getAllUsers);
-
-// esempio route protetta
-router.get("/profilo", authMiddleware, authController.getProfile);
-
-// rotta conferma registrazione utente
-router.get("/conferma/:token", authController.confermaRegistrazione);
-router.delete("/:id", authController.deleteUser);
-
 router.post('/update-password', authController.updatePassword);
 
-//rotta per rendere admin un utente
-router.put('/:id/admin', authMiddleware, authController.admin);
+// Profilo utente autenticato
+router.get('/profile', authMiddleware, authController.getProfile);
 
-//rotta per rendere user un utente
-router.put('/:id/user', authMiddleware, authController.user);
+// Gestione utenti (admin)
+router.get('/users', authMiddleware, adminMiddleware, authController.getAllUsers);
+router.delete('/:id', authMiddleware, adminMiddleware, authController.deleteUser);
+router.put('/:id/admin', authMiddleware, adminMiddleware, authController.admin);
+router.put('/:id/user', authMiddleware, adminMiddleware, authController.user);
+router.put('/:id/operatore', authMiddleware, adminMiddleware, authController.operatore);
 
-router.put('/:id/operatore', authMiddleware, authController.operatore)
+// ── PANNELLO DETTAGLIO UTENTE (admin) ─────────────────────────────────────
+// Dettaglio completo: profilo + indirizzi + carte oscurate + punti
+router.get('/:id/dettaglio', authMiddleware, adminMiddleware, authController.getUtenteDettaglio);
+// Aggiunta/sottrazione punti fedeltà
+router.put('/:id/punti', authMiddleware, adminMiddleware, authController.modificaPuntiFedelta);
+// Invia email reset password per conto dell'utente
+router.post('/:id/reset-password-admin', authMiddleware, adminMiddleware, authController.inviaResetPasswordAdmin);
+// Modifica indirizzo salvato
+router.put('/indirizzi/:id', authMiddleware, adminMiddleware, authController.aggiornaIndirizzoAdmin);
 
 module.exports = router;
