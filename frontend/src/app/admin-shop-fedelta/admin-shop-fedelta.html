@@ -1,0 +1,190 @@
+<div class="shop-fedelta-page">
+
+  <!-- ══ HEADER ══════════════════════════════════════════════════ -->
+  <div class="shop-fedelta-header">
+    <div class="shop-fedelta-header-icon"><i class="bi bi-stars"></i></div>
+    <div>
+      <h2>Gestisci lo Shop Fedeltà</h2>
+      <p>Crea coupon acquistabili con punti fedeltà e monitora i prodotti usati disponibili nello shop.</p>
+    </div>
+  </div>
+
+  <!-- ══ TAB ══════════════════════════════════════════════════════ -->
+  <div class="shop-fedelta-tabs">
+    <button class="shop-tab" [class.active]="tabAttiva === 'coupon'" (click)="tabAttiva = 'coupon'">
+      <i class="bi bi-ticket-perforated-fill"></i> Coupon Fedeltà
+    </button>
+    <button class="shop-tab" [class.active]="tabAttiva === 'prodotti'" (click)="tabAttiva = 'prodotti'; caricaProdottiUsati()">
+      <i class="bi bi-box-seam-fill"></i> Prodotti Usati
+    </button>
+  </div>
+
+  <!-- ══════════════════ TAB: COUPON ══════════════════════════════ -->
+  <div *ngIf="tabAttiva === 'coupon'">
+
+    <!-- Toast -->
+    <div class="shop-toast" *ngIf="msgCoupon" [class.toast-success]="msgCoupon.tipo==='success'" [class.toast-error]="msgCoupon.tipo==='error'">
+      {{ msgCoupon.testo }}
+    </div>
+
+    <!-- Form creazione coupon -->
+    <div class="shop-card">
+      <div class="shop-card-title"><i class="bi bi-plus-circle-fill"></i> Crea nuovo coupon fedeltà</div>
+
+      <div class="shop-form-grid">
+        <div class="shop-form-group">
+          <label>Codice coupon *</label>
+          <input type="text" [(ngModel)]="nuovoCoupon.codice" placeholder="es. ESTATE25" class="shop-input" />
+        </div>
+        <div class="shop-form-group">
+          <label>Sconto (%)</label>
+          <input type="number" [(ngModel)]="nuovoCoupon.percentuale" min="1" max="100" class="shop-input" />
+        </div>
+        <div class="shop-form-group">
+          <label>Costo in punti fedeltà</label>
+          <input type="number" [(ngModel)]="nuovoCoupon.costoInPunti" min="1" class="shop-input" />
+        </div>
+        <div class="shop-form-group">
+          <label>Data scadenza</label>
+          <input type="date" [(ngModel)]="nuovoCoupon.scadenza" class="shop-input" />
+        </div>
+        <div class="shop-form-group">
+          <label>Disponibilità (-1 = illimitata)</label>
+          <input type="number" [(ngModel)]="nuovoCoupon.disponibile" min="-1" class="shop-input" />
+        </div>
+        <div class="shop-form-group shop-form-group--full">
+          <label>Descrizione</label>
+          <input type="text" [(ngModel)]="nuovoCoupon.descrizione" placeholder="es. Sconto del 25% su qualsiasi ordine" class="shop-input" />
+        </div>
+      </div>
+
+      <button class="shop-btn-create" (click)="creaCoupon()" [disabled]="salvandoCoupon">
+        <i class="bi" [class.bi-plus-lg]="!salvandoCoupon" [class.bi-arrow-repeat]="salvandoCoupon"></i>
+        {{ salvandoCoupon ? 'Creazione in corso…' : 'Crea Coupon' }}
+      </button>
+    </div>
+
+    <!-- Tabella coupon esistenti -->
+    <div class="shop-card mt-3">
+      <div class="shop-card-title"><i class="bi bi-list-ul"></i> Coupon fedeltà esistenti
+        <button class="shop-btn-refresh" (click)="caricaCoupon()" title="Aggiorna">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+
+      <div class="shop-loading" *ngIf="caricandoCoupon">
+        <div class="spinner-border spinner-border-sm text-warning"></div> Caricamento…
+      </div>
+
+      <div class="shop-empty" *ngIf="!caricandoCoupon && couponList.length === 0">
+        <i class="bi bi-ticket-perforated"></i> Nessun coupon fedeltà creato.
+      </div>
+
+      <div class="shop-table-wrap" *ngIf="!caricandoCoupon && couponList.length > 0">
+        <table class="shop-table">
+          <thead>
+            <tr>
+              <th>Codice</th>
+              <th>Sconto</th>
+              <th>Costo (pt)</th>
+              <th>Scadenza</th>
+              <th>Utilizzi</th>
+              <th>Dispon.</th>
+              <th>Stato</th>
+              <th>Azioni</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of couponList" [class.row-inattivo]="!c.attivo">
+              <td><code>{{ c.codice }}</code></td>
+              <td><span class="badge-perc">-{{ c.valore }}%</span></td>
+              <td><span class="badge-punti"><i class="bi bi-trophy-fill"></i> {{ c.costo_punti || '—' }}</span></td>
+              <td>{{ c.data_scadenza }}</td>
+              <td>{{ c.utilizzi_attuali }} / {{ c.utilizzi_massimi === -1 ? '∞' : c.utilizzi_massimi }}</td>
+              <td>{{ c.disponibile === -1 ? '∞' : c.disponibile }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="c.attivo" [class.badge-danger]="!c.attivo">
+                  {{ c.attivo ? 'Attivo' : 'Inattivo' }}
+                </span>
+              </td>
+              <td class="td-actions">
+                <button class="btn-icon" [title]="c.attivo ? 'Disattiva' : 'Attiva'" (click)="toggleAttivoCoupon(c)">
+                  <i class="bi" [class.bi-toggle-on]="c.attivo" [class.bi-toggle-off]="!c.attivo"></i>
+                </button>
+                <button class="btn-icon btn-icon--danger" title="Elimina" (click)="eliminaCoupon(c.id)">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ TAB: PRODOTTI USATI ══════════════════════ -->
+  <div *ngIf="tabAttiva === 'prodotti'">
+
+    <!-- Toast -->
+    <div class="shop-toast" *ngIf="msgProdotti" [class.toast-success]="msgProdotti.tipo==='success'" [class.toast-error]="msgProdotti.tipo==='error'">
+      {{ msgProdotti.testo }}
+    </div>
+
+    <div class="shop-card">
+      <div class="shop-card-title">
+        <i class="bi bi-box-seam-fill"></i> Prodotti usati nello shop fedeltà
+        <button class="shop-btn-refresh" (click)="caricaProdottiUsati()" title="Aggiorna">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+      <p class="shop-card-sub">Tutti i prodotti con condizione <strong>Usato</strong> vengono mostrati nello shop fedeltà. Il costo in punti è calcolato automaticamente: <code>ROUND(prezzo) / 5</code>.</p>
+
+      <div class="shop-loading" *ngIf="caricandoProdotti">
+        <div class="spinner-border spinner-border-sm text-warning"></div> Caricamento…
+      </div>
+
+      <div class="shop-empty" *ngIf="!caricandoProdotti && prodottiUsati.length === 0">
+        <i class="bi bi-box2"></i> Nessun prodotto usato trovato nel catalogo.
+      </div>
+
+      <div class="shop-table-wrap" *ngIf="!caricandoProdotti && prodottiUsati.length > 0">
+        <table class="shop-table">
+          <thead>
+            <tr>
+              <th>Img</th>
+              <th>Nome</th>
+              <th>Categoria</th>
+              <th>Prezzo (€)</th>
+              <th>Costo (pt)</th>
+              <th>Giacenza</th>
+              <th>Vetrina</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of prodottiUsati" [class.row-esaurito]="p.giacenza === 0">
+              <td>
+                <img [src]="getImmagineProdotto(p.immagine)" [alt]="p.nome"
+                     width="48" height="48" style="object-fit:cover;border-radius:.4rem;" loading="lazy" />
+              </td>
+              <td>{{ p.nome }}</td>
+              <td>{{ p.categoria_nome }}</td>
+              <td>€{{ p.prezzoUnitarioVendita | number:'1.2-2' }}</td>
+              <td><span class="badge-punti"><i class="bi bi-trophy-fill"></i> {{ p.costoInPunti }}</span></td>
+              <td>
+                <span [class.text-danger]="p.giacenza === 0" [class.fw-bold]="p.giacenza === 0">
+                  {{ p.giacenza === 0 ? 'ESAURITO' : p.giacenza }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" [class.badge-success]="p.pubblicatoVetrina" [class.badge-danger]="!p.pubblicatoVetrina">
+                  {{ p.pubblicatoVetrina ? 'Sì' : 'No' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>

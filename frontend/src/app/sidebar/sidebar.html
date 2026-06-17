@@ -1,6 +1,6 @@
 <div class="profilo-sidebar" [class.collapsed]="isMenuCollapsed" [class.no-transition]="!isAnimationEnabled">
 
-  <!-- ══ HEADER ═══════════════════════════════════════════════ -->
+  <!-- ══ HEADER ═══════════════════════════════════════════════════ -->
   <div class="profilo-sidebar-header">
     <div class="profilo-sidebar-bg-deco"></div>
 
@@ -64,6 +64,13 @@
       <span class="profilo-nav-label nav-text">Le mie Vendite</span>
       <i class="bi bi-chevron-right profilo-nav-arrow"></i>
     </a>
+    <!-- ══ SPENDI PUNTI FEDELTÀ ══════════════════════════════════ -->
+    <a routerLink="/profilo/fedelta" routerLinkActive="active" class="profilo-nav-link profilo-nav-link--fedelta" title="Spendi i tuoi Punti Fedeltà">
+      <span class="profilo-nav-icon"><i class="bi bi-gift-fill"></i></span>
+      <span class="profilo-nav-label nav-text">Spendi i Punti Fedeltà</span>
+      <i class="bi bi-chevron-right profilo-nav-arrow"></i>
+    </a>
+    <!-- ════════════════════════════════════════════════════════ -->
     <a routerLink="/profilo/carte-di-credito" routerLinkActive="active" class="profilo-nav-link" title="Metodi di Pagamento">
       <span class="profilo-nav-icon"><i class="bi bi-credit-card"></i></span>
       <span class="profilo-nav-label nav-text">Metodi di Pagamento</span>

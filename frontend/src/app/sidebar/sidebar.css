@@ -1,396 +1,297 @@
-/* ═══════════════════════════════════════════════════════
-   SIDEBAR PROFILO UTENTE — palette rosa PAwerUP
-   Colori dal styles.css globale:
-     --main-color:       #f86ded
-     --main-color-hover: #ff9ef8
-     gradient active:    135deg, #f86ded → #fb7185
-     dark bg:            #020617
-   ═══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════
+   SIDEBAR PROFILO — stile invariato + aggiunta voce fedeltà
+══════════════════════════════════════════════════════════════════ */
 
-/* ── Container ──────────────────────────────────────────── */
+/* ── Layout contenitore ─────────────────────────────────────────── */
 .profilo-sidebar {
-  /* Gradiente scuro caldo che richiama il rosa del brand */
-  background: linear-gradient(160deg, #1a0820 0%, #2d0d2a 45%, #3a1035 100%);
+  background: #fff;
   border-radius: 1.25rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  padding: 0;
   overflow: hidden;
-  box-shadow:
-    0 4px 6px rgba(0,0,0,0.18),
-    0 12px 32px rgba(248, 109, 237, 0.18),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-  position: sticky;
-  top: 1.5rem;
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  width: 280px; /* Larghezza fissa base della sidebar */
-  min-width: 80px;
+  transition: width .3s ease, min-width .3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  min-width: 260px;
 }
 
-/* ── Header ───────────────────────────────────────────── */
+.profilo-sidebar.collapsed {
+  width: 72px;
+  min-width: 72px;
+}
+
+.profilo-sidebar.no-transition,
+.profilo-sidebar.no-transition * {
+  transition: none !important;
+}
+
+/* testo/elementi nascosti quando collapsed */
+.profilo-sidebar.collapsed .nav-text,
+.profilo-sidebar.collapsed .profilo-nav-arrow {
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity .2s ease, width .3s ease;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
 .profilo-sidebar-header {
   position: relative;
-  padding: 1.75rem 1.5rem 1.25rem;
-  text-align: center;
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+  padding: 1.5rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
   overflow: hidden;
+  min-height: 180px;
 }
 
-/* Cerchi decorativi di sfondo con il rosa del sito */
-.profilo-sidebar-bg-deco::before,
-.profilo-sidebar-bg-deco::after {
-  content: '';
+.profilo-sidebar-bg-deco {
   position: absolute;
-  border-radius: 50%;
-  opacity: 0.13;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(255,255,255,.12) 0%, transparent 60%);
   pointer-events: none;
 }
-.profilo-sidebar-bg-deco::before {
-  width: 200px;
-  height: 200px;
-  background: #f86ded;
-  top: -70px;
-  left: -50px;
-}
-.profilo-sidebar-bg-deco::after {
-  width: 130px;
-  height: 130px;
-  background: #ff9ef8;
-  bottom: -30px;
-  right: -30px;
-}
 
-/* Pulsante toggle */
+/* Toggle btn */
 .profilo-toggle-btn {
   position: absolute;
-  top: 0.9rem;
-  right: 0.9rem;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.6);
-  border-radius: 0.5rem;
+  top: .75rem;
+  right: .75rem;
+  background: rgba(255,255,255,.15);
+  border: none;
+  color: #fff;
+  border-radius: .5rem;
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Aggiunta transizione fluida */
+  transition: background .2s;
+  font-size: 1rem;
+  z-index: 2;
 }
-.profilo-toggle-btn:hover {
-  background: rgba(248, 109, 237, 0.18);
-  color: #f86ded;
-}
+.profilo-toggle-btn:hover { background: rgba(255,255,255,.3); }
 
-/* Avatar con iniziali */
-.profilo-avatar-wrap {
-  display: inline-block;
-  margin-bottom: 0.8rem;
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Assicura lo spostamento fluido */
-}
-
+/* Avatar */
+.profilo-avatar-wrap { margin-top: .25rem; }
 .profilo-avatar {
-  width: 68px;
-  height: 68px;
+  width: 56px;
+  height: 56px;
+  background: rgba(255,255,255,.25);
+  border: 2px solid rgba(255,255,255,.6);
   border-radius: 50%;
-  background: linear-gradient(135deg, #f86ded, #fb7185);
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-size: 1.3rem;
+  font-weight: 700;
   color: #fff;
-  letter-spacing: 0.03em;
-  transition: all 0.3s ease;
-  box-shadow:
-    0 0 0 3px rgba(248, 109, 237, 0.3),
-    0 0 18px rgba(248, 109, 237, 0.4);
-  animation: avatarPulsePink 3.5s ease-in-out infinite;
+  letter-spacing: .05em;
 }
 
-@keyframes avatarPulsePink {
-  0%, 100% {
-    box-shadow: 0 0 0 3px rgba(248,109,237,0.3), 0 0 18px rgba(248,109,237,0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(248,109,237,0.12), 0 0 28px rgba(248,109,237,0.6);
-  }
+/* Nome / email */
+.profilo-header-info {
+  text-align: center;
+  transition: opacity .2s, width .3s;
 }
-
-/* Nome e email */
 .profilo-sidebar-name {
   color: #fff;
   font-weight: 700;
-  font-size: 0.95rem;
-  margin: 0 0 0.15rem;
-  letter-spacing: 0.01em;
+  font-size: .95rem;
+  margin: 0;
   white-space: nowrap;
-  transition: all 0.3s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 .profilo-sidebar-email {
-  color: rgba(255,255,255,0.45);
-  font-size: 0.75rem;
-  margin-bottom: 1rem;
-  word-break: break-all;
+  color: rgba(255,255,255,.75);
+  font-size: .72rem;
+  margin: 0;
   white-space: nowrap;
-  transition: all 0.3s ease;
-}
-
-/* Card punti fedeltà */
-.profilo-points-card {
-  background: rgba(248, 109, 237, 0.1);
-  border: 1px solid rgba(248, 109, 237, 0.2);
-  border-radius: 0.85rem;
-  padding: 0.75rem 1rem;
-  text-align: left;
   overflow: hidden;
-  transition: all 0.3s ease;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
+/* Punti fedeltà card */
+.profilo-points-card {
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: .75rem;
+  padding: .55rem .75rem;
+  width: 100%;
+  max-width: 220px;
+  margin-top: .25rem;
+  transition: opacity .2s, width .3s;
+}
 .profilo-points-top {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  margin-bottom: 0.6rem;
+  gap: .35rem;
 }
+.profilo-points-icon { color: #ffd700; font-size: .9rem; }
+.profilo-points-value { color: #fff; font-weight: 700; font-size: 1rem; }
+.profilo-points-label { color: rgba(255,255,255,.8); font-size: .7rem; }
 
-.profilo-points-icon {
-  color: #facc15;
-  font-size: 0.95rem;
-  line-height: 1;
-}
-
-.profilo-points-value {
-  color: #fff;
-  font-weight: 800;
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.profilo-points-label {
-  color: rgba(255,255,255,0.5);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-}
-
-/* Barra livello */
+.profilo-level-bar-wrap { margin-top: .35rem; }
 .profilo-level-bar {
   height: 5px;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,.25);
   border-radius: 99px;
   overflow: hidden;
-  margin-bottom: 0.35rem;
 }
-
 .profilo-level-fill {
   height: 100%;
-  background: linear-gradient(90deg, #f86ded, #fb7185);
+  background: #ffd700;
   border-radius: 99px;
-  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: width .6s ease;
 }
-
 .profilo-level-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.4);
-  letter-spacing: 0.04em;
-  font-weight: 600;
+  font-size: .62rem;
+  color: rgba(255,255,255,.7);
+  margin-top: .2rem;
 }
 
-/* ── Divider ───────────────────────────────────────────── */
+/* ── Divider ─────────────────────────────────────────────────────── */
 .profilo-sidebar-divider {
   display: flex;
   align-items: center;
-  padding: 0 1.25rem;
-  margin: 0.4rem 0;
+  padding: .5rem 1rem;
+  gap: .5rem;
 }
 .profilo-sidebar-divider::before,
 .profilo-sidebar-divider::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: rgba(255,255,255,0.09);
+  background: #f0f0f0;
 }
 .profilo-sidebar-divider span {
-  color: rgba(255,255,255,0.28);
-  font-size: 0.63rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  padding: 0 0.6rem;
+  color: #bbb;
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .08em;
   white-space: nowrap;
-  transition: all 0.3s ease;
 }
 
-/* ── Navigazione ───────────────────────────────────────── */
+/* ── Navigazione ─────────────────────────────────────────────────── */
 .profilo-nav {
-  padding: 0.4rem 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  padding: .25rem .5rem;
+  gap: .15rem;
+  flex: 1;
 }
 
 .profilo-nav-link {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.65rem 0.9rem;
-  border-radius: 0.7rem;
-  color: rgba(255,255,255,0.65);
+  gap: .65rem;
+  padding: .6rem .75rem;
+  border-radius: .65rem;
   text-decoration: none;
+  color: #444;
+  font-size: .88rem;
   font-weight: 500;
-  font-size: 0.88rem;
-  transition: background 0.18s ease, color 0.18s ease, transform 0.14s ease;
+  transition: background .18s, color .18s;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
 }
-
 .profilo-nav-link:hover {
-  background: rgba(248, 109, 237, 0.1);
-  color: #ff9ef8;
-  transform: translateX(3px);
+  background: #fdf0f0;
+  color: #c0392b;
 }
-
-/* Voce attiva: stesso gradiente rosa usato ovunque nel sito */
 .profilo-nav-link.active {
-  background: linear-gradient(135deg, rgba(248,109,237,0.85), rgba(251,113,133,0.7));
-  color: #fff !important;
-  box-shadow: 0 2px 10px rgba(248, 109, 237, 0.4);
+  background: #fdf0f0;
+  color: #c0392b;
+  font-weight: 600;
 }
 
-.profilo-nav-link.active .profilo-nav-icon,
-.profilo-nav-link.active .profilo-nav-label,
-.profilo-nav-link.active .profilo-nav-arrow {
-  color: #fff !important;
+/* ── Voce Fedeltà — evidenziata in oro ───────────────────────────── */
+.profilo-nav-link--fedelta {
+  background: linear-gradient(90deg, #fff9e6 0%, #fff3cc 100%);
+  color: #b8860b;
+  border: 1px solid #f0d060;
+  font-weight: 600;
 }
+.profilo-nav-link--fedelta .profilo-nav-icon i {
+  color: #d4a017;
+}
+.profilo-nav-link--fedelta:hover {
+  background: linear-gradient(90deg, #fff3cc 0%, #ffe88a 100%);
+  color: #9a6f00;
+}
+.profilo-nav-link--fedelta.active {
+  background: linear-gradient(90deg, #ffeaa0 0%, #ffd700 100%);
+  color: #7a5200;
+  border-color: #d4a017;
+}
+/* ─────────────────────────────────────────────────────────────────── */
 
 .profilo-nav-icon {
-  width: 30px;
-  height: 30px;
-  background: rgba(255,255,255,0.07);
-  border-radius: 0.45rem;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
+  font-size: 1rem;
   flex-shrink: 0;
-  transition: background 0.18s ease;
 }
 
-.profilo-nav-link:hover .profilo-nav-icon {
-  background: rgba(248, 109, 237, 0.15);
-}
-
-.profilo-nav-link.active .profilo-nav-icon {
-  background: rgba(255,255,255,0.18);
-}
-
-.profilo-nav-label {
-  flex: 1;
-  font-weight: 600;
-  white-space: nowrap;
-  transition: all 0.3s ease;
-}
+.profilo-nav-label { flex: 1; }
 
 .profilo-nav-arrow {
-  font-size: 0.65rem;
-  opacity: 0;
-  transition: opacity 0.18s ease;
-  color: rgba(255,255,255,0.4);
+  font-size: .7rem;
+  color: #ccc;
+  transition: opacity .2s;
 }
 .profilo-nav-link:hover .profilo-nav-arrow,
 .profilo-nav-link.active .profilo-nav-arrow {
-  opacity: 1;
+  color: #c0392b;
 }
 
-/* ── Footer / Logout ───────────────────────────────────── */
+/* ── Footer ─────────────────────────────────────────────────────── */
 .profilo-sidebar-footer {
-  padding: 0.9rem 1.25rem 1.5rem;
-  border-top: 1px solid rgba(255,255,255,0.07);
-  margin-top: 0.5rem;
+  padding: .75rem .5rem;
+  border-top: 1px solid #f0f0f0;
 }
 
 .profilo-logout-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  background: rgba(239,68,68,0.1);
-  border: 1px solid rgba(239,68,68,0.2);
-  color: rgba(239,68,68,0.85);
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.55rem 1rem;
-  border-radius: 0.65rem;
+  gap: .6rem;
   width: 100%;
+  padding: .55rem .75rem;
+  border: none;
+  border-radius: .65rem;
+  background: none;
+  color: #888;
+  font-size: .88rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  overflow: hidden;
+  transition: background .18s, color .18s;
   white-space: nowrap;
+  overflow: hidden;
 }
 .profilo-logout-btn:hover {
-  background: rgba(239,68,68,0.2);
-  color: #ef4444;
-  border-color: rgba(239,68,68,0.4);
+  background: #fdf0f0;
+  color: #c0392b;
 }
 
-/* ── STATO CHIUSO (COLLAPSED) ──────────────────────────── */
-.profilo-sidebar.collapsed {
-  width: 80px; /* Larghezza ridotta, mostra solo le icone */
-}
-
-/* Ridimensionamento dell'avatar per evitare che stoni */
-.profilo-sidebar.collapsed .profilo-avatar {
-  width: 42px;
-  height: 42px;
-  font-size: 1.1rem;
-}
-
-/* 1. Spingiamo l'avatar verso il basso per fare spazio al bottone menù */
-.profilo-sidebar.collapsed .profilo-avatar-wrap {
-  margin-top: 2rem;
-}
-
-/* 2. Centriamo il pulsante in alto e lo ruotiamo per indicare l'apertura */
-.profilo-sidebar.collapsed .profilo-toggle-btn {
-  right: calc(50% - 16px); /* 16px è la metà esatta della larghezza (32px) */
-  transform: rotate(180deg);
-}
-/* Nascondi i testi scivolando via delicatamente */
-.profilo-sidebar.collapsed .profilo-sidebar-name,
-.profilo-sidebar.collapsed .profilo-sidebar-email,
-.profilo-sidebar.collapsed .profilo-nav-label,
-.profilo-sidebar.collapsed .profilo-nav-arrow,
-.profilo-sidebar.collapsed .profilo-sidebar-divider span,
-.profilo-sidebar.collapsed .profilo-logout-btn span {
-  opacity: 0;
-  visibility: hidden;
-  width: 0;
-  padding: 0;
-  margin: 0;
-}
-
-/* Riduciamo il padding del footer per non schiacciare troppo l'icona del logout */
-.profilo-sidebar.collapsed .profilo-sidebar-footer {
-  padding: 0.9rem 0.5rem 1.5rem;
-}
-
-/* Nascondi la card dei punti (rimuove anche l'ingombro verticale) */
-.profilo-sidebar.collapsed .profilo-points-card {
-  opacity: 0;
-  visibility: hidden;
-  height: 0;
-  padding: 0;
-  margin: 0;
-  border: none;
-}
-
-/* Adatta il bottone di logout in modo che mostri solo l'icona centrata */
-.profilo-sidebar.collapsed .profilo-logout-btn {
-  padding: 0.55rem 0;
-  justify-content: center;
-}
-
-/* ── Responsive ───────────────────────────────────────── */
+/* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 991px) {
   .profilo-sidebar {
-    position: static;
-    border-radius: 1rem;
-    margin-bottom: 1.5rem;
+    width: 72px;
+    min-width: 72px;
   }
 }

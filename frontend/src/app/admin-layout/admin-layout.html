@@ -7,25 +7,18 @@
 
         <!-- Header sidebar -->
         <div class="admin-sidebar-header">
-          <!-- Sfondo decorativo -->
           <div class="admin-sidebar-bg-deco"></div>
-
-          <!-- Icona scudo -->
           <div class="admin-shield-wrap">
             <div class="admin-shield">
               <i class="bi bi-shield-lock-fill"></i>
             </div>
             <span class="admin-badge-pill">ADMIN</span>
           </div>
-
-          <!-- Nome e ruolo -->
           <h5 class="admin-sidebar-name">{{ adminNome }}</h5>
           <p class="admin-sidebar-role">
             <i class="bi bi-circle-fill admin-online-dot"></i>
             Portale di Gestione
           </p>
-
-          <!-- Ora live -->
           <div class="admin-ora">{{ oraCorrente }}</div>
         </div>
 
@@ -36,8 +29,7 @@
 
         <!-- Voci di menu -->
         <nav class="admin-nav">
-          <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-            class="admin-nav-link">
+          <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="admin-nav-link">
             <span class="admin-nav-icon"><i class="bi bi-speedometer2"></i></span>
             <span class="admin-nav-label">Dashboard</span>
             <i class="bi bi-chevron-right admin-nav-arrow"></i>
@@ -67,6 +59,13 @@
             <span class="admin-nav-label">Coupon</span>
             <i class="bi bi-chevron-right admin-nav-arrow"></i>
           </a>
+          <!-- ══ SHOP FEDELTÀ ═══════════════════════════════════════ -->
+          <a routerLink="/admin/shop-fedelta" routerLinkActive="active" class="admin-nav-link admin-nav-link--fedelta">
+            <span class="admin-nav-icon"><i class="bi bi-stars"></i></span>
+            <span class="admin-nav-label">Shop Fedeltà</span>
+            <i class="bi bi-chevron-right admin-nav-arrow"></i>
+          </a>
+          <!-- ════════════════════════════════════════════════════════ -->
         </nav>
 
         <!-- Footer sidebar -->
@@ -82,7 +81,6 @@
 
     <!-- ═══ CONTENUTO PRINCIPALE ════════════════════════════════════════════ -->
     <div class="col-lg-9">
-      <!-- Banner area protetta -->
       <div class="admin-area-banner mb-4">
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-shield-exclamation fs-5"></i>
@@ -93,7 +91,6 @@
         </div>
         <span class="admin-area-badge">ACCESSO PRIVILEGIATO</span>
       </div>
-
       <router-outlet></router-outlet>
     </div>
 

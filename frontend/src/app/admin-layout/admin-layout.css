@@ -1,304 +1,224 @@
-/* ═══════════════════════════════════════════════════════
-   ADMIN LAYOUT — Sidebar professionale
-   ═══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   ADMIN LAYOUT — stile invariato + voce Shop Fedeltà in oro
+══════════════════════════════════════════════════════════ */
 
 .admin-wrapper {
-  padding: 2rem 1rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 1.5rem 1rem;
 }
 
-/* ── Sidebar container ───────────────────────────────── */
+/* ── Sidebar ─────────────────────────────────────────────── */
 .admin-sidebar {
-  background: linear-gradient(160deg, #1a0a0e 0%, #2d0f17 40%, #3d1520 100%);
+  background: #fff;
   border-radius: 1.25rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
   overflow: hidden;
-  box-shadow:
-    0 4px 6px rgba(0,0,0,0.18),
-    0 12px 32px rgba(180, 20, 40, 0.18),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
   position: sticky;
   top: 1.5rem;
 }
 
-/* ── Header ──────────────────────────────────────────── */
+/* Header */
 .admin-sidebar-header {
   position: relative;
-  padding: 2rem 1.5rem 1.5rem;
-  text-align: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+  padding: 1.75rem 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
   overflow: hidden;
 }
-
-/* Cerchi decorativi di sfondo */
-.admin-sidebar-bg-deco::before,
-.admin-sidebar-bg-deco::after {
-  content: '';
+.admin-sidebar-bg-deco {
   position: absolute;
-  border-radius: 50%;
-  opacity: 0.12;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(255,255,255,.07) 0%, transparent 60%);
   pointer-events: none;
 }
-.admin-sidebar-bg-deco::before {
-  width: 180px;
-  height: 180px;
-  background: #dc3545;
-  top: -60px;
-  left: -40px;
-}
-.admin-sidebar-bg-deco::after {
-  width: 120px;
-  height: 120px;
-  background: #ff6b6b;
-  bottom: -20px;
-  right: -30px;
-}
 
-/* Scudo con badge ADMIN */
 .admin-shield-wrap {
   position: relative;
   display: inline-block;
-  margin-bottom: 0.75rem;
 }
-
 .admin-shield {
-  width: 72px;
-  height: 72px;
+  width: 60px;
+  height: 60px;
+  background: rgba(255,255,255,.12);
+  border: 2px solid rgba(255,255,255,.25);
   border-radius: 50%;
-  background: linear-gradient(135deg, #dc3545, #a71d2a);
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.9rem;
+  font-size: 1.6rem;
   color: #fff;
-  box-shadow:
-    0 0 0 3px rgba(220,53,69,0.3),
-    0 0 20px rgba(220,53,69,0.4);
-  animation: shieldPulse 3s ease-in-out infinite;
 }
-
-@keyframes shieldPulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(220,53,69,0.3), 0 0 20px rgba(220,53,69,0.4); }
-  50%       { box-shadow: 0 0 0 6px rgba(220,53,69,0.15), 0 0 30px rgba(220,53,69,0.6); }
-}
-
 .admin-badge-pill {
   position: absolute;
-  bottom: -4px;
+  bottom: -6px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(90deg, #ff4757, #dc3545);
+  background: #e74c3c;
   color: #fff;
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  padding: 2px 8px;
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  padding: 1px 8px;
   border-radius: 99px;
   white-space: nowrap;
-  border: 2px solid #2d0f17;
 }
 
-/* Nome admin */
 .admin-sidebar-name {
   color: #fff;
   font-weight: 700;
-  font-size: 1rem;
-  margin: 0.5rem 0 0.2rem;
-  letter-spacing: 0.01em;
+  font-size: .98rem;
+  margin: .4rem 0 0;
+  text-align: center;
 }
-
-/* Ruolo */
 .admin-sidebar-role {
-  color: rgba(255,255,255,0.55);
-  font-size: 0.78rem;
-  margin-bottom: 0.75rem;
+  color: rgba(255,255,255,.65);
+  font-size: .75rem;
+  margin: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
+  gap: .35rem;
 }
+.admin-online-dot { color: #2ecc71; font-size: .5rem; }
 
-.admin-online-dot {
-  font-size: 0.45rem;
-  color: #28a745;
-  animation: blinkDot 2s ease-in-out infinite;
-}
-
-@keyframes blinkDot {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
-}
-
-/* Ora live */
 .admin-ora {
-  display: inline-block;
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.7);
-  font-size: 0.82rem;
-  font-family: 'Courier New', monospace;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  padding: 0.3rem 0.9rem;
-  border-radius: 99px;
-  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,.5);
+  font-size: .7rem;
+  margin-top: .15rem;
+  font-family: monospace;
 }
 
-/* ── Divider sezione ─────────────────────────────────── */
+/* Divider */
 .admin-sidebar-divider {
   display: flex;
   align-items: center;
-  padding: 0 1.25rem;
-  margin: 0.5rem 0;
+  padding: .5rem 1rem;
+  gap: .5rem;
 }
-
 .admin-sidebar-divider::before,
 .admin-sidebar-divider::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: rgba(255,255,255,0.1);
+  background: #f0f0f0;
 }
-
 .admin-sidebar-divider span {
-  color: rgba(255,255,255,0.3);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  padding: 0 0.6rem;
+  color: #bbb;
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .08em;
   white-space: nowrap;
 }
 
-/* ── Navigazione ─────────────────────────────────────── */
+/* Nav */
 .admin-nav {
-  padding: 0.5rem 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  padding: .25rem .5rem;
+  gap: .15rem;
+  flex: 1;
 }
-
 .admin-nav-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.7rem 1rem;
-  border-radius: 0.75rem;
-  color: rgba(255,255,255,0.7);
+  gap: .65rem;
+  padding: .6rem .75rem;
+  border-radius: .65rem;
   text-decoration: none;
+  color: #444;
+  font-size: .88rem;
   font-weight: 500;
-  font-size: 0.9rem;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
-  position: relative;
+  transition: background .18s, color .18s;
+  white-space: nowrap;
+  overflow: hidden;
 }
-
 .admin-nav-link:hover {
-  background: rgba(255,255,255,0.08);
-  color: #fff;
-  transform: translateX(3px);
+  background: #f5f5f5;
+  color: #1a1a2e;
 }
-
 .admin-nav-link.active {
-  background: linear-gradient(90deg, rgba(220,53,69,0.85), rgba(167,29,42,0.7));
-  color: #fff !important;
-  box-shadow: 0 2px 12px rgba(220,53,69,0.4);
+  background: #eef0f8;
+  color: #0f3460;
+  font-weight: 600;
 }
 
-.admin-nav-link.active .admin-nav-icon,
-.admin-nav-link.active .admin-nav-label,
-.admin-nav-link.active .admin-nav-arrow {
-  color: #fff !important;
+/* ── Voce Shop Fedeltà — evidenziata in oro ─────────────── */
+.admin-nav-link--fedelta {
+  background: linear-gradient(90deg, #fff9e6 0%, #fff3cc 100%);
+  color: #b8860b;
+  border: 1px solid #f0d060;
+  font-weight: 600;
 }
+.admin-nav-link--fedelta .admin-nav-icon i { color: #d4a017; }
+.admin-nav-link--fedelta:hover {
+  background: linear-gradient(90deg, #fff3cc 0%, #ffe88a 100%);
+  color: #9a6f00;
+}
+.admin-nav-link--fedelta.active {
+  background: linear-gradient(90deg, #ffeaa0 0%, #ffd700 100%);
+  color: #7a5200;
+  border-color: #d4a017;
+}
+/* ──────────────────────────────────────────────────────── */
 
 .admin-nav-icon {
-  width: 32px;
-  height: 32px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 0.5rem;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
   flex-shrink: 0;
-  transition: background 0.2s ease;
 }
-
-.admin-nav-link.active .admin-nav-icon {
-  background: rgba(255,255,255,0.2);
-}
-
-.admin-nav-label {
-  flex: 1;
-  font-weight: 600;
-}
-
-.admin-nav-arrow {
-  font-size: 0.7rem;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  color: rgba(255,255,255,0.5);
-}
-
+.admin-nav-label { flex: 1; }
+.admin-nav-arrow { font-size: .7rem; color: #ccc; }
 .admin-nav-link:hover .admin-nav-arrow,
-.admin-nav-link.active .admin-nav-arrow {
-  opacity: 1;
-}
+.admin-nav-link.active .admin-nav-arrow { color: #0f3460; }
 
-/* ── Footer sidebar ──────────────────────────────────── */
+/* Footer */
 .admin-sidebar-footer {
-  padding: 1rem 1.25rem 1.5rem;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  margin-top: 0.5rem;
+  padding: .75rem 1rem;
+  border-top: 1px solid #f0f0f0;
 }
-
 .admin-back-link {
   display: flex;
   align-items: center;
-  color: rgba(255,255,255,0.45);
+  color: #888;
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
-  padding: 0.4rem 0;
+  font-size: .85rem;
+  padding: .4rem .5rem;
+  border-radius: .5rem;
+  transition: background .18s, color .18s;
 }
-
 .admin-back-link:hover {
-  color: rgba(255,255,255,0.85);
+  background: #f5f5f5;
+  color: #333;
 }
 
-/* ═══════════════════════════════════════════════════════
-   BANNER AREA PROTETTA
-   ═══════════════════════════════════════════════════════ */
+/* Banner area protetta */
 .admin-area-banner {
+  background: linear-gradient(90deg, #fff8f8, #fff0f0);
+  border: 1px solid #fad7d7;
+  border-radius: .875rem;
+  padding: .75rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(90deg, #fff5f6, #ffe8eb);
-  border: 1px solid #ffccd5;
-  border-left: 4px solid #dc3545;
-  border-radius: 0.75rem;
-  padding: 0.85rem 1.25rem;
-  color: #6b1220;
-  font-size: 0.88rem;
+  gap: 1rem;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  color: #555;
+  font-size: .88rem;
 }
-
 .admin-area-badge {
-  background: #dc3545;
+  background: #e74c3c;
   color: #fff;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .1em;
   padding: 3px 10px;
   border-radius: 99px;
   white-space: nowrap;
-}
-
-/* ── Responsive ──────────────────────────────────────── */
-@media (max-width: 991px) {
-  .admin-sidebar {
-    position: static;
-    border-radius: 1rem;
-  }
-  .admin-wrapper {
-    padding: 1rem 0.5rem;
-  }
 }
