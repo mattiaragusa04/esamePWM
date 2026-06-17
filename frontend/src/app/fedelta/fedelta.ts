@@ -2,6 +2,8 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { ToastService } from '../shared/toast.service';
+import { PuntiService } from '../shared/punti.service';
 
 interface CatalogoCoupon {
   id: string;
@@ -44,9 +46,9 @@ export class FedeltaComponent implements OnInit {
 
   caricandoCoupon   = false;
   caricandoProdotti = false;
-  acquistandoPreset: number | null = null;
+  // Mappa percentuale -> booleano per tracciare ogni singolo preset in acquisto
+  acquistandoPresetMap: Record<number, boolean> = {};
 
-  messaggio: { testo: string; tipo: 'success' | 'error' } | null = null;
   couponAcquistato: { codice: string; percentuale: number; scadenza: string } | null = null;
 
   prodottoScelto: ProdottoUsato | null = null;
@@ -57,23 +59,28 @@ export class FedeltaComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private http: HttpClient
+    private http: HttpClient,
+    private toast: ToastService,
+    private puntiService: PuntiService
   ) {}
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    this.leggiPuntiLocali();
+    this.puntiFedelta = this.puntiService.valore || this.leggiPuntiLocali();
     this.caricaPresetCoupon();
     this.caricaCatalogoCoupon();
     this.caricaProdottiUsati();
   }
 
-  private leggiPuntiLocali(): void {
-    const raw = localStorage.getItem('user');
-    if (raw) {
-      const u = JSON.parse(raw);
-      this.puntiFedelta = u.puntiFedelta ?? u.punti_fedelta ?? 0;
-    }
+  private leggiPuntiLocali(): number {
+    try {
+      const raw = localStorage.getItem('user');
+      if (raw) {
+        const u = JSON.parse(raw);
+        return u.puntiFedelta ?? u.punti_fedelta ?? 0;
+      }
+    } catch {}
+    return 0;
   }
 
   private headers(): HttpHeaders {
@@ -100,7 +107,7 @@ export class FedeltaComponent implements OnInit {
     this.http.get<CatalogoCoupon[]>(`${this.API}/catalogo-coupon`, { headers: this.headers() })
       .subscribe({
         next: d  => { this.catalogoCoupon = d; this.caricandoCoupon = false; },
-        error: () => this.caricandoCoupon = false
+        error: () => { this.caricandoCoupon = false; }
       });
   }
 
@@ -109,58 +116,62 @@ export class FedeltaComponent implements OnInit {
     this.http.get<ProdottoUsato[]>(`${this.API}/prodotti-usati`, { headers: this.headers() })
       .subscribe({
         next: d  => { this.prodottiUsati = d; this.caricandoProdotti = false; },
-        error: () => this.caricandoProdotti = false
+        error: () => { this.caricandoProdotti = false; }
       });
   }
 
   acquistaPreset(preset: PresetCoupon): void {
     if (this.puntiFedelta < preset.costoInPunti) {
-      this.mostraMessaggio(`Punti insufficienti (hai ${this.puntiFedelta} pt, ne servono ${preset.costoInPunti} pt).`, 'error');
+      this.toast.error(`Punti insufficienti (hai ${this.puntiFedelta} pt, ne servono ${preset.costoInPunti} pt).`);
       return;
     }
-    this.acquistandoPreset = preset.percentuale;
+    // Segna SOLO questo preset come in acquisto
+    this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.percentuale]: true };
+
     this.http.post<any>(`${this.API}/acquista-preset-coupon`, { percentuale: preset.percentuale }, { headers: this.headers() })
       .subscribe({
         next: r => {
-          this.acquistandoPreset = null;
+          // Rimuovi il flag di loading per questo preset
+          this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.percentuale]: false };
+
           this.puntiFedelta = r.puntiFedeltaRimanenti;
-          this.aggiornaPuntiLocale(r.puntiFedeltaRimanenti);
+          // Propaga al service → aggiorna sidebar in real-time
+          this.puntiService.aggiorna(r.puntiFedeltaRimanenti);
 
           const nuovoCoupon = { codice: r.codice, percentuale: preset.percentuale, scadenza: r.scadenza };
           this.couponAcquistato = nuovoCoupon;
 
-          // Salva il coupon e lo storico punti nel localStorage per la pagina Profilo
           this.salvaCouponLocale(nuovoCoupon, preset.costoInPunti, preset.descrizione);
 
-          this.mostraMessaggio(`✅ Coupon acquistato! Codice: ${r.codice}`, 'success');
+          // Toast di conferma con il codice generato
+          this.toast.success(`✅ Coupon -${preset.percentuale}% ottenuto! Codice: ${r.codice}`, 5000);
         },
         error: e => {
-          this.acquistandoPreset = null;
-          this.mostraMessaggio(e.error?.error || 'Errore durante l\'acquisto.', 'error');
+          this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.percentuale]: false };
+          this.toast.error(e.error?.error || 'Errore durante l\'acquisto.');
         }
       });
   }
 
   acquistaCoupon(coupon: CatalogoCoupon): void {
     if (this.puntiFedelta < coupon.costoInPunti) {
-      this.mostraMessaggio(`Punti insufficienti (hai ${this.puntiFedelta} pt, ne servono ${coupon.costoInPunti} pt).`, 'error');
+      this.toast.error(`Punti insufficienti (hai ${this.puntiFedelta} pt, ne servono ${coupon.costoInPunti} pt).`);
       return;
     }
     this.http.post<any>(`${this.API}/acquista-coupon`, { catalogoId: coupon.id }, { headers: this.headers() })
       .subscribe({
         next: r => {
           this.puntiFedelta = r.puntiFedeltaRimanenti;
-          this.aggiornaPuntiLocale(r.puntiFedeltaRimanenti);
+          this.puntiService.aggiorna(r.puntiFedeltaRimanenti);
 
           const nuovoCoupon = { codice: r.codice, percentuale: coupon.percentuale, scadenza: r.scadenza };
           this.couponAcquistato = nuovoCoupon;
 
-          // Salva il coupon e lo storico punti nel localStorage per la pagina Profilo
           this.salvaCouponLocale(nuovoCoupon, coupon.costoInPunti, coupon.descrizione);
 
-          this.mostraMessaggio(`✅ Coupon acquistato! Codice: ${r.codice}`, 'success');
+          this.toast.success(`✅ Coupon -${coupon.percentuale}% riscattato! Codice: ${r.codice}`, 5000);
         },
-        error: e => this.mostraMessaggio(e.error?.error || 'Errore durante l\'acquisto.', 'error')
+        error: e => this.toast.error(e.error?.error || 'Errore durante l\'acquisto.')
       });
   }
 
@@ -177,39 +188,33 @@ export class FedeltaComponent implements OnInit {
   confermaAcquistoProdotto(): void {
     if (!this.prodottoScelto) return;
     this.acquistando = true;
-    const nomeProdotto   = this.prodottoScelto.nome;
-    const costoInPunti  = this.prodottoScelto.costoInPunti;
+    const nomeProdotto  = this.prodottoScelto.nome;
+    const costoInPunti = this.prodottoScelto.costoInPunti;
     this.http.post<any>(`${this.API}/acquista-prodotto`, { prodottoId: this.prodottoScelto.id }, { headers: this.headers() })
       .subscribe({
         next: r => {
           this.puntiFedelta = r.puntiFedeltaRimanenti;
-          this.aggiornaPuntiLocale(r.puntiFedeltaRimanenti);
+          this.puntiService.aggiorna(r.puntiFedeltaRimanenti);
           this.prodottiUsati = this.prodottiUsati
             .map(p => p.id === this.prodottoScelto!.id ? { ...p, giacenza: p.giacenza - 1 } : p)
             .filter(p => p.giacenza > 0);
           this.acquistando = false;
           this.annullaConferma();
 
-          // Salva nel storico punti (senza coupon)
           this.salvaStoricoPuntiLocale(costoInPunti, `Prodotto usato: ${nomeProdotto}`);
 
-          this.mostraMessaggio(`🏆 Acquisto effettuato! Ordine #${r.ordineId} creato con ${r.costoInPunti} punti.`, 'success');
+          this.toast.success(`🏆 Acquisto effettuato! Ordine #${r.ordineId} creato con ${r.costoInPunti} punti.`);
         },
         error: e => {
           this.acquistando = false;
-          this.mostraMessaggio(e.error?.error || 'Errore durante l\'acquisto.', 'error');
+          this.toast.error(e.error?.error || 'Errore durante l\'acquisto.');
         }
       });
   }
 
-  private aggiornaPuntiLocale(nuoviPunti: number): void {
-    const raw = localStorage.getItem('user');
-    if (raw) {
-      const u = JSON.parse(raw);
-      u.puntiFedelta = nuoviPunti;
-      u.punti_fedelta = nuoviPunti;
-      localStorage.setItem('user', JSON.stringify(u));
-    }
+  /** Restituisce true se il preset con quella percentuale è in fase di acquisto */
+  isAcquistandoPreset(percentuale: number): boolean {
+    return !!this.acquistandoPresetMap[percentuale];
   }
 
   /**
@@ -221,13 +226,10 @@ export class FedeltaComponent implements OnInit {
     puntiSpesi: number,
     descrizione: string
   ): void {
-    // 1. Salva coupon
     let couponList: any[] = [];
     try { couponList = JSON.parse(localStorage.getItem('coupon_riscattati') || '[]'); } catch {}
     couponList.unshift({ ...coupon, dataAcquisto: new Date().toISOString() });
     localStorage.setItem('coupon_riscattati', JSON.stringify(couponList));
-
-    // 2. Aggiorna storico spesa
     this.salvaStoricoPuntiLocale(puntiSpesi, descrizione, coupon.codice);
   }
 
@@ -242,11 +244,6 @@ export class FedeltaComponent implements OnInit {
       ...(codice ? { codice } : {})
     });
     localStorage.setItem('storico_punti', JSON.stringify(storico));
-  }
-
-  private mostraMessaggio(testo: string, tipo: 'success' | 'error'): void {
-    this.messaggio = { testo, tipo };
-    setTimeout(() => this.messaggio = null, 6000);
   }
 
   getCopiaAbbreviata(codice: string): string {

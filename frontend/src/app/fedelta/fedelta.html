@@ -13,15 +13,6 @@
     </div>
   </div>
 
-  <!-- ══════════ TOAST MESSAGGIO ══════════ -->
-  <div class="fedelta-toast" *ngIf="messaggio"
-       [class.toast-success]="messaggio.tipo === 'success'"
-       [class.toast-error]="messaggio.tipo === 'error'">
-    <i class="bi" [class.bi-check-circle-fill]="messaggio.tipo === 'success'"
-                  [class.bi-exclamation-triangle-fill]="messaggio.tipo === 'error'"></i>
-    {{ messaggio.testo }}
-  </div>
-
   <!-- ══════════ COUPON ACQUISTATO ══════════ -->
   <div class="fedelta-coupon-result" *ngIf="couponAcquistato">
     <div class="coupon-result-card">
@@ -83,12 +74,12 @@
           </div>
 
           <button class="preset-btn"
-                  [disabled]="puntiFedelta < p.costoInPunti || acquistandoPreset === p.percentuale"
+                  [disabled]="puntiFedelta < p.costoInPunti || isAcquistandoPreset(p.percentuale)"
                   (click)="acquistaPreset(p)">
-            <span *ngIf="acquistandoPreset !== p.percentuale">
+            <span *ngIf="!isAcquistandoPreset(p.percentuale)">
               <i class="bi bi-lightning-charge-fill"></i> Ottieni codice
             </span>
-            <span *ngIf="acquistandoPreset === p.percentuale">
+            <span *ngIf="isAcquistandoPreset(p.percentuale)">
               <i class="bi bi-arrow-repeat spin"></i> Generazione…
             </span>
           </button>

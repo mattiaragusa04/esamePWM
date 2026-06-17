@@ -1,7 +1,9 @@
-import { Component, OnInit, Inject, PLATFORM_ID, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, HostListener } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ToastService } from '../shared/toast.service';
+import { PuntiService } from '../shared/punti.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,17 +11,19 @@ import { ToastService } from '../shared/toast.service';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
-export class Sidebar implements OnInit {
+export class Sidebar implements OnInit, OnDestroy {
   utente: any = null;
   isMenuCollapsed: boolean = false;
   isAnimationEnabled: boolean = false;
   private readonly COLLAPSE_BREAKPOINT = 992;
   private autoCollapsed: boolean = false;
+  private punteSub?: Subscription;
 
   constructor(
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private toast: ToastService
+    private toast: ToastService,
+    private puntiService: PuntiService
   ) {}
 
   ngOnInit(): void {
@@ -36,8 +40,40 @@ export class Sidebar implements OnInit {
       }
 
       setTimeout(() => { this.isAnimationEnabled = true; }, 50);
+
+      // ── Subscribe al BehaviorSubject: aggiorna utente.puntiFedelta in real-time
+      this.punteSub = this.puntiService.punti$.subscribe(punti => {
+        if (!this.utente) {
+          const raw = localStorage.getItem('user');
+          if (raw) this.utente = JSON.parse(raw);
+        }
+        if (this.utente) {
+          this.utente = { ...this.utente, puntiFedelta: punti };
+        }
+      });
+
+      // ── StorageEvent: intercetta modifiche fatte da altre schede / dal pannello admin
+      window.addEventListener('storage', this.onStorage);
     }
   }
+
+  ngOnDestroy(): void {
+    this.punteSub?.unsubscribe();
+    if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('storage', this.onStorage);
+    }
+  }
+
+  /** Ricarica i punti quando il localStorage 'user' cambia da un'altra tab/admin */
+  private onStorage = (e: StorageEvent) => {
+    if (e.key === 'user' && e.newValue) {
+      try {
+        const u = JSON.parse(e.newValue);
+        const nuoviPunti = u.puntiFedelta ?? u.punti_fedelta ?? 0;
+        this.puntiService.aggiorna(nuoviPunti);
+      } catch {}
+    }
+  };
 
   // ── Proprietà derivate ─────────────────────────────────────
 
