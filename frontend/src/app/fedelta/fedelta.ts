@@ -55,7 +55,7 @@ export class FedeltaComponent implements OnInit {
   mostraConferma = false;
   acquistando = false;
 
-  private readonly API = 'http://localhost:3000/api/fedelta';
+  private readonly API = 'http://localhost:3000/api/coupon/fedelta';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
