@@ -54,13 +54,10 @@ export class Profilo implements OnInit {
         }
       });
 
-      // Carica coupon riscattati dal DB
-      this.http.get<CouponRiscattato[]>(`${this.API_FEDELTA}/miei-coupon`, { headers }).subscribe({
-        next: (d) => this.couponRiscattati = d,
-        error: () => this.couponRiscattati = []
-      });
+      
     }
   }
+
 
   /** Aggiorna i punti dell'utente nel modello locale */
   aggiornaPuntiUtente(nuoviPunti: number): void {
@@ -79,6 +76,21 @@ export class Profilo implements OnInit {
     };
   }
 
+  async caricaCouponRiscattati() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${this.API_FEDELTA}/coupon-riscattati`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        this.couponRiscattati = await res.json();
+      }
+    } catch {
+      console.error('[Profilo] Impossibile connettersi al server.');
+    }
+  }
   getInitials(): string {
     if (!this.utente) return '?';
     const n = (this.utente.nome    || '').charAt(0).toUpperCase();
