@@ -10,13 +10,6 @@ export interface CouponRiscattato {
   dataAcquisto?: string;
 }
 
-export interface StoricoSpesaPunti {
-  data: string;
-  puntiSpesi: number;
-  descrizione: string;
-  codice?: string;
-}
-
 @Component({
   selector: 'app-profilo',
   standalone: true,
@@ -32,8 +25,6 @@ export class Profilo implements OnInit {
   totalPreferiti = 0;
 
   couponRiscattati: CouponRiscattato[] = [];
-  storicoSpesaPunti: StoricoSpesaPunti[] = [];
-
   private readonly API        = 'http://localhost:3000/api/auth/profile';
   private readonly API_FEDELTA = 'http://localhost:3000/api/coupon';
 
@@ -63,66 +54,12 @@ export class Profilo implements OnInit {
         }
       });
 
-      // Carica storico punti spesi
-      this.http.get<StoricoSpesaPunti[]>(`${this.API_FEDELTA}/storico-spesa`, { headers }).subscribe({
-        next: (d) => this.storicoSpesaPunti = d,
-        error: () => this.storicoSpesaPunti = this.leggiStoricoLocale()
-      });
-
-      // Carica coupon riscattati
+      // Carica coupon riscattati dal DB
       this.http.get<CouponRiscattato[]>(`${this.API_FEDELTA}/miei-coupon`, { headers }).subscribe({
         next: (d) => this.couponRiscattati = d,
-        error: () => this.couponRiscattati = this.leggiCouponLocali()
+        error: () => this.couponRiscattati = []
       });
     }
-  }
-
-  /** Legge lo storico punti spesi salvato localmente come fallback */
-  private leggiStoricoLocale(): StoricoSpesaPunti[] {
-    try {
-      const raw = localStorage.getItem('storico_punti');
-      return raw ? JSON.parse(raw) : [];
-    } catch { return []; }
-  }
-
-  /** Legge i coupon riscattati salvati localmente come fallback */
-  private leggiCouponLocali(): CouponRiscattato[] {
-    try {
-      const raw = localStorage.getItem('coupon_riscattati');
-      return raw ? JSON.parse(raw) : [];
-    } catch { return []; }
-  }
-
-  /** Aggiunge un coupon appena generato alla lista locale e aggiorna lo storico */
-  aggiungiCouponLocale(coupon: CouponRiscattato, puntiSpesi: number, descrizione: string): void {
-    // Aggiorna lista coupon
-    const couponList = this.leggiCouponLocali();
-    couponList.unshift({ ...coupon, dataAcquisto: new Date().toISOString() });
-    localStorage.setItem('coupon_riscattati', JSON.stringify(couponList));
-    this.couponRiscattati = couponList;
-
-    // Aggiorna storico punti
-    const storico = this.leggiStoricoLocale();
-    storico.unshift({
-      data: new Date().toISOString(),
-      puntiSpesi,
-      descrizione,
-      codice: coupon.codice
-    });
-    localStorage.setItem('storico_punti', JSON.stringify(storico));
-    this.storicoSpesaPunti = storico;
-  }
-
-  /** Aggiunge al storico locale una spesa per prodotto usato */
-  aggiungiSpesaProdottoLocale(puntiSpesi: number, nomeProdotto: string): void {
-    const storico = this.leggiStoricoLocale();
-    storico.unshift({
-      data: new Date().toISOString(),
-      puntiSpesi,
-      descrizione: `Prodotto usato: ${nomeProdotto}`
-    });
-    localStorage.setItem('storico_punti', JSON.stringify(storico));
-    this.storicoSpesaPunti = storico;
   }
 
   /** Aggiorna i punti dell'utente nel modello locale */
