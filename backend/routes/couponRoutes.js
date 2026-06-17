@@ -13,7 +13,7 @@ const verificaAdmin = require('../middleware/adminMiddleware');
 router.post('/valida', verificaToken, couponController.validaCoupon);
 
 // Admin: lista tutti i coupon
-router.get('/', verificaToken, verificaAdmin, couponController.getAllCoupon);
+router.get('/', verificaToken, verificaAdmin, couponController.getCoupon);
 
 // Admin: crea un nuovo coupon
 router.post('/', verificaToken, verificaAdmin, couponController.creaCoupon);

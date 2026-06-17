@@ -98,11 +98,8 @@ const Ordine = {
                 else res({ id: id, changes: this.changes });
             });
         });
-    }
-}
-
-  // Crea un ordine pagato interamente con punti fedeltà
-  static createConPunti(userId, totale) {
+    },  
+    createConPunti : (userId, totale) => {
     return new Promise((resolve, reject) => {
       const db = require('../db/database');
       db.run(
@@ -115,5 +112,8 @@ const Ordine = {
       );
     });
   }
+}
+
+
 
 module.exports = Ordine;
