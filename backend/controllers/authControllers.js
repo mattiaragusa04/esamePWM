@@ -9,6 +9,18 @@ const CartaDiCredito = require('../models/cartaDiCreditoModel');
 
 const SECRET = process.env.JWT_SECRET || "supersecretkey";
 
+// ─── Helper: normalizza i campi dell'utente verso snake_case
+// Il DB usa 'puntiFedelta' (camelCase), ma il frontend si aspetta 'punti_fedelta'.
+// Questa funzione aggiunge l'alias senza modificare lo schema DB.
+function normalizzaUtente(user) {
+  if (!user) return user;
+  return {
+    ...user,
+    // Espone il valore sia col nome DB originale sia con quello che il frontend si aspetta
+    punti_fedelta: user.puntiFedelta ?? user.punti_fedelta ?? 0
+  };
+}
+
 // 1. Configurazione del Trasportatore per le Email
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -170,7 +182,7 @@ exports.login = async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: "Credenziali non valide" });
     const token = jwt.sign({ id: user.id, email: user.email, ruolo: user.ruolo, bootId }, SECRET, { expiresIn: "1h" });
     const { password: userPassword, ...safeUser } = user;
-    res.json({ token, utente: safeUser });
+    res.json({ token, utente: normalizzaUtente(safeUser) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -179,7 +191,7 @@ exports.login = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll();
-    const safeUsers = users.map(({ password, ...user }) => user);
+    const safeUsers = users.map(({ password, ...user }) => normalizzaUtente(user));
     res.json(safeUsers);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -192,7 +204,7 @@ exports.getProfile = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "Utente non trovato" });
     const { password, ...safeUser } = user;
-    res.json(safeUser);
+    res.json(normalizzaUtente(safeUser));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -221,7 +233,8 @@ exports.getUtenteDettaglio = async (req, res) => {
       cvv: '***'
     }));
 
-    res.json({ utente: safeUser, indirizzi, carte: carteOscurate });
+    // normalizzaUtente aggiunge l'alias punti_fedelta = puntiFedelta
+    res.json({ utente: normalizzaUtente(safeUser), indirizzi, carte: carteOscurate });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
