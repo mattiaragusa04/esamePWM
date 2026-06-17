@@ -60,7 +60,10 @@ export class AdminUtenti implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     try {
-      const response = await fetch('http://localhost:3000/api/auth/utenti');
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3000/api/auth/users', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (response.ok) {
         this.utenti = await response.json();
         this.utentiFiltrati = [...this.utenti];
