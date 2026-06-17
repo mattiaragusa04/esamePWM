@@ -35,46 +35,10 @@ export class Profilo implements OnInit {
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-
-    const raw = localStorage.getItem('user');
-    if (raw) {
-      this.utente = this.normalizza(JSON.parse(raw));
-    }
-
-    const token = localStorage.getItem('token');
-    if (token) {
-      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-      this.http.get<any>(this.API, { headers }).subscribe({
-        next: (utenteAggiornato) => {
-          this.utente = this.normalizza(utenteAggiornato);
-          localStorage.setItem('user', JSON.stringify(this.utente));
-        },
-        error: (err) => {
-          console.warn('[Profilo] Impossibile ricaricare il profilo dal server, uso cache locale:', err.status);
-        }
-      });
-
-      
-    }
+    this.caricaProfilo();
+    this.caricaCouponRiscattati();
   }
 
-
-  /** Aggiorna i punti dell'utente nel modello locale */
-  aggiornaPuntiUtente(nuoviPunti: number): void {
-    if (this.utente) {
-      this.utente = this.normalizza({ ...this.utente, puntiFedelta: nuoviPunti, punti_fedelta: nuoviPunti });
-    }
-  }
-
-  /** Aggiunge alias punti_fedelta = puntiFedelta per compatibilità template */
-  private normalizza(u: any): any {
-    if (!u) return u;
-    return {
-      ...u,
-      puntiFedelta:  u.puntiFedelta  ?? u.punti_fedelta  ?? 0,
-      punti_fedelta: u.puntiFedelta  ?? u.punti_fedelta  ?? 0
-    };
-  }
 
   async caricaCouponRiscattati() {
     const token = localStorage.getItem('token');
@@ -86,6 +50,22 @@ export class Profilo implements OnInit {
       });
       if (res.ok) {
         this.couponRiscattati = await res.json();
+      }
+    } catch {
+      console.error('[Profilo] Impossibile connettersi al server.');
+    }
+  }
+
+  async caricaProfilo(){
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const res = await fetch(this.API, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        this.utente = await res.json();
       }
     } catch {
       console.error('[Profilo] Impossibile connettersi al server.');
