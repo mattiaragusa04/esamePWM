@@ -182,15 +182,19 @@
 
 <aside class="au-panel" [class.au-panel--open]="panelloVisible" role="complementary" aria-label="Dettaglio utente">
 
-  <!-- Header pannello -->
-  <div class="au-panel-header">
-    <div class="au-panel-avatar" *ngIf="panelloUtente">
-      <i class="bi bi-person-circle"></i>
+  <!-- ── Hero header pannello ── -->
+  <div class="au-panel-hero" *ngIf="panelloUtente">
+    <button class="au-panel-close" (click)="chiudiPannello()" aria-label="Chiudi pannello">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <div class="au-panel-hero-avatar">
+      {{ (panelloUtente.nome?.charAt(0) ?? '') + (panelloUtente.cognome?.charAt(0) ?? '') | uppercase }}
     </div>
-    <div class="au-panel-header-info" *ngIf="panelloUtente">
-      <h5 class="au-panel-name">{{ panelloUtente.nome }} {{ panelloUtente.cognome }}</h5>
-      <span class="au-panel-email">{{ panelloUtente.email }}</span>
-      <span class="badge rounded-pill ms-2"
+    <h5 class="au-panel-hero-name">{{ panelloUtente.nome }} {{ panelloUtente.cognome }}</h5>
+    <span class="au-panel-hero-email">{{ panelloUtente.email }}</span>
+    <div class="au-panel-hero-meta">
+      <span class="au-panel-hero-id">#{{ panelloUtente.id }}</span>
+      <span class="badge rounded-pill au-panel-hero-badge"
         [ngClass]="{
           'bg-danger':    panelloUtente.ruolo === 'admin',
           'bg-info':      panelloUtente.ruolo === 'operatore',
@@ -199,9 +203,6 @@
         {{ panelloUtente.ruolo | uppercase }}
       </span>
     </div>
-    <button class="au-panel-close" (click)="chiudiPannello()" aria-label="Chiudi pannello">
-      <i class="bi bi-x-lg"></i>
-    </button>
   </div>
 
   <!-- Loader pannello -->
@@ -221,22 +222,33 @@
     <!-- ── Punti fedeltà ── -->
     <div class="au-panel-section">
       <h6 class="au-panel-section-title"><i class="bi bi-star-fill text-warning me-2"></i>Punti fedeltà</h6>
-      <div class="au-panel-punti-row">
-        <span class="au-panel-punti-value">{{ panelloUtente.punti_fedelta ?? 0 }}</span>
-        <span class="text-muted small ms-1">punti attuali</span>
+
+      <!-- Card valore REALE dal DB -->
+      <div class="au-panel-punti-card">
+        <div class="au-panel-punti-label">Punti attuali nel database</div>
+        <div class="au-panel-punti-value">{{ panelloDettaglio?.utente?.punti_fedelta ?? panelloUtente.punti_fedelta ?? 0 }}</div>
+        <div class="au-panel-punti-sublabel">Fonte: risposta API <code>/dettaglio</code></div>
       </div>
-      <div class="d-flex gap-2 align-items-center mt-2 flex-wrap">
-        <input type="number" class="form-control form-control-sm au-panel-input-punti"
-          [(ngModel)]="deltaPunti" placeholder="es. +50 o -20">
-        <input type="text" class="form-control form-control-sm flex-grow-1"
-          [(ngModel)]="notaPunti" placeholder="Nota (opzionale)">
-        <button class="btn btn-sm btn-success" [disabled]="puntiLoading || deltaPunti === 0"
-          (click)="modificaPunti(deltaPunti)">
-          <span *ngIf="puntiLoading" class="spinner-border spinner-border-sm" role="status"></span>
-          <i *ngIf="!puntiLoading" class="bi bi-check-lg"></i>
-        </button>
+
+      <!-- Delta modifica -->
+      <div class="au-panel-punti-edit">
+        <label class="au-panel-punti-edit-label">
+          <i class="bi bi-pencil-fill me-1"></i>Modifica punti (inserisci un valore, es. <code>+50</code> o <code>-20</code>)
+        </label>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+          <input type="number" class="form-control form-control-sm au-panel-input-punti"
+            [(ngModel)]="deltaPunti" placeholder="es. 50 o -20">
+          <input type="text" class="form-control form-control-sm flex-grow-1"
+            [(ngModel)]="notaPunti" placeholder="Nota (opzionale)">
+          <button class="btn btn-sm btn-success au-btn-apply" [disabled]="puntiLoading || deltaPunti === 0"
+            (click)="modificaPunti(deltaPunti)" title="Applica modifica">
+            <span *ngIf="puntiLoading" class="spinner-border spinner-border-sm" role="status"></span>
+            <i *ngIf="!puntiLoading" class="bi bi-check-lg"></i>
+          </button>
+        </div>
       </div>
-      <small class="text-success mt-1 d-block" *ngIf="puntiMessaggio">{{ puntiMessaggio }}</small>
+
+      <small class="au-punti-msg" *ngIf="puntiMessaggio">{{ puntiMessaggio }}</small>
     </div>
 
     <!-- ── Reset password ── -->
