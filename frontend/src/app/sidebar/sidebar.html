@@ -1,99 +1,58 @@
-<div class="profilo-sidebar" [class.collapsed]="isMenuCollapsed" [class.no-transition]="!isAnimationEnabled">
+<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-white shadow-lg sidebar-container" [class.collapsed]="isMenuCollapsed" [class.no-transition]="!isAnimationEnabled" style="border-radius: 1.5rem; z-index: 1;">
+    <div class="d-flex align-items-center justify-content-between mb-3 mb-md-0 w-100">
+      <a href="/" class="d-flex align-items-center text-dark text-decoration-none brand-text">
+        <i class="bi bi-person-circle fs-2 pe-none me-2 bi"></i>
+        <span class="fs-4 text-nowrap">Il mio Profilo</span>
+      </a>
+      <button class="btn btn-sm btn-outline-secondary border-0 menu-toggler-btn" (click)="toggleMenu()">
+        <i class="bi bi-list fs-3 menu-toggler-icon"></i>
+      </button>
+    </div>
+    <hr />
+    <ul class="nav nav-pills flex-column mb-2">
+      <li class="nav-item">
+        <a routerLink="/profilo" class="nav-link d-flex align-items-center" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" title="Dati Personali">
+          <i class="bi bi-house pe-none me-2"></i>
+          <span class="nav-text text-nowrap">Dati Personali</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/profilo/ordini" class="nav-link d-flex align-items-center" routerLinkActive="active" title="I miei Ordini">
+          <i class="bi bi-table pe-none me-2"></i>
+          <span class="nav-text text-nowrap">I miei Ordini</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/profilo/vendite" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Le mie Vendite">
+          <i class="bi bi-cash-coin pe-none me-2"></i>
+          <span class="nav-text text-nowrap">Le mie Vendite</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/profilo/carte-di-credito" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Metodi di Pagamento">
+          <i class="bi bi-credit-card pe-none me-2"></i>
+          <span class="nav-text text-nowrap">Metodi di Pagamento</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/profilo/indirizzi" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Indirizzi Salvati">
+          <i class="bi bi-pin-map pe-none me-2"></i>
+          <span class="nav-text text-nowrap">Indirizzi Salvati</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/profilo/impostazioni" class="nav-link d-flex align-items-center" routerLinkActive="active" title="Impostazioni">
+          <i class="bi bi-speedometer2 pe-none me-2"></i>
+          <span class="nav-text text-nowrap">Impostazioni</span>
+        </a>
+      </li>
+    </ul>
 
-  <!-- ══ HEADER ═══════════════════════════════════════════════════ -->
-  <div class="profilo-sidebar-header">
-    <div class="profilo-sidebar-bg-deco"></div>
+    <hr />
 
-    <!-- Toggle button -->
-    <button class="profilo-toggle-btn" (click)="toggleMenu()" title="Espandi/Comprimi">
-      <i class="bi" [ngClass]="isMenuCollapsed ? 'bi-layout-sidebar' : 'bi-layout-sidebar-reverse'"></i>
+    <!-- Bottone Logout -->
+    <button class="btn btn-outline-danger d-flex align-items-center logout-btn" (click)="logout()" title="Logout">
+      <i class="bi bi-box-arrow-right pe-none me-2 fs-5"></i>
+      <span class="nav-text text-nowrap">Esci dall'account</span>
     </button>
-
-    <!-- Avatar con iniziali -->
-    <div class="profilo-avatar-wrap">
-      <div class="profilo-avatar">
-        <span class="nav-text">{{ iniziali }}</span>
-      </div>
-    </div>
-
-    <!-- Nome e email -->
-    <div class="nav-text profilo-header-info">
-      <h5 class="profilo-sidebar-name">{{ utente?.nome }} {{ utente?.cognome }}</h5>
-      <p class="profilo-sidebar-email">{{ utente?.email }}</p>
-    </div>
-
-    <!-- Card punti fedeltà -->
-    <div class="profilo-points-card nav-text">
-      <div class="profilo-points-top">
-        <span class="profilo-points-icon"><i class="bi bi-star-fill"></i></span>
-        <span class="profilo-points-value">{{ utente?.puntiFedelta || 0 }}</span>
-        <span class="profilo-points-label">Punti Fedeltà</span>
-      </div>
-      <!-- Barra livello -->
-      <div class="profilo-level-bar-wrap">
-        <div class="profilo-level-bar">
-          <div class="profilo-level-fill" [style.width.%]="progressoPunti"></div>
-        </div>
-        <div class="profilo-level-labels">
-          <span>{{ livelloCorrente }}</span>
-          <span>{{ livelloSuccessivo }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ DIVIDER ══════════════════════════════════════════════ -->
-  <div class="profilo-sidebar-divider">
-    <span class="nav-text">MENU</span>
-  </div>
-
-  <!-- ══ NAVIGAZIONE ═══════════════════════════════════════════ -->
-  <nav class="profilo-nav">
-    <a routerLink="/profilo" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="profilo-nav-link" title="Dati Personali">
-      <span class="profilo-nav-icon"><i class="bi bi-house"></i></span>
-      <span class="profilo-nav-label nav-text">Dati Personali</span>
-      <i class="bi bi-chevron-right profilo-nav-arrow"></i>
-    </a>
-    <a routerLink="/profilo/ordini" routerLinkActive="active" class="profilo-nav-link" title="I miei Ordini">
-      <span class="profilo-nav-icon"><i class="bi bi-bag"></i></span>
-      <span class="profilo-nav-label nav-text">I miei Ordini</span>
-      <i class="bi bi-chevron-right profilo-nav-arrow"></i>
-    </a>
-    <a routerLink="/profilo/vendite" routerLinkActive="active" class="profilo-nav-link" title="Le mie Vendite">
-      <span class="profilo-nav-icon"><i class="bi bi-cash-coin"></i></span>
-      <span class="profilo-nav-label nav-text">Le mie Vendite</span>
-      <i class="bi bi-chevron-right profilo-nav-arrow"></i>
-    </a>
-    <!-- ══ SPENDI PUNTI FEDELTÀ ══════════════════════════════════ -->
-    <a routerLink="/profilo/fedelta" routerLinkActive="active" class="profilo-nav-link profilo-nav-link--fedelta" title="Spendi i tuoi Punti Fedeltà">
-      <span class="profilo-nav-icon"><i class="bi bi-gift-fill"></i></span>
-      <span class="profilo-nav-label nav-text">Spendi i Punti Fedeltà</span>
-      <i class="bi bi-chevron-right profilo-nav-arrow"></i>
-    </a>
-    <!-- ════════════════════════════════════════════════════════ -->
-    <a routerLink="/profilo/carte-di-credito" routerLinkActive="active" class="profilo-nav-link" title="Metodi di Pagamento">
-      <span class="profilo-nav-icon"><i class="bi bi-credit-card"></i></span>
-      <span class="profilo-nav-label nav-text">Metodi di Pagamento</span>
-      <i class="bi bi-chevron-right profilo-nav-arrow"></i>
-    </a>
-    <a routerLink="/profilo/indirizzi" routerLinkActive="active" class="profilo-nav-link" title="Indirizzi Salvati">
-      <span class="profilo-nav-icon"><i class="bi bi-pin-map"></i></span>
-      <span class="profilo-nav-label nav-text">Indirizzi Salvati</span>
-      <i class="bi bi-chevron-right profilo-nav-arrow"></i>
-    </a>
-    <a routerLink="/profilo/impostazioni" routerLinkActive="active" class="profilo-nav-link" title="Impostazioni">
-      <span class="profilo-nav-icon"><i class="bi bi-gear"></i></span>
-      <span class="profilo-nav-label nav-text">Impostazioni</span>
-      <i class="bi bi-chevron-right profilo-nav-arrow"></i>
-    </a>
-  </nav>
-
-  <!-- ══ FOOTER / LOGOUT ═══════════════════════════════════════ -->
-  <div class="profilo-sidebar-footer">
-    <button class="profilo-logout-btn" (click)="logout()" title="Logout">
-      <i class="bi bi-box-arrow-right"></i>
-      <span class="nav-text">Logout</span>
-    </button>
-  </div>
-
 </div>
