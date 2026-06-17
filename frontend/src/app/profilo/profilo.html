@@ -2,13 +2,11 @@
 
   <!-- ═══ HERO BANNER ═══ -->
   <div class="profilo-hero">
-    <!-- Orb decorativi animati -->
     <div class="profilo-hero-orb orb-1"></div>
     <div class="profilo-hero-orb orb-2"></div>
     <div class="profilo-hero-orb orb-3"></div>
 
     <div class="profilo-hero-inner">
-      <!-- Avatar grande con glow -->
       <div class="profilo-hero-avatar">
         <span>{{ getInitials() }}</span>
         <div class="profilo-hero-avatar-ring"></div>
@@ -24,7 +22,6 @@
         </div>
       </div>
 
-      <!-- Badge livello -->
       <div class="profilo-hero-level" *ngIf="utente">
         <div class="profilo-level-badge">
           <i class="bi bi-star-fill"></i>
@@ -54,7 +51,6 @@
         <div class="profilo-stat-label">Punti Fedeltà</div>
       </div>
     </div>
-
     <div class="profilo-stat-card">
       <div class="profilo-stat-icon icon-orange">
         <i class="bi bi-box-seam-fill"></i>
@@ -64,7 +60,6 @@
         <div class="profilo-stat-label">Ordini Totali</div>
       </div>
     </div>
-
     <div class="profilo-stat-card">
       <div class="profilo-stat-icon icon-green">
         <i class="bi bi-tags-fill"></i>
@@ -74,7 +69,6 @@
         <div class="profilo-stat-label">Articoli Venduti</div>
       </div>
     </div>
-
     <div class="profilo-stat-card">
       <div class="profilo-stat-icon icon-purple">
         <i class="bi bi-heart-fill"></i>
@@ -89,7 +83,6 @@
   <!-- ═══ DATI ACCOUNT + QUICK ACTIONS ═══ -->
   <div class="profilo-bottom-grid" *ngIf="utente">
 
-    <!-- Card dati personali -->
     <div class="profilo-info-card">
       <div class="profilo-card-header">
         <div class="profilo-card-icon">
@@ -97,7 +90,6 @@
         </div>
         <h2 class="profilo-card-title">Il tuo Account</h2>
       </div>
-
       <div class="profilo-fields-grid">
         <div class="profilo-field">
           <span class="profilo-field-label"><i class="bi bi-person"></i> Nome</span>
@@ -124,7 +116,6 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
     <div class="profilo-actions-card">
       <div class="profilo-card-header">
         <div class="profilo-card-icon">
@@ -132,47 +123,42 @@
         </div>
         <h2 class="profilo-card-title">Azioni Rapide</h2>
       </div>
-
       <div class="profilo-quick-actions">
         <a routerLink="/profilo/ordini" class="profilo-action-btn">
-          <div class="profilo-action-icon">
-            <i class="bi bi-box-seam"></i>
-          </div>
+          <div class="profilo-action-icon"><i class="bi bi-box-seam"></i></div>
           <span>I miei Ordini</span>
           <i class="bi bi-chevron-right profilo-action-arrow"></i>
         </a>
         <a routerLink="/profilo/vendite" class="profilo-action-btn">
-          <div class="profilo-action-icon">
-            <i class="bi bi-tags"></i>
-          </div>
+          <div class="profilo-action-icon"><i class="bi bi-tags"></i></div>
           <span>Le mie Vendite</span>
           <i class="bi bi-chevron-right profilo-action-arrow"></i>
         </a>
         <a routerLink="/profilo/preferiti" class="profilo-action-btn">
-          <div class="profilo-action-icon">
-            <i class="bi bi-heart"></i>
-          </div>
+          <div class="profilo-action-icon"><i class="bi bi-heart"></i></div>
           <span>Preferiti</span>
           <i class="bi bi-chevron-right profilo-action-arrow"></i>
         </a>
         <a routerLink="/profilo/indirizzi" class="profilo-action-btn">
-          <div class="profilo-action-icon">
-            <i class="bi bi-geo-alt"></i>
-          </div>
+          <div class="profilo-action-icon"><i class="bi bi-geo-alt"></i></div>
           <span>Indirizzi</span>
           <i class="bi bi-chevron-right profilo-action-arrow"></i>
         </a>
         <a routerLink="/profilo/carte-di-credito" class="profilo-action-btn">
-          <div class="profilo-action-icon">
-            <i class="bi bi-credit-card"></i>
-          </div>
+          <div class="profilo-action-icon"><i class="bi bi-credit-card"></i></div>
           <span>Carte di Credito</span>
           <i class="bi bi-chevron-right profilo-action-arrow"></i>
         </a>
-        <a routerLink="/profilo/impostazioni" class="profilo-action-btn">
-          <div class="profilo-action-icon">
-            <i class="bi bi-gear"></i>
+        <!-- ★ NUOVO: link Fedeltà ★ -->
+        <a routerLink="/profilo/fedelta" class="profilo-action-btn profilo-action-fedelta">
+          <div class="profilo-action-icon profilo-action-icon-gold">
+            <i class="bi bi-trophy-fill"></i>
           </div>
+          <span>Spendi Punti Fedeltà</span>
+          <i class="bi bi-chevron-right profilo-action-arrow"></i>
+        </a>
+        <a routerLink="/profilo/impostazioni" class="profilo-action-btn">
+          <div class="profilo-action-icon"><i class="bi bi-gear"></i></div>
           <span>Impostazioni</span>
           <i class="bi bi-chevron-right profilo-action-arrow"></i>
         </a>

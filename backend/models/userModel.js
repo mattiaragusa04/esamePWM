@@ -43,24 +43,34 @@ const User = {
 
   updatePuntiFedelta: (userId, puntiDaAggiungere) => {
     return new Promise((resolve, reject) => {
-      // Usa il nome esatto della colonna come da CREATE TABLE in database.js
       const queryUpdate = `UPDATE utente SET puntiFedelta = COALESCE(puntiFedelta, 0) + ? WHERE id = ?`;
       db.run(queryUpdate, [puntiDaAggiungere, userId], function (err) {
         if (err) return reject(err);
         if (this.changes === 0) {
-          // Nessuna riga aggiornata: userId inesistente o colonna non trovata
-          return reject(new Error(`updatePuntiFedelta: nessuna riga aggiornata per userId=${userId}. Verifica che l'utente esista.`));
+          return reject(new Error(`updatePuntiFedelta: nessuna riga aggiornata per userId=${userId}.`));
         }
-        // Leggi il valore effettivo aggiornato dal DB per conferma
         db.get(`SELECT puntiFedelta FROM utente WHERE id = ?`, [userId], (err2, row) => {
           if (err2) return reject(err2);
-          resolve({
-            id: Number(userId),
-            changes: this.changes,
-            puntiFedelta: row ? row.puntiFedelta : null
-          });
+          resolve({ id: Number(userId), changes: this.changes, puntiFedelta: row ? row.puntiFedelta : null });
         });
       });
+    });
+  },
+
+  // Scala (sottrae) i punti fedeltà — usato per acquisti con punti
+  deductPuntiFedelta: (userId, puntiDaSottrarre) => {
+    return new Promise((resolve, reject) => {
+      db.run(
+        `UPDATE utente SET puntiFedelta = MAX(0, COALESCE(puntiFedelta, 0) - ?) WHERE id = ?`,
+        [puntiDaSottrarre, userId],
+        function (err) {
+          if (err) return reject(err);
+          db.get(`SELECT puntiFedelta FROM utente WHERE id = ?`, [userId], (err2, row) => {
+            if (err2) return reject(err2);
+            resolve({ id: Number(userId), puntiFedelta: row ? row.puntiFedelta : null });
+          });
+        }
+      );
     });
   },
 
@@ -77,7 +87,6 @@ const User = {
         `DELETE FROM vendi WHERE utente_id = ?`,
         `DELETE FROM utente WHERE id = ?`
       ];
-
       const runNext = (index) => {
         if (index >= queries.length) return resolve({ id });
         db.run(queries[index], [id], (err) => {
@@ -85,7 +94,6 @@ const User = {
           runNext(index + 1);
         });
       };
-
       runNext(0);
     });
   },

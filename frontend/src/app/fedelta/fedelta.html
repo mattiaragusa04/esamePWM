@@ -1,0 +1,182 @@
+<div class="fedelta-page">
+
+  <!-- ══════════ HEADER PUNTI ══════════ -->
+  <div class="fedelta-header">
+    <div class="fedelta-header-orb orb1"></div>
+    <div class="fedelta-header-orb orb2"></div>
+    <div class="fedelta-header-inner">
+      <div class="fedelta-header-icon"><i class="bi bi-trophy-fill"></i></div>
+      <div class="fedelta-header-info">
+        <div class="fedelta-header-label">Il tuo saldo punti fedeltà</div>
+        <div class="fedelta-header-punti">{{ puntiFedelta | number }} <span>pt</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TOAST MESSAGGIO ══════════ -->
+  <div class="fedelta-toast" *ngIf="messaggio"
+       [class.toast-success]="messaggio.tipo === 'success'"
+       [class.toast-error]="messaggio.tipo === 'error'">
+    <i class="bi" [class.bi-check-circle-fill]="messaggio.tipo === 'success'"
+                  [class.bi-exclamation-triangle-fill]="messaggio.tipo === 'error'"></i>
+    {{ messaggio.testo }}
+  </div>
+
+  <!-- ══════════ COUPON ACQUISTATO ══════════ -->
+  <div class="fedelta-coupon-result" *ngIf="couponAcquistato">
+    <div class="coupon-result-card">
+      <div class="coupon-result-badge">COUPON ATTIVO</div>
+      <div class="coupon-result-perc">-{{ couponAcquistato.percentuale }}%</div>
+      <div class="coupon-result-codice">
+        <span class="coupon-result-label">Codice:</span>
+        <strong>{{ couponAcquistato.codice }}</strong>
+      </div>
+      <div class="coupon-result-scadenza">Valido fino al {{ couponAcquistato.scadenza }}</div>
+      <div class="coupon-result-tip">💡 Copia il codice e usalo al momento del pagamento</div>
+    </div>
+  </div>
+
+  <!-- ══════════ TAB ══════════ -->
+  <div class="fedelta-tabs">
+    <button class="fedelta-tab" [class.active]="tabAttiva === 'coupon'"
+            (click)="tabAttiva = 'coupon'; couponAcquistato = null">
+      <i class="bi bi-ticket-perforated-fill"></i> Acquista Coupon
+    </button>
+    <button class="fedelta-tab" [class.active]="tabAttiva === 'prodotti'"
+            (click)="tabAttiva = 'prodotti'; couponAcquistato = null">
+      <i class="bi bi-box-seam-fill"></i> Acquista Prodotti Usati
+    </button>
+  </div>
+
+  <!-- ══════════ TAB: COUPON ══════════ -->
+  <div class="fedelta-section" *ngIf="tabAttiva === 'coupon'">
+    <div class="fedelta-section-header">
+      <h2><i class="bi bi-ticket-perforated-fill"></i> Coupon Sconto</h2>
+      <p>Riscatta i tuoi punti fedeltà in coupon sconto da usare nei tuoi prossimi acquisti.</p>
+    </div>
+
+    <div class="fedelta-loading" *ngIf="caricandoCoupon">
+      <div class="spinner"></div>
+    </div>
+
+    <div class="coupon-grid" *ngIf="!caricandoCoupon">
+      <div class="coupon-card" *ngFor="let coupon of catalogoCoupon"
+           [class.non-disponibile]="puntiFedelta < coupon.costoInPunti">
+
+        <!-- Nastro percentuale -->
+        <div class="coupon-ribbon">-{{ coupon.percentuale }}%</div>
+
+        <div class="coupon-card-body">
+          <div class="coupon-icon"><i class="bi bi-tag-fill"></i></div>
+          <div class="coupon-titolo">Sconto {{ coupon.percentuale }}%</div>
+          <div class="coupon-desc">{{ coupon.descrizione }}</div>
+
+          <div class="coupon-costo">
+            <i class="bi bi-trophy"></i> {{ coupon.costoInPunti }} punti
+          </div>
+
+          <div class="coupon-disponibilita" *ngIf="puntiFedelta >= coupon.costoInPunti">
+            <i class="bi bi-check-circle"></i> Disponibile
+          </div>
+          <div class="coupon-mancano" *ngIf="puntiFedelta < coupon.costoInPunti">
+            <i class="bi bi-lock"></i> Mancano {{ coupon.costoInPunti - puntiFedelta }} pt
+          </div>
+        </div>
+
+        <button class="coupon-btn"
+                [disabled]="puntiFedelta < coupon.costoInPunti"
+                (click)="acquistaCoupon(coupon)">
+          <i class="bi bi-lightning-charge-fill"></i> Riscatta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TAB: PRODOTTI USATI ══════════ -->
+  <div class="fedelta-section" *ngIf="tabAttiva === 'prodotti'">
+    <div class="fedelta-section-header">
+      <h2><i class="bi bi-box-seam-fill"></i> Prodotti Usati con Punti</h2>
+      <p>Acquista prodotti usati usando esclusivamente i tuoi punti fedeltà. Nessun punto verrà guadagnato da questi acquisti.</p>
+    </div>
+
+    <div class="fedelta-loading" *ngIf="caricandoProdotti">
+      <div class="spinner"></div>
+    </div>
+
+    <div class="prodotti-empty" *ngIf="!caricandoProdotti && prodottiUsati.length === 0">
+      <i class="bi bi-box2-fill"></i>
+      <p>Nessun prodotto usato disponibile al momento.</p>
+    </div>
+
+    <div class="prodotti-grid" *ngIf="!caricandoProdotti && prodottiUsati.length > 0">
+      <div class="prodotto-card" *ngFor="let p of prodottiUsati"
+           [class.non-disponibile]="puntiFedelta < p.costoInPunti">
+
+        <div class="prodotto-card-img-wrap">
+          <img [src]="getImmagineProdotto(p.immagine)" [alt]="p.nome"
+               loading="lazy" width="300" height="200">
+          <!-- Badge punti in evidenza -->
+          <div class="prodotto-punti-badge">
+            <i class="bi bi-trophy-fill"></i> {{ p.costoInPunti | number }} pt
+          </div>
+          <div class="prodotto-usato-badge">Usato</div>
+        </div>
+
+        <div class="prodotto-card-body">
+          <div class="prodotto-categoria">{{ p.categoria_nome }}</div>
+          <div class="prodotto-nome">{{ p.nome }}</div>
+          <div class="prodotto-prezzo-originale">
+            Valore: <strong>€{{ p.prezzoUnitarioVendita | number:'1.2-2' }}</strong>
+          </div>
+          <div class="prodotto-giacenza">Disponibili: {{ p.giacenza }}</div>
+
+          <div class="prodotto-stato-punti" *ngIf="puntiFedelta >= p.costoInPunti">
+            <i class="bi bi-check-circle"></i> Puoi acquistarlo!
+          </div>
+          <div class="prodotto-stato-mancano" *ngIf="puntiFedelta < p.costoInPunti">
+            <i class="bi bi-lock"></i> Mancano {{ p.costoInPunti - puntiFedelta }} pt
+          </div>
+        </div>
+
+        <button class="prodotto-btn"
+                [disabled]="puntiFedelta < p.costoInPunti"
+                (click)="apriConferma(p)">
+          <i class="bi bi-trophy-fill"></i> Acquista con {{ p.costoInPunti }} pt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ MODALE CONFERMA ══════════ -->
+  <div class="fedelta-overlay" *ngIf="mostraConferma" (click)="annullaConferma()">
+    <div class="fedelta-modal" (click)="$event.stopPropagation()">
+      <div class="modal-icon"><i class="bi bi-trophy-fill"></i></div>
+      <h3>Conferma acquisto con punti</h3>
+
+      <div class="modal-prodotto" *ngIf="prodottoScelto">
+        <strong>{{ prodottoScelto.nome }}</strong>
+        <div class="modal-costo">
+          Costo: <span class="modal-punti">{{ prodottoScelto.costoInPunti }} punti</span>
+        </div>
+        <div class="modal-saldo">
+          Saldo dopo: <strong>{{ puntiFedelta - prodottoScelto.costoInPunti }} pt</strong>
+        </div>
+        <div class="modal-avviso">
+          <i class="bi bi-info-circle"></i>
+          Da questo acquisto non verranno accumulati punti fedeltà.
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" (click)="annullaConferma()" [disabled]="acquistando">
+          Annulla
+        </button>
+        <button class="modal-btn-confirm" (click)="confermaAcquistoProdotto()" [disabled]="acquistando">
+          <span *ngIf="!acquistando"><i class="bi bi-check-lg"></i> Conferma</span>
+          <span *ngIf="acquistando"><i class="bi bi-arrow-repeat spin"></i> In corso…</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
