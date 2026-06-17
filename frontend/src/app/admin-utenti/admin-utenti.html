@@ -223,10 +223,10 @@
     <div class="au-panel-section">
       <h6 class="au-panel-section-title"><i class="bi bi-star-fill text-warning me-2"></i>Punti fedeltà</h6>
 
-      <!-- Card valore REALE dal DB -->
+      <!-- Card valore REALE: panelloUtente viene sovrascritto con data.utente in apriPannello() -->
       <div class="au-panel-punti-card">
         <div class="au-panel-punti-label">Punti attuali nel database</div>
-        <div class="au-panel-punti-value">{{ panelloDettaglio?.utente?.punti_fedelta ?? panelloUtente.punti_fedelta ?? 0 }}</div>
+        <div class="au-panel-punti-value">{{ panelloUtente.punti_fedelta ?? 0 }}</div>
         <div class="au-panel-punti-sublabel">Fonte: risposta API <code>/dettaglio</code></div>
       </div>
 

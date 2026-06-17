@@ -27,6 +27,9 @@ export class AdminUtenti implements OnInit {
   // --- Stato pannello dettaglio ---
   panelloVisible = false;
   panelloUtente: any = null;
+  // panelloDettaglio contiene SOLO indirizzi e carte.
+  // I dati aggiornati dell'utente (inclusi punti_fedelta) sono in panelloUtente,
+  // che viene sovrascritto con data.utente al completamento della chiamata /dettaglio.
   panelloDettaglio: { indirizzi: any[]; carte: any[] } | null = null;
   panelloLoading = false;
   panelloErrore = '';
@@ -93,7 +96,7 @@ export class AdminUtenti implements OnInit {
     );
   }
 
-  // ── Pannello dettaglio ────────────────────────────────────────────────────
+  // ── Pannello dettaglio ───────────────────────────────────────────────
   async apriPannello(utente: any) {
     this.panelloUtente = utente;
     this.panelloVisible = true;
@@ -115,7 +118,9 @@ export class AdminUtenti implements OnInit {
       });
       if (resp.ok) {
         const data = await resp.json();
+        // Sovrascrive panelloUtente con i dati freschi dal DB (include punti_fedelta aggiornati)
         this.panelloUtente = data.utente;
+        // panelloDettaglio contiene solo indirizzi e carte
         this.panelloDettaglio = { indirizzi: data.indirizzi, carte: data.carte };
       } else {
         this.panelloErrore = 'Errore nel caricamento del dettaglio.';
@@ -136,7 +141,7 @@ export class AdminUtenti implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ── Modifica indirizzo ────────────────────────────────────────────────────
+  // ── Modifica indirizzo ───────────────────────────────────────────────
   avviaEditIndirizzo(ind: any) {
     this.editIndirizzoId = ind.id;
     this.editIndirizzo = { ...ind };
@@ -158,7 +163,6 @@ export class AdminUtenti implements OnInit {
         body: JSON.stringify(this.editIndirizzo)
       });
       if (resp.ok) {
-        // Aggiorna la lista indirizzi nel pannello
         const idx = this.panelloDettaglio!.indirizzi.findIndex(i => i.id === this.editIndirizzoId);
         if (idx !== -1) this.panelloDettaglio!.indirizzi[idx] = { ...this.editIndirizzo, id: this.editIndirizzoId };
         this.editIndirizzoId = null;
@@ -171,7 +175,7 @@ export class AdminUtenti implements OnInit {
     }
   }
 
-  // ── Punti fedeltà ─────────────────────────────────────────────────────────
+  // ── Punti fedeltà ─────────────────────────────────────────────────
   async modificaPunti(delta: number) {
     if (!this.panelloUtente) return;
     this.puntiLoading = true;
@@ -184,10 +188,8 @@ export class AdminUtenti implements OnInit {
         body: JSON.stringify({ delta, nota: this.notaPunti })
       });
       if (resp.ok) {
-        const data = await resp.json();
-        if (this.panelloUtente) {
-          this.panelloUtente.punti_fedelta = (this.panelloUtente.punti_fedelta ?? 0) + delta;
-        }
+        // Aggiorna panelloUtente localmente per mostrare il nuovo valore senza ricaricare
+        this.panelloUtente.punti_fedelta = (this.panelloUtente.punti_fedelta ?? 0) + delta;
         this.puntiMessaggio = `Punti aggiornati: ${delta >= 0 ? '+' : ''}${delta}`;
         this.deltaPunti = 0;
         this.notaPunti = '';
@@ -205,7 +207,7 @@ export class AdminUtenti implements OnInit {
     }
   }
 
-  // ── Reset password admin ──────────────────────────────────────────────────
+  // ── Reset password admin ────────────────────────────────────────────
   async inviaResetPassword() {
     if (!this.panelloUtente) return;
     this.resetLoading = true;
@@ -226,7 +228,7 @@ export class AdminUtenti implements OnInit {
     }
   }
 
-  // ── Modale conferma ───────────────────────────────────────────────────────
+  // ── Modale conferma ─────────────────────────────────────────────────
   apriModale(utente: any, azione: AzioneConferma) {
     this.modaleUtente = utente;
     this.modaleAzione = azione;
