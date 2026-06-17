@@ -66,7 +66,7 @@ export class Profilo implements OnInit {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
-        this.utente = this.normalizza(await res.json());
+        this.utente = (await res.json());
       }
     } catch {
       console.error('[Profilo] Impossibile connettersi al server.');
