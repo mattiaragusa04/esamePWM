@@ -35,7 +35,7 @@ export class Profilo implements OnInit {
   storicoSpesaPunti: StoricoSpesaPunti[] = [];
 
   private readonly API        = 'http://localhost:3000/api/auth/profile';
-  private readonly API_FEDELTA = 'http://localhost:3000/api/coupon/fedelta';
+  private readonly API_FEDELTA = 'http://localhost:3000/api/fedelta';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,

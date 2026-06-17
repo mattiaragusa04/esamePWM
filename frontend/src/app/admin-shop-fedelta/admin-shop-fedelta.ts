@@ -60,7 +60,7 @@ export class AdminShopFedelta implements OnInit {
   caricandoProdotti = false;
   msgProdotti: { testo: string; tipo: 'success' | 'error' } | null = null;
 
-  private readonly API_FEDELTA = 'http://localhost:3000/api/coupon/fedelta';
+  private readonly API_FEDELTA = 'http://localhost:3000/api/fedelta';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
