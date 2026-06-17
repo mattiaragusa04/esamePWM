@@ -1,7 +1,6 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 export interface CouponRiscattato {
   codice: string;
@@ -30,7 +29,7 @@ export class Profilo implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private http: HttpClient
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -46,29 +45,33 @@ export class Profilo implements OnInit {
 
     try {
       const res = await fetch(`${this.API_FEDELTA}/miei-coupon`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         this.couponRiscattati = await res.json();
       }
     } catch {
       console.error('[Profilo] Impossibile connettersi al server.');
+    } finally {
+      this.cdr.detectChanges();
     }
   }
 
-  async caricaProfilo(){
+  async caricaProfilo() {
     const token = localStorage.getItem('token');
     if (!token) return;
 
     try {
       const res = await fetch(this.API, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
-        this.utente = await res.json();
+        this.utente = this.normalizza(await res.json());
       }
     } catch {
       console.error('[Profilo] Impossibile connettersi al server.');
+    } finally {
+      this.cdr.detectChanges();
     }
   }
   getInitials(): string {
