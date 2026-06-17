@@ -1,6 +1,5 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { ToastService } from '../shared/toast.service';
 import { PuntiService } from '../shared/punti.service';
@@ -46,7 +45,6 @@ export class FedeltaComponent implements OnInit {
 
   caricandoCoupon   = false;
   caricandoProdotti = false;
-  // Mappa percentuale -> booleano per tracciare ogni singolo preset in acquisto
   acquistandoPresetMap: Record<number, boolean> = {};
 
   couponAcquistato: { codice: string; percentuale: number; scadenza: string } | null = null;
@@ -59,118 +57,141 @@ export class FedeltaComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
     private toast: ToastService,
     private puntiService: PuntiService
   ) {}
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    this.puntiFedelta = this.puntiService.valore || this.leggiPuntiLocali();
+    this.puntiFedelta = this.puntiService.valore ?? 0;
     this.caricaPresetCoupon();
     this.caricaCatalogoCoupon();
     this.caricaProdottiUsati();
   }
 
-  private leggiPuntiLocali(): number {
+  private getToken(): string {
+    return localStorage.getItem('token') || '';
+  }
+
+  async caricaPresetCoupon() {
+    const token = this.getToken();
     try {
-      const raw = localStorage.getItem('user');
-      if (raw) {
-        const u = JSON.parse(raw);
-        return u.puntiFedelta ?? u.punti_fedelta ?? 0;
+      const res = await fetch(`${this.API}/preset-coupon`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        this.presetCoupon = await res.json();
+      } else {
+        console.error('[Fedelta] Errore caricamento preset coupon:', res.status);
       }
-    } catch {}
-    return 0;
+    } catch (e) {
+      console.error('[Fedelta] Errore di rete preset coupon:', e);
+    } finally {
+      this.cdr.detectChanges();
+    }
   }
 
-  private headers(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
-    return new HttpHeaders({ Authorization: `Bearer ${token}` });
-  }
-
-  caricaPresetCoupon(): void {
-    this.http.get<PresetCoupon[]>(`${this.API}/preset-coupon`, { headers: this.headers() })
-      .subscribe({
-        next: d  => this.presetCoupon = d,
-        error: () => {
-          this.presetCoupon = [5, 10, 15, 20, 25].map(p => ({
-            percentuale: p,
-            costoInPunti: p * 10,
-            descrizione: `Sconto del ${p}% su qualsiasi ordine`
-          }));
-        }
-      });
-  }
-
-  caricaCatalogoCoupon(): void {
+  async caricaCatalogoCoupon() {
     this.caricandoCoupon = true;
-    this.http.get<CatalogoCoupon[]>(`${this.API}/catalogo-coupon`, { headers: this.headers() })
-      .subscribe({
-        next: d  => { this.catalogoCoupon = d; this.caricandoCoupon = false; },
-        error: () => { this.caricandoCoupon = false; }
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/catalogo-coupon`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      if (res.ok) {
+        this.catalogoCoupon = await res.json();
+      } else {
+        console.error('[Fedelta] Errore caricamento catalogo coupon:', res.status);
+      }
+    } catch (e) {
+      console.error('[Fedelta] Errore di rete catalogo coupon:', e);
+    } finally {
+      this.caricandoCoupon = false;
+      this.cdr.detectChanges();
+    }
   }
 
-  caricaProdottiUsati(): void {
+  async caricaProdottiUsati() {
     this.caricandoProdotti = true;
-    this.http.get<ProdottoUsato[]>(`${this.API}/prodotti-usati`, { headers: this.headers() })
-      .subscribe({
-        next: d  => { this.prodottiUsati = d; this.caricandoProdotti = false; },
-        error: () => { this.caricandoProdotti = false; }
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/prodotti-usati`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      if (res.ok) {
+        this.prodottiUsati = await res.json();
+      } else {
+        console.error('[Fedelta] Errore caricamento prodotti usati:', res.status);
+      }
+    } catch (e) {
+      console.error('[Fedelta] Errore di rete prodotti usati:', e);
+    } finally {
+      this.caricandoProdotti = false;
+      this.cdr.detectChanges();
+    }
   }
 
-  acquistaPreset(preset: PresetCoupon): void {
+  async acquistaPreset(preset: PresetCoupon) {
     if (this.puntiFedelta < preset.costoInPunti) {
       this.toast.error(`Punti insufficienti (hai ${this.puntiFedelta} pt, ne servono ${preset.costoInPunti} pt).`);
       return;
     }
-    // Segna SOLO questo preset come in acquisto
     this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.percentuale]: true };
+    this.cdr.detectChanges();
 
-    this.http.post<any>(`${this.API}/acquista-preset-coupon`, { percentuale: preset.percentuale }, { headers: this.headers() })
-      .subscribe({
-        next: r => {
-          // Rimuovi il flag di loading per questo preset
-          this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.percentuale]: false };
-
-          this.puntiFedelta = r.puntiFedeltaRimanenti;
-          // Propaga al service → aggiorna sidebar in real-time
-          this.puntiService.aggiorna(r.puntiFedeltaRimanenti);
-
-          const nuovoCoupon = { codice: r.codice, percentuale: preset.percentuale, scadenza: r.scadenza };
-          this.couponAcquistato = nuovoCoupon;
-
-
-          // Toast di conferma con il codice generato
-          this.toast.success(`✅ Coupon -${preset.percentuale}% ottenuto! Codice: ${r.codice}`, 5000);
-        },
-        error: e => {
-          this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.percentuale]: false };
-          this.toast.error(e.error?.error || 'Errore durante l\'acquisto.');
-        }
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/acquista-preset-coupon`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ percentuale: preset.percentuale })
       });
+      const data = await res.json();
+      if (res.ok) {
+        this.puntiFedelta = data.puntiFedeltaRimanenti;
+        this.puntiService.aggiorna(data.puntiFedeltaRimanenti);
+        this.couponAcquistato = { codice: data.codice, percentuale: preset.percentuale, scadenza: data.scadenza };
+        this.toast.success(`Coupon -${preset.percentuale}% ottenuto! Codice: ${data.codice}`, 5000);
+      } else {
+        this.toast.error(data.error || 'Errore durante l\'acquisto.');
+      }
+    } catch (e) {
+      console.error('[Fedelta] Errore di rete acquisto preset:', e);
+      this.toast.error('Errore di connessione al server.');
+    } finally {
+      this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.percentuale]: false };
+      this.cdr.detectChanges();
+    }
   }
 
-  acquistaCoupon(coupon: CatalogoCoupon): void {
+  async acquistaCoupon(coupon: CatalogoCoupon) {
     if (this.puntiFedelta < coupon.costoInPunti) {
       this.toast.error(`Punti insufficienti (hai ${this.puntiFedelta} pt, ne servono ${coupon.costoInPunti} pt).`);
       return;
     }
-    this.http.post<any>(`${this.API}/acquista-coupon`, { catalogoId: coupon.id }, { headers: this.headers() })
-      .subscribe({
-        next: r => {
-          this.puntiFedelta = r.puntiFedeltaRimanenti;
-          this.puntiService.aggiorna(r.puntiFedeltaRimanenti);
-
-          const nuovoCoupon = { codice: r.codice, percentuale: coupon.percentuale, scadenza: r.scadenza };
-          this.couponAcquistato = nuovoCoupon;
-
-
-          this.toast.success(`✅ Coupon -${coupon.percentuale}% riscattato! Codice: ${r.codice}`, 5000);
-        },
-        error: e => this.toast.error(e.error?.error || 'Errore durante l\'acquisto.')
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/acquista-coupon`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ catalogoId: coupon.id })
       });
+      const data = await res.json();
+      if (res.ok) {
+        this.puntiFedelta = data.puntiFedeltaRimanenti;
+        this.puntiService.aggiorna(data.puntiFedeltaRimanenti);
+        this.couponAcquistato = { codice: data.codice, percentuale: coupon.percentuale, scadenza: data.scadenza };
+        this.toast.success(`Coupon -${coupon.percentuale}% riscattato! Codice: ${data.codice}`, 5000);
+      } else {
+        this.toast.error(data.error || 'Errore durante l\'acquisto.');
+      }
+    } catch (e) {
+      console.error('[Fedelta] Errore di rete acquisto coupon:', e);
+      this.toast.error('Errore di connessione al server.');
+    } finally {
+      this.cdr.detectChanges();
+    }
   }
 
   apriConferma(prodotto: ProdottoUsato): void {
@@ -183,31 +204,39 @@ export class FedeltaComponent implements OnInit {
     this.mostraConferma = false;
   }
 
-  confermaAcquistoProdotto(): void {
+  async confermaAcquistoProdotto() {
     if (!this.prodottoScelto) return;
     this.acquistando = true;
-    this.http.post<any>(`${this.API}/acquista-prodotto`, { prodottoId: this.prodottoScelto.id }, { headers: this.headers() })
-      .subscribe({
-        next: r => {
-          this.puntiFedelta = r.puntiFedeltaRimanenti;
-          this.puntiService.aggiorna(r.puntiFedeltaRimanenti);
-          this.prodottiUsati = this.prodottiUsati
-            .map(p => p.id === this.prodottoScelto!.id ? { ...p, giacenza: p.giacenza - 1 } : p)
-            .filter(p => p.giacenza > 0);
-          this.acquistando = false;
-          this.annullaConferma();
+    this.cdr.detectChanges();
 
-
-          this.toast.success(`🏆 Acquisto effettuato! Ordine #${r.ordineId} creato con ${r.costoInPunti} punti.`);
-        },
-        error: e => {
-          this.acquistando = false;
-          this.toast.error(e.error?.error || 'Errore durante l\'acquisto.');
-        }
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/acquista-prodotto`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prodottoId: this.prodottoScelto.id })
       });
+      const data = await res.json();
+      if (res.ok) {
+        this.puntiFedelta = data.puntiFedeltaRimanenti;
+        this.puntiService.aggiorna(data.puntiFedeltaRimanenti);
+        this.prodottiUsati = this.prodottiUsati
+          .map(p => p.id === this.prodottoScelto!.id ? { ...p, giacenza: p.giacenza - 1 } : p)
+          .filter(p => p.giacenza > 0);
+        this.annullaConferma();
+        this.toast.success(`Acquisto effettuato! Ordine #${data.ordineId} creato con ${data.costoInPunti} punti.`);
+      } else {
+        this.toast.error(data.error || 'Errore durante l\'acquisto.');
+      }
+    } catch (e) {
+      console.error('[Fedelta] Errore di rete acquisto prodotto:', e);
+      this.toast.error('Errore di connessione al server.');
+    } finally {
+      this.acquistando = false;
+      this.cdr.detectChanges();
+    }
   }
 
-  /** Restituisce true se il preset con quella percentuale è in fase di acquisto */
   isAcquistandoPreset(percentuale: number): boolean {
     return !!this.acquistandoPresetMap[percentuale];
   }
