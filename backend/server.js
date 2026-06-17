@@ -12,7 +12,7 @@ const cartaDiCreditoRoutes = require('./routes/cartaDiCreditoRoutes');
 const vendiRoutes         = require('./routes/vendiRoutes');
 const indirizzoRoutes     = require('./routes/indirizzoRoutes');
 const couponRoutes        = require('./routes/couponRoutes');
-const fedeltaRoutes       = require('./routes/fedeltaRoutes');
+
 
 const app = express();
 
@@ -33,7 +33,7 @@ app.use('/api/carta',    cartaDiCreditoRoutes);
 app.use('/api/vendi',    vendiRoutes);
 app.use('/api/indirizzo', indirizzoRoutes);
 app.use('/api/coupon',   couponRoutes);
-app.use('/api/fedelta',  fedeltaRoutes);
+
 
 app.get('/', (req, res) => res.send('Il server è attivo e funzionante!'));
 
