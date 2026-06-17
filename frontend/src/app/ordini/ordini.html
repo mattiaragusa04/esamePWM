@@ -94,7 +94,7 @@
   <div class="modal-overlay" *ngIf="ordineSelezionato" (click)="chiudiDettaglio()">
     <div class="modal-box" (click)="$event.stopPropagation()">
 
-      <div class="modal-header-custom d-flex justify-content-between align-items-center mb-4">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center"> 
         <div>
           <h4 class="m-0">Riepilogo Ordine <span class="testo-pink">#{{ ordineSelezionato.id }}</span></h4>
           <small class="text-muted">{{ ordineSelezionato.data | date:'dd MMMM yyyy' }}</small>

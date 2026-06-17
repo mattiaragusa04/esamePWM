@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS ordine (
     sconto_applicato REAL DEFAULT 0,
     punti_fedelta INTEGER DEFAULT 0,
     statoOrdine TEXT NOT NULL,
+    pagato_con_punti BOOLEAN DEFAULT 0,
     FOREIGN KEY (utente_id) REFERENCES utente(id),
     FOREIGN KEY (carta_id) REFERENCES carta_di_credito(id),
     FOREIGN KEY (indirizzo_id) REFERENCES indirizzo(id),

@@ -243,6 +243,7 @@
   overflow-y: auto;
   animation: slideUpModal 0.22s ease;
   box-shadow: 0 10px 50px rgba(248,109,237,0.22), 0 2px 12px rgba(0,0,0,0.1);
+  margin-top: 15vh;
 }
 
 @keyframes slideUpModal {
