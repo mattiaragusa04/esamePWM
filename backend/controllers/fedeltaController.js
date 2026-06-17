@@ -9,6 +9,98 @@ const Prodotto = require('../models/prodottoModel');
 const arrotonda = v => Math.floor(Number(v) + 0.5);
 const calcolaPunti = prezzo => arrotonda(prezzo) / 5;
 
+// Punti richiesti per ogni percentuale di sconto preset
+const PUNTI_PER_PRESET = {
+  5:  50,
+  10: 100,
+  15: 150,
+  20: 200,
+  25: 250
+};
+
+// ═══════════════════════════════════════════════════════════════
+// UTENTE — GET /api/fedelta/preset-coupon
+// Restituisce i coupon preset fissi (5%, 10%, 15%, 20%, 25%)
+// Non richiedono un record in DB: sono generati on-the-fly.
+// ═══════════════════════════════════════════════════════════════
+exports.getPresetCoupon = (req, res) => {
+  const preset = [5, 10, 15, 20, 25].map(perc => ({
+    percentuale: perc,
+    costoInPunti: PUNTI_PER_PRESET[perc],
+    descrizione: `Sconto del ${perc}% su qualsiasi ordine`
+  }));
+  res.json(preset);
+};
+
+// ═══════════════════════════════════════════════════════════════
+// UTENTE — POST /api/fedelta/acquista-preset-coupon  { percentuale }
+// Genera un coupon personale partendo da un preset (5/10/15/20/25%)
+// utilizzi_massimi = 1, descrizione = [email utente | X pt spesi]
+// ═══════════════════════════════════════════════════════════════
+exports.acquistaPresetCoupon = async (req, res) => {
+  const userId      = req.user.id;
+  const { percentuale } = req.body;
+
+  const percNum = Number(percentuale);
+  if (![5, 10, 15, 20, 25].includes(percNum)) {
+    return res.status(400).json({ error: 'Percentuale non valida. Valori ammessi: 5, 10, 15, 20, 25.' });
+  }
+
+  const costoInPunti = PUNTI_PER_PRESET[percNum];
+
+  try {
+    const utente = await User.findById(userId);
+    if (!utente) return res.status(404).json({ error: 'Utente non trovato.' });
+
+    const puntiDisponibili = utente.puntiFedelta || 0;
+    if (puntiDisponibili < costoInPunti) {
+      return res.status(400).json({
+        error: `Punti insufficienti. Hai ${puntiDisponibili} pt, ne servono ${costoInPunti} pt.`
+      });
+    }
+
+    // Codice casuale univoco
+    const chars  = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let codice   = 'SC' + percNum + '-';
+    for (let i = 0; i < 8; i++) codice += chars[Math.floor(Math.random() * chars.length)];
+
+    // Scadenza 3 mesi
+    const scadenza = new Date();
+    scadenza.setMonth(scadenza.getMonth() + 3);
+    const scadenzaStr = scadenza.toISOString().split('T')[0];
+
+    // Descrizione con dati utente
+    const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
+
+    await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO Coupon
+           (codice, tipo, valore, descrizione, data_scadenza,
+            utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
+         VALUES (?, 'percentuale', ?, ?, ?, 1, 0, 1, 0)`,
+        [codice, percNum, descrizione, scadenzaStr],
+        function (err) { if (err) reject(err); else resolve(this.lastID); }
+      );
+    });
+
+    await User.deductPuntiFedelta(userId, costoInPunti);
+    const utenteAggiornato = await User.findById(userId);
+
+    res.json({
+      message: `Coupon acquistato! Usa il codice entro il ${scadenzaStr}.`,
+      codice,
+      scadenza: scadenzaStr,
+      percentuale: percNum,
+      puntiScalati: costoInPunti,
+      puntiFedeltaRimanenti: utenteAggiornato.puntiFedelta
+    });
+
+  } catch (err) {
+    console.error('acquistaPresetCoupon error:', err);
+    res.status(500).json({ error: 'Errore interno del server.' });
+  }
+};
+
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — GET /api/fedelta/catalogo-coupon
 // Legge i coupon fedeltà ATTIVI dal DB (costo_punti > 0)
@@ -43,7 +135,6 @@ exports.acquistaCoupon = async (req, res) => {
   if (!catalogoId) return res.status(400).json({ error: 'catalogoId obbligatorio.' });
 
   try {
-    // Legge il coupon template dal DB
     const template = await new Promise((resolve, reject) => {
       db.get(
         `SELECT * FROM Coupon WHERE id = ? AND attivo = 1 AND costo_punti > 0`,
@@ -65,24 +156,24 @@ exports.acquistaCoupon = async (req, res) => {
       });
     }
 
-    // Genera codice univoco per l'utente
     const codice = `FEDELTA${template.valore}-${Date.now()}-${userId}`;
     const scadenza = new Date();
     scadenza.setMonth(scadenza.getMonth() + 3);
     const scadenzaStr = scadenza.toISOString().split('T')[0];
 
-    // Inserisce il coupon personale nel DB
+    // Descrizione arricchita con dati utente
+    const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
+
     await new Promise((resolve, reject) => {
       db.run(
         `INSERT INTO Coupon (codice, tipo, valore, descrizione, data_scadenza,
                              utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
          VALUES (?, 'percentuale', ?, ?, ?, 1, 0, 1, 0)`,
-        [codice, template.valore, template.descrizione, scadenzaStr],
+        [codice, template.valore, descrizione, scadenzaStr],
         function (err) { if (err) reject(err); else resolve(this.lastID); }
       );
     });
 
-    // Decrementa disponibilità se non illimitata
     if (template.disponibile !== -1) {
       await new Promise((resolve, reject) => {
         db.run(
@@ -93,9 +184,7 @@ exports.acquistaCoupon = async (req, res) => {
       });
     }
 
-    // Scala i punti all'utente
     await User.deductPuntiFedelta(userId, costoInPunti);
-
     const utenteAggiornato = await User.findById(userId);
 
     res.json({
@@ -115,7 +204,6 @@ exports.acquistaCoupon = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — GET /api/fedelta/prodotti-usati
-// Prodotti usati visibili in vetrina, con costoInPunti calcolato
 // ═══════════════════════════════════════════════════════════════
 exports.getProdottiUsati = (req, res) => {
   db.all(
@@ -142,7 +230,6 @@ exports.getProdottiUsati = (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — POST /api/fedelta/acquista-prodotto  { prodottoId }
-// Acquisto prodotto usato con punti fedeltà
 // ═══════════════════════════════════════════════════════════════
 exports.acquistaProdottoConPunti = async (req, res) => {
   const userId    = req.user.id;
@@ -151,7 +238,6 @@ exports.acquistaProdottoConPunti = async (req, res) => {
   if (!prodottoId) return res.status(400).json({ error: 'prodottoId obbligatorio.' });
 
   try {
-    // Legge prodotto live dal DB
     const prodotto = await new Promise((resolve, reject) => {
       db.get(
         `SELECT p.*, c.denominazione AS categoria_nome
@@ -181,7 +267,6 @@ exports.acquistaProdottoConPunti = async (req, res) => {
       });
     }
 
-    // Crea ordine con pagato_con_punti=1, punti_fedelta=0
     const newOrdine = await new Promise((resolve, reject) => {
       db.run(
         `INSERT INTO ordine
@@ -194,10 +279,8 @@ exports.acquistaProdottoConPunti = async (req, res) => {
       );
     });
 
-    // Aggiunge prodotto all'ordine
     await Ordine.addProdottoToOrdine(newOrdine.id, prodottoId, 1, prodotto.prezzoUnitarioVendita);
 
-    // Scala giacenza
     await new Promise((resolve, reject) => {
       db.run(
         `UPDATE prodotto SET giacenza = MAX(0, giacenza - 1) WHERE id = ? AND giacenza > 0`,
@@ -206,9 +289,7 @@ exports.acquistaProdottoConPunti = async (req, res) => {
       );
     });
 
-    // Scala punti utente
     await User.deductPuntiFedelta(userId, costoInPunti);
-
     const utenteAggiornato = await User.findById(userId);
 
     res.status(201).json({
@@ -226,7 +307,6 @@ exports.acquistaProdottoConPunti = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — GET /api/fedelta/admin/coupon-fedelta
-// Tutti i coupon che hanno costo_punti > 0 (coupon fedeltà)
 // ═══════════════════════════════════════════════════════════════
 exports.adminGetCouponFedelta = (req, res) => {
   db.all(
@@ -243,8 +323,6 @@ exports.adminGetCouponFedelta = (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — POST /api/fedelta/admin/coupon-fedelta
-// Crea coupon fedeltà (acquistabile con punti)
-// Body: { codice, percentuale, costoInPunti, descrizione, scadenza, disponibile }
 // ═══════════════════════════════════════════════════════════════
 exports.adminCreaCouponFedelta = (req, res) => {
   const { codice, percentuale, costoInPunti, descrizione, scadenza, disponibile } = req.body;
@@ -311,7 +389,6 @@ exports.adminEliminaCouponFedelta = (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — GET /api/fedelta/admin/prodotti-usati
-// Tutti i prodotti usati (anche non in vetrina / esauriti)
 // ═══════════════════════════════════════════════════════════════
 exports.adminGetProdottiUsati = (req, res) => {
   db.all(

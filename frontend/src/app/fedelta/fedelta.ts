@@ -10,6 +10,12 @@ interface CatalogoCoupon {
   descrizione: string;
 }
 
+interface PresetCoupon {
+  percentuale: number;
+  costoInPunti: number;
+  descrizione: string;
+}
+
 interface ProdottoUsato {
   id: number;
   nome: string;
@@ -32,11 +38,13 @@ export class FedeltaComponent implements OnInit {
   tabAttiva: 'coupon' | 'prodotti' = 'coupon';
 
   puntiFedelta = 0;
+  presetCoupon: PresetCoupon[] = [];
   catalogoCoupon: CatalogoCoupon[] = [];
   prodottiUsati: ProdottoUsato[] = [];
 
-  caricandoCoupon  = false;
+  caricandoCoupon   = false;
   caricandoProdotti = false;
+  acquistandoPreset: number | null = null; // percentuale in acquisto
 
   messaggio: { testo: string; tipo: 'success' | 'error' } | null = null;
   couponAcquistato: { codice: string; percentuale: number; scadenza: string } | null = null;
@@ -55,6 +63,7 @@ export class FedeltaComponent implements OnInit {
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this.leggiPuntiLocali();
+    this.caricaPresetCoupon();
     this.caricaCatalogoCoupon();
     this.caricaProdottiUsati();
   }
@@ -72,6 +81,21 @@ export class FedeltaComponent implements OnInit {
     return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 
+  caricaPresetCoupon(): void {
+    this.http.get<PresetCoupon[]>(`${this.API}/preset-coupon`, { headers: this.headers() })
+      .subscribe({
+        next: d  => this.presetCoupon = d,
+        error: () => {
+          // Fallback lato client se la route non risponde
+          this.presetCoupon = [5, 10, 15, 20, 25].map(p => ({
+            percentuale: p,
+            costoInPunti: p * 10,
+            descrizione: `Sconto del ${p}% su qualsiasi ordine`
+          }));
+        }
+      });
+  }
+
   caricaCatalogoCoupon(): void {
     this.caricandoCoupon = true;
     this.http.get<CatalogoCoupon[]>(`${this.API}/catalogo-coupon`, { headers: this.headers() })
@@ -87,6 +111,28 @@ export class FedeltaComponent implements OnInit {
       .subscribe({
         next: d  => { this.prodottiUsati = d; this.caricandoProdotti = false; },
         error: () => this.caricandoProdotti = false
+      });
+  }
+
+  acquistaPreset(preset: PresetCoupon): void {
+    if (this.puntiFedelta < preset.costoInPunti) {
+      this.mostraMessaggio(`Punti insufficienti (hai ${this.puntiFedelta} pt, ne servono ${preset.costoInPunti} pt).`, 'error');
+      return;
+    }
+    this.acquistandoPreset = preset.percentuale;
+    this.http.post<any>(`${this.API}/acquista-preset-coupon`, { percentuale: preset.percentuale }, { headers: this.headers() })
+      .subscribe({
+        next: r => {
+          this.acquistandoPreset = null;
+          this.puntiFedelta = r.puntiFedeltaRimanenti;
+          this.aggiornaPuntiLocale(r.puntiFedeltaRimanenti);
+          this.couponAcquistato = { codice: r.codice, percentuale: preset.percentuale, scadenza: r.scadenza };
+          this.mostraMessaggio(`✅ Coupon acquistato! Codice: ${r.codice}`, 'success');
+        },
+        error: e => {
+          this.acquistandoPreset = null;
+          this.mostraMessaggio(e.error?.error || 'Errore durante l\'acquisto.', 'error');
+        }
       });
   }
 
@@ -125,7 +171,6 @@ export class FedeltaComponent implements OnInit {
         next: r => {
           this.puntiFedelta = r.puntiFedeltaRimanenti;
           this.aggiornaPuntiLocale(r.puntiFedeltaRimanenti);
-          // Rimuovi il prodotto dalla lista o aggiorna giacenza
           this.prodottiUsati = this.prodottiUsati
             .map(p => p.id === this.prodottoScelto!.id ? { ...p, giacenza: p.giacenza - 1 } : p)
             .filter(p => p.giacenza > 0);
@@ -163,5 +208,17 @@ export class FedeltaComponent implements OnInit {
     if (!immagine) return 'https://placehold.co/300x200?text=Prodotto';
     if (immagine.startsWith('http')) return immagine;
     return `http://localhost:3000/public/${immagine}`;
+  }
+
+  // Colori dinamici per i preset in base alla percentuale
+  getPresetColor(perc: number): string {
+    const map: Record<number, string> = {
+      5:  '#6c757d',
+      10: '#0d6efd',
+      15: '#0dcaf0',
+      20: '#198754',
+      25: '#dc3545'
+    };
+    return map[perc] || '#6c757d';
   }
 }

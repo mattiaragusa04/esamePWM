@@ -6,6 +6,10 @@ const auth    = require('../middleware/authMiddleware');
 router.use(auth);
 
 // ── Utente ──────────────────────────────────────────────
+// Preset coupon fissi (5%, 10%, 15%, 20%, 25%) — generati on-the-fly
+router.get('/preset-coupon',     ctrl.getPresetCoupon);
+// Acquisto coupon preset con punti
+router.post('/acquista-preset-coupon', ctrl.acquistaPresetCoupon);
 // Catalogo coupon dal DB (punti → coupon)
 router.get('/catalogo-coupon',   ctrl.getCatalogoCoupon);
 // Acquisto coupon con punti
