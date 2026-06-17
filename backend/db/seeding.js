@@ -169,7 +169,21 @@ async function popolaDatabaseUtenteAdmin() {
         console.log(error);
     }
 }
+function seedingProdotti() {
+    db.get("SELECT COUNT(*) AS count from prodotto", async (err, row) => {
+        if (row && row.count === 0) {
+            console.log('Dati base inseriti. Avvio download cataloghi esterni...');
 
+            // Esegue l'inserimento statico di console e videogiochi
+            await popolaDatabaseCategoriaConsole();
+            await popolaDatabaseCategoriaVideogiochi();
+            await popolaDatabaseCategoriaAccessori();
+            await popolaDatabaseCategoriaElettronica();
+
+            console.log('Download cataloghi esterni completato.');
+        }
+    });
+}
 // Funzione per popolare il database con dati di esempio
 function seedDatabase() {
     db.get("SELECT COUNT(*) AS count from categoria", (err, row) => {
@@ -187,27 +201,12 @@ function seedDatabase() {
         }
     });
 
-    function seedingProdotti() {
-        db.get("SELECT COUNT(*) AS count from prodotto", async (err, row) => {
-            if (row && row.count === 0) {
-                console.log('Dati base inseriti. Avvio download cataloghi esterni...');
-
-                // Esegue l'inserimento statico di console e videogiochi
-                await popolaDatabaseCategoriaConsole();
-                await popolaDatabaseCategoriaVideogiochi();
-                await popolaDatabaseCategoriaAccessori();
-                await popolaDatabaseCategoriaElettronica();
-
-                console.log('Download cataloghi esterni completato.');
-            }
-        });
-    }
-
     db.get("SELECT COUNT(*) AS count from utente WHERE ruolo = 'admin'", async (err, row) => {
         if (row && row.count === 0) {
             await popolaDatabaseUtenteAdmin();
         }
     });
 }
+
 
 module.exports = seedDatabase;

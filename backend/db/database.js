@@ -116,7 +116,8 @@ CREATE TABLE IF NOT EXISTS Coupon (
     data_scadenza DATE,
     utilizzi_massimi INTEGER,
     utilizzi_attuali INTEGER DEFAULT 0,
-    attivo INTEGER DEFAULT 1,
+    attivo INTEGER DEFAULT 1,   
+    costo_punti INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS vendi (

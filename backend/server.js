@@ -3,6 +3,7 @@ const express = require('express');
 const cors    = require('cors');
 const db      = require('./db/database');
 const path    = require('path');
+const seedDatabase = require('./db/seeding');
 
 const authRoutes          = require('./routes/authRoutes');
 const prodottiRoutes      = require('./routes/prodottiRoutes');
@@ -56,4 +57,7 @@ app.listen(PORT, () => {
       }
     });
   });
+
+  // Richiama il popolamento iniziale del database se vuoto
+  seedDatabase();
 });

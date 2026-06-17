@@ -81,7 +81,7 @@ export class Profilo implements OnInit {
     if (!token) return;
 
     try {
-      const res = await fetch(`${this.API_FEDELTA}/coupon-riscattati`, {
+      const res = await fetch(`${this.API_FEDELTA}/miei-coupon`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {

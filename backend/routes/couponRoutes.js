@@ -26,30 +26,31 @@ router.patch('/:id/toggle', verificaToken, verificaAdmin, couponController.toggl
 
 // ── Utente ──────────────────────────────────────────────
 // Preset coupon fissi (5%, 10%, 15%, 20%, 25%) — generati on-the-fly
-router.get('/preset-coupon', couponController.getPresetCoupon);
+router.get('/preset-coupon', verificaToken,couponController.getPresetCoupon);
 // Acquisto coupon preset con punti
-router.post('/acquista-preset-coupon', couponController.acquistaPresetCoupon);
+router.post('/acquista-preset-coupon', verificaToken,couponController.acquistaPresetCoupon);
 // Catalogo coupon dal DB (punti → coupon)
-router.get('/catalogo-coupon', couponController.getCatalogoCoupon);
+router.get('/catalogo-coupon', verificaToken,couponController.getCatalogoCoupon);
 // Acquisto coupon con punti
-router.post('/acquista-coupon',  couponController.acquistaCoupon);
+router.post('/acquista-coupon', verificaToken ,couponController.acquistaCoupon);
 // Lista prodotti usati (live dal DB)
-router.get('/prodotti-usati', couponController.getProdottiUsati);
+router.get('/prodotti-usati', verificaToken,couponController.getProdottiUsati);
 // Acquisto prodotto usato con punti
-router.post('/acquista-prodotto', couponController.acquistaProdottoConPunti);
+router.post('/acquista-prodotto',verificaToken, couponController.acquistaProdottoConPunti);
 // Lista coupon utente
 router.get('/miei-coupon', verificaToken, couponController.iMieiCoupon);
+
 // ── Admin ───────────────────────────────────────────────
 // Tutti i coupon fedeltà (tabella admin)
-router.get('/admin/coupon-fedelta', couponController.adminGetCouponFedelta);
+router.get('/admin/coupon-fedelta', verificaAdmin,couponController.adminGetCouponFedelta);
 // Crea coupon fedeltà
-router.post('/admin/coupon-fedelta', couponController.adminCreaCouponFedelta);
+router.post('/admin/coupon-fedelta', verificaAdmin,couponController.adminCreaCouponFedelta);
 // Toggle attivo
-router.patch('/admin/coupon-fedelta/:id/toggle', couponController.adminToggleCouponFedelta);
+router.patch('/admin/coupon-fedelta/:id/toggle', verificaAdmin, couponController.adminToggleCouponFedelta);
 // Elimina coupon fedeltà
-router.delete('/admin/coupon-fedelta/:id', couponController.adminEliminaCouponFedelta);
+router.delete('/admin/coupon-fedelta/:id', verificaAdmin,couponController.adminEliminaCouponFedelta);
 // Tutti i prodotti usati (per admin, include anche quelli non in vetrina)
-router.get('/admin/prodotti-usati', couponController.adminGetProdottiUsati);
+router.get('/admin/prodotti-usati', verificaAdmin,couponController.adminGetProdottiUsati);
 
 
 module.exports = router;
