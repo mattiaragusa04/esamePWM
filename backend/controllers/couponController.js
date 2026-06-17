@@ -1,7 +1,7 @@
 const Coupon = require('../models/couponModel');
 
 // GET /api/coupon — lista tutti i coupon (admin)
-const getCoupon = async (req, res) => {
+exports.getCoupon = async (req, res) => {
   try {
     const coupon = await Coupon.findAll();
     res.json(coupon);
@@ -12,7 +12,7 @@ const getCoupon = async (req, res) => {
 };
 
 // POST /api/coupon — crea un nuovo coupon (admin)
-const creaCoupon = async (req, res) => {
+exports.creaCoupon = async (req, res) => {
   const { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi } = req.body;
 
   if (!codice || !tipo || !valore) {
@@ -41,7 +41,7 @@ const creaCoupon = async (req, res) => {
 };
 
 // PUT /api/coupon/:id — modifica un coupon esistente (admin)
-const modificaCoupon = async (req, res) => {
+exports.modificaCoupon = async (req, res) => {
   const { id } = req.params;
   const { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi } = req.body;
 
@@ -86,7 +86,7 @@ const modificaCoupon = async (req, res) => {
 };
 
 // PATCH /api/coupon/:id/toggle — attiva/disattiva (admin)
-const toggleCoupon = async (req, res) => {
+exports.toggleCoupon = async (req, res) => {
   const { id } = req.params;
   try {
     const coupon = await Coupon.findById(id);
@@ -102,7 +102,7 @@ const toggleCoupon = async (req, res) => {
 };
 
 // POST /api/coupon/valida — valida codice coupon (utente nel pagamento)
-const validaCoupon = async (req, res) => {
+exports.validaCoupon = async (req, res) => {
   const { codice, totale } = req.body;
   if (!codice) return res.status(400).json({ error: 'Codice mancante.' });
   if (!totale || Number(totale) <= 0) return res.status(400).json({ error: 'Totale non valido.' });
@@ -139,4 +139,3 @@ const validaCoupon = async (req, res) => {
   }
 };
 
-module.exports = { getCoupon, creaCoupon, modificaCoupon, toggleCoupon, validaCoupon };
