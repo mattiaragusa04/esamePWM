@@ -43,18 +43,29 @@ const User = {
 
   updatePuntiFedelta: (userId, puntiDaAggiungere) => {
     return new Promise((resolve, reject) => {
-      const query = `UPDATE utente SET puntiFedelta = COALESCE(puntiFedelta, 0) + ? WHERE id = ?`;
-      db.run(query, [puntiDaAggiungere, userId], function (err) {
-        if (err) reject(err);
-        else resolve({ id: userId, changes: this.changes });
+      // Usa il nome esatto della colonna come da CREATE TABLE in database.js
+      const queryUpdate = `UPDATE utente SET puntiFedelta = COALESCE(puntiFedelta, 0) + ? WHERE id = ?`;
+      db.run(queryUpdate, [puntiDaAggiungere, userId], function (err) {
+        if (err) return reject(err);
+        if (this.changes === 0) {
+          // Nessuna riga aggiornata: userId inesistente o colonna non trovata
+          return reject(new Error(`updatePuntiFedelta: nessuna riga aggiornata per userId=${userId}. Verifica che l'utente esista.`));
+        }
+        // Leggi il valore effettivo aggiornato dal DB per conferma
+        db.get(`SELECT puntiFedelta FROM utente WHERE id = ?`, [userId], (err2, row) => {
+          if (err2) return reject(err2);
+          resolve({
+            id: Number(userId),
+            changes: this.changes,
+            puntiFedelta: row ? row.puntiFedelta : null
+          });
+        });
       });
     });
   },
 
   delete: (id) => {
     return new Promise((resolve, reject) => {
-      // Prima di eliminare l'utente, cancella tutte le righe collegate
-      // rispettando l'ordine dei vincoli di foreign key
       const queries = [
         `DELETE FROM contiene WHERE carrello_id IN (SELECT id FROM carrello WHERE utente_id = ?)`,
         `DELETE FROM carrello WHERE utente_id = ?`,
