@@ -114,6 +114,61 @@
           <span class="profilo-field-value punti-value">{{ utente.puntiFedelta || 0 }} pt</span>
         </div>
       </div>
+
+      <!-- ═══ STORICO PUNTI FEDELTÀ SPESI ═══ -->
+      <div class="profilo-storico-section">
+        <div class="profilo-card-header" style="margin-top: 1.5rem;">
+          <div class="profilo-card-icon">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <h2 class="profilo-card-title">Storico Punti Spesi</h2>
+        </div>
+        <div *ngIf="storicoSpesaPunti.length === 0" class="profilo-storico-empty">
+          <i class="bi bi-inbox"></i>
+          <span>Nessuna spesa di punti ancora registrata.</span>
+        </div>
+        <div class="profilo-storico-list" *ngIf="storicoSpesaPunti.length > 0">
+          <div class="profilo-storico-item" *ngFor="let s of storicoSpesaPunti">
+            <div class="profilo-storico-icon">
+              <i class="bi bi-trophy-fill"></i>
+            </div>
+            <div class="profilo-storico-body">
+              <div class="profilo-storico-desc">{{ s.descrizione }}</div>
+              <div class="profilo-storico-meta">
+                <span class="profilo-storico-data">{{ formatData(s.data) }}</span>
+                <span *ngIf="s.codice" class="profilo-storico-codice">{{ s.codice }}</span>
+              </div>
+            </div>
+            <div class="profilo-storico-punti">-{{ s.puntiSpesi }} pt</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ COUPON RISCATTATI ═══ -->
+      <div class="profilo-coupon-section">
+        <div class="profilo-card-header" style="margin-top: 1.5rem;">
+          <div class="profilo-card-icon">
+            <i class="bi bi-ticket-perforated-fill"></i>
+          </div>
+          <h2 class="profilo-card-title">Coupon Riscattati</h2>
+        </div>
+        <div *ngIf="couponRiscattati.length === 0" class="profilo-storico-empty">
+          <i class="bi bi-ticket"></i>
+          <span>Nessun coupon riscattato ancora.</span>
+        </div>
+        <div class="profilo-coupon-list" *ngIf="couponRiscattati.length > 0">
+          <div class="profilo-coupon-item" *ngFor="let c of couponRiscattati">
+            <div class="profilo-coupon-badge">-{{ c.percentuale }}%</div>
+            <div class="profilo-coupon-body">
+              <div class="profilo-coupon-codice"><strong>{{ c.codice }}</strong></div>
+              <div class="profilo-coupon-meta">
+                <span *ngIf="c.dataAcquisto">Ottenuto il {{ formatData(c.dataAcquisto) }}</span>
+                <span class="profilo-coupon-scadenza">Scade il {{ c.scadenza }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="profilo-actions-card">
@@ -124,7 +179,7 @@
         <h2 class="profilo-card-title">Azioni Rapide</h2>
       </div>
       <div class="profilo-quick-actions">
-        <a routerLink="/profilo/ordini" class="profilo-action-btn">
+        <a routerLink="/profilo" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="profilo-action-btn">
           <div class="profilo-action-icon"><i class="bi bi-box-seam"></i></div>
           <span>I miei Ordini</span>
           <i class="bi bi-chevron-right profilo-action-arrow"></i>

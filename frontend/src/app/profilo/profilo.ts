@@ -3,6 +3,20 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
+export interface CouponRiscattato {
+  codice: string;
+  percentuale: number;
+  scadenza: string;
+  dataAcquisto?: string;
+}
+
+export interface StoricoSpesaPunti {
+  data: string;
+  puntiSpesi: number;
+  descrizione: string;
+  codice?: string;
+}
+
 @Component({
   selector: 'app-profilo',
   standalone: true,
@@ -13,12 +27,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class Profilo implements OnInit {
   utente: any = null;
 
-  // Placeholder: collegare ai servizi reali
   totalOrdini    = 0;
   totalVendite   = 0;
   totalPreferiti = 0;
 
-  private readonly API = 'http://localhost:3000/api/auth/profile';
+  couponRiscattati: CouponRiscattato[] = [];
+  storicoSpesaPunti: StoricoSpesaPunti[] = [];
+
+  private readonly API        = 'http://localhost:3000/api/auth/profile';
+  private readonly API_FEDELTA = 'http://localhost:3000/api/fedelta';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -28,26 +45,90 @@ export class Profilo implements OnInit {
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Carica subito i dati dal localStorage come valore iniziale
     const raw = localStorage.getItem('user');
     if (raw) {
       this.utente = this.normalizza(JSON.parse(raw));
     }
 
-    // Poi richiede i dati aggiornati dal DB (cattura modifiche admin ai punti)
     const token = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
       this.http.get<any>(this.API, { headers }).subscribe({
         next: (utenteAggiornato) => {
           this.utente = this.normalizza(utenteAggiornato);
-          // Aggiorna localStorage così gli altri componenti sono allineati
           localStorage.setItem('user', JSON.stringify(this.utente));
         },
         error: (err) => {
           console.warn('[Profilo] Impossibile ricaricare il profilo dal server, uso cache locale:', err.status);
         }
       });
+
+      // Carica storico punti spesi
+      this.http.get<StoricoSpesaPunti[]>(`${this.API_FEDELTA}/storico-spesa`, { headers }).subscribe({
+        next: (d) => this.storicoSpesaPunti = d,
+        error: () => this.storicoSpesaPunti = this.leggiStoricoLocale()
+      });
+
+      // Carica coupon riscattati
+      this.http.get<CouponRiscattato[]>(`${this.API_FEDELTA}/miei-coupon`, { headers }).subscribe({
+        next: (d) => this.couponRiscattati = d,
+        error: () => this.couponRiscattati = this.leggiCouponLocali()
+      });
+    }
+  }
+
+  /** Legge lo storico punti spesi salvato localmente come fallback */
+  private leggiStoricoLocale(): StoricoSpesaPunti[] {
+    try {
+      const raw = localStorage.getItem('storico_punti');
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }
+
+  /** Legge i coupon riscattati salvati localmente come fallback */
+  private leggiCouponLocali(): CouponRiscattato[] {
+    try {
+      const raw = localStorage.getItem('coupon_riscattati');
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }
+
+  /** Aggiunge un coupon appena generato alla lista locale e aggiorna lo storico */
+  aggiungiCouponLocale(coupon: CouponRiscattato, puntiSpesi: number, descrizione: string): void {
+    // Aggiorna lista coupon
+    const couponList = this.leggiCouponLocali();
+    couponList.unshift({ ...coupon, dataAcquisto: new Date().toISOString() });
+    localStorage.setItem('coupon_riscattati', JSON.stringify(couponList));
+    this.couponRiscattati = couponList;
+
+    // Aggiorna storico punti
+    const storico = this.leggiStoricoLocale();
+    storico.unshift({
+      data: new Date().toISOString(),
+      puntiSpesi,
+      descrizione,
+      codice: coupon.codice
+    });
+    localStorage.setItem('storico_punti', JSON.stringify(storico));
+    this.storicoSpesaPunti = storico;
+  }
+
+  /** Aggiunge al storico locale una spesa per prodotto usato */
+  aggiungiSpesaProdottoLocale(puntiSpesi: number, nomeProdotto: string): void {
+    const storico = this.leggiStoricoLocale();
+    storico.unshift({
+      data: new Date().toISOString(),
+      puntiSpesi,
+      descrizione: `Prodotto usato: ${nomeProdotto}`
+    });
+    localStorage.setItem('storico_punti', JSON.stringify(storico));
+    this.storicoSpesaPunti = storico;
+  }
+
+  /** Aggiorna i punti dell'utente nel modello locale */
+  aggiornaPuntiUtente(nuoviPunti: number): void {
+    if (this.utente) {
+      this.utente = this.normalizza({ ...this.utente, puntiFedelta: nuoviPunti, punti_fedelta: nuoviPunti });
     }
   }
 
@@ -101,5 +182,10 @@ export class Profilo implements OnInit {
     const to   = this.getLevelNextThreshold();
     if (to === from) return 100;
     return Math.min(100, Math.round(((p - from) / (to - from)) * 100));
+  }
+
+  formatData(iso: string): string {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 }

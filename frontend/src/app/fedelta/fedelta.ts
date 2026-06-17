@@ -44,7 +44,7 @@ export class FedeltaComponent implements OnInit {
 
   caricandoCoupon   = false;
   caricandoProdotti = false;
-  acquistandoPreset: number | null = null; // percentuale in acquisto
+  acquistandoPreset: number | null = null;
 
   messaggio: { testo: string; tipo: 'success' | 'error' } | null = null;
   couponAcquistato: { codice: string; percentuale: number; scadenza: string } | null = null;
@@ -86,7 +86,6 @@ export class FedeltaComponent implements OnInit {
       .subscribe({
         next: d  => this.presetCoupon = d,
         error: () => {
-          // Fallback lato client se la route non risponde
           this.presetCoupon = [5, 10, 15, 20, 25].map(p => ({
             percentuale: p,
             costoInPunti: p * 10,
@@ -126,7 +125,13 @@ export class FedeltaComponent implements OnInit {
           this.acquistandoPreset = null;
           this.puntiFedelta = r.puntiFedeltaRimanenti;
           this.aggiornaPuntiLocale(r.puntiFedeltaRimanenti);
-          this.couponAcquistato = { codice: r.codice, percentuale: preset.percentuale, scadenza: r.scadenza };
+
+          const nuovoCoupon = { codice: r.codice, percentuale: preset.percentuale, scadenza: r.scadenza };
+          this.couponAcquistato = nuovoCoupon;
+
+          // Salva il coupon e lo storico punti nel localStorage per la pagina Profilo
+          this.salvaCouponLocale(nuovoCoupon, preset.costoInPunti, preset.descrizione);
+
           this.mostraMessaggio(`✅ Coupon acquistato! Codice: ${r.codice}`, 'success');
         },
         error: e => {
@@ -146,7 +151,13 @@ export class FedeltaComponent implements OnInit {
         next: r => {
           this.puntiFedelta = r.puntiFedeltaRimanenti;
           this.aggiornaPuntiLocale(r.puntiFedeltaRimanenti);
-          this.couponAcquistato = { codice: r.codice, percentuale: coupon.percentuale, scadenza: r.scadenza };
+
+          const nuovoCoupon = { codice: r.codice, percentuale: coupon.percentuale, scadenza: r.scadenza };
+          this.couponAcquistato = nuovoCoupon;
+
+          // Salva il coupon e lo storico punti nel localStorage per la pagina Profilo
+          this.salvaCouponLocale(nuovoCoupon, coupon.costoInPunti, coupon.descrizione);
+
           this.mostraMessaggio(`✅ Coupon acquistato! Codice: ${r.codice}`, 'success');
         },
         error: e => this.mostraMessaggio(e.error?.error || 'Errore durante l\'acquisto.', 'error')
@@ -166,6 +177,8 @@ export class FedeltaComponent implements OnInit {
   confermaAcquistoProdotto(): void {
     if (!this.prodottoScelto) return;
     this.acquistando = true;
+    const nomeProdotto   = this.prodottoScelto.nome;
+    const costoInPunti  = this.prodottoScelto.costoInPunti;
     this.http.post<any>(`${this.API}/acquista-prodotto`, { prodottoId: this.prodottoScelto.id }, { headers: this.headers() })
       .subscribe({
         next: r => {
@@ -176,6 +189,10 @@ export class FedeltaComponent implements OnInit {
             .filter(p => p.giacenza > 0);
           this.acquistando = false;
           this.annullaConferma();
+
+          // Salva nel storico punti (senza coupon)
+          this.salvaStoricoPuntiLocale(costoInPunti, `Prodotto usato: ${nomeProdotto}`);
+
           this.mostraMessaggio(`🏆 Acquisto effettuato! Ordine #${r.ordineId} creato con ${r.costoInPunti} punti.`, 'success');
         },
         error: e => {
@@ -195,6 +212,38 @@ export class FedeltaComponent implements OnInit {
     }
   }
 
+  /**
+   * Salva il coupon appena generato nel localStorage (coupon_riscattati)
+   * e aggiunge una voce allo storico punti spesi (storico_punti).
+   */
+  private salvaCouponLocale(
+    coupon: { codice: string; percentuale: number; scadenza: string },
+    puntiSpesi: number,
+    descrizione: string
+  ): void {
+    // 1. Salva coupon
+    let couponList: any[] = [];
+    try { couponList = JSON.parse(localStorage.getItem('coupon_riscattati') || '[]'); } catch {}
+    couponList.unshift({ ...coupon, dataAcquisto: new Date().toISOString() });
+    localStorage.setItem('coupon_riscattati', JSON.stringify(couponList));
+
+    // 2. Aggiorna storico spesa
+    this.salvaStoricoPuntiLocale(puntiSpesi, descrizione, coupon.codice);
+  }
+
+  /** Aggiunge una voce allo storico punti spesi nel localStorage */
+  private salvaStoricoPuntiLocale(puntiSpesi: number, descrizione: string, codice?: string): void {
+    let storico: any[] = [];
+    try { storico = JSON.parse(localStorage.getItem('storico_punti') || '[]'); } catch {}
+    storico.unshift({
+      data: new Date().toISOString(),
+      puntiSpesi,
+      descrizione,
+      ...(codice ? { codice } : {})
+    });
+    localStorage.setItem('storico_punti', JSON.stringify(storico));
+  }
+
   private mostraMessaggio(testo: string, tipo: 'success' | 'error'): void {
     this.messaggio = { testo, tipo };
     setTimeout(() => this.messaggio = null, 6000);
@@ -210,7 +259,6 @@ export class FedeltaComponent implements OnInit {
     return `http://localhost:3000/public/${immagine}`;
   }
 
-  // Colori dinamici per i preset in base alla percentuale
   getPresetColor(perc: number): string {
     const map: Record<number, string> = {
       5:  '#6c757d',
