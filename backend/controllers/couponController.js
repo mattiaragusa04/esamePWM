@@ -211,7 +211,8 @@ exports.acquistaPresetCoupon = async (req, res) => {
     // Descrizione con dati utente
     const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
 
-    await Coupon.createGenerato({ codice, valore: percNum, descrizione, scadenzaStr });
+    const nuovoCoupon = await Coupon.createGenerato({ codice, valore: percNum, descrizione, scadenzaStr });
+    await Coupon.insertCouponGenerato(userId, nuovoCoupon.id);
 
     await User.deductPuntiFedelta(userId, costoInPunti);
     const utenteAggiornato = await User.findById(userId);
@@ -277,7 +278,8 @@ exports.acquistaCoupon = async (req, res) => {
     // Descrizione arricchita con dati utente
     const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
 
-    await Coupon.createGenerato({ codice, valore: template.valore, descrizione, scadenzaStr });
+    const nuovoCoupon = await Coupon.createGenerato({ codice, valore: template.valore, descrizione, scadenzaStr });
+    await Coupon.insertCouponGenerato(userId, nuovoCoupon.id);
     await Coupon.decrementaDisponibile(catalogoId);
 
     await User.deductPuntiFedelta(userId, costoInPunti);

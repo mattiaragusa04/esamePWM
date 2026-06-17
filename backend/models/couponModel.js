@@ -245,12 +245,26 @@ const Coupon = {
     });
   },
 
+  insertCouponGenerato: (userId, couponId) => {
+    return new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO coupon_generati (utente_id, coupon_id) VALUES (?, ?)`,
+        [userId, couponId],
+        function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
+      );
+    });
+  },
+
   getCouponbyUserId: (userId) => {
     return new Promise((resolve, reject) => {
-      db.get(
-        `SELECT id FROM Coupon WHERE utente_id = ? AND costo_punti > 0 LIMIT 1`,
+      db.all(
+        `SELECT c.codice, c.valore AS percentuale, c.data_scadenza AS scadenza, cg.data_generazione AS dataAcquisto
+         FROM coupon_generati cg
+         JOIN Coupon c ON c.id = cg.coupon_id
+         WHERE cg.utente_id = ?
+         ORDER BY cg.data_generazione DESC`,
         [userId],
-        (err, row) => { if (err) reject(err); else resolve(row); }
+        (err, rows) => { if (err) reject(err); else resolve(rows); }
       );
     });
   },
