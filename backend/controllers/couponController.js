@@ -1,4 +1,6 @@
 const Coupon = require('../models/couponModel');
+const User   = require('../models/userModel');
+const Ordine = require('../models/ordineModel');
 
 // ═══════════════════════════════════════════════════════════════
 // HELPER
@@ -209,16 +211,7 @@ exports.acquistaPresetCoupon = async (req, res) => {
     // Descrizione con dati utente
     const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
 
-    await new Promise((resolve, reject) => {
-      db.run(
-        `INSERT INTO Coupon
-           (codice, tipo, valore, descrizione, data_scadenza,
-            utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
-         VALUES (?, 'percentuale', ?, ?, ?, 1, 0, 1, 0)`,
-        [codice, percNum, descrizione, scadenzaStr],
-        function (err) { if (err) reject(err); else resolve(this.lastID); }
-      );
-    });
+    await Coupon.createGenerato({ codice, valore: percNum, descrizione, scadenzaStr });
 
     await User.deductPuntiFedelta(userId, costoInPunti);
     const utenteAggiornato = await User.findById(userId);
@@ -242,23 +235,12 @@ exports.acquistaPresetCoupon = async (req, res) => {
 // UTENTE — GET /api/coupon/catalogo-coupon
 // Legge i coupon fedeltà ATTIVI dal DB (costo_punti > 0)
 // ═══════════════════════════════════════════════════════════════
-exports.getCatalogoCoupon = (req, res) => {
-  db.all(
-    `SELECT id, codice, tipo, valore AS percentuale, descrizione,
-            data_scadenza, utilizzi_massimi, utilizzi_attuali,
-            costo_punti AS costoInPunti, disponibile
-     FROM Coupon
-     WHERE attivo = 1
-       AND costo_punti > 0
-       AND (disponibile = -1 OR disponibile > 0)
-       AND (data_scadenza IS NULL OR date(data_scadenza) >= date('now'))
-     ORDER BY valore ASC`,
-    [],
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json(rows);
-    }
-  );
+exports.getCatalogoCoupon = async (req, res) => {
+  try {
+    res.json(await Coupon.findCatalogoFedelta());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -272,13 +254,7 @@ exports.acquistaCoupon = async (req, res) => {
   if (!catalogoId) return res.status(400).json({ error: 'catalogoId obbligatorio.' });
 
   try {
-    const template = await new Promise((resolve, reject) => {
-      db.get(
-        `SELECT * FROM Coupon WHERE id = ? AND attivo = 1 AND costo_punti > 0`,
-        [catalogoId],
-        (err, row) => { if (err) reject(err); else resolve(row); }
-      );
-    });
+    const template = await Coupon.findFedeltaById(catalogoId);
     if (!template) return res.status(404).json({ error: 'Coupon non trovato o non disponibile.' });
 
     const utente = await User.findById(userId);
@@ -301,25 +277,8 @@ exports.acquistaCoupon = async (req, res) => {
     // Descrizione arricchita con dati utente
     const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
 
-    await new Promise((resolve, reject) => {
-      db.run(
-        `INSERT INTO Coupon (codice, tipo, valore, descrizione, data_scadenza,
-                             utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
-         VALUES (?, 'percentuale', ?, ?, ?, 1, 0, 1, 0)`,
-        [codice, template.valore, descrizione, scadenzaStr],
-        function (err) { if (err) reject(err); else resolve(this.lastID); }
-      );
-    });
-
-    if (template.disponibile !== -1) {
-      await new Promise((resolve, reject) => {
-        db.run(
-          `UPDATE Coupon SET disponibile = MAX(0, disponibile - 1) WHERE id = ?`,
-          [catalogoId],
-          function (err) { if (err) reject(err); else resolve(this.changes); }
-        );
-      });
-    }
+    await Coupon.createGenerato({ codice, valore: template.valore, descrizione, scadenzaStr });
+    await Coupon.decrementaDisponibile(catalogoId);
 
     await User.deductPuntiFedelta(userId, costoInPunti);
     const utenteAggiornato = await User.findById(userId);
@@ -342,27 +301,13 @@ exports.acquistaCoupon = async (req, res) => {
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — GET /api/coupon/prodotti-usati
 // ═══════════════════════════════════════════════════════════════
-exports.getProdottiUsati = (req, res) => {
-  db.all(
-    `SELECT p.id, p.nome, p.descrizione, p.prezzoUnitarioVendita,
-            p.immagine, p.giacenza, p.condizione,
-            c.denominazione AS categoria_nome
-     FROM prodotto p
-     LEFT JOIN categoria c ON p.categoria_id = c.id
-     WHERE (p.condizione = 'Usato' OR p.usato = 1)
-       AND p.giacenza > 0
-       AND p.pubblicatoVetrina = 1
-     ORDER BY p.prezzoUnitarioVendita ASC`,
-    [],
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      const prodotti = rows.map(p => ({
-        ...p,
-        costoInPunti: calcolaPunti(p.prezzoUnitarioVendita)
-      }));
-      res.json(prodotti);
-    }
-  );
+exports.getProdottiUsati = async (req, res) => {
+  try {
+    const rows = await Coupon.findProdottiUsati();
+    res.json(rows.map(p => ({ ...p, costoInPunti: calcolaPunti(p.prezzoUnitarioVendita) })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -375,16 +320,7 @@ exports.acquistaProdottoConPunti = async (req, res) => {
   if (!prodottoId) return res.status(400).json({ error: 'prodottoId obbligatorio.' });
 
   try {
-    const prodotto = await new Promise((resolve, reject) => {
-      db.get(
-        `SELECT p.*, c.denominazione AS categoria_nome
-         FROM prodotto p
-         LEFT JOIN categoria c ON p.categoria_id = c.id
-         WHERE p.id = ?`,
-        [prodottoId],
-        (err, row) => { if (err) reject(err); else resolve(row); }
-      );
-    });
+    const prodotto = await Coupon.findProdottoById(prodottoId);
 
     if (!prodotto) return res.status(404).json({ error: 'Prodotto non trovato.' });
 
@@ -404,27 +340,11 @@ exports.acquistaProdottoConPunti = async (req, res) => {
       });
     }
 
-    const newOrdine = await new Promise((resolve, reject) => {
-      db.run(
-        `INSERT INTO ordine
-           (carta_id, indirizzo_id, utente_id, coupon_id, data, totale,
-            totale_scontato, sconto_applicato, punti_fedelta, statoOrdine, pagato_con_punti)
-         VALUES (NULL, NULL, ?, NULL, ?, ?, ?, 0, 0, 'In elaborazione', 1)`,
-        [userId, new Date().toISOString(),
-         prodotto.prezzoUnitarioVendita, prodotto.prezzoUnitarioVendita],
-        function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
-      );
-    });
+    const newOrdine = await Ordine.createConPunti(userId, prodotto.prezzoUnitarioVendita);
 
     await Ordine.addProdottoToOrdine(newOrdine.id, prodottoId, 1, prodotto.prezzoUnitarioVendita);
 
-    await new Promise((resolve, reject) => {
-      db.run(
-        `UPDATE prodotto SET giacenza = MAX(0, giacenza - 1) WHERE id = ? AND giacenza > 0`,
-        [prodottoId],
-        function (err) { if (err) reject(err); else resolve(this.changes); }
-      );
-    });
+    await Coupon.decrementaGiacenza(prodottoId);
 
     await User.deductPuntiFedelta(userId, costoInPunti);
     const utenteAggiornato = await User.findById(userId);
@@ -445,105 +365,67 @@ exports.acquistaProdottoConPunti = async (req, res) => {
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — GET /api/coupon/admin/coupon-fedelta
 // ═══════════════════════════════════════════════════════════════
-exports.adminGetCouponFedelta = (req, res) => {
-  db.all(
-    `SELECT * FROM Coupon
-     WHERE costo_punti > 0
-     ORDER BY id DESC`,
-    [],
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json(rows);
-    }
-  );
+exports.adminGetCouponFedelta = async (req, res) => {
+  try {
+    res.json(await Coupon.findAllFedelta());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — POST /api/coupon/admin/coupon-fedelta
 // ═══════════════════════════════════════════════════════════════
-exports.adminCreaCouponFedelta = (req, res) => {
+exports.adminCreaCouponFedelta = async (req, res) => {
   const { codice, percentuale, costoInPunti, descrizione, scadenza, disponibile } = req.body;
-
-  if (!codice || !percentuale || !costoInPunti) {
+  if (!codice || !percentuale || !costoInPunti)
     return res.status(400).json({ error: 'codice, percentuale e costoInPunti sono obbligatori.' });
+  try {
+    const result = await Coupon.createFedelta({ codice, percentuale, costoInPunti, descrizione, scadenza, disponibile });
+    res.status(201).json({ message: 'Coupon fedeltà creato.', id: result.id });
+  } catch (err) {
+    if (err.message && err.message.includes('UNIQUE'))
+      return res.status(400).json({ error: 'Codice coupon già esistente.' });
+    res.status(500).json({ error: err.message });
   }
-
-  const disp = disponibile !== undefined ? Number(disponibile) : -1;
-
-  db.run(
-    `INSERT INTO Coupon
-       (codice, tipo, valore, descrizione, data_scadenza,
-        utilizzi_massimi, utilizzi_attuali, attivo, costo_punti, disponibile)
-     VALUES (?, 'percentuale', ?, ?, ?, -1, 0, 1, ?, ?)`,
-    [codice.trim().toUpperCase(), Number(percentuale),
-     descrizione || `Sconto del ${percentuale}% — coupon fedeltà`,
-     scadenza || null,
-     Number(costoInPunti), disp],
-    function (err) {
-      if (err) {
-        if (err.message.includes('UNIQUE')) {
-          return res.status(400).json({ error: 'Codice coupon già esistente.' });
-        }
-        return res.status(500).json({ error: err.message });
-      }
-      res.status(201).json({ message: 'Coupon fedeltà creato.', id: this.lastID });
-    }
-  );
 };
 
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — PATCH /api/coupon/admin/coupon-fedelta/:id/toggle
 // ═══════════════════════════════════════════════════════════════
-exports.adminToggleCouponFedelta = (req, res) => {
+exports.adminToggleCouponFedelta = async (req, res) => {
   const { id } = req.params;
-  const { attivo } = req.body;
-  db.run(
-    `UPDATE Coupon SET attivo = ? WHERE id = ? AND costo_punti > 0`,
-    [attivo ? 1 : 0, id],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message });
-      if (this.changes === 0) return res.status(404).json({ error: 'Coupon non trovato.' });
-      res.json({ message: 'Stato aggiornato.' });
-    }
-  );
+  try {
+    const result = await Coupon.toggleFedelta(id, req.body.attivo);
+    if (result.changes === 0) return res.status(404).json({ error: 'Coupon non trovato.' });
+    res.json({ message: 'Stato aggiornato.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — DELETE /api/coupon/admin/coupon-fedelta/:id
 // ═══════════════════════════════════════════════════════════════
-exports.adminEliminaCouponFedelta = (req, res) => {
+exports.adminEliminaCouponFedelta = async (req, res) => {
   const { id } = req.params;
-  db.run(
-    `DELETE FROM Coupon WHERE id = ? AND costo_punti > 0`,
-    [id],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message });
-      if (this.changes === 0) return res.status(404).json({ error: 'Coupon non trovato.' });
-      res.json({ message: 'Coupon eliminato.' });
-    }
-  );
+  try {
+    const result = await Coupon.deleteFedelta(id);
+    if (result.changes === 0) return res.status(404).json({ error: 'Coupon non trovato.' });
+    res.json({ message: 'Coupon eliminato.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — GET /api/coupon/admin/prodotti-usati
 // ═══════════════════════════════════════════════════════════════
-exports.adminGetProdottiUsati = (req, res) => {
-  db.all(
-    `SELECT p.id, p.nome, p.descrizione, p.prezzoUnitarioVendita,
-            p.immagine, p.giacenza, p.condizione, p.pubblicatoVetrina,
-            c.denominazione AS categoria_nome
-     FROM prodotto p
-     LEFT JOIN categoria c ON p.categoria_id = c.id
-     WHERE (p.condizione = 'Usato' OR p.usato = 1)
-     ORDER BY p.giacenza DESC, p.prezzoUnitarioVendita ASC`,
-    [],
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      const prodotti = rows.map(p => ({
-        ...p,
-        costoInPunti: calcolaPunti(p.prezzoUnitarioVendita)
-      }));
-      res.json(prodotti);
-    }
-  );
+exports.adminGetProdottiUsati = async (req, res) => {
+  try {
+    const rows = await Coupon.findAllProdottiUsatiAdmin();
+    res.json(rows.map(p => ({ ...p, costoInPunti: calcolaPunti(p.prezzoUnitarioVendita) })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };

@@ -101,4 +101,19 @@ const Ordine = {
     }
 }
 
+  // Crea un ordine pagato interamente con punti fedeltà
+  static createConPunti(userId, totale) {
+    return new Promise((resolve, reject) => {
+      const db = require('../db/database');
+      db.run(
+        `INSERT INTO ordine
+           (carta_id, indirizzo_id, utente_id, coupon_id, data, totale,
+            totale_scontato, sconto_applicato, punti_fedelta, statoOrdine, pagato_con_punti)
+         VALUES (NULL, NULL, ?, NULL, ?, ?, ?, 0, 0, 'In elaborazione', 1)`,
+        [userId, new Date().toISOString(), totale, totale],
+        function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
+      );
+    });
+  }
+
 module.exports = Ordine;
