@@ -1,7 +1,6 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 interface CouponFedelta {
   id: number;
@@ -60,78 +59,122 @@ export class AdminShopFedelta implements OnInit {
   caricandoProdotti = false;
   msgProdotti: { testo: string; tipo: 'success' | 'error' } | null = null;
 
-  private readonly API_FEDELTA = 'http://localhost:3000/api/fedelta';
+  private readonly API = 'http://localhost:3000/api/coupon';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private http: HttpClient
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this.caricaCoupon();
     this.caricaProdottiUsati();
-    // Imposta data scadenza default a +1 anno
     const d = new Date();
     d.setFullYear(d.getFullYear() + 1);
     this.nuovoCoupon.scadenza = d.toISOString().split('T')[0];
   }
 
-  private headers(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
-    return new HttpHeaders({ Authorization: `Bearer ${token}` });
+  private getToken(): string {
+    return localStorage.getItem('token') || '';
   }
 
   /* ── COUPON ─────────────────────────────────────────────────── */
 
-  caricaCoupon(): void {
+  async caricaCoupon() {
     this.caricandoCoupon = true;
-    this.http.get<CouponFedelta[]>(`${this.API_FEDELTA}/admin/coupon-fedelta`, { headers: this.headers() })
-      .subscribe({
-        next: d  => { this.couponList = d; this.caricandoCoupon = false; },
-        error: () => { this.caricandoCoupon = false; }
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/admin/coupon-fedelta`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      if (res.ok) {
+        this.couponList = await res.json();
+      } else {
+        console.error('[AdminShopFedelta] Errore caricamento coupon:', res.status);
+      }
+    } catch (e) {
+      console.error('[AdminShopFedelta] Errore di rete coupon:', e);
+    } finally {
+      this.caricandoCoupon = false;
+      this.cdr.detectChanges();
+    }
   }
 
-  creaCoupon(): void {
+  async creaCoupon() {
     if (!this.nuovoCoupon.codice.trim()) {
-      this.showMsgCoupon('Il codice è obbligatorio.', 'error'); return;
+      this.showMsgCoupon('Il codice è obbligatorio.', 'error');
+      return;
     }
     this.salvandoCoupon = true;
-    this.http.post<any>(`${this.API_FEDELTA}/admin/coupon-fedelta`, this.nuovoCoupon, { headers: this.headers() })
-      .subscribe({
-        next: () => {
-          this.salvandoCoupon = false;
-          this.showMsgCoupon('✅ Coupon creato con successo!', 'success');
-          this.caricaCoupon();
-          this.resetForm();
-        },
-        error: e => {
-          this.salvandoCoupon = false;
-          this.showMsgCoupon(e.error?.error || 'Errore nella creazione.', 'error');
-        }
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/admin/coupon-fedelta`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.nuovoCoupon)
       });
+      const data = await res.json();
+      if (res.ok) {
+        this.showMsgCoupon('Coupon creato con successo!', 'success');
+        this.resetForm();
+        await this.caricaCoupon();
+      } else {
+        this.showMsgCoupon(data.error || 'Errore nella creazione.', 'error');
+      }
+    } catch (e) {
+      console.error('[AdminShopFedelta] Errore di rete creazione coupon:', e);
+      this.showMsgCoupon('Errore di connessione al server.', 'error');
+    } finally {
+      this.salvandoCoupon = false;
+      this.cdr.detectChanges();
+    }
   }
 
-  eliminaCoupon(id: number): void {
+  async eliminaCoupon(id: number) {
     if (!confirm('Eliminare questo coupon fedeltà?')) return;
-    this.http.delete(`${this.API_FEDELTA}/admin/coupon-fedelta/${id}`, { headers: this.headers() })
-      .subscribe({
-        next: () => {
-          this.showMsgCoupon('Coupon eliminato.', 'success');
-          this.couponList = this.couponList.filter(c => c.id !== id);
-        },
-        error: e => this.showMsgCoupon(e.error?.error || 'Errore eliminazione.', 'error')
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/admin/coupon-fedelta/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
       });
+      const data = await res.json();
+      if (res.ok) {
+        this.showMsgCoupon('Coupon eliminato.', 'success');
+        this.couponList = this.couponList.filter(c => c.id !== id);
+      } else {
+        this.showMsgCoupon(data.error || 'Errore eliminazione.', 'error');
+      }
+    } catch (e) {
+      console.error('[AdminShopFedelta] Errore di rete eliminazione coupon:', e);
+      this.showMsgCoupon('Errore di connessione al server.', 'error');
+    } finally {
+      this.cdr.detectChanges();
+    }
   }
 
-  toggleAttivoCoupon(coupon: CouponFedelta): void {
+  async toggleAttivoCoupon(coupon: CouponFedelta) {
     const nuovoStato = coupon.attivo ? 0 : 1;
-    this.http.patch(`${this.API_FEDELTA}/admin/coupon-fedelta/${coupon.id}/toggle`, { attivo: nuovoStato }, { headers: this.headers() })
-      .subscribe({
-        next: () => { coupon.attivo = nuovoStato; },
-        error: e => this.showMsgCoupon(e.error?.error || 'Errore aggiornamento.', 'error')
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/admin/coupon-fedelta/${coupon.id}/toggle`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ attivo: nuovoStato })
       });
+      const data = await res.json();
+      if (res.ok) {
+        coupon.attivo = nuovoStato;
+      } else {
+        this.showMsgCoupon(data.error || 'Errore aggiornamento.', 'error');
+      }
+    } catch (e) {
+      console.error('[AdminShopFedelta] Errore di rete toggle coupon:', e);
+      this.showMsgCoupon('Errore di connessione al server.', 'error');
+    } finally {
+      this.cdr.detectChanges();
+    }
   }
 
   private resetForm(): void {
@@ -147,13 +190,24 @@ export class AdminShopFedelta implements OnInit {
 
   /* ── PRODOTTI USATI ─────────────────────────────────────────── */
 
-  caricaProdottiUsati(): void {
+  async caricaProdottiUsati() {
     this.caricandoProdotti = true;
-    this.http.get<ProdottoUsato[]>(`${this.API_FEDELTA}/admin/prodotti-usati`, { headers: this.headers() })
-      .subscribe({
-        next: d  => { this.prodottiUsati = d; this.caricandoProdotti = false; },
-        error: () => { this.caricandoProdotti = false; }
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}/admin/prodotti-usati`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      if (res.ok) {
+        this.prodottiUsati = await res.json();
+      } else {
+        console.error('[AdminShopFedelta] Errore caricamento prodotti:', res.status);
+      }
+    } catch (e) {
+      console.error('[AdminShopFedelta] Errore di rete prodotti:', e);
+    } finally {
+      this.caricandoProdotti = false;
+      this.cdr.detectChanges();
+    }
   }
 
   getImmagineProdotto(immagine: string): string {

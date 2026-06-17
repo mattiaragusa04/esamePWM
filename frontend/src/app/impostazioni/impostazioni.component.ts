@@ -2,7 +2,6 @@ import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 
 import { ToastService } from '../shared/toast.service';
 import { ThemeService, Theme } from '../shared/theme.service';
@@ -30,7 +29,6 @@ export class ImpostazioniComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
     private toast: ToastService,
     private themeService: ThemeService
@@ -82,25 +80,29 @@ export class ImpostazioniComponent implements OnInit {
   }
 
   // === RESET PASSWORD ===
-  richiediResetPassword(): void {
+  async richiediResetPassword() {
     if (!this.emailResetPassword) {
       this.toast.warning('Inserisci un indirizzo email.');
       return;
     }
-
     this.isRichiestaResetInCorso = true;
-
-    this.http.post('http://localhost:3000/api/auth/password-reset', { email: this.emailResetPassword })
-      .subscribe({
-        next: () => {
-          this.toast.info('Se l’email è corretta, riceverai a breve le istruzioni per il reset.');
-          this.isRichiestaResetInCorso = false;
-        },
-        error: () => {
-          this.toast.error('Si è verificato un problema durante la richiesta di reset.');
-          this.isRichiestaResetInCorso = false;
-        }
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: this.emailResetPassword })
       });
+      if (res.ok) {
+        this.toast.info('Se l’email è corretta, riceverai a breve le istruzioni per il reset.');
+      } else {
+        this.toast.error('Si è verificato un problema durante la richiesta di reset.');
+      }
+    } catch (e) {
+      console.error('[Impostazioni] Errore di rete reset password:', e);
+      this.toast.error('Errore di connessione al server.');
+    } finally {
+      this.isRichiestaResetInCorso = false;
+    }
   }
 
   // === RIPRISTINO PAGINA ===

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../shared/toast.service';
 
 @Component({
@@ -21,7 +20,6 @@ export class ResetPasswordComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
     private toast: ToastService
   ) {}
 
@@ -43,25 +41,30 @@ export class ResetPasswordComponent implements OnInit {
     return true;
   }
 
-  onSubmit(): void {
+  async onSubmit() {
     if (!this.isPasswordValid() || this.newPassword !== this.confirmPassword) {
       this.toast.warning('Controlla i requisiti della password.');
       return;
     }
-
     this.isLoading = true;
-    this.http.post('http://localhost:3000/api/auth/update-password', {
-      token: this.token,
-      newPassword: this.newPassword
-    }).subscribe({
-      next: (res: any) => {
-        this.toast.success(res.message || 'Password aggiornata con successo!');
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/update-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: this.token, newPassword: this.newPassword })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        this.toast.success(data.message || 'Password aggiornata con successo!');
         this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        this.toast.error(err.error?.message || 'Errore durante l\'aggiornamento della password.');
-        this.isLoading = false;
+      } else {
+        this.toast.error(data.message || 'Errore durante l\'aggiornamento della password.');
       }
-    });
+    } catch (e) {
+      console.error('[ResetPassword] Errore di rete:', e);
+      this.toast.error('Errore di connessione al server.');
+    } finally {
+      this.isLoading = false;
+    }
   }
 }
