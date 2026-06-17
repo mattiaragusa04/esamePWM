@@ -243,8 +243,17 @@ const Coupon = {
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );
     });
-  }
+  },
 
+  getCouponbyUserId: (userId) => {
+    return new Promise((resolve, reject) => {
+      db.get(
+        `SELECT id FROM Coupon WHERE utente_id = ? AND costo_punti > 0 LIMIT 1`,
+        [userId],
+        (err, row) => { if (err) reject(err); else resolve(row); }
+      );
+    });
+  },
 };
 
 module.exports = Coupon;

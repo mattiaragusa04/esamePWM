@@ -429,3 +429,13 @@ exports.adminGetProdottiUsati = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.iMieiCoupon = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const coupon = await Coupon.getCouponbyUserId(userId);
+    res.json(coupon);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

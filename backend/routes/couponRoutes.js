@@ -37,7 +37,8 @@ router.post('/acquista-coupon',  couponController.acquistaCoupon);
 router.get('/prodotti-usati', couponController.getProdottiUsati);
 // Acquisto prodotto usato con punti
 router.post('/acquista-prodotto', couponController.acquistaProdottoConPunti);
-
+// Lista coupon utente
+router.get('/miei-coupon', verificaToken, couponController.iMieiCoupon);
 // ── Admin ───────────────────────────────────────────────
 // Tutti i coupon fedeltà (tabella admin)
 router.get('/admin/coupon-fedelta', couponController.adminGetCouponFedelta);
@@ -49,5 +50,6 @@ router.patch('/admin/coupon-fedelta/:id/toggle', couponController.adminToggleCou
 router.delete('/admin/coupon-fedelta/:id', couponController.adminEliminaCouponFedelta);
 // Tutti i prodotti usati (per admin, include anche quelli non in vetrina)
 router.get('/admin/prodotti-usati', couponController.adminGetProdottiUsati);
+
 
 module.exports = router;
