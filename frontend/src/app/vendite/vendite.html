@@ -1,7 +1,8 @@
 <div class="vendite-page">
 
-  <!-- ╔═══ HERO ═══════════════════════════════════════════════════════╗ -->
-  <div class="vendite-hero">
+  <!-- ╔═══ HERO ════════════════════════════════════════════════════════╗ -->
+  <div class="vendite-hero" #venditeHero>
+    <canvas #venditeCanvas style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
     <div class="vendite-hero-orb orb-1"></div>
     <div class="vendite-hero-orb orb-2"></div>
     <div class="vendite-hero-inner">
@@ -30,7 +31,7 @@
     <div class="vendite-empty-icon"><i class="bi bi-tags"></i></div>
     <h4>Non hai ancora venduto nulla.</h4>
     <p>Il tuo storico vendite è vuoto. Hai giochi o console che non usi più? Vendili a noi!</p>
-    <a routerLink="/vendi" class="vendite-hero-btn" style="background:#f86ded; border-color:#f86ded;">
+    <a routerLink="/vendi" class="vendite-hero-btn">
       <i class="bi bi-tags-fill"></i> Vendi ora
     </a>
   </div>
@@ -52,12 +53,10 @@
 
         <div class="text-center">
           <span class="vendita-col-label">Valore Stimato</span>
-          <!-- Compenso in punti fedeltà -->
           <span *ngIf="vendita.tipo_compenso === 'punti'" class="vendita-col-value text-pink">
             <i class="bi bi-star-fill" style="font-size:0.85em;"></i>
             {{ vendita.punti_offerti }} pt fedeltà
           </span>
-          <!-- Compenso in euro (default) -->
           <span *ngIf="vendita.tipo_compenso !== 'punti'" class="vendita-col-value text-pink">
             {{ vendita.prezzo_stimato | currency:'EUR':'symbol':'1.2-2' }}
           </span>

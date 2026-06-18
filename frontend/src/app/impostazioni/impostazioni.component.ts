@@ -1,10 +1,12 @@
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { ToastService } from '../shared/toast.service';
 import { ThemeService, Theme } from '../shared/theme.service';
+import { NeuralCanvasService } from '../shared/neural-canvas.service';
+
 @Component({
   selector: 'app-impostazioni',
   standalone: true,
@@ -12,7 +14,11 @@ import { ThemeService, Theme } from '../shared/theme.service';
   templateUrl: './impostazioni.component.html',
   styleUrl: './impostazioni.component.css'
 })
-export class ImpostazioniComponent implements OnInit {
+export class ImpostazioniComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('impostazioniCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('impostazioniHero')   heroRef!:   ElementRef<HTMLDivElement>;
+
   utente: any = null;
 
   // Tema
@@ -31,35 +37,40 @@ export class ImpostazioniComponent implements OnInit {
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
     private toast: ToastService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private neuralCanvas: NeuralCanvasService
   ) {}
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Utente
     const userString = localStorage.getItem('user');
     if (userString) {
       this.utente = JSON.parse(userString);
     }
 
-    // Tema: legge dal service centralizzato (già applicato all'avvio dell'app)
     this.tema = this.themeService.theme();
 
-    // Notifiche
-    const notifPromo = localStorage.getItem('notifPromozioni');
-    const notifOrdini = localStorage.getItem('notifOrdini');
+    const notifPromo   = localStorage.getItem('notifPromozioni');
+    const notifOrdini  = localStorage.getItem('notifOrdini');
     const notifVendite = localStorage.getItem('notifVendite');
 
-    if (notifPromo !== null) {
-      this.notifichePromozioni = notifPromo === 'true';
-    }
-    if (notifOrdini !== null) {
-      this.notificheOrdini = notifOrdini === 'true';
-    }
-    if (notifVendite !== null) {
-      this.notificheVendite = notifVendite === 'true';
-    }
+    if (notifPromo   !== null) this.notifichePromozioni = notifPromo   === 'true';
+    if (notifOrdini  !== null) this.notificheOrdini     = notifOrdini  === 'true';
+    if (notifVendite !== null) this.notificheVendite    = notifVendite === 'true';
+  }
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => {
+      const canvas = this.canvasRef?.nativeElement;
+      const hero   = this.heroRef?.nativeElement;
+      if (canvas && hero) this.neuralCanvas.init(canvas, hero);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.canvasRef?.nativeElement) this.neuralCanvas.destroy(this.canvasRef.nativeElement);
   }
 
   // === TEMA ===
@@ -73,8 +84,8 @@ export class ImpostazioniComponent implements OnInit {
     if (!isPlatformBrowser(this.platformId)) return;
 
     localStorage.setItem('notifPromozioni', String(this.notifichePromozioni));
-    localStorage.setItem('notifOrdini', String(this.notificheOrdini));
-    localStorage.setItem('notifVendite', String(this.notificheVendite));
+    localStorage.setItem('notifOrdini',     String(this.notificheOrdini));
+    localStorage.setItem('notifVendite',    String(this.notificheVendite));
 
     this.toast.success('Preferenze di notifica salvate.');
   }
@@ -108,16 +119,11 @@ export class ImpostazioniComponent implements OnInit {
   // === RIPRISTINO PAGINA ===
   ripristinaPagina(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-
-    // Resetta il tema tramite service (gestisce sia localStorage che DOM)
     this.themeService.setTheme('light');
-
-    // Cancella altre preferenze di UI
     localStorage.removeItem('notifPromozioni');
     localStorage.removeItem('notifOrdini');
     localStorage.removeItem('notifVendite');
     localStorage.removeItem('isSidebarCollapsed');
-
     this.toast.success('Impostazioni e stato pagina ripristinati ai valori iniziali.');
     window.location.reload();
   }
@@ -129,9 +135,7 @@ export class ImpostazioniComponent implements OnInit {
     if (confirm('Vuoi davvero cancellare tutti i dati salvati in questo browser per questa applicazione?')) {
       const token = localStorage.getItem('token');
       localStorage.clear();
-      if (token) {
-        localStorage.setItem('token', token);
-      }
+      if (token) localStorage.setItem('token', token);
       this.toast.success('Dati locali cancellati.');
       this.router.navigate(['/']);
     }

@@ -1,8 +1,9 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ToastService } from '../shared/toast.service';
 import { PuntiService } from '../shared/punti.service';
+import { NeuralCanvasService } from '../shared/neural-canvas.service';
 
 interface CatalogoCoupon {
   id: string;
@@ -35,7 +36,11 @@ interface ProdottoUsato {
   templateUrl: './fedelta.html',
   styleUrls: ['./fedelta.css']
 })
-export class FedeltaComponent implements OnInit {
+export class FedeltaComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('fedeltaCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('fedeltaHero')   heroRef!:   ElementRef<HTMLDivElement>;
+
   tabAttiva: 'coupon' | 'prodotti' = 'coupon';
 
   puntiFedelta = 0;
@@ -60,13 +65,12 @@ export class FedeltaComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
     private toast: ToastService,
-    private puntiService: PuntiService
+    private puntiService: PuntiService,
+    private neuralCanvas: NeuralCanvasService
   ) {}
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    // FIX: carica i punti freschi dal server invece di fidarsi solo del valore
-    // in-memory del PuntiService (che potrebbe essere obsoleto dopo una modifica admin).
     this.caricaPuntiFreschi().then(() => {
       this.caricaPresetCoupon();
       this.caricaCatalogoCoupon();
@@ -74,11 +78,23 @@ export class FedeltaComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => {
+      const canvas = this.canvasRef?.nativeElement;
+      const hero   = this.heroRef?.nativeElement;
+      if (canvas && hero) this.neuralCanvas.init(canvas, hero);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.canvasRef?.nativeElement) this.neuralCanvas.destroy(this.canvasRef.nativeElement);
+  }
+
   private getToken(): string {
     return localStorage.getItem('token') || '';
   }
 
-  /** Recupera i punti aggiornati dal server e allinea PuntiService + localStorage */
   private async caricaPuntiFreschi(): Promise<void> {
     const token = this.getToken();
     if (!token) return;
@@ -91,7 +107,6 @@ export class FedeltaComponent implements OnInit {
         const punti = utente.puntiFedelta ?? utente.punti_fedelta ?? 0;
         this.puntiFedelta = punti;
         this.puntiService.aggiorna(punti);
-        // Aggiorna anche localStorage per mantenere coerenza
         const raw = localStorage.getItem('user');
         if (raw) {
           const u = JSON.parse(raw);
@@ -101,7 +116,6 @@ export class FedeltaComponent implements OnInit {
         }
       }
     } catch (e) {
-      // Fallback: usa il valore già in memoria
       this.puntiFedelta = this.puntiService.valore ?? 0;
     } finally {
       this.cdr.detectChanges();

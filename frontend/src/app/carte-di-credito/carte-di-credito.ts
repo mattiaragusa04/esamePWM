@@ -1,8 +1,9 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { ToastService } from '../shared/toast.service';
+import { NeuralCanvasService } from '../shared/neural-canvas.service';
 
 export function scadenzaValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
@@ -41,7 +42,11 @@ export function luhnValidator(control: AbstractControl): ValidationErrors | null
   templateUrl: './carte-di-credito.html',
   styleUrl: './carte-di-credito.css'
 })
-export class CarteDiCredito implements OnInit {
+export class CarteDiCredito implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('carteCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('carteHero')   heroRef!:   ElementRef<HTMLDivElement>;
+
   carte: any[] = [];
   isLoading: boolean = true;
   mostraForm: boolean = false;
@@ -55,7 +60,10 @@ export class CarteDiCredito implements OnInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
-    private fb: FormBuilder, private toast: ToastService) {
+    private fb: FormBuilder,
+    private toast: ToastService,
+    private neuralCanvas: NeuralCanvasService
+  ) {
     this.cartaForm = this.fb.group({
       nomeCarta: ['', Validators.required],
       numeroCarta: ['', [Validators.required, luhnValidator]],
@@ -68,6 +76,19 @@ export class CarteDiCredito implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.caricaCarte();
     }
+  }
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => {
+      const canvas = this.canvasRef?.nativeElement;
+      const hero   = this.heroRef?.nativeElement;
+      if (canvas && hero) this.neuralCanvas.init(canvas, hero);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.canvasRef?.nativeElement) this.neuralCanvas.destroy(this.canvasRef.nativeElement);
   }
 
   async caricaCarte() {

@@ -1,7 +1,6 @@
-/* ═══════════════════════════════════════════════════════
+/* ═════════════════════════════════════════════════════
    PAGINA PROFILO — redesign accattivante
-   Palette: #f86ded (rosa), #ff9ef8 (hover), gradient 135deg
-   ═══════════════════════════════════════════════════════ */
+   ═════════════════════════════════════════════════════ */
 
 .profilo-page {
   padding: 0.5rem 0 2rem;
@@ -13,25 +12,24 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── HERO BANNER ──────────────────────────────────────── */
+/* ─── HERO BANNER ──────────────────────────────────────────── */
+/* Sfondo scuro per permettere al canvas neurale di essere visibile */
 .profilo-hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #f86ded 0%, #fb7185 55%, #fda4af 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
   border-radius: 1.5rem;
   padding: 2.2rem 2rem;
   margin-bottom: 1.5rem;
-  box-shadow:
-    0 4px 6px rgba(248,109,237,0.2),
-    0 20px 40px rgba(248,109,237,0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
-/* Orb animati di sfondo */
+/* Orb azzerati: il canvas neurale gestisce già l'effetto visivo */
 .profilo-hero-orb {
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  opacity: 0.25;
+  opacity: 0;
   animation: orbFloat 6s ease-in-out infinite;
 }
 .orb-1 {
@@ -79,9 +77,9 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.25);
+  background: rgba(248, 109, 237, 0.25);
   backdrop-filter: blur(6px);
-  border: 3px solid rgba(255,255,255,0.6);
+  border: 3px solid rgba(248, 109, 237, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,7 +95,7 @@
   position: absolute;
   inset: -6px;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.35);
+  border: 2px solid rgba(248, 109, 237, 0.35);
   animation: ringPulse 2.5s ease-in-out infinite;
 }
 
@@ -115,7 +113,7 @@
 .profilo-hero-greeting {
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255,255,255,0.65);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-bottom: 0.2rem;
@@ -127,7 +125,7 @@
   color: #fff;
   margin: 0 0 0.35rem;
   line-height: 1.1;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 .profilo-hero-surname {
@@ -136,7 +134,7 @@
 
 .profilo-hero-email {
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.6);
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -154,9 +152,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: rgba(255,255,255,0.2);
+  background: rgba(248, 109, 237, 0.18);
   backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.35);
+  border: 1px solid rgba(248, 109, 237, 0.35);
   border-radius: 99px;
   padding: 0.3rem 0.9rem;
   font-size: 0.8rem;
@@ -177,14 +175,14 @@
 
 .profilo-level-bar {
   height: 6px;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.15);
   border-radius: 99px;
   overflow: hidden;
 }
 
 .profilo-level-fill {
   height: 100%;
-  background: rgba(255,255,255,0.85);
+  background: #f86ded;
   border-radius: 99px;
   transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1);
 }
@@ -193,11 +191,11 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.65rem;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.5);
   font-weight: 600;
 }
 
-/* ─── STAT CARDS ───────────────────────────────────────── */
+/* ─── STAT CARDS ─────────────────────────────────────────────── */
 .profilo-stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -223,7 +221,6 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   transition: transform 0.22s ease, box-shadow 0.22s ease;
   animation: statSlideIn 0.4s ease both;
-  /* navigazione */
   cursor: pointer;
   text-decoration: none;
   color: inherit;
@@ -276,7 +273,6 @@
   margin-top: 0.15rem;
 }
 
-/* dark mode stat cards */
 body.theme-dark .profilo-stat-card {
   background: linear-gradient(160deg, #1e293b, #0f172a);
   border-color: rgba(148,163,184,0.2);
@@ -285,7 +281,7 @@ body.theme-dark .profilo-stat-card {
 body.theme-dark .profilo-stat-value { color: #f1f5f9; }
 body.theme-dark .profilo-stat-label { color: #94a3b8; }
 
-/* ─── BOTTOM GRID ──────────────────────────────────────── */
+/* ─── BOTTOM GRID ──────────────────────────────────────────── */
 .profilo-bottom-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -297,7 +293,6 @@ body.theme-dark .profilo-stat-label { color: #94a3b8; }
   .profilo-bottom-grid { grid-template-columns: 1fr; }
 }
 
-/* Card generica profilo */
 .profilo-info-card,
 .profilo-actions-card {
   background: var(--card-bg, #fff);
@@ -314,7 +309,6 @@ body.theme-dark .profilo-actions-card {
   box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
-/* Header delle card */
 .profilo-card-header {
   display: flex;
   align-items: center;
@@ -349,7 +343,6 @@ body.theme-dark .profilo-card-header {
 
 body.theme-dark .profilo-card-title { color: #f1f5f9; }
 
-/* Griglia campi info */
 .profilo-fields-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -415,7 +408,6 @@ body.theme-dark .profilo-field-value { color: #e5e7eb; }
   font-weight: 700;
 }
 
-/* Quick actions */
 .profilo-quick-actions {
   display: flex;
   flex-direction: column;
@@ -479,21 +471,18 @@ body.theme-dark .profilo-action-btn:hover {
   transform: translateX(3px);
 }
 
-/* ─── PATCH: storico punti & coupon riscattati ─────── */
-.profilo-storico-section,
+/* ─── COUPON RISCATTATI ────────────────────────────────────────── */
 .profilo-coupon-section {
   margin-top: 1.5rem;
   border-top: 1px solid rgba(0,0,0,.08);
   padding-top: 1rem;
 }
 
-body.theme-dark .profilo-storico-section,
 body.theme-dark .profilo-coupon-section {
   border-top-color: rgba(148,163,184,0.15);
 }
 
-.profilo-storico-empty,
-.profilo-coupon-empty {
+.profilo-storico-empty {
   display: flex;
   align-items: center;
   gap: .5rem;
@@ -502,105 +491,6 @@ body.theme-dark .profilo-coupon-section {
   padding: .75rem 0;
 }
 
-/* Storico punti */
-.profilo-storico-list {
-  display: flex;
-  flex-direction: column;
-  gap: .6rem;
-  max-height: 260px;
-  overflow-y: auto;
-  padding-right: .25rem;
-}
-
-.profilo-storico-item {
-  display: flex;
-  align-items: flex-start;
-  gap: .75rem;
-  padding: .6rem .75rem;
-  border-radius: 10px;
-  background: rgba(0,0,0,.03);
-  transition: background .2s;
-}
-
-.profilo-storico-item:hover {
-  background: rgba(0,0,0,.06);
-}
-
-body.theme-dark .profilo-storico-item {
-  background: rgba(148,163,184,0.06);
-}
-body.theme-dark .profilo-storico-item:hover {
-  background: rgba(148,163,184,0.1);
-}
-
-.profilo-storico-icon {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ffd700, #ff8c00);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: .8rem;
-}
-
-.profilo-storico-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.profilo-storico-desc {
-  font-size: .9rem;
-  font-weight: 500;
-  color: #333;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-body.theme-dark .profilo-storico-desc { color: #e5e7eb; }
-
-.profilo-storico-meta {
-  display: flex;
-  gap: .6rem;
-  align-items: center;
-  margin-top: .15rem;
-  flex-wrap: wrap;
-}
-
-.profilo-storico-data {
-  font-size: .78rem;
-  color: #999;
-}
-
-.profilo-storico-codice {
-  font-size: .75rem;
-  font-family: monospace;
-  background: rgba(0,0,0,.07);
-  padding: .1rem .4rem;
-  border-radius: 4px;
-  color: #555;
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-body.theme-dark .profilo-storico-codice {
-  background: rgba(255,255,255,.08);
-  color: #cbd5e1;
-}
-
-.profilo-storico-punti {
-  flex-shrink: 0;
-  font-weight: 700;
-  color: #e53935;
-  font-size: .95rem;
-}
-
-/* Coupon riscattati */
 .profilo-coupon-list {
   display: flex;
   flex-direction: column;
@@ -672,4 +562,219 @@ body.theme-dark .profilo-coupon-codice { color: #e5e7eb; }
 
 .profilo-coupon-scadenza {
   color: #e65100;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   [RECENSIONI] Banner + popup recensione
+   (stesse classi di ordini.css — markup identico)
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Banner recensione (redesign professionale) ──────────────────────── */
+.recensione-banner {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  background: #1e1e2e;
+  border: 1px solid #2a2a3e;
+  border-left: 3.5px solid #f86ded;
+  border-radius: 14px;
+  padding: 1.1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+
+.recensione-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.recensione-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.recensione-banner-left > i {
+  font-size: 1.3rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.recensione-banner-left div strong {
+  display: block;
+  color: #f0f0f0;
+  font-size: 0.93rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.recensione-banner-left div small {
+  color: #9ca3af;
+  font-size: 0.8rem;
+}
+
+.btn-recensione-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.48rem 1.15rem;
+  background: #f86ded;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-recensione-banner:hover {
+  background: #e055d4;
+  box-shadow: 0 4px 14px rgba(248,109,237,0.35);
+}
+
+/* Modale recensione - dimensioni leggermente più strette */
+.recensione-modal {
+  max-width: 480px;
+}
+
+/* Stelle interattive */
+.stelle-container {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.stella {
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.15s;
+  line-height: 1;
+}
+
+.stella:hover {
+  transform: scale(1.15);
+}
+
+.stella-piena i  { color: #f59e0b; }
+.stella-vuota i  { color: #3a3a4e; }
+
+/* Textarea recensione */
+.recensione-textarea {
+  background: #16162a;
+  border: 1px solid #3a3a4e;
+  color: #e0e0e0;
+  border-radius: 10px;
+  resize: vertical;
+  font-size: 0.93rem;
+}
+
+.recensione-textarea:focus {
+  background: #16162a;
+  border-color: #f86ded;
+  color: #e0e0e0;
+  box-shadow: 0 0 0 3px rgba(248,109,237,0.15);
+  outline: none;
+}
+
+.recensione-textarea::placeholder {
+  color: #555;
+}
+
+/* Bottone submit recensione */
+.btn-recensione-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.4rem;
+  background: #f86ded;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-recensione-submit:hover:not(:disabled) {
+  background: #e055d4;
+}
+
+.btn-recensione-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Messaggio successo nel popup */
+.recensione-successo {
+  color: #22c55e;
+}
+
+/* Utility condivise con ordini.css */
+.testo-pink { color: #f86ded; }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-box {
+  background: #1e1e2e;
+  border-radius: 18px;
+  border: 1px solid #2a2a3e;
+  padding: 1.8rem;
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+
+.modal-header-custom {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #2a2a3e;
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.2s;
+}
+
+.btn-close-modal:hover { color: #fff; }
+
+.ordine-col-label {
+  font-size: 0.72rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+/* ── Fix alert errore recensione (leggibilità dark mode) ─────────────────── */
+.alert.alert-danger {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 8px;
+  color: #fca5a5;
 }

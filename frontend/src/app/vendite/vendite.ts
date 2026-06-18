@@ -1,6 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { NeuralCanvasService } from '../shared/neural-canvas.service';
 
 @Component({
   selector: 'app-vendite',
@@ -9,13 +10,17 @@ import { RouterLink } from '@angular/router';
   templateUrl: './vendite.html',
   styleUrl: './vendite.css'
 })
-export class Vendite implements OnInit {
+export class Vendite implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('venditeCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('venditeHero') heroRef!: ElementRef<HTMLDivElement>;
+
   vendite: any[] = [];
   isLoading: boolean = true;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private neuralCanvas: NeuralCanvasService
   ) {}
 
   ngOnInit(): void {
@@ -26,6 +31,23 @@ export class Vendite implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => {
+      const canvas = this.canvasRef?.nativeElement;
+      const hero = this.heroRef?.nativeElement;
+      if (canvas && hero) {
+        this.neuralCanvas.init(canvas, hero);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.canvasRef?.nativeElement) {
+      this.neuralCanvas.destroy(this.canvasRef.nativeElement);
+    }
+  }
+
   async caricaVendite() {
     this.isLoading = true;
     const token = localStorage.getItem('token');
@@ -33,9 +55,7 @@ export class Vendite implements OnInit {
       this.isLoading = false;
       return;
     }
-
     try {
-      // Effettua la chiamata al backend per recuperare lo storico
       const response = await fetch('http://localhost:3000/api/vendi/utente', {
         headers: { 'Authorization': `Bearer ${token}` }
       });

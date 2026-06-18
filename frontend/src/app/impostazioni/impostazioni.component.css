@@ -16,17 +16,18 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─ HERO ───────────────────────────────────────── */
+/* ─ HERO ─────────────────────────────────────────────── */
 .imp-hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #f86ded 0%, #fb7185 55%, #fda4af 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
   border-radius: 1.5rem;
   padding: 2rem 2rem 1.8rem;
-  box-shadow: 0 4px 6px rgba(248,109,237,0.2), 0 20px 40px rgba(248,109,237,0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
+/* Gli orb sono azzerati: il canvas neurale gestisce già l'effetto di sfondo */
 .imp-hero-orb {
-  position: absolute; border-radius: 50%; pointer-events: none; opacity: 0.22;
+  position: absolute; border-radius: 50%; pointer-events: none; opacity: 0;
   animation: impOrb 6s ease-in-out infinite;
 }
 .imp-hero-orb.orb-1 { width:220px; height:220px; background: radial-gradient(circle,#fff 0%,transparent 70%); top:-80px; right:-60px; }
@@ -41,19 +42,16 @@
 }
 .imp-hero-left { display: flex; align-items: center; gap: 1.1rem; }
 .imp-hero-icon {
-  width: 62px; height: 62px; border-radius: 50%;
-  background: rgba(255,255,255,0.25); backdrop-filter: blur(6px);
-  border: 2px solid rgba(255,255,255,0.5);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.7rem; color: #fff; flex-shrink: 0;
+  font-size: 2.5rem;
+  color: #f86ded;
+  line-height: 1;
 }
 .imp-hero-title {
-  color:#fff; font-size:1.65rem; font-weight:800; margin:0 0 0.2rem;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  color:#fff; font-size:1.8rem; font-weight:700; margin:0;
 }
-.imp-hero-sub { color:rgba(255,255,255,0.88); font-size:0.92rem; margin:0; }
+.imp-hero-sub { color:#aaa; font-size:0.95rem; margin:0; }
 
-/* ─ SEZIONI ─────────────────────────────────────── */
+/* ─ SEZIONI ─────────────────────────────────────────────── */
 .imp-section {
   background: #fff;
   border-radius: 1.25rem;
@@ -109,6 +107,7 @@ body.theme-dark .imp-section-desc { color: #94a3b8; }
 }
 body.theme-dark .imp-label { color: #94a3b8; }
 .imp-note { font-size: 0.85rem; color: #94a3b8; margin: 0; flex: 1; }
+body.theme-dark .imp-note { color: #64748b; }
 
 /* Toggle tema */
 .imp-toggle-group { display: flex; gap: 0.5rem; }
@@ -123,6 +122,11 @@ body.theme-dark .imp-label { color: #94a3b8; }
   cursor: pointer;
   transition: all 0.18s;
 }
+body.theme-dark .imp-toggle-btn:not(.active) {
+  border-color: rgba(248,109,237,0.2);
+  color: #94a3b8;
+  background: rgba(15,23,42,0.4);
+}
 .imp-toggle-btn.active {
   background: linear-gradient(135deg, #f86ded, #fb7185);
   border-color: transparent;
@@ -132,6 +136,11 @@ body.theme-dark .imp-label { color: #94a3b8; }
 .imp-toggle-btn:not(.active):hover {
   border-color: rgba(248,109,237,0.5);
   color: #f86ded;
+}
+body.theme-dark .imp-toggle-btn:not(.active):hover {
+  border-color: rgba(248,109,237,0.45);
+  color: #f9a8d4;
+  background: rgba(248,109,237,0.08);
 }
 
 /* Checkbox custom */
@@ -146,6 +155,10 @@ body.theme-dark .imp-label { color: #94a3b8; }
 }
 .imp-checkbox-item:hover { border-color: rgba(248,109,237,0.3); background: rgba(248,109,237,0.03); }
 body.theme-dark .imp-checkbox-item { background: rgba(15,23,42,0.5); border-color: rgba(148,163,184,0.12); }
+body.theme-dark .imp-checkbox-item:hover {
+  border-color: rgba(248,109,237,0.3);
+  background: rgba(248,109,237,0.06);
+}
 /* Nascondi checkbox nativo */
 .imp-checkbox-item input[type="checkbox"] { position:absolute; opacity:0; width:0; height:0; }
 .imp-checkbox-box {
@@ -186,7 +199,18 @@ body.theme-dark .imp-checkbox-title { color: #f1f5f9; }
   box-shadow: 0 0 0 3px rgba(248,109,237,0.15);
   background: #fff;
 }
-body.theme-dark .imp-input { background: rgba(15,23,42,0.7); border-color: rgba(148,163,184,0.2); color: #e5e7eb; }
+body.theme-dark .imp-input {
+  background: rgba(15,23,42,0.7);
+  border-color: rgba(148,163,184,0.2);
+  color: #e5e7eb;
+}
+body.theme-dark .imp-input:focus {
+  border-color: #f86ded;
+  box-shadow: 0 0 0 3px rgba(248,109,237,0.15);
+  background: rgba(15,23,42,0.9);
+  color: #f1f5f9;
+}
+body.theme-dark .imp-input::placeholder { color: #475569; }
 
 /* Pulsanti */
 .imp-btn-primary {
@@ -213,6 +237,15 @@ body.theme-dark .imp-input { background: rgba(15,23,42,0.7); border-color: rgba(
   transition: all 0.18s;
 }
 .imp-btn-secondary:hover { background: rgba(248,109,237,0.12); border-color: rgba(248,109,237,0.5); }
+body.theme-dark .imp-btn-secondary {
+  background: rgba(248,109,237,0.08);
+  border-color: rgba(248,109,237,0.25);
+  color: #f9a8d4;
+}
+body.theme-dark .imp-btn-secondary:hover {
+  background: rgba(248,109,237,0.15);
+  border-color: rgba(248,109,237,0.45);
+}
 
 .imp-btn-danger {
   display: inline-flex; align-items: center;
@@ -228,10 +261,22 @@ body.theme-dark .imp-input { background: rgba(15,23,42,0.7); border-color: rgba(
   background: rgba(239,68,68,0.12);
   border-color: rgba(239,68,68,0.5);
 }
+body.theme-dark .imp-btn-danger {
+  background: rgba(239,68,68,0.08);
+  border-color: rgba(239,68,68,0.25);
+  color: #fca5a5;
+}
+body.theme-dark .imp-btn-danger:hover {
+  background: rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.45);
+}
 
 /* Sezione danger: bordo leggermente rosso */
 .imp-section-danger {
   border-color: rgba(239,68,68,0.12);
+}
+body.theme-dark .imp-section-danger {
+  border-color: rgba(239,68,68,0.18);
 }
 
 @media (max-width: 600px) {
@@ -241,82 +286,7 @@ body.theme-dark .imp-input { background: rgba(15,23,42,0.7); border-color: rgba(
   .imp-toggle-group { flex-wrap: wrap; }
 }
 
-
-/* ============================================================
-   DARK MODE — fix aggiuntivi impostazioni
-   ============================================================ */
-
-/* Sfondo pagina dark */
-:host-context(body.theme-dark) .imp-page {
+/* Colore testo pagina dark */
+body.theme-dark .imp-page {
   color: #e2e8f0;
-}
-
-/* Input focus dark */
-:host-context(body.theme-dark) .imp-input:focus {
-  border-color: #f86ded;
-  box-shadow: 0 0 0 3px rgba(248,109,237,0.15);
-  background: rgba(15,23,42,0.9);
-  color: #f1f5f9;
-}
-
-:host-context(body.theme-dark) .imp-input::placeholder {
-  color: #475569;
-}
-
-/* Toggle tema dark */
-:host-context(body.theme-dark) .imp-toggle-btn:not(.active) {
-  border-color: rgba(248,109,237,0.2);
-  color: #94a3b8;
-  background: rgba(15,23,42,0.4);
-}
-
-:host-context(body.theme-dark) .imp-toggle-btn:not(.active):hover {
-  border-color: rgba(248,109,237,0.45);
-  color: #f9a8d4;
-  background: rgba(248,109,237,0.08);
-}
-
-/* Checkbox hover dark */
-:host-context(body.theme-dark) .imp-checkbox-item:hover {
-  border-color: rgba(248,109,237,0.3);
-  background: rgba(248,109,237,0.06);
-}
-
-/* Bottone secondary dark */
-:host-context(body.theme-dark) .imp-btn-secondary {
-  background: rgba(248,109,237,0.08);
-  border-color: rgba(248,109,237,0.25);
-  color: #f9a8d4;
-}
-
-:host-context(body.theme-dark) .imp-btn-secondary:hover {
-  background: rgba(248,109,237,0.15);
-  border-color: rgba(248,109,237,0.45);
-}
-
-/* Bottone danger dark */
-:host-context(body.theme-dark) .imp-btn-danger {
-  background: rgba(239,68,68,0.08);
-  border-color: rgba(239,68,68,0.25);
-  color: #fca5a5;
-}
-
-:host-context(body.theme-dark) .imp-btn-danger:hover {
-  background: rgba(239,68,68,0.15);
-  border-color: rgba(239,68,68,0.45);
-}
-
-/* Sezione danger border dark */
-:host-context(body.theme-dark) .imp-section-danger {
-  border-color: rgba(239,68,68,0.18);
-}
-
-/* Note testo dark */
-:host-context(body.theme-dark) .imp-note {
-  color: #64748b;
-}
-
-/* Label dark */
-:host-context(body.theme-dark) .imp-label {
-  color: #94a3b8;
 }

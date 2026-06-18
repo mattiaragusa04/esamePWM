@@ -266,3 +266,36 @@
 
   </div>
 </div>
+
+
+<!-- ── SEZIONE: RECENSIONI CLIENTI ───────────────────── -->
+<div class="home-section mt-4" *ngIf="recensioniPubbliche.length > 0">
+  <div class="home-section-header">
+    <div class="home-section-label">
+      <i class="bi bi-chat-quote-fill"></i> Community
+    </div>
+    <h2 class="home-section-title">
+      Cosa dicono i nostri <span class="home-accent">clienti</span>
+    </h2>
+  </div>
+
+  <div class="home-recensioni-grid">
+    <div class="home-recensione-card" *ngFor="let r of recensioniPubbliche">
+      <!-- Intestazione: avatar iniziali + nome + data -->
+      <div class="home-rec-header">
+        <div class="home-rec-avatar">{{ (r.nome?.charAt(0) || '?').toUpperCase() }}{{ (r.cognome?.charAt(0) || '').toUpperCase() }}</div>
+        <div class="home-rec-meta">
+          <span class="home-rec-nome">{{ r.nome }} {{ r.cognome }}</span>
+          <span class="home-rec-data">{{ r.data | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+      <!-- Stelle -->
+      <div class="home-rec-stelle">
+        <i class="bi bi-star-fill" *ngFor="let s of stelle(r.voto)"></i>
+        <i class="bi bi-star" *ngFor="let s of stelle(5 - r.voto)"></i>
+      </div>
+      <!-- Testo -->
+      <p class="home-rec-testo">{{ r.testo }}</p>
+    </div>
+  </div>
+</div>

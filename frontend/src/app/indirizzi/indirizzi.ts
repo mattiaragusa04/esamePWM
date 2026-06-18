@@ -1,7 +1,8 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastService } from '../shared/toast.service';
+import { NeuralCanvasService } from '../shared/neural-canvas.service';
 
 @Component({
   selector: 'app-indirizzi',
@@ -10,7 +11,11 @@ import { ToastService } from '../shared/toast.service';
   templateUrl: './indirizzi.html',
   styleUrl: './indirizzi.css'
 })
-export class Indirizzi implements OnInit {
+export class Indirizzi implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('indirizziCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('indirizziHero')   heroRef!:   ElementRef<HTMLDivElement>;
+
   indirizzi: any[] = [];
   isLoading: boolean = true;
   mostraForm: boolean = false;
@@ -25,7 +30,8 @@ export class Indirizzi implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
-    private toast: ToastService
+    private toast: ToastService,
+    private neuralCanvas: NeuralCanvasService
   ) {
     this.indirizzoForm = this.fb.group({
       tipo:          ['Casa', Validators.required],
@@ -43,6 +49,19 @@ export class Indirizzi implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => {
+      const canvas = this.canvasRef?.nativeElement;
+      const hero   = this.heroRef?.nativeElement;
+      if (canvas && hero) this.neuralCanvas.init(canvas, hero);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.canvasRef?.nativeElement) this.neuralCanvas.destroy(this.canvasRef.nativeElement);
+  }
+
   async caricaIndirizzi() {
     this.isLoading = true;
     const token = localStorage.getItem('token');
@@ -53,9 +72,12 @@ export class Indirizzi implements OnInit {
       });
       if (response.ok) {
         this.indirizzi = await response.json();
+      } else {
+        this.toast.error('Impossibile caricare gli indirizzi.');
       }
     } catch (error) {
       console.error('Errore nel caricamento degli indirizzi:', error);
+      this.toast.error('Errore di connessione al server.');
     } finally {
       this.isLoading = false;
       this.cdr.detectChanges();

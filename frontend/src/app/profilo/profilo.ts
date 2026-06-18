@@ -1,6 +1,8 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Inject, PLATFORM_ID, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NeuralCanvasService } from '../shared/neural-canvas.service';
 
 export interface CouponRiscattato {
   codice: string;
@@ -12,11 +14,15 @@ export interface CouponRiscattato {
 @Component({
   selector: 'app-profilo',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './profilo.html',
   styleUrls: ['./profilo.css']
 })
-export class Profilo implements OnInit {
+export class Profilo implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('profiloCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('profiloHero')   heroRef!:   ElementRef<HTMLDivElement>;
+
   utente: any = null;
 
   totalOrdini    = 0;
@@ -24,6 +30,18 @@ export class Profilo implements OnInit {
   totalPreferiti = 0;
 
   couponRiscattati: CouponRiscattato[] = [];
+
+  // ── Recensione (Opzione C: banner fisso nel profilo) ──────────────────────
+  haOrdineConsegnato: boolean = false;
+  miaRecensione: any = null;          // null = non ha ancora recensito
+  mostraPopupRecensione: boolean = false;
+  recensioneForm = { voto: 0, testo: '' };
+  stelleHover: number = 0;
+  recensioneInvio: boolean = false;
+  recensioneErrore: string = '';
+  recensioneSuccesso: boolean = false;
+  // ─────────────────────────────────────────────────────────────────────────
+
   private readonly API         = 'http://localhost:3000/api/auth/profile';
   private readonly API_FEDELTA = 'http://localhost:3000/api/coupon';
   private readonly API_ORDINI  = 'http://localhost:3000/api/ordine/utente';
@@ -31,7 +49,8 @@ export class Profilo implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private neuralCanvas: NeuralCanvasService
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +58,20 @@ export class Profilo implements OnInit {
     this.caricaProfilo();
     this.caricaCouponRiscattati();
     this.caricaContatori();
+    this.caricaStatoRecensione();
+  }
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => {
+      const canvas = this.canvasRef?.nativeElement;
+      const hero   = this.heroRef?.nativeElement;
+      if (canvas && hero) this.neuralCanvas.init(canvas, hero);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.canvasRef?.nativeElement) this.neuralCanvas.destroy(this.canvasRef.nativeElement);
   }
 
   async caricaContatori() {
@@ -54,6 +87,8 @@ export class Profilo implements OnInit {
       if (resOrdini.ok) {
         const ordini = await resOrdini.json();
         this.totalOrdini = Array.isArray(ordini) ? ordini.length : 0;
+        // controlla se c'è almeno un ordine consegnato
+        this.haOrdineConsegnato = Array.isArray(ordini) && ordini.some((o: any) => o.statoOrdine === 'Consegnato');
       }
 
       if (resVendite.ok) {
@@ -64,7 +99,6 @@ export class Profilo implements OnInit {
       console.error('[Profilo] Errore nel caricamento dei contatori.');
     }
 
-    // I preferiti sono salvati in localStorage
     try {
       const salvati = localStorage.getItem('preferiti');
       this.totalPreferiti = salvati ? JSON.parse(salvati).length : 0;
@@ -73,6 +107,94 @@ export class Profilo implements OnInit {
     }
 
     this.cdr.detectChanges();
+  }
+
+  async caricaStatoRecensione() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const res = await fetch('http://localhost:3000/api/recensioni/mia', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        this.miaRecensione = data.recensione || null;
+      }
+    } catch {
+      console.error('[Profilo] Errore controllo recensione.');
+    } finally {
+      this.cdr.detectChanges();
+    }
+  }
+
+  apriPopupRecensione() {
+    if (this.miaRecensione) {
+      this.recensioneForm.voto  = this.miaRecensione.voto;
+      this.recensioneForm.testo = this.miaRecensione.testo;
+    } else {
+      this.recensioneForm = { voto: 0, testo: '' };
+    }
+    this.recensioneErrore   = '';
+    this.recensioneSuccesso = false;
+    this.mostraPopupRecensione = true;
+    this.cdr.detectChanges();
+  }
+
+  chiudiPopupRecensione() {
+    this.mostraPopupRecensione = false;
+    this.recensioneErrore = '';
+  }
+
+  setVoto(v: number) {
+    this.recensioneForm.voto = v;
+  }
+
+  async inviaRecensione() {
+    this.recensioneErrore = '';
+    if (this.recensioneForm.voto < 1 || this.recensioneForm.voto > 5) {
+      this.recensioneErrore = 'Seleziona un voto tra 1 e 5 stelle.';
+      return;
+    }
+    if (!this.recensioneForm.testo.trim()) {
+      this.recensioneErrore = 'Scrivi qualcosa nella recensione.';
+      return;
+    }
+
+    this.recensioneInvio = true;
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch('http://localhost:3000/api/recensioni', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          voto:  this.recensioneForm.voto,
+          testo: this.recensioneForm.testo.trim()
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        this.recensioneSuccesso = true;
+        this.miaRecensione = {
+          voto:  this.recensioneForm.voto,
+          testo: this.recensioneForm.testo.trim()
+        };
+        setTimeout(() => {
+          this.chiudiPopupRecensione();
+          this.recensioneSuccesso = false;
+          this.cdr.detectChanges();
+        }, 1800);
+      } else {
+        this.recensioneErrore = data.error || 'Errore durante il salvataggio.';
+      }
+    } catch {
+      this.recensioneErrore = 'Errore di rete. Riprova.';
+    } finally {
+      this.recensioneInvio = false;
+      this.cdr.detectChanges();
+    }
   }
 
   async caricaCouponRiscattati() {
