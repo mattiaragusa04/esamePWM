@@ -49,12 +49,10 @@ export class Pagamento implements OnInit {
 
   // ─── COUPON ────────────────────────────────────────────────────────────────────────────
 codiceCoupon: string = '';
-  couponApplicato: any = null;    // oggetto coupon validato dal backend
+  couponApplicato: any = null;
   couponErrore: string = '';
   isValidatingCoupon: boolean = false;
 
-  // I campi che arrivano dal backend sono: sconto e totale_finale
-  // Questi getter li mappano ai nomi usati nel template
   get scontoEuro(): number {
     return this.couponApplicato ? this.couponApplicato.sconto : 0;
   }
@@ -121,7 +119,6 @@ codiceCoupon: string = '';
           return acc + prezzoEff * item.quantita;
         }, 0) * 100) / 100;
 
-        // Se c'è già un coupon applicato, ricalcola lo sconto sul nuovo totale
         if (this.couponApplicato) {
           await this.applicaCoupon(true);
         }
@@ -201,7 +198,6 @@ codiceCoupon: string = '';
 
   // ─── METODI COUPON ────────────────────────────────────────────────────────────────────────
 
-  // silenzioso = true quando viene chiamato internamente (ricalcolo dopo cambio totale)
   async applicaCoupon(silenzioso = false) {
     const codice = this.codiceCoupon.trim();
     if (!codice) return;
@@ -218,7 +214,6 @@ codiceCoupon: string = '';
       });
 
       if (res.ok) {
-        // Backend risponde con: { valido, coupon_id, tipo, valore, sconto, totale_finale }
         const data = await res.json();
         this.couponApplicato = data;
         if (!silenzioso) {
@@ -272,13 +267,15 @@ codiceCoupon: string = '';
     this.cdr.detectChanges();
 
     try {
-      // 1. Salvataggio carta
+      // 1. Gestione carta
       let cartaId = Number(this.selectedCartaId);
       if (cartaId === 0) {
+        const formPagamento = this.checkoutForm.getRawValue().pagamento;
+        // Passiamo salvaCarta al backend: se false -> salvato=0 (invisibile nel profilo)
         const resCarta = await fetch('http://localhost:3000/api/carta/create', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.checkoutForm.getRawValue().pagamento)
+          body: JSON.stringify(formPagamento)
         });
         if (resCarta.ok) {
           cartaId = (await resCarta.json()).id;
@@ -288,13 +285,15 @@ codiceCoupon: string = '';
         }
       }
 
-      // 2. Salvataggio indirizzo
+      // 2. Gestione indirizzo
       let indirizzoId = Number(this.selectedIndirizzoId);
       if (indirizzoId === 0) {
+        const formSpedizione = this.checkoutForm.getRawValue().spedizione;
+        // Passiamo salvaIndirizzo al backend: se false -> salvato=0 (invisibile nel profilo)
         const resIndirizzo = await fetch('http://localhost:3000/api/indirizzo/create', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.checkoutForm.getRawValue().spedizione)
+          body: JSON.stringify(formSpedizione)
         });
         if (resIndirizzo.ok) {
           indirizzoId = (await resIndirizzo.json()).id;
@@ -304,7 +303,7 @@ codiceCoupon: string = '';
         }
       }
 
-      // 3. Creazione ordine (con coupon se presente)
+      // 3. Creazione ordine
       const payloadOrdine: any = {
         carta_id: cartaId,
         indirizzo_id: indirizzoId,

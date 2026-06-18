@@ -42,7 +42,8 @@
 
   <!-- ═══ STAT CARDS ═══ -->
   <div class="profilo-stats-row" *ngIf="utente">
-    <div class="profilo-stat-card">
+
+    <a routerLink="/profilo/fedelta" class="profilo-stat-card">
       <div class="profilo-stat-icon icon-pink">
         <i class="bi bi-trophy-fill"></i>
       </div>
@@ -50,8 +51,9 @@
         <div class="profilo-stat-value">{{ utente.puntiFedelta || 0 }}</div>
         <div class="profilo-stat-label">Punti Fedeltà</div>
       </div>
-    </div>
-    <div class="profilo-stat-card">
+    </a>
+
+    <a routerLink="/profilo/ordini" class="profilo-stat-card">
       <div class="profilo-stat-icon icon-orange">
         <i class="bi bi-box-seam-fill"></i>
       </div>
@@ -59,8 +61,9 @@
         <div class="profilo-stat-value">{{ totalOrdini }}</div>
         <div class="profilo-stat-label">Ordini Totali</div>
       </div>
-    </div>
-    <div class="profilo-stat-card">
+    </a>
+
+    <a routerLink="/profilo/vendite" class="profilo-stat-card">
       <div class="profilo-stat-icon icon-green">
         <i class="bi bi-tags-fill"></i>
       </div>
@@ -68,8 +71,9 @@
         <div class="profilo-stat-value">{{ totalVendite }}</div>
         <div class="profilo-stat-label">Articoli Venduti</div>
       </div>
-    </div>
-    <div class="profilo-stat-card">
+    </a>
+
+    <a routerLink="/preferiti" class="profilo-stat-card">
       <div class="profilo-stat-icon icon-purple">
         <i class="bi bi-heart-fill"></i>
       </div>
@@ -77,7 +81,8 @@
         <div class="profilo-stat-value">{{ totalPreferiti }}</div>
         <div class="profilo-stat-label">Preferiti</div>
       </div>
-    </div>
+    </a>
+
   </div>
 
   <!-- ═══ DATI ACCOUNT + QUICK ACTIONS ═══ -->

@@ -48,6 +48,8 @@ app.listen(PORT, () => {
     `ALTER TABLE Coupon ADD COLUMN costo_punti INTEGER DEFAULT 0`,
     // Colonna disponibile su Coupon (-1 = illimitata)
     `ALTER TABLE Coupon ADD COLUMN disponibile INTEGER DEFAULT -1`,
+    // FIX: Colonna pagato_con_punti su composto per tracciare i singoli articoli pagati con punti
+    `ALTER TABLE composto ADD COLUMN pagato_con_punti INTEGER DEFAULT 0`,
   ];
 
   migrations.forEach(sql => {

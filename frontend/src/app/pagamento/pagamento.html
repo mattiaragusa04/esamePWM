@@ -64,7 +64,7 @@
 
             <div class="pag-field pag-field--sm">
               <label class="pag-label">Civico</label>
-              <input type="text" formControlName="numero_civico" class="pag-input" placeholder="12" maxlength="4"
+              <input type="text" formControlName="numero_civico" class="pag-input" placeholder="123" maxlength="4"
                 [class.pag-field-error]="submitted && checkoutForm.get('spedizione.numero_civico')?.invalid"
                 (input)="checkoutForm.get('spedizione.numero_civico')?.setValue($any($event.target).value.replace(/[^0-9]/g, ''))">
               <span class="pag-error" *ngIf="submitted && checkoutForm.get('spedizione.numero_civico')?.invalid">

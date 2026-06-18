@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const vendiController = require('../controllers/vendiControllers');
-const authMiddleware = require('../middleware/authMiddleware'); 
+const authMiddleware = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -26,13 +26,12 @@ router.post('/offerta', upload.array('images', 5), vendiController.submitSellOff
 
 router.get('/inviati', vendiController.getAllProdottiInviati);
 
+// Route dedicata accettazione: logica completa (giacenza + punti)
+router.put('/:id/accetta', vendiController.accettaOfferta);
+
+// Route generica aggiornamento stato (Rifiuta, In attesa)
 router.put('/:id', vendiController.update);
 
 router.get('/:id', vendiController.getProdottoForSellingById);
-
-
-
-
-
 
 module.exports = router;

@@ -107,10 +107,11 @@
   border-color: rgba(248,109,237,0.3);
 }
 
+/* FIX: badge USATO — colore ambra coerente con styles.css globale */
 .badge-usato {
-  background: rgba(100,116,139,0.1);
-  color: #64748b;
-  border-color: rgba(100,116,139,0.3);
+  background: rgba(234, 179, 8, 0.12);
+  color: #a16207;
+  border-color: rgba(234, 179, 8, 0.35);
 }
 
 /* Prezzo */
@@ -326,10 +327,11 @@
   border-color: rgba(248,109,237,0.3);
 }
 
+/* FIX dark: badge USATO → ambra luminosa */
 :host-context(body.theme-dark) .badge-usato {
-  background: rgba(100,116,139,0.2);
-  color: #94a3b8;
-  border-color: rgba(100,116,139,0.35);
+  background: rgba(234, 179, 8, 0.18);
+  color: #fde047;
+  border-color: rgba(234, 179, 8, 0.4);
 }
 
 /* Badge sconto dark */

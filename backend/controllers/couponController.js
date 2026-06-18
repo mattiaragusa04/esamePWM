@@ -6,7 +6,16 @@ const Ordine = require('../models/ordineModel');
 // HELPER
 // ═══════════════════════════════════════════════════════════════
 const arrotonda = v => Math.floor(Number(v) + 0.5);
-const calcolaPunti = prezzo => arrotonda(prezzo) / 5;
+
+// FIX: costoInPunti ora usa il campo puntiFedelta del prodotto.
+// Se puntiFedelta è 0 o assente, fallback al calcolo dal prezzo (retrocompatibilità).
+const getCostoInPunti = (prodotto) => {
+  if (prodotto.puntiFedelta && Number(prodotto.puntiFedelta) > 0) {
+    return Number(prodotto.puntiFedelta);
+  }
+  // Fallback: arrotondamento commerciale del prezzo / 5
+  return arrotonda(prodotto.prezzoUnitarioVendita) / 5;
+};
 
 // Punti richiesti per ogni percentuale di sconto preset
 const PUNTI_PER_PRESET = {
@@ -76,7 +85,6 @@ exports.modificaCoupon = async (req, res) => {
     const coupon = await Coupon.findById(id);
     if (!coupon) return res.status(404).json({ error: 'Coupon non trovato.' });
 
-    // Controlla duplicato codice solo se il codice è cambiato
     const nuovoCodice = codice.toUpperCase().trim();
     if (nuovoCodice !== coupon.codice) {
       const tutti = await Coupon.findAll();
@@ -154,13 +162,10 @@ exports.validaCoupon = async (req, res) => {
     console.error('validaCoupon error:', err);
     res.status(500).json({ error: 'Errore nella validazione del coupon.' });
   }
-
 };
 
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — GET /api/coupon/preset-coupon
-// Restituisce i coupon preset fissi (5%, 10%, 15%, 20%, 25%)
-// Non richiedono un record in DB: sono generati on-the-fly.
 // ═══════════════════════════════════════════════════════════════
 exports.getPresetCoupon = (req, res) => {
   const preset = [5, 10, 15, 20, 25].map(perc => ({
@@ -172,9 +177,7 @@ exports.getPresetCoupon = (req, res) => {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// UTENTE — POST /api/coupon/acquista-preset-coupon  { percentuale }
-// Genera un coupon personale partendo da un preset (5/10/15/20/25%)
-// utilizzi_massimi = 1, descrizione = [email utente | X pt spesi]
+// UTENTE — POST /api/coupon/acquista-preset-coupon
 // ═══════════════════════════════════════════════════════════════
 exports.acquistaPresetCoupon = async (req, res) => {
   const userId      = req.user.id;
@@ -198,17 +201,14 @@ exports.acquistaPresetCoupon = async (req, res) => {
       });
     }
 
-    // Codice casuale univoco
     const chars  = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let codice   = 'SC' + percNum + '-';
     for (let i = 0; i < 8; i++) codice += chars[Math.floor(Math.random() * chars.length)];
 
-    // Scadenza 3 mesi
     const scadenza = new Date();
     scadenza.setMonth(scadenza.getMonth() + 3);
     const scadenzaStr = scadenza.toISOString().split('T')[0];
 
-    // Descrizione con dati utente
     const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
 
     const nuovoCoupon = await Coupon.createGenerato({ codice, valore: percNum, descrizione, scadenzaStr });
@@ -234,7 +234,6 @@ exports.acquistaPresetCoupon = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — GET /api/coupon/catalogo-coupon
-// Legge i coupon fedeltà ATTIVI dal DB (costo_punti > 0)
 // ═══════════════════════════════════════════════════════════════
 exports.getCatalogoCoupon = async (req, res) => {
   try {
@@ -245,8 +244,7 @@ exports.getCatalogoCoupon = async (req, res) => {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// UTENTE — POST /api/coupon/acquista-coupon  { catalogoId }
-// catalogoId = id numerico del coupon in DB
+// UTENTE — POST /api/coupon/acquista-coupon
 // ═══════════════════════════════════════════════════════════════
 exports.acquistaCoupon = async (req, res) => {
   const userId = req.user.id;
@@ -275,7 +273,6 @@ exports.acquistaCoupon = async (req, res) => {
     scadenza.setMonth(scadenza.getMonth() + 3);
     const scadenzaStr = scadenza.toISOString().split('T')[0];
 
-    // Descrizione arricchita con dati utente
     const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
 
     const nuovoCoupon = await Coupon.createGenerato({ codice, valore: template.valore, descrizione, scadenzaStr });
@@ -302,11 +299,12 @@ exports.acquistaCoupon = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — GET /api/coupon/prodotti-usati
+// FIX: costoInPunti ora proviene da p.puntiFedelta (non più dal prezzo)
 // ═══════════════════════════════════════════════════════════════
 exports.getProdottiUsati = async (req, res) => {
   try {
     const rows = await Coupon.findProdottiUsati();
-    res.json(rows.map(p => ({ ...p, costoInPunti: calcolaPunti(p.prezzoUnitarioVendita) })));
+    res.json(rows.map(p => ({ ...p, costoInPunti: getCostoInPunti(p) })));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -314,6 +312,9 @@ exports.getProdottiUsati = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — POST /api/coupon/acquista-prodotto  { prodottoId }
+// FIX: usa getCostoInPunti (puntiFedelta del prodotto)
+//      verifica giacenza atomica dopo decrementaGiacenza
+//      passa pagatoConPunti=1 ad addProdottoToOrdine
 // ═══════════════════════════════════════════════════════════════
 exports.acquistaProdottoConPunti = async (req, res) => {
   const userId    = req.user.id;
@@ -330,7 +331,8 @@ exports.acquistaProdottoConPunti = async (req, res) => {
     if (!isUsato) return res.status(400).json({ error: 'Solo prodotti usati acquistabili con punti.' });
     if (prodotto.giacenza < 1) return res.status(400).json({ error: 'Prodotto esaurito.' });
 
-    const costoInPunti = calcolaPunti(prodotto.prezzoUnitarioVendita);
+    // FIX: usa puntiFedelta del prodotto come costo
+    const costoInPunti = getCostoInPunti(prodotto);
 
     const utente = await User.findById(userId);
     if (!utente) return res.status(404).json({ error: 'Utente non trovato.' });
@@ -342,11 +344,17 @@ exports.acquistaProdottoConPunti = async (req, res) => {
       });
     }
 
+    // Crea l'ordine (pagato_con_punti = 1 a livello ordine)
     const newOrdine = await Ordine.createConPunti(userId, prodotto.prezzoUnitarioVendita);
 
-    await Ordine.addProdottoToOrdine(newOrdine.id, prodottoId, 1, prodotto.prezzoUnitarioVendita);
+    // FIX: aggiunge il prodotto alla tabella composto con pagato_con_punti = 1
+    await Ordine.addProdottoToOrdine(newOrdine.id, prodottoId, 1, prodotto.prezzoUnitarioVendita, 1);
 
-    await Coupon.decrementaGiacenza(prodottoId);
+    // Decrementa giacenza in modo atomico; se changes=0 la giacenza era già 0 (race condition)
+    const decResult = await Coupon.decrementaGiacenza(prodottoId);
+    if (decResult.changes === 0) {
+      return res.status(409).json({ error: 'Prodotto esaurito. Riprova.' });
+    }
 
     await User.deductPuntiFedelta(userId, costoInPunti);
     const utenteAggiornato = await User.findById(userId);
@@ -422,11 +430,12 @@ exports.adminEliminaCouponFedelta = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — GET /api/coupon/admin/prodotti-usati
+// FIX: costoInPunti ora proviene da p.puntiFedelta
 // ═══════════════════════════════════════════════════════════════
 exports.adminGetProdottiUsati = async (req, res) => {
   try {
     const rows = await Coupon.findAllProdottiUsatiAdmin();
-    res.json(rows.map(p => ({ ...p, costoInPunti: calcolaPunti(p.prezzoUnitarioVendita) })));
+    res.json(rows.map(p => ({ ...p, costoInPunti: getCostoInPunti(p) })));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -65,20 +65,23 @@ const Ordine = {
         });
     },
 
-    addProdottoToOrdine : (ordineId, prodottoId, quantita, prezzoUnitario) => {
+    // FIX: aggiunto parametro pagatoConPunti (default 0) per tracciare i prodotti acquistati con punti fedeltà
+    addProdottoToOrdine : (ordineId, prodottoId, quantita, prezzoUnitario, pagatoConPunti = 0) => {
         return new Promise((res, rej) => {
-            const query = `INSERT INTO composto (ordine_id, prodotto_id, quantita, prezzoUnitario) VALUES (?, ?, ?, ?)`;
-            db.run(query, [ordineId, prodottoId, quantita, prezzoUnitario], function(err) {
+            const query = `INSERT INTO composto (ordine_id, prodotto_id, quantita, prezzoUnitario, pagato_con_punti) VALUES (?, ?, ?, ?, ?)`;
+            db.run(query, [ordineId, prodottoId, quantita, prezzoUnitario, pagatoConPunti ? 1 : 0], function(err) {
                 if (err) rej(err);
                 else res({ id: this.lastID });
             });
         });
     },
 
+    // FIX: aggiunto c.pagato_con_punti nella SELECT per restituirlo al frontend
     getProdottiByOrdineId: (ordineId) => {
         return new Promise((res, rej) => {
             const query = `
-                SELECT c.quantita, c.prezzoUnitario, p.id, p.nome, p.immagine, p.condizione, p.puntiFedelta
+                SELECT c.quantita, c.prezzoUnitario, c.pagato_con_punti,
+                       p.id, p.nome, p.immagine, p.condizione, p.puntiFedelta
                 FROM composto c
                 JOIN prodotto p ON c.prodotto_id = p.id
                 WHERE c.ordine_id = ?
@@ -98,22 +101,20 @@ const Ordine = {
                 else res({ id: id, changes: this.changes });
             });
         });
-    },  
+    },
+
     createConPunti : (userId, totale) => {
-    return new Promise((resolve, reject) => {
-      const db = require('../db/database');
-      db.run(
-        `INSERT INTO ordine
-           (carta_id, indirizzo_id, utente_id, coupon_id, data, totale,
-            totale_scontato, sconto_applicato, punti_fedelta, statoOrdine, pagato_con_punti)
-         VALUES (NULL, NULL, ?, NULL, ?, ?, ?, 0, 0, 'In elaborazione', 1)`,
-        [userId, new Date().toISOString(), totale, totale],
-        function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
-      );
-    });
-  }
-}
-
-
+        return new Promise((resolve, reject) => {
+            db.run(
+                `INSERT INTO ordine
+                   (carta_id, indirizzo_id, utente_id, coupon_id, data, totale,
+                    totale_scontato, sconto_applicato, punti_fedelta, statoOrdine, pagato_con_punti)
+                 VALUES (NULL, NULL, ?, NULL, ?, ?, ?, 0, 0, 'In elaborazione', 1)`,
+                [userId, new Date().toISOString(), totale, totale],
+                function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
+            );
+        });
+    }
+};
 
 module.exports = Ordine;

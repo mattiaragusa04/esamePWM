@@ -13,7 +13,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── HERO ───────────────────────────────────────────── */
+/* ─── HERO ─────────────────────────────────────────── */
 .carte-hero {
   position: relative;
   overflow: hidden;
@@ -102,7 +102,7 @@
   color: #fff;
 }
 
-/* ─── FORM ───────────────────────────────────────────── */
+/* ─── FORM ─────────────────────────────────────────── */
 .carte-form-card {
   background: #fff;
   border-radius: 1.25rem;
@@ -308,7 +308,7 @@ body.theme-dark .carte-btn-secondary:hover {
   cursor: not-allowed;
 }
 
-/* ─── GRIGLIA CARTE VISUALE ─────────────────────────── */
+/* ─── GRIGLIA CARTE VISUALE ──────────────────────────────────────── */
 .carte-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -440,7 +440,48 @@ body.theme-dark .carte-btn-secondary:hover {
   color: #fff;
 }
 
-/* ─── EMPTY STATE ──────────────────────────────────────── */
+/* ─── CONFERMA ELIMINAZIONE INLINE (carta) ─────────────────── */
+.carta-confirm-delete {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+.carta-confirm-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  white-space: nowrap;
+}
+.carta-confirm-yes,
+.carta-confirm-no {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+}
+.carta-confirm-yes {
+  background: rgba(239,68,68,0.55);
+  color: #fff;
+}
+.carta-confirm-yes:hover {
+  background: rgba(239,68,68,0.85);
+  border-color: rgba(239,68,68,0.7);
+}
+.carta-confirm-no {
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.85);
+}
+.carta-confirm-no:hover {
+  background: rgba(255,255,255,0.28);
+}
+
+/* ─── EMPTY STATE ────────────────────────────────────────────── */
 .carte-empty {
   display: flex;
   flex-direction: column;

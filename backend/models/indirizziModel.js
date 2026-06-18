@@ -12,28 +12,40 @@ const Indirizzo = {
     },
     findById : (id) => {
         return new Promise((res, rej) => {
-            const query = `SELECT * FROM indirizzo WHERE id = ?`;    
+            const query = `SELECT * FROM indirizzo WHERE id = ?`;
             db.get(query, [id], (err, row) => {
                 if (err) rej(err);
                 else res(row);
             });
-        }); 
+        });
     },
+    // Restituisce solo gli indirizzi visibili nel profilo (salvato = 1)
     findByUserId : (userId) => {
         return new Promise((res, rej) => {
-            const query = `SELECT * FROM indirizzo WHERE utente_id = ?`;    
+            const query = `SELECT * FROM indirizzo WHERE utente_id = ? AND salvato = 1`;
             db.all(query, [userId], (err, rows) => {
                 if (err) rej(err);
                 else res(rows);
             });
-        }); 
+        });
     },
+    // Crea l'indirizzo. Il campo salvato determina se appare nel profilo.
     create : (indirizzo) => {
         return new Promise((res, rej) => {
-            const query = `INSERT INTO indirizzo (utente_id, tipo, via, numero_civico, provincia, paese, cap) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-            db.run(query, [indirizzo.utente_id, indirizzo.tipo, indirizzo.via, indirizzo.numero_civico, indirizzo.provincia, indirizzo.paese, indirizzo.cap], function(err) {
+            const salvato = indirizzo.salvato !== undefined ? indirizzo.salvato : 1;
+            const query = `INSERT INTO indirizzo (utente_id, tipo, via, numero_civico, provincia, paese, cap, salvato) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+            db.run(query, [
+                indirizzo.utente_id,
+                indirizzo.tipo,
+                indirizzo.via,
+                indirizzo.numero_civico,
+                indirizzo.provincia,
+                indirizzo.paese,
+                indirizzo.cap,
+                salvato
+            ], function(err) {
                 if (err) rej(err);
-                else res({ id: this.lastID, ...indirizzo });
+                else res({ id: this.lastID, ...indirizzo, salvato });
             });
         });
     },
@@ -46,12 +58,26 @@ const Indirizzo = {
             });
         });
     },
+    // Soft-delete: nasconde l'indirizzo dal profilo (salvato = 0).
+    // Se l'indirizzo non è usato in nessun ordine, lo elimina fisicamente.
     delete : (id) => {
         return new Promise((res, rej) => {
-            const query = `DELETE FROM indirizzo WHERE id = ?`;
-            db.run(query, [id], function(err) {
-                if (err) rej(err);
-                else res({ id });
+            // Controlla se l'indirizzo è referenziato da almeno un ordine
+            db.get(`SELECT COUNT(*) as cnt FROM ordine WHERE indirizzo_id = ?`, [id], (err, row) => {
+                if (err) return rej(err);
+                if (row.cnt > 0) {
+                    // Ha ordini collegati: soft-delete (nasconde dal profilo)
+                    db.run(`UPDATE indirizzo SET salvato = 0 WHERE id = ?`, [id], function(err2) {
+                        if (err2) rej(err2);
+                        else res({ id, softDeleted: true });
+                    });
+                } else {
+                    // Nessun ordine collegato: delete fisica
+                    db.run(`DELETE FROM indirizzo WHERE id = ?`, [id], function(err2) {
+                        if (err2) rej(err2);
+                        else res({ id, softDeleted: false });
+                    });
+                }
             });
         });
     }

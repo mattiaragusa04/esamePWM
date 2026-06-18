@@ -24,26 +24,38 @@
     <div class="col-lg-10">
       <div class="card mb-3 shadow-sm" *ngFor="let prodotto of prodottiPreferiti">
         <div class="row g-0 align-items-center p-3">
-        
+
           <div class="col-md-2 text-center">
             <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:4200/' + prodotto.immagine" class="img-fluid rounded" alt="{{prodotto.nome}}" style="max-height: 80px; object-fit: contain;">
           </div>
-        
-          <div class="col-md-6">
+
+          <div class="col-md-5">
             <h5 class="card-title text-truncate mb-1" title="{{prodotto.nome}}">{{ prodotto.nome }}</h5>
             <p class="text-muted mb-0 small">Prezzo unitario: {{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol':'1.2-2' }}</p>
           </div>
-        
+
           <div class="col-md-3 text-center text-md-end mt-3 mt-md-0 d-flex justify-content-md-end justify-content-center align-items-center">
             <a class="btn btn-sm btn-info rounded-pill px-4 fw-bold text-dark shadow-sm" [routerLink]="['/dettagli-prodotto', prodotto.id]">Vedi Dettagli</a>
           </div>
-          
+
+          <!-- Tasto Aggiungi al Carrello -->
+          <div class="col-md-1 text-center mt-3 mt-md-0">
+            <button
+              class="btn btn-success rounded-circle shadow-sm d-inline-flex justify-content-center align-items-center p-0"
+              style="width: 36px; height: 36px;"
+              (click)="aggiungiAlCarrello(prodotto)"
+              title="Aggiungi al carrello e rimuovi dai preferiti">
+              <i class="bi bi-cart-plus"></i>
+            </button>
+          </div>
+
           <!-- Tasto Rimozione -->
           <div class="col-md-1 text-center text-md-end mt-3 mt-md-0">
             <button class="btn btn-danger rounded-circle shadow-sm d-inline-flex justify-content-center align-items-center p-0" style="width: 36px; height: 36px;" (click)="prodottoDaRimuovere = prodotto.id" title="Rimuovi dai preferiti">
               <i class="bi bi-trash"></i>
             </button>
           </div>
+
         </div>
       </div>
       <div class="d-flex justify-content-between mt-4">

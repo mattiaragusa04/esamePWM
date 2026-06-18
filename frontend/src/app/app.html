@@ -25,7 +25,7 @@
           [(ngModel)]="termineRicerca"
           (keyup.enter)="cerca()"
         />
-        <kbd class="pw-search-kbd" (click)="cerca()">↵</kbd>
+        <kbd class="pw-search-kbd" (click)="cerca()">&#8629;</kbd>
       </div>
 
       <!-- DESTRA: Chip Vendi + icone -->
@@ -36,6 +36,18 @@
           <i class="bi bi-tags-fill"></i>
           <span>Vendi</span>
         </button>
+
+        <!-- Chip "Admin" — solo md+, visibile solo agli admin -->
+        <a
+          *ngIf="utenteLoggato?.ruolo === 'admin'"
+          class="pw-chip-vendi d-none d-md-inline-flex"
+          routerLink="/admin"
+          title="Dashboard Admin"
+          style="background:var(--pw-danger, #c0392b); color:#fff; border-color:transparent;"
+        >
+          <i class="bi bi-shield-lock-fill"></i>
+          <span>Admin</span>
+        </a>
 
         <!-- Icona Ricerca (solo mobile) -->
         <button class="pw-nav-icon-btn d-lg-none" type="button" (click)="toggleRicerca($event)" aria-label="Cerca">
@@ -193,9 +205,9 @@
   <router-outlet></router-outlet>
 </div>
 
-<!-- ═══════════════════════════════════════════
+<!-- ═════════════════════════════════════════════
      FOOTER REDESIGN
-═══════════════════════════════════════════ -->
+═════════════════════════════════════════════ -->
 <footer class="pw-footer">
 
   <!-- Banda superiore con glow -->
@@ -229,6 +241,7 @@
           <li><a [routerLink]="['/categoria', 'elettronica']"><i class="bi bi-cpu"></i>Elettronica</a></li>
           <li><a [routerLink]="['/categoria', 'accessori']"><i class="bi bi-headset"></i>Accessori</a></li>
           <li><a routerLink="/vendi"><i class="bi bi-tags-fill"></i>Vendi a PAwerUP</a></li>
+          <li><a routerLink="/coupon"><i class="bi bi-ticket-perforated"></i>Coupon</a></li>
         </ul>
       </div>
 
@@ -239,6 +252,8 @@
           <li><a [routerLink]="['/profilo']"><i class="bi bi-person-circle"></i>Il mio Profilo</a></li>
           <li><a [routerLink]="['/ordini']"><i class="bi bi-bag-check"></i>I miei Ordini</a></li>
           <li><a [routerLink]="['/preferiti']"><i class="bi bi-heart"></i>Preferiti</a></li>
+          <li><a [routerLink]="['/fedelta']"><i class="bi bi-star-fill"></i>Punti Fedeltà</a></li>
+          <li><a [routerLink]="['/vendite']"><i class="bi bi-shop"></i>Le mie Vendite</a></li>
           <li><a [routerLink]="['/carrello']"><i class="bi bi-cart3"></i>Carrello</a></li>
         </ul>
         <h6 class="pw-footer-heading mt-4">Supporto</h6>

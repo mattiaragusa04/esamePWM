@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS indirizzo(
     provincia TEXT NOT NULL,
     paese TEXT NOT NULL,
     cap TEXT NOT NULL,
+    salvato INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY (utente_id) REFERENCES utente(id)
 );
 CREATE TABLE IF NOT EXISTS categoria (
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS carta_di_credito (
     nome_titolare TEXT NOT NULL,
     data_scadenza TEXT NOT NULL,
     cvv TEXT,
+    salvato INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY (utente_id) REFERENCES utente(id)
 );
 CREATE TABLE IF NOT EXISTS ordine (
@@ -79,6 +81,7 @@ CREATE TABLE IF NOT EXISTS composto (
     ordine_id INTEGER,
     prodotto_id INTEGER,
     quantita INTEGER NOT NULL,
+    pagato_con_punti INTEGER DEFAULT 0,
     prezzoUnitario REAL NOT NULL,
     PRIMARY KEY (ordine_id, prodotto_id),
     FOREIGN KEY (ordine_id) REFERENCES ordine(id),
@@ -116,7 +119,7 @@ CREATE TABLE IF NOT EXISTS Coupon (
     data_scadenza DATE,
     utilizzi_massimi INTEGER,
     utilizzi_attuali INTEGER DEFAULT 0,
-    attivo INTEGER DEFAULT 1,   
+    attivo INTEGER DEFAULT 1,
     costo_punti INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -137,6 +140,8 @@ CREATE TABLE IF NOT EXISTS vendi (
     data_offerta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_aggiornamento_stato TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     note_amministratore TEXT,
+    tipo_compenso TEXT NOT NULL DEFAULT 'euro',
+    punti_offerti INTEGER DEFAULT 0,
     FOREIGN KEY (utente_id) REFERENCES utente(id),
     FOREIGN KEY (prodotto_id) REFERENCES prodotto(id)
 );
@@ -152,5 +157,33 @@ CREATE TABLE IF NOT EXISTS messaggio_contatto (
     data TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `);
+
+// Migration: aggiunge colonna 'salvato' a carta_di_credito se non esiste
+db.run(`ALTER TABLE carta_di_credito ADD COLUMN salvato INTEGER NOT NULL DEFAULT 1`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+        console.error('Migration carta_di_credito.salvato:', err.message);
+    }
+});
+
+// Migration: aggiunge colonna 'salvato' a indirizzo se non esiste
+db.run(`ALTER TABLE indirizzo ADD COLUMN salvato INTEGER NOT NULL DEFAULT 1`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+        console.error('Migration indirizzo.salvato:', err.message);
+    }
+});
+
+// Migration: aggiunge colonna 'tipo_compenso' a vendi se non esiste (valori: 'euro' | 'punti')
+db.run(`ALTER TABLE vendi ADD COLUMN tipo_compenso TEXT NOT NULL DEFAULT 'euro'`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+        console.error('Migration vendi.tipo_compenso:', err.message);
+    }
+});
+
+// Migration: aggiunge colonna 'punti_offerti' a vendi se non esiste
+db.run(`ALTER TABLE vendi ADD COLUMN punti_offerti INTEGER DEFAULT 0`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+        console.error('Migration vendi.punti_offerti:', err.message);
+    }
+});
 
 module.exports = db;

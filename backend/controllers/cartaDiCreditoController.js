@@ -35,14 +35,17 @@ exports.getCarteByUserId = async (req, res) => {
 exports.createCarta = async (req, res) => {
     try {
         const userId = req.user.id;
-        // Mappiamo i campi in arrivo dal frontend ai nomi delle colonne nel database
         const numCarta = req.body.numeroCarta || req.body.numero_carta;
+        // Il frontend passa salvaCarta (true/false), lo convertiamo in 0/1 per SQLite
+        // Default 1 (salvata) se il campo non viene inviato (es. da altre parti dell'app)
+        const salvato = req.body.salvaCarta === false || req.body.salvato === 0 ? 0 : 1;
         const cartaData = {
             utente_id: userId,
             numero_carta: numCarta ? numCarta.replace(/\s+/g, '') : '',
             nome_titolare: req.body.nomeCarta || req.body.nome_titolare,
             data_scadenza: req.body.scadenza || req.body.data_scadenza,
-            cvv: req.body.cvv
+            cvv: req.body.cvv,
+            salvato
         };
         const newCart = await cartaDiCredito.create(cartaData);
         res.json(newCart);
@@ -67,13 +70,9 @@ exports.updateCarta = async (req, res) => {
 exports.deleteCarta = async (req, res) => {
     try {
         const cartId = req.params.id;
-        const deletedCart = await cartaDiCredito.delete(cartId);
-        res.json(deletedCart);
+        const result = await cartaDiCredito.delete(cartId);
+        res.json(result);
     } catch (err) {
-        // Controlla se l'errore è dovuto al fatto che la carta è usata in un ordine
-        if (err.message && err.message.includes("FOREIGN KEY constraint failed")) {
-            return res.status(400).json({ error: "Impossibile eliminare questa carta perché è associata a uno o più ordini passati." });
-        }
         res.status(500).json({ error: err.message });
     }
 };

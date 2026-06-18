@@ -5,11 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { ToastService } from '../shared/toast.service';
-// Interfaccia per il prodotto, riutilizzata dal componente Prodotti
+
 export interface Prodotto {
   id: number;
   categoria_id: number;
-  categoria_nome: string; // Aggiunto: nome della categoria per la logica di filtro
+  categoria_nome: string;
   nome: string;
   descrizione: string;
   giacenza: number;
@@ -19,21 +19,19 @@ export interface Prodotto {
   pubblicatoAcquisto: boolean;
   pubblicatoVetrina: boolean;
   condizione: string;
-  puntiFedelta: number; // Nuovo campo per i punti fedeltà
+  puntiFedelta: number;
 }
 
-// Interfaccia per le opzioni di condizione
 interface ConditionOption {
   value: string;
   label: string;
-  adjustment: number; // Percentuale di aggiustamento al prezzo base (es. 0 per nessun cambiamento, -0.05 per -5%)
+  adjustment: number;
 }
 
-// Interfaccia per le categorie di condizione
 interface ConditionCategory {
   name: string;
   options: ConditionOption[];
-  selectedValue: string; // Opzione selezionata per questa categoria
+  selectedValue: string;
 }
 
 @Component({
@@ -51,7 +49,14 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
   estimatedPrice: number = 0;
   selectedFiles: File[] = [];
 
-  // Definizione delle categorie di condizione e delle loro opzioni
+  // Scelta compenso
+  tipoCompenso: 'euro' | 'punti' = 'euro';
+  // Punti calcolati: Math.round(prezzo_stimato / 5) + 5
+  puntiFedeltatOfferti: number = 0;
+  // Indica se l'utente ha almeno una carta salvata
+  haCartaDiCredito: boolean = false;
+  isLoadingCarte: boolean = false;
+
   allConditionCategories: { [key: string]: ConditionCategory[] } = {
     'Videogiochi': [
       {
@@ -76,7 +81,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
         name: 'Condizioni Manuale e Inserti',
         options: [
           { value: 'completo', label: 'Presente e integro', adjustment: 0 },
-        { value: 'mancante', label: 'Mancante', adjustment: -0.05 }
+          { value: 'mancante', label: 'Mancante', adjustment: -0.05 }
         ],
         selectedValue: 'completo'
       }
@@ -84,73 +89,72 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
     'Console': [
       {
         name: 'Stato Estetico Console',
-      options: [
-        { value: 'pari_nuovo', label: 'Pari al nuovo', adjustment: 0 },
-        { value: 'usato_ottimo', label: 'Ottimo (Segni minimi)', adjustment: -0.10 },
-        { value: 'usato_segni', label: 'Usato (Graffi visibili)', adjustment: -0.20 }
-      ],
-      selectedValue: 'pari_nuovo'
-    },
-    {
-      name: 'Funzionamento Tecnico',
-      options: [
-        { value: 'perfetto', label: 'Testata e funzionante', adjustment: 0 },
-        { value: 'problemi_minori', label: 'Difetti minori (Esempio: porte USB)', adjustment: -0.30 },
-        { value: 'non_funzionante', label: 'Non funzionante / Per parti', adjustment: -0.70 }
-      ],
-      selectedValue: 'perfetto'
-    },
-    {
-      name: 'Cavi e Controller originali',
-      options: [
-        { value: 'tutti', label: 'Tutti inclusi', adjustment: 0 },
-        { value: 'parziali', label: 'Alcuni mancanti', adjustment: -0.15 }
-      ],
-      selectedValue: 'tutti'
-    }
-  ],
-  'Accessori': [
-    {
-      name: 'Condizioni Estetiche',
-      options: [
-        { value: 'ottime', label: 'Ottime', adjustment: 0 },
-        { value: 'buone', label: 'Buone (Segni d\'usura)', adjustment: -0.15 },
-        { value: 'usurato', label: 'Molto usurato (Esempio: gommini analogici)', adjustment: -0.30 }
-      ],
-      selectedValue: 'ottime'
-    },
-    {
-      name: 'Funzionamento Tasti/Sensori',
-      options: [
-        { value: 'perfetto', label: 'Perfetto', adjustment: 0 },
-        { value: 'drift_difetti', label: 'Difetti (Esempio: Drift analogico)', adjustment: -0.50 }
-      ],
-      selectedValue: 'perfetto'
-    }
-  ],
-  'Elettronica': [
-    {
-      name: 'Stato Estetico (Hardware)',
-      options: [
-        { value: 'perfetto', label: 'Perfetto / Come nuovo', adjustment: 0 },
-        { value: 'buono', label: 'Buono (Graffi superficiali)', adjustment: -0.10 },
-        { value: 'usurato', label: 'Usurato (Segni evidenti)', adjustment: -0.25 }
-      ],
-      selectedValue: 'perfetto'
-    },
-    {
-      name: 'Funzionamento Hardware',
-      options: [
-        { value: 'funzionante', label: 'Testato e funzionante', adjustment: 0 },
-        { value: 'problemi', label: 'Difetti funzionali', adjustment: -0.50 }
-      ],
-      selectedValue: 'funzionante'
-    }
-  ]
-};
+        options: [
+          { value: 'pari_nuovo', label: 'Pari al nuovo', adjustment: 0 },
+          { value: 'usato_ottimo', label: 'Ottimo (Segni minimi)', adjustment: -0.10 },
+          { value: 'usato_segni', label: 'Usato (Graffi visibili)', adjustment: -0.20 }
+        ],
+        selectedValue: 'pari_nuovo'
+      },
+      {
+        name: 'Funzionamento Tecnico',
+        options: [
+          { value: 'perfetto', label: 'Testata e funzionante', adjustment: 0 },
+          { value: 'problemi_minori', label: 'Difetti minori (Esempio: porte USB)', adjustment: -0.30 },
+          { value: 'non_funzionante', label: 'Non funzionante / Per parti', adjustment: -0.70 }
+        ],
+        selectedValue: 'perfetto'
+      },
+      {
+        name: 'Cavi e Controller originali',
+        options: [
+          { value: 'tutti', label: 'Tutti inclusi', adjustment: 0 },
+          { value: 'parziali', label: 'Alcuni mancanti', adjustment: -0.15 }
+        ],
+        selectedValue: 'tutti'
+      }
+    ],
+    'Accessori': [
+      {
+        name: 'Condizioni Estetiche',
+        options: [
+          { value: 'ottime', label: 'Ottime', adjustment: 0 },
+          { value: 'buone', label: 'Buone (Segni d\'usura)', adjustment: -0.15 },
+          { value: 'usurato', label: 'Molto usurato (Esempio: gommini analogici)', adjustment: -0.30 }
+        ],
+        selectedValue: 'ottime'
+      },
+      {
+        name: 'Funzionamento Tasti/Sensori',
+        options: [
+          { value: 'perfetto', label: 'Perfetto', adjustment: 0 },
+          { value: 'drift_difetti', label: 'Difetti (Esempio: Drift analogico)', adjustment: -0.50 }
+        ],
+        selectedValue: 'perfetto'
+      }
+    ],
+    'Elettronica': [
+      {
+        name: 'Stato Estetico (Hardware)',
+        options: [
+          { value: 'perfetto', label: 'Perfetto / Come nuovo', adjustment: 0 },
+          { value: 'buono', label: 'Buono (Graffi superficiali)', adjustment: -0.10 },
+          { value: 'usurato', label: 'Usurato (Segni evidenti)', adjustment: -0.25 }
+        ],
+        selectedValue: 'perfetto'
+      },
+      {
+        name: 'Funzionamento Hardware',
+        options: [
+          { value: 'funzionante', label: 'Testato e funzionante', adjustment: 0 },
+          { value: 'problemi', label: 'Difetti funzionali', adjustment: -0.50 }
+        ],
+        selectedValue: 'funzionante'
+      }
+    ]
+  };
 
-
-  currentConditionCategories: ConditionCategory[] = []; // Questo array conterrà le categorie di condizione attuali
+  currentConditionCategories: ConditionCategory[] = [];
 
   private routeSub: Subscription | undefined;
 
@@ -158,7 +162,9 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router, private toast: ToastService) {}
+    private router: Router,
+    private toast: ToastService
+  ) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -167,6 +173,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
         if (id) {
           this.prodottoId = +id;
           this.caricaProdotto(this.prodottoId);
+          this.verificaCartaDiCredito();
         } else {
           this.errorMessage = 'ID prodotto non fornito.';
         }
@@ -176,6 +183,35 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeSub?.unsubscribe();
+  }
+
+  async verificaCartaDiCredito() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.haCartaDiCredito = false;
+      return;
+    }
+    this.isLoadingCarte = true;
+    try {
+      const response = await fetch('http://localhost:3000/api/carte/utente', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const carte = await response.json();
+        this.haCartaDiCredito = Array.isArray(carte) && carte.length > 0;
+      } else {
+        this.haCartaDiCredito = false;
+      }
+    } catch {
+      this.haCartaDiCredito = false;
+    } finally {
+      this.isLoadingCarte = false;
+      // Se non ha carta, forza la scelta a 'punti'
+      if (!this.haCartaDiCredito) {
+        this.tipoCompenso = 'punti';
+      }
+      this.cdr.detectChanges();
+    }
   }
 
   async caricaProdotto(id: number) {
@@ -189,19 +225,15 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
         const data = await response.json();
         this.prodotto = data;
 
-        // Determina quale set di condizioni visualizzare in base alla categoria del prodotto
         const categoryName = this.prodotto?.categoria_nome;
-        console.log('DEBUG: Categoria del prodotto caricato:', categoryName); // Aggiunto per debugging
         if (categoryName && this.allConditionCategories[categoryName]) {
-          // Deep copy per assicurare che ogni prodotto abbia il proprio set mutabile di valori selezionati
           this.currentConditionCategories = JSON.parse(JSON.stringify(this.allConditionCategories[categoryName]));
         } else {
           this.errorMessage = 'Categoria prodotto non riconosciuta o non supportata per la valutazione.';
-          this.prodotto = null; // Impedisce la visualizzazione del prodotto se la categoria non è supportata
+          this.prodotto = null;
         }
 
-        this.calculateEstimatedPrice(); // Calcola il prezzo iniziale dopo aver impostato le condizioni
-        console.log('Prodotto caricato per la valutazione:', this.prodotto);
+        this.calculateEstimatedPrice();
       } else {
         this.errorMessage = 'Errore nel recupero del prodotto.';
       }
@@ -221,28 +253,28 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
   calculateEstimatedPrice() {
     if (!this.prodotto) {
       this.estimatedPrice = 0;
+      this.puntiFedeltatOfferti = 0;
       return;
     }
 
-    // Prezzo base: 40% in meno rispetto al prezzo di vendita originale
-    let basePrice = this.prodotto.prezzoUnitarioVendita * 0.60; // 60% del valore originale
+    let basePrice = this.prodotto.prezzoUnitarioVendita * 0.60;
 
     let totalAdjustment = 0;
-    this.currentConditionCategories.forEach(category => { // Usa currentConditionCategories
+    this.currentConditionCategories.forEach(category => {
       const selectedOption = category.options.find(opt => opt.value === category.selectedValue);
       if (selectedOption) {
         totalAdjustment += selectedOption.adjustment;
       }
     });
 
-    // Applica l'aggiustamento totale al prezzo base
-    // Assicurati che totalAdjustment non renda il prezzo negativo o troppo alto
-    totalAdjustment = Math.max(-0.99, Math.min(0.50, totalAdjustment)); // Limita gli aggiustamenti
-
+    totalAdjustment = Math.max(-0.99, Math.min(0.50, totalAdjustment));
     this.estimatedPrice = basePrice * (1 + totalAdjustment);
-
-    // Arrotondamento al 0.50 più vicino (es. 28.42 -> 28.50, 28.04 -> 28.00)
     this.estimatedPrice = Math.max(0, Math.round(this.estimatedPrice * 2) / 2);
+
+    // Calcola punti: Math.round(prezzo / 5) + 5
+    this.puntiFedeltatOfferti = Math.round(this.estimatedPrice / 5) + 5;
+
+    this.cdr.detectChanges();
   }
 
   onFileSelected(event: any) {
@@ -265,18 +297,17 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Prepara i dati da inviare al backend
     const offerData = {
       prodottoId: this.prodotto.id,
       estimatedPrice: this.estimatedPrice,
-      conditions: this.currentConditionCategories.map(cat => ({ // Invia solo le condizioni attuali
+      tipoCompenso: this.tipoCompenso,
+      conditions: this.currentConditionCategories.map(cat => ({
         category: cat.name,
         selectedOption: cat.selectedValue
       }))
     };
 
     try {
-      // Questo sarà un nuovo endpoint backend per inviare un'offerta di vendita
       const response = await fetch('http://localhost:3000/api/vendi/offerta', {
         method: 'POST',
         headers: {
@@ -287,11 +318,13 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       });
 
       if (response.ok) {
-        this.toast.success(`Offerta di vendita per "${this.prodotto.nome}" inviata con successo! Prezzo stimato: €${this.estimatedPrice.toFixed(2)}. Riceverai una conferma a breve.`);
-        this.router.navigate(['/']); // Reindirizza alla home o a una pagina "le mie offerte"
+        const compensoMsg = this.tipoCompenso === 'punti'
+          ? `${this.puntiFedeltatOfferti} punti fedeltà`
+          : `€${this.estimatedPrice.toFixed(2)}`;
+        this.toast.success(`Offerta per "${this.prodotto.nome}" inviata! Compenso proposto: ${compensoMsg}. Riceverai una conferma a breve.`);
+        this.router.navigate(['/profilo/vendite']);
       } else {
         const errorData = await response.json();
-        console.error("Dettagli errore backend (offerta di vendita):", errorData);
         this.toast.error(`Errore nell'invio dell'offerta: ${errorData.error || errorData.message || 'Sconosciuto'}`);
       }
     } catch (error) {
@@ -301,6 +334,6 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
   }
 
   handleImageError(event: any) {
-    event.target.src = 'https://via.placeholder.com/300?text=No+Image'; // Immagine di fallback
+    event.target.src = 'https://via.placeholder.com/300?text=No+Image';
   }
 }

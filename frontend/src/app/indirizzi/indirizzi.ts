@@ -16,6 +16,9 @@ export class Indirizzi implements OnInit {
   mostraForm: boolean = false;
   isSaving: boolean = false;
 
+  // ID dell'indirizzo in attesa di conferma eliminazione (null = nessuno)
+  indirizzoInAttesaEliminazione: number | null = null;
+
   indirizzoForm: FormGroup;
 
   constructor(
@@ -94,19 +97,39 @@ export class Indirizzi implements OnInit {
     }
   }
 
+  /** Primo click: mostra la conferma inline sulla card */
+  chiediConfermaEliminaIndirizzo(id: number) {
+    this.indirizzoInAttesaEliminazione = id;
+    this.cdr.detectChanges();
+  }
+
+  /** L'utente annulla la conferma */
+  annullaEliminaIndirizzo() {
+    this.indirizzoInAttesaEliminazione = null;
+    this.cdr.detectChanges();
+  }
+
+  /** Secondo click: elimina davvero */
   async eliminaIndirizzo(id: number) {
-    if (!confirm('Vuoi davvero rimuovere questo indirizzo?')) return;
+    this.indirizzoInAttesaEliminazione = null;
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:3000/api/indirizzo/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (response.ok) {
-      this.indirizzi = this.indirizzi.filter(i => i.id !== id);
+    try {
+      const response = await fetch(`http://localhost:3000/api/indirizzo/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        this.indirizzi = this.indirizzi.filter(i => i.id !== id);
+        this.toast.success('Indirizzo eliminato.');
+      } else {
+        const errData = await response.json();
+        this.toast.error(errData.error || 'Impossibile eliminare l\'indirizzo.');
+      }
+    } catch (error) {
+      console.error(error);
+      this.toast.error('Errore di connessione al server.');
+    } finally {
       this.cdr.detectChanges();
-    } else {
-      const errData = await response.json();
-      this.toast.error(errData.error || 'Impossibile eliminare l\'indirizzo.');
     }
   }
 }

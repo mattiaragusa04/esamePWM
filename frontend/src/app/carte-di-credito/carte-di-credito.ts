@@ -47,6 +47,9 @@ export class CarteDiCredito implements OnInit {
   mostraForm: boolean = false;
   isSaving: boolean = false;
 
+  // ID della carta in attesa di conferma eliminazione (null = nessuna)
+  cartaInAttesaEliminazione: number | null = null;
+
   cartaForm: FormGroup;
 
   constructor(
@@ -158,19 +161,39 @@ export class CarteDiCredito implements OnInit {
     }
   }
 
+  /** Primo click: mostra la conferma inline sulla carta */
+  chiediConfermaEliminaCarta(id: number) {
+    this.cartaInAttesaEliminazione = id;
+    this.cdr.detectChanges();
+  }
+
+  /** L'utente annulla la conferma */
+  annullaEliminaCarta() {
+    this.cartaInAttesaEliminazione = null;
+    this.cdr.detectChanges();
+  }
+
+  /** Secondo click: elimina davvero */
   async eliminaCarta(id: number) {
-    if (!confirm('Vuoi davvero rimuovere questa carta dal tuo account?')) return;
+    this.cartaInAttesaEliminazione = null;
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:3000/api/carta/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (response.ok) {
-      this.carte = this.carte.filter(c => c.id !== id);
+    try {
+      const response = await fetch(`http://localhost:3000/api/carta/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        this.carte = this.carte.filter(c => c.id !== id);
+        this.toast.success('Carta rimossa con successo.');
+      } else {
+        const errData = await response.json();
+        this.toast.error(errData.error || 'Impossibile eliminare la carta.');
+      }
+    } catch (error) {
+      console.error(error);
+      this.toast.error('Errore di connessione al server.');
+    } finally {
       this.cdr.detectChanges();
-    } else {
-      const errData = await response.json();
-      this.toast.error(errData.error || "Impossibile eliminare la carta.");
     }
   }
 }

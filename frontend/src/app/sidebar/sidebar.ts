@@ -18,6 +18,7 @@ export class Sidebar implements OnInit, OnDestroy {
   private readonly COLLAPSE_BREAKPOINT = 992;
   private autoCollapsed: boolean = false;
   private punteSub?: Subscription;
+  private readonly API_PROFILE = 'http://localhost:3000/api/auth/profile';
 
   constructor(
     private router: Router,
@@ -41,7 +42,7 @@ export class Sidebar implements OnInit, OnDestroy {
 
       setTimeout(() => { this.isAnimationEnabled = true; }, 50);
 
-      // ── Subscribe al BehaviorSubject: aggiorna utente.puntiFedelta in real-time
+      // Subscribe al BehaviorSubject: aggiorna utente.puntiFedelta in real-time
       this.punteSub = this.puntiService.punti$.subscribe(punti => {
         if (!this.utente) {
           const raw = localStorage.getItem('user');
@@ -52,8 +53,12 @@ export class Sidebar implements OnInit, OnDestroy {
         }
       });
 
-      // ── StorageEvent: intercetta modifiche fatte da altre schede / dal pannello admin
+      // StorageEvent: intercetta modifiche fatte da altre schede
       window.addEventListener('storage', this.onStorage);
+
+      // FIX: sincronizza i punti reali dal server al mount,
+      // così i punti modificati dall'admin sono sempre aggiornati.
+      this.sincronizzaPuntiDalServer();
     }
   }
 
@@ -64,7 +69,30 @@ export class Sidebar implements OnInit, OnDestroy {
     }
   }
 
-  /** Ricarica i punti quando il localStorage 'user' cambia da un'altra tab/admin */
+  /** Recupera il profilo aggiornato dal server e allinea PuntiService + localStorage */
+  private sincronizzaPuntiDalServer(): void {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch(this.API_PROFILE, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => res.ok ? res.json() : null)
+      .then(utenteFresco => {
+        if (!utenteFresco) return;
+        const punti = utenteFresco.puntiFedelta ?? utenteFresco.punti_fedelta ?? 0;
+        // Aggiorna localStorage con i dati freschi
+        const raw = localStorage.getItem('user');
+        if (raw) {
+          const u = JSON.parse(raw);
+          u.puntiFedelta  = punti;
+          u.punti_fedelta = punti;
+          localStorage.setItem('user', JSON.stringify(u));
+        }
+        // Propaga a tutti i subscriber tramite PuntiService
+        this.puntiService.aggiorna(punti);
+      })
+      .catch(() => { /* fail silenzioso: mantiene il valore dal localStorage */ });
+  }
+
+  /** Ricarica i punti quando il localStorage 'user' cambia da un'altra tab */
   private onStorage = (e: StorageEvent) => {
     if (e.key === 'user' && e.newValue) {
       try {
@@ -87,9 +115,9 @@ export class Sidebar implements OnInit, OnDestroy {
   /** Livelli fedeltà: Bronze 0-99, Silver 100-299, Gold 300-699, Platinum 700+ */
   private get livelli() {
     return [
-      { nome: 'Bronze',   min: 0,   max: 99  },
-      { nome: 'Silver',   min: 100, max: 299 },
-      { nome: 'Gold',     min: 300, max: 699 },
+      { nome: 'Bronze',   min: 0,   max: 99   },
+      { nome: 'Silver',   min: 100, max: 299  },
+      { nome: 'Gold',     min: 300, max: 699  },
       { nome: 'Platinum', min: 700, max: 9999 },
     ];
   }

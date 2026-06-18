@@ -53,7 +53,8 @@ export class FedeltaComponent implements OnInit {
   mostraConferma = false;
   acquistando = false;
 
-  private readonly API = 'http://localhost:3000/api/coupon';
+  private readonly API         = 'http://localhost:3000/api/coupon';
+  private readonly API_PROFILE = 'http://localhost:3000/api/auth/profile';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -64,14 +65,47 @@ export class FedeltaComponent implements OnInit {
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    this.puntiFedelta = this.puntiService.valore ?? 0;
-    this.caricaPresetCoupon();
-    this.caricaCatalogoCoupon();
-    this.caricaProdottiUsati();
+    // FIX: carica i punti freschi dal server invece di fidarsi solo del valore
+    // in-memory del PuntiService (che potrebbe essere obsoleto dopo una modifica admin).
+    this.caricaPuntiFreschi().then(() => {
+      this.caricaPresetCoupon();
+      this.caricaCatalogoCoupon();
+      this.caricaProdottiUsati();
+    });
   }
 
   private getToken(): string {
     return localStorage.getItem('token') || '';
+  }
+
+  /** Recupera i punti aggiornati dal server e allinea PuntiService + localStorage */
+  private async caricaPuntiFreschi(): Promise<void> {
+    const token = this.getToken();
+    if (!token) return;
+    try {
+      const res = await fetch(this.API_PROFILE, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const utente = await res.json();
+        const punti = utente.puntiFedelta ?? utente.punti_fedelta ?? 0;
+        this.puntiFedelta = punti;
+        this.puntiService.aggiorna(punti);
+        // Aggiorna anche localStorage per mantenere coerenza
+        const raw = localStorage.getItem('user');
+        if (raw) {
+          const u = JSON.parse(raw);
+          u.puntiFedelta  = punti;
+          u.punti_fedelta = punti;
+          localStorage.setItem('user', JSON.stringify(u));
+        }
+      }
+    } catch (e) {
+      // Fallback: usa il valore già in memoria
+      this.puntiFedelta = this.puntiService.valore ?? 0;
+    } finally {
+      this.cdr.detectChanges();
+    }
   }
 
   async caricaPresetCoupon() {
@@ -242,7 +276,7 @@ export class FedeltaComponent implements OnInit {
   }
 
   getCopiaAbbreviata(codice: string): string {
-    return codice.length > 20 ? codice.substring(0, 20) + '…' : codice;
+    return codice.length > 20 ? codice.substring(0, 20) + '\u2026' : codice;
   }
 
   getImmagineProdotto(immagine: string): string {

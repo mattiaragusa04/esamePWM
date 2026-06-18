@@ -1457,3 +1457,36 @@ body.theme-dark .badge-condizione.badge-esaurito {
 body.theme-dark .product-card .out-of-stock-corner-badge {
   box-shadow: 0 6px 22px rgba(15, 23, 42, 0.6);
 }
+
+/* ============================================================
+   DARK MODE — FIX SCHERMATE BIANCHE
+   Forza background #0f172a su tutti i wrapper di pagina custom
+   e su main/app-root per catturare layout non nominati.
+   Nessun CSS di componente toccato — soluzione centralizzata.
+   ============================================================ */
+
+body.theme-dark main,
+body.theme-dark app-root > *,
+body.theme-dark section,
+body.theme-dark .profilo-page,
+body.theme-dark .ordini-wrapper,
+body.theme-dark .vendi-page,
+body.theme-dark .carrello-page,
+body.theme-dark .preferiti-wrapper,
+body.theme-dark .pagamento-page,
+body.theme-dark .fedelta-page,
+body.theme-dark .contattaci-page,
+body.theme-dark .ricerca-page,
+body.theme-dark .dettagli-page {
+  background-color: #0f172a !important;
+  color: #e5e7eb !important;
+}
+
+/* Pattern generici: *-page, *-wrapper, *-container, *-section */
+body.theme-dark [class$="-page"],
+body.theme-dark [class$="-wrapper"],
+body.theme-dark [class$="-container"],
+body.theme-dark [class$="-section"] {
+  background-color: #0f172a !important;
+  color: #e5e7eb !important;
+}

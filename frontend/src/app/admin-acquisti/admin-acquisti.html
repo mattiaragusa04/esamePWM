@@ -6,7 +6,7 @@
         </div>
     </div>
 
-    <!-- Barra di ricerca + filtro stato -->
+    <!-- Barra di ricerca + filtri -->
     <div class="d-flex flex-wrap gap-3 align-items-center mb-4" *ngIf="!isLoading && !errorMessage">
         <div class="input-group" style="max-width: 380px;">
             <span class="input-group-text bg-white border-end-0 rounded-pill-start">
@@ -16,7 +16,7 @@
                 type="text"
                 class="form-control border-start-0 ps-0"
                 style="border-radius: 0 2rem 2rem 0;"
-                placeholder="Cerca per ID offerta o utente..."
+                placeholder="Cerca per ID, utente o prodotto..."
                 [(ngModel)]="searchQuery"
                 (ngModelChange)="filtraOfferte()"
             >
@@ -46,7 +46,22 @@
                 (click)="filtroStato = 'Rifiutata'; filtraOfferte()">Rifiutata</button>
         </div>
 
-        <small class="text-muted" *ngIf="searchQuery || filtroStato">
+        <!-- Filtro per tipo compenso -->
+        <div class="btn-group" role="group">
+            <button class="btn btn-sm rounded-pill me-1 font-weight-bold"
+                [ngClass]="filtroCompenso === '' ? 'btn-info text-white' : 'btn-outline-secondary'"
+                (click)="filtroCompenso = ''; filtraOfferte()">Tutti</button>
+            <button class="btn btn-sm rounded-pill me-1 font-weight-bold"
+                [ngClass]="filtroCompenso === 'euro' ? 'btn-success' : 'btn-outline-secondary'"
+                (click)="filtroCompenso = 'euro'; filtraOfferte()">
+                <i class="bi bi-currency-euro me-1"></i>Euro</button>
+            <button class="btn btn-sm rounded-pill font-weight-bold"
+                [ngClass]="filtroCompenso === 'punti' ? 'btn-warning text-dark' : 'btn-outline-secondary'"
+                (click)="filtroCompenso = 'punti'; filtraOfferte()">
+                <i class="bi bi-star-fill me-1"></i>Punti</button>
+        </div>
+
+        <small class="text-muted" *ngIf="searchQuery || filtroStato || filtroCompenso">
             {{ offerteFiltrate.length }} risultat{{ offerteFiltrate.length === 1 ? 'o' : 'i' }} su {{ offerte.length }} offerte
         </small>
     </div>
@@ -70,7 +85,8 @@
                         <th scope="col" class="ps-4">ID</th>
                         <th scope="col">Utente</th>
                         <th scope="col">Prodotto</th>
-                        <th scope="col">Prezzo Stimato</th>
+                        <th scope="col">Compenso</th>
+                        <th scope="col">Valore Offerta</th>
                         <th scope="col">Data Offerta</th>
                         <th scope="col">Stato</th>
                         <th scope="col" class="text-center">Azioni</th>
@@ -78,16 +94,41 @@
                 </thead>
                 <tbody>
                     <tr *ngIf="offerteFiltrate.length === 0">
-                        <td colspan="7" class="text-center py-5 text-muted">
+                        <td colspan="8" class="text-center py-5 text-muted">
                             <i class="bi bi-inbox me-2"></i>
-                            {{ searchQuery || filtroStato ? 'Nessuna offerta trovata.' : 'Nessuna offerta di vendita ricevuta.' }}
+                            {{ searchQuery || filtroStato || filtroCompenso ? 'Nessuna offerta trovata.' : 'Nessuna offerta di vendita ricevuta.' }}
                         </td>
                     </tr>
                     <tr *ngFor="let offerta of offerteFiltrate">
                         <td class="ps-4 font-weight-bold text-secondary">#{{ offerta.id }}</td>
-                        <td><span class="badge bg-light text-dark border">Utente #{{ offerta.utente_id }}</span></td>
-                        <td><span class="badge bg-light text-dark border">Prodotto #{{ offerta.prodotto_id }}</span></td>
-                        <td class="font-weight-bold text-danger">{{ offerta.prezzo_stimato | currency:'EUR':'symbol' }}</td>
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                #{{ offerta.utente_id }}
+                                <span *ngIf="offerta.nome_utente"> — {{ offerta.nome_utente }} {{ offerta.cognome_utente }}</span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                #{{ offerta.prodotto_id }}
+                                <span *ngIf="offerta.nome_prodotto"> — {{ offerta.nome_prodotto }}</span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill"
+                                [ngClass]="offerta.tipo_compenso === 'punti' ? 'bg-warning text-dark' : 'bg-success'">
+                                <i class="bi me-1" [ngClass]="offerta.tipo_compenso === 'punti' ? 'bi-star-fill' : 'bi-currency-euro'"></i>
+                                {{ offerta.tipo_compenso === 'punti' ? 'Punti' : 'Euro' }}
+                            </span>
+                        </td>
+                        <td class="font-weight-bold">
+                            <span *ngIf="offerta.tipo_compenso !== 'punti'" class="text-success">
+                                {{ offerta.prezzo_stimato | currency:'EUR':'symbol' }}
+                            </span>
+                            <span *ngIf="offerta.tipo_compenso === 'punti'" class="text-warning">
+                                {{ calcolaPuntiStimati(offerta.prezzo_stimato) }} pt
+                                <small class="text-muted d-block" style="font-size:0.75rem;">(€{{ offerta.prezzo_stimato | number:'1.2-2' }} base)</small>
+                            </span>
+                        </td>
                         <td class="text-muted small">{{ offerta.data_offerta | date:'dd/MM/yyyy HH:mm' }}</td>
                         <td>
                             <span class="badge rounded-pill"
@@ -122,23 +163,44 @@
                     <button type="button" class="btn-close" (click)="chiudiModale()"></button>
                 </div>
                 <div class="modal-body p-4">
+
+                    <!-- Riepilogo schede -->
                     <div class="row g-3 mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="card border-0 bg-light rounded-3 p-3 text-center">
                                 <small class="text-muted">Utente</small>
                                 <div class="font-weight-bold">#{{ offertaSelezionata.utente_id }}</div>
+                                <small *ngIf="offertaSelezionata.nome_utente" class="text-muted">{{ offertaSelezionata.nome_utente }} {{ offertaSelezionata.cognome_utente }}</small>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="card border-0 bg-light rounded-3 p-3 text-center">
                                 <small class="text-muted">Prodotto</small>
                                 <div class="font-weight-bold">#{{ offertaSelezionata.prodotto_id }}</div>
+                                <small *ngIf="offertaSelezionata.nome_prodotto" class="text-muted">{{ offertaSelezionata.nome_prodotto }}</small>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="card border-0 bg-light rounded-3 p-3 text-center">
-                                <small class="text-muted">Prezzo Stimato</small>
+                                <small class="text-muted">Prezzo base stimato</small>
                                 <div class="font-weight-bold text-danger">{{ offertaSelezionata.prezzo_stimato | currency:'EUR':'symbol' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 rounded-3 p-3 text-center"
+                                [ngClass]="offertaSelezionata.tipo_compenso === 'punti' ? 'bg-warning bg-opacity-10 border border-warning' : 'bg-success bg-opacity-10 border border-success'">
+                                <small class="text-muted">Tipo compenso</small>
+                                <div class="font-weight-bold mt-1">
+                                    <span *ngIf="offertaSelezionata.tipo_compenso !== 'punti'">
+                                        <i class="bi bi-currency-euro text-success me-1"></i>
+                                        <span class="text-success">{{ offertaSelezionata.prezzo_stimato | currency:'EUR':'symbol' }}</span>
+                                    </span>
+                                    <span *ngIf="offertaSelezionata.tipo_compenso === 'punti'">
+                                        <i class="bi bi-star-fill text-warning me-1"></i>
+                                        <span class="text-warning">{{ calcolaPuntiStimati(offertaSelezionata.prezzo_stimato) }} punti</span>
+                                    </span>
+                                </div>
+                                <small class="text-muted" *ngIf="offertaSelezionata.tipo_compenso === 'punti'">+5 pt bonus inclusi</small>
                             </div>
                         </div>
                     </div>
@@ -147,12 +209,15 @@
                     <div class="mb-4">
                         <h6 class="font-weight-bold border-bottom pb-2">Condizioni dichiarate</h6>
                         <div class="bg-light rounded-3 p-3">
-                            <ng-container *ngIf="condizioniParsed as c">
-                                <div *ngFor="let item of c | keyvalue" class="d-flex justify-content-between py-1 border-bottom">
-                                    <span class="text-muted">{{ item.key }}</span>
-                                    <span class="font-weight-bold">{{ item.value }}</span>
+                            <ng-container *ngIf="condizioniParsed && condizioniParsed.length > 0; else condizioniEmpty">
+                                <div *ngFor="let item of condizioniParsed" class="d-flex justify-content-between py-1 border-bottom">
+                                    <span class="text-muted">{{ item.category }}</span>
+                                    <span class="font-weight-bold">{{ item.selectedOption }}</span>
                                 </div>
                             </ng-container>
+                            <ng-template #condizioniEmpty>
+                                <span class="text-muted small">Nessuna condizione registrata.</span>
+                            </ng-template>
                         </div>
                     </div>
 
@@ -179,14 +244,30 @@
                             </button>
                             <button class="btn btn-success rounded-pill font-weight-bold px-4"
                                 [disabled]="offertaSelezionata.stato_offerta === 'Accettata'"
-                                (click)="aggiornaStato('Accettata')">
+                                (click)="accettaOfferta()">
                                 <i class="bi bi-check-circle-fill me-1"></i> Accetta
+                                <small class="d-block" style="font-size:0.7rem; opacity:0.85;">
+                                    <span *ngIf="offertaSelezionata.tipo_compenso === 'punti'">+{{ calcolaPuntiStimati(offertaSelezionata.prezzo_stimato) }} pt fedeltà</span>
+                                    <span *ngIf="offertaSelezionata.tipo_compenso !== 'punti'">+1 giacenza prodotto</span>
+                                </small>
                             </button>
                             <button class="btn btn-danger rounded-pill font-weight-bold px-4"
                                 [disabled]="offertaSelezionata.stato_offerta === 'Rifiutata'"
                                 (click)="aggiornaStato('Rifiutata')">
                                 <i class="bi bi-x-circle-fill me-1"></i> Rifiuta
                             </button>
+                        </div>
+                        <!-- Avviso logica accettazione -->
+                        <div class="mt-3 alert alert-info border-0 rounded-3 py-2 px-3 small" *ngIf="offertaSelezionata.stato_offerta !== 'Accettata'">
+                            <i class="bi bi-info-circle-fill me-1"></i>
+                            <strong>Accettando</strong> questa offerta:
+                            la giacenza del prodotto verrà incrementata di 1
+                            <span *ngIf="offertaSelezionata.tipo_compenso === 'punti'">
+                                e all'utente verranno accreditati <strong>{{ calcolaPuntiStimati(offertaSelezionata.prezzo_stimato) }} punti fedeltà</strong>.
+                            </span>
+                            <span *ngIf="offertaSelezionata.tipo_compenso !== 'punti'">
+                                e il pagamento in <strong>Euro</strong> dovrà essere elaborato manualmente.
+                            </span>
                         </div>
                     </div>
                 </div>

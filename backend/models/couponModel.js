@@ -2,7 +2,6 @@ const db = require('../db/database');
 
 const Coupon = {
 
-  // Trova un coupon valido per codice (usato sia in validaCoupon che in createOrdine)
   findValidByCodice: (codice) => {
     const oggi = new Date().toISOString().split('T')[0];
     return new Promise((resolve, reject) => {
@@ -45,7 +44,6 @@ const Coupon = {
     });
   },
 
-  // Aggiorna un coupon esistente per id
   update: (id, { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi }) => {
     return new Promise((resolve, reject) => {
       db.run(
@@ -79,7 +77,7 @@ const Coupon = {
       );
     });
   },
-  // Inserisce un coupon generato on-the-fly (acquisto preset o catalogo fedeltà)
+
   createGenerato: ({ codice, valore, descrizione, scadenzaStr }) => {
     return new Promise((resolve, reject) => {
       db.run(
@@ -93,7 +91,6 @@ const Coupon = {
     });
   },
 
-  // Trova coupon fedeltà attivo dal catalogo (costo_punti > 0)
   findFedeltaById: (id) => {
     return new Promise((resolve, reject) => {
       db.get(
@@ -104,7 +101,6 @@ const Coupon = {
     });
   },
 
-  // Catalogo coupon fedeltà attivi (per utente)
   findCatalogoFedelta: () => {
     return new Promise((resolve, reject) => {
       db.all(
@@ -123,7 +119,6 @@ const Coupon = {
     });
   },
 
-  // Decrementa disponibile se non illimitato (-1)
   decrementaDisponibile: (id) => {
     return new Promise((resolve, reject) => {
       db.run(
@@ -134,7 +129,6 @@ const Coupon = {
     });
   },
 
-  // Tutti i coupon fedeltà (admin)
   findAllFedelta: () => {
     return new Promise((resolve, reject) => {
       db.all(
@@ -145,7 +139,6 @@ const Coupon = {
     });
   },
 
-  // Crea coupon fedeltà dal pannello admin
   createFedelta: ({ codice, percentuale, costoInPunti, descrizione, scadenza, disponibile }) => {
     const disp = disponibile !== undefined ? Number(disponibile) : -1;
     return new Promise((resolve, reject) => {
@@ -162,7 +155,6 @@ const Coupon = {
     });
   },
 
-  // Toggle attivo solo su coupon fedeltà (costo_punti > 0)
   toggleFedelta: (id, attivo) => {
     return new Promise((resolve, reject) => {
       db.run(
@@ -173,7 +165,6 @@ const Coupon = {
     });
   },
 
-  // Elimina coupon fedeltà
   deleteFedelta: (id) => {
     return new Promise((resolve, reject) => {
       db.run(
@@ -184,16 +175,16 @@ const Coupon = {
     });
   },
 
-  // Prodotti usati in vetrina (per utente fedeltà)
+  // FIX: rimosso p.usato (colonna inesistente) — il filtro ora usa solo p.condizione = 'Usato'
   findProdottiUsati: () => {
     return new Promise((resolve, reject) => {
       db.all(
         `SELECT p.id, p.nome, p.descrizione, p.prezzoUnitarioVendita,
-                p.immagine, p.giacenza, p.condizione,
+                p.immagine, p.giacenza, p.condizione, p.puntiFedelta,
                 c.denominazione AS categoria_nome
          FROM prodotto p
          LEFT JOIN categoria c ON p.categoria_id = c.id
-         WHERE (p.condizione = 'Usato' OR p.usato = 1)
+         WHERE p.condizione = 'Usato'
            AND p.giacenza > 0
            AND p.pubblicatoVetrina = 1
          ORDER BY p.prezzoUnitarioVendita ASC`,
@@ -203,7 +194,6 @@ const Coupon = {
     });
   },
 
-  // Prodotto singolo con categoria (per acquisto con punti)
   findProdottoById: (id) => {
     return new Promise((resolve, reject) => {
       db.get(
@@ -217,7 +207,6 @@ const Coupon = {
     });
   },
 
-  // Decrementa giacenza prodotto
   decrementaGiacenza: (prodottoId) => {
     return new Promise((resolve, reject) => {
       db.run(
@@ -228,16 +217,16 @@ const Coupon = {
     });
   },
 
-  // Tutti i prodotti usati (admin, include non in vetrina)
+  // FIX: rimosso p.usato (colonna inesistente) — il filtro ora usa solo p.condizione = 'Usato'
   findAllProdottiUsatiAdmin: () => {
     return new Promise((resolve, reject) => {
       db.all(
         `SELECT p.id, p.nome, p.descrizione, p.prezzoUnitarioVendita,
-                p.immagine, p.giacenza, p.condizione, p.pubblicatoVetrina,
+                p.immagine, p.giacenza, p.condizione, p.pubblicatoVetrina, p.puntiFedelta,
                 c.denominazione AS categoria_nome
          FROM prodotto p
          LEFT JOIN categoria c ON p.categoria_id = c.id
-         WHERE (p.condizione = 'Usato' OR p.usato = 1)
+         WHERE p.condizione = 'Usato'
          ORDER BY p.giacenza DESC, p.prezzoUnitarioVendita ASC`,
         [],
         (err, rows) => { if (err) reject(err); else resolve(rows); }

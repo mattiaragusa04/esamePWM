@@ -73,10 +73,7 @@ const Prodotto = {
   create: (prodotto) => {
     return new Promise((resolve, reject) => {
       const query = `INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, genere, condizione, puntiFedelta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      
-      // Calcolo punti fedeltà (1 punto ogni 5 euro, come fatto nel seeding)
       const puntiFedelta = Math.round((prodotto.prezzoUnitarioVendita || 0) / 5);
-
       db.run(query, [
         prodotto.categoria_id,
         prodotto.nome,
@@ -84,7 +81,7 @@ const Prodotto = {
         prodotto.giacenza || 0,
         prodotto.immagine || '',
         prodotto.prezzoUnitarioVendita || 0,
-        1, // pubblicatoVetrina di default a true
+        1,
         prodotto.genere || null,
         prodotto.condizione || 'Nuovo',
         puntiFedelta
@@ -95,7 +92,7 @@ const Prodotto = {
     });
   },
 
-  update : (prodotto) => {
+  update: (prodotto) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE prodotto SET categoria_id = ?, nome = ?, descrizione = ?, giacenza = ?, immagine = ?, prezzoUnitarioVendita = ?, pubblicatoVetrina = ?, genere = ?, condizione = ? WHERE id = ?`;
       db.run(query, [
@@ -114,9 +111,24 @@ const Prodotto = {
         else resolve({ id: prodotto.id, ...prodotto });
       });
     });
+  },
+
+  /**
+   * Ripristina la giacenza di un prodotto sommando la quantità restituita.
+   * Usato quando un ordine viene annullato.
+   */
+  ripristinaGiacenza: (prodottoId, quantita) => {
+    return new Promise((resolve, reject) => {
+      db.run(
+        `UPDATE prodotto SET giacenza = giacenza + ? WHERE id = ?`,
+        [quantita, prodottoId],
+        function (err) {
+          if (err) reject(err);
+          else resolve({ id: prodottoId, changes: this.changes });
+        }
+      );
+    });
   }
 };
-
-
 
 module.exports = Prodotto;

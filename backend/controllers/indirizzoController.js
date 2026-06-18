@@ -30,19 +30,23 @@ exports.getIndirizziByUserId = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-};  
+};
 
 exports.createIndirizzo = async (req, res) => {
     try {
         const userId = req.user.id;
-        const indirizzoData = { 
+        // Il frontend passa salvaIndirizzo (true/false), lo convertiamo in 0/1 per SQLite
+        // Default 1 (salvato) se il campo non viene inviato (es. da altre parti dell'app)
+        const salvato = req.body.salvaIndirizzo === false || req.body.salvato === 0 ? 0 : 1;
+        const indirizzoData = {
             utente_id: userId,
             tipo: req.body.tipo || req.body.tipo_indirizzo,
             via: req.body.via || req.body.via_indirizzo,
             numero_civico: req.body.numero_civico || req.body.civico,
             provincia: req.body.provincia || req.body.provincia_indirizzo,
             paese: req.body.paese || req.body.paese_indirizzo,
-            cap: req.body.cap || req.body.cap_indirizzo
+            cap: req.body.cap || req.body.cap_indirizzo,
+            salvato
         };
         const newIndirizzo = await indirizzo.create(indirizzoData);
         res.json(newIndirizzo);
@@ -54,13 +58,9 @@ exports.createIndirizzo = async (req, res) => {
 exports.deleteIndirizzo = async (req, res) => {
     try {
         const indirizzoId = req.params.id;
-        const deletedIndirizzo = await indirizzo.delete(indirizzoId);
-        res.json(deletedIndirizzo);
-    }catch (err) {
-        // Controlla se l'errore è dovuto al fatto che l'indirizzo è presente in un ordine
-        if (err.message && err.message.includes("FOREIGN KEY constraint failed")) {
-            return res.status(400).json({ error: "Impossibile eliminare questo indirizzo perché è associato a uno o più ordini passati." });
-        }
+        const result = await indirizzo.delete(indirizzoId);
+        res.json(result);
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};

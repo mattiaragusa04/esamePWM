@@ -42,34 +42,42 @@
 
         <div class="text-center">
           <span class="vendita-col-label">Prodotto</span>
-          <span class="vendita-col-value">{{ vendita.nome_prodotto || 'In valutazione' }}</span>
+          <span class="vendita-col-value">{{ vendita.nome_prodotto || 'N/D' }}</span>
         </div>
 
         <div class="text-center">
           <span class="vendita-col-label">Data Offerta</span>
-          <span class="vendita-col-value">{{ vendita.data | date:'dd/MM/yyyy' }}</span>
+          <span class="vendita-col-value">{{ vendita.data_offerta | date:'dd/MM/yyyy' }}</span>
         </div>
 
         <div class="text-center">
           <span class="vendita-col-label">Valore Stimato</span>
-          <span class="vendita-col-value text-pink">{{ vendita.prezzo_stimato | currency:'EUR':'symbol':'1.2-2' }}</span>
+          <!-- Compenso in punti fedeltà -->
+          <span *ngIf="vendita.tipo_compenso === 'punti'" class="vendita-col-value text-pink">
+            <i class="bi bi-star-fill" style="font-size:0.85em;"></i>
+            {{ vendita.punti_offerti }} pt fedeltà
+          </span>
+          <!-- Compenso in euro (default) -->
+          <span *ngIf="vendita.tipo_compenso !== 'punti'" class="vendita-col-value text-pink">
+            {{ vendita.prezzo_stimato | currency:'EUR':'symbol':'1.2-2' }}
+          </span>
         </div>
 
         <div class="text-center">
           <span class="vendita-col-label">Stato</span>
           <span class="badge-stato"
             [ngClass]="{
-              'badge-accettata':   vendita.stato === 'Accettata',
-              'badge-valutazione': vendita.stato === 'In valutazione' || !vendita.stato,
-              'badge-rifiutata':   vendita.stato === 'Rifiutata'
+              'badge-accettata':   vendita.stato_offerta === 'Accettata',
+              'badge-valutazione': vendita.stato_offerta === 'In attesa' || !vendita.stato_offerta,
+              'badge-rifiutata':   vendita.stato_offerta === 'Rifiutata'
             }">
             <i class="bi"
               [ngClass]="{
-                'bi-check-circle-fill': vendita.stato === 'Accettata',
-                'bi-clock-fill':        vendita.stato === 'In valutazione' || !vendita.stato,
-                'bi-x-circle-fill':     vendita.stato === 'Rifiutata'
+                'bi-check-circle-fill': vendita.stato_offerta === 'Accettata',
+                'bi-clock-fill':        vendita.stato_offerta === 'In attesa' || !vendita.stato_offerta,
+                'bi-x-circle-fill':     vendita.stato_offerta === 'Rifiutata'
               }"></i>
-            {{ vendita.stato || 'In valutazione' }}
+            {{ vendita.stato_offerta || 'In attesa' }}
           </span>
         </div>
 

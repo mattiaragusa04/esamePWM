@@ -52,13 +52,22 @@
 
         <div class="text-center">
           <span class="ordine-col-label">Totale</span>
-          <ng-container *ngIf="ordine.totale_scontato != null && ordine.totale_scontato < ordine.totale; else soloTotale">
-            <span class="text-muted text-decoration-line-through small me-1">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
-            <strong class="text-success">{{ ordine.totale_scontato | currency:'EUR':'symbol':'1.2-2' }}</strong>
-            <span class="badge bg-success ms-1 small"><i class="bi bi-tag-fill"></i></span>
+          <!-- Ordine pagato interamente con punti fedeltà -->
+          <ng-container *ngIf="ordine.pagato_con_punti == 1; else totaleNormale">
+            <span class="ordine-col-value fw-bold" style="color:#f59e0b;">
+              <i class="bi bi-star-fill"></i> Punti fedeltà
+            </span>
           </ng-container>
-          <ng-template #soloTotale>
-            <span class="ordine-col-value text-pink">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
+          <!-- Ordine pagato con euro (con o senza coupon) -->
+          <ng-template #totaleNormale>
+            <ng-container *ngIf="ordine.totale_scontato != null && ordine.totale_scontato < ordine.totale; else soloTotale">
+              <span class="text-muted text-decoration-line-through small me-1">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
+              <strong class="text-success">{{ ordine.totale_scontato | currency:'EUR':'symbol':'1.2-2' }}</strong>
+              <span class="badge bg-success ms-1 small"><i class="bi bi-tag-fill"></i></span>
+            </ng-container>
+            <ng-template #soloTotale>
+              <span class="ordine-col-value text-pink">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </ng-template>
           </ng-template>
         </div>
 
@@ -94,7 +103,7 @@
   <div class="modal-overlay" *ngIf="ordineSelezionato" (click)="chiudiDettaglio()">
     <div class="modal-box" (click)="$event.stopPropagation()">
 
-      <div class="modal-header-custom d-flex justify-content-between align-items-center"> 
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
         <div>
           <h4 class="m-0">Riepilogo Ordine <span class="testo-pink">#{{ ordineSelezionato.id }}</span></h4>
           <small class="text-muted">{{ ordineSelezionato.data | date:'dd MMMM yyyy' }}</small>
@@ -110,6 +119,7 @@
 
       <div *ngIf="!isLoadingDettagli">
 
+        <!-- Prodotti -->
         <div class="mb-4">
           <h6 class="text-muted text-uppercase small mb-3"><i class="bi bi-bag me-1"></i>Prodotti acquistati</h6>
           <div *ngIf="dettagliOrdine.length === 0" class="text-muted text-center py-3">Nessun prodotto trovato.</div>
@@ -121,38 +131,75 @@
               <div>
                 <strong class="d-block">{{ item.nome }}</strong>
                 <small class="text-muted">{{ item.condizione }} · Qtà: {{ item.quantita }}</small>
+                <span *ngIf="item.pagato_con_punti == 1"
+                      class="badge bg-warning text-dark mt-1 d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-star-fill"></i> Pagato con punti fedeltà
+                </span>
               </div>
             </div>
             <div class="text-end">
-              <span class="fw-bold">{{ item.prezzoUnitario | currency:'EUR':'symbol':'1.2-2' }}</span>
-              <small class="text-muted d-block">cad.</small>
+              <ng-container *ngIf="item.pagato_con_punti == 1; else prezzoNormale">
+                <span class="fw-bold text-warning">
+                  <i class="bi bi-star-fill"></i> {{ item.puntiFedelta }} pt
+                </span>
+                <small class="text-muted d-block">punti fedeltà</small>
+              </ng-container>
+              <ng-template #prezzoNormale>
+                <span class="fw-bold">{{ item.prezzoUnitario | currency:'EUR':'symbol':'1.2-2' }}</span>
+                <small class="text-muted d-block">cad.</small>
+              </ng-template>
             </div>
           </div>
         </div>
 
-        <div class="riepilogo-box p-3 mb-3">
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">Subtotale</span>
-            <span>{{ ordineSelezionato.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
-          </div>
-          <ng-container *ngIf="ordineSelezionato.sconto_applicato > 0">
-            <div class="d-flex justify-content-between mb-2 text-success">
-              <span><i class="bi bi-tag-fill me-1"></i>Sconto coupon</span>
-              <span>- {{ ordineSelezionato.sconto_applicato | currency:'EUR':'symbol':'1.2-2' }}</span>
-            </div>
-          </ng-container>
-          <hr class="my-2">
-          <div class="d-flex justify-content-between fw-bold fs-5">
-            <span>Totale pagato</span>
-            <span [class.text-success]="ordineSelezionato.sconto_applicato > 0"
-                  [style.color]="!(ordineSelezionato.sconto_applicato > 0) ? '#f86ded' : ''">
-              {{ (ordineSelezionato.totale_scontato ?? ordineSelezionato.totale) | currency:'EUR':'symbol':'1.2-2' }}
-            </span>
-          </div>
-        </div>
+        <!-- ═══ RIEPILOGO ECONOMICO ═══════════════════════════════════════ -->
 
+        <!-- CASO A: ordine interamente pagato con punti fedeltà -->
+        <ng-container *ngIf="ordinePagatoConPunti; else riepilogoEuro">
+          <div class="riepilogo-box p-3 mb-3">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Prodotti riscattati</span>
+              <span class="text-warning fw-semibold">
+                <i class="bi bi-star-fill"></i> {{ totalePuntiSpesi }} pt
+              </span>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between fw-bold fs-5">
+              <span>Totale pagato</span>
+              <span style="color:#f59e0b;">
+                <i class="bi bi-star-fill"></i> {{ totalePuntiSpesi }} pt
+              </span>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- CASO B: ordine pagato in euro (normale o con coupon) -->
+        <ng-template #riepilogoEuro>
+          <div class="riepilogo-box p-3 mb-3">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Subtotale</span>
+              <span>{{ ordineSelezionato.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+            <ng-container *ngIf="ordineSelezionato.sconto_applicato > 0">
+              <div class="d-flex justify-content-between mb-2 text-success">
+                <span><i class="bi bi-tag-fill me-1"></i>Sconto coupon</span>
+                <span>- {{ ordineSelezionato.sconto_applicato | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+            </ng-container>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between fw-bold fs-5">
+              <span>Totale pagato</span>
+              <span [class.text-success]="ordineSelezionato.sconto_applicato > 0"
+                    [style.color]="!(ordineSelezionato.sconto_applicato > 0) ? '#f86ded' : ''">
+                {{ (ordineSelezionato.totale_scontato ?? ordineSelezionato.totale) | currency:'EUR':'symbol':'1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Punti fedeltà guadagnati (solo per ordini in euro) -->
         <div class="punti-box d-flex align-items-center gap-2 p-3 mb-3"
-             *ngIf="puntiFedeltaOrdine > 0">
+             *ngIf="!ordinePagatoConPunti && puntiFedeltaOrdine > 0">
           <i class="bi bi-star-fill text-warning fs-4"></i>
           <div>
             <strong>{{ puntiFedeltaOrdine }} punti fedeltà</strong>

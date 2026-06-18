@@ -2,6 +2,9 @@ import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angu
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
+import { CarrelloService } from '../carrello.service';
+import { ToastService } from '../shared/toast.service';
+
 @Component({
   selector: 'app-preferiti',
   standalone: true,
@@ -16,10 +19,11 @@ export class PreferitiComponent implements OnInit {
   mostraModaleSvuota: boolean = false;
   prodottoDaRimuovere: number | null = null;
 
-
   constructor(
     private cdr: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private carrelloService: CarrelloService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -40,7 +44,6 @@ export class PreferitiComponent implements OnInit {
         const response = await fetch('http://localhost:3000/api/prodotti');
         if (response.ok) {
           const tuttiIProdotti = await response.json();
-          // Filtriamo dal catalogo solo i prodotti corrispondenti agli ID in localStorage
           this.prodottiPreferiti = tuttiIProdotti.filter((p: any) => this.preferitiIds.includes(p.id));
         }
       } catch (error) {
@@ -66,5 +69,15 @@ export class PreferitiComponent implements OnInit {
     localStorage.removeItem('preferiti');
     this.prodottiPreferiti = [];
     this.cdr.detectChanges();
+  }
+
+  async aggiungiAlCarrello(prodotto: any) {
+    const condizione = prodotto.condizione ?? 'Nuovo';
+    const prezzo = Number(prodotto.prezzoUnitarioVendita ?? 0);
+    const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizione, prezzo);
+    if (successo) {
+      this.toast.success(`"${prodotto.nome}" aggiunto al carrello!`);
+      this.rimuoviPreferito(prodotto.id);
+    }
   }
 }

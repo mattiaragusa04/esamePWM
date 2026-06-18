@@ -24,8 +24,10 @@ export class Profilo implements OnInit {
   totalPreferiti = 0;
 
   couponRiscattati: CouponRiscattato[] = [];
-  private readonly API        = 'http://localhost:3000/api/auth/profile';
+  private readonly API         = 'http://localhost:3000/api/auth/profile';
   private readonly API_FEDELTA = 'http://localhost:3000/api/coupon';
+  private readonly API_ORDINI  = 'http://localhost:3000/api/ordini/utente';
+  private readonly API_VENDI   = 'http://localhost:3000/api/vendi/utente';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -36,8 +38,42 @@ export class Profilo implements OnInit {
     if (!isPlatformBrowser(this.platformId)) return;
     this.caricaProfilo();
     this.caricaCouponRiscattati();
+    this.caricaContatori();
   }
 
+  async caricaContatori() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const [resOrdini, resVendite] = await Promise.all([
+        fetch(this.API_ORDINI, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(this.API_VENDI,  { headers: { Authorization: `Bearer ${token}` } })
+      ]);
+
+      if (resOrdini.ok) {
+        const ordini = await resOrdini.json();
+        this.totalOrdini = Array.isArray(ordini) ? ordini.length : 0;
+      }
+
+      if (resVendite.ok) {
+        const vendite = await resVendite.json();
+        this.totalVendite = Array.isArray(vendite) ? vendite.length : 0;
+      }
+    } catch {
+      console.error('[Profilo] Errore nel caricamento dei contatori.');
+    }
+
+    // I preferiti sono salvati in localStorage
+    try {
+      const salvati = localStorage.getItem('preferiti');
+      this.totalPreferiti = salvati ? JSON.parse(salvati).length : 0;
+    } catch {
+      this.totalPreferiti = 0;
+    }
+
+    this.cdr.detectChanges();
+  }
 
   async caricaCouponRiscattati() {
     const token = localStorage.getItem('token');
@@ -74,6 +110,7 @@ export class Profilo implements OnInit {
       this.cdr.detectChanges();
     }
   }
+
   getInitials(): string {
     if (!this.utente) return '?';
     const n = (this.utente.nome    || '').charAt(0).toUpperCase();

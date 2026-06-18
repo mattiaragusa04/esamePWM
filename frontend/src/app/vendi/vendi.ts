@@ -1,4 +1,14 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  ChangeDetectorRef,
+  Inject,
+  PLATFORM_ID
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -20,6 +30,15 @@ export interface Prodotto {
   condizione: string;
 }
 
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  color: string;
+}
+
 @Component({
   selector: 'app-vendi',
   standalone: true,
@@ -27,7 +46,10 @@ export interface Prodotto {
   templateUrl: './vendi.html',
   styleUrl: './vendi.css',
 })
-export class Vendi implements OnInit, OnDestroy {
+export class Vendi implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('particleCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('heroBox') heroBoxRef!: ElementRef<HTMLDivElement>;
+
   prodotti: Prodotto[] = [];
   prodottiFiltrati: Prodotto[] = [];
   isLoading: boolean = false;
@@ -41,6 +63,15 @@ export class Vendi implements OnInit, OnDestroy {
 
   private routeSub: Subscription | undefined;
 
+  // ── Canvas / rete neurale ─────────────────────────────────
+  private ctx!: CanvasRenderingContext2D;
+  private particles: Particle[] = [];
+  private animFrame!: number;
+  private mouse = { x: -999, y: -999 };
+  private numParticles = 200;
+  private resizeListener?: () => void;
+  private readonly COLORS = ['#f86ded', '#a78bfa'];
+
   constructor(
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -53,10 +84,129 @@ export class Vendi implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.routeSub?.unsubscribe();
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => this.setupCanvas());
   }
 
+  ngOnDestroy(): void {
+    this.routeSub?.unsubscribe();
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.animFrame !== undefined) cancelAnimationFrame(this.animFrame);
+      if (this.resizeListener) window.removeEventListener('resize', this.resizeListener);
+    }
+  }
+
+  // ── Canvas logic (replicata da home.ts) ──────────────────
+  private setupCanvas(): void {
+    const canvas = this.canvasRef?.nativeElement;
+    const box = this.heroBoxRef?.nativeElement;
+    if (!canvas || !box) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    this.ctx = ctx;
+
+    this.resizeListener = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const w = box.offsetWidth;
+      const h = box.offsetHeight;
+      if (w === 0 || h === 0) {
+        requestAnimationFrame(() => this.resizeListener && this.resizeListener());
+        return;
+      }
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      this.ctx.scale(dpr, dpr);
+      this.initParticles(w, h);
+    };
+
+    this.resizeListener();
+    window.addEventListener('resize', this.resizeListener);
+
+    box.addEventListener('mousemove', (e: MouseEvent) => {
+      const rect = box.getBoundingClientRect();
+      this.mouse.x = e.clientX - rect.left;
+      this.mouse.y = e.clientY - rect.top;
+    });
+    box.addEventListener('mouseleave', () => {
+      this.mouse = { x: -999, y: -999 };
+    });
+
+    this.animate();
+  }
+
+  private initParticles(width: number, height: number): void {
+    this.particles = [];
+    for (let i = 0; i < this.numParticles; i++) {
+      this.particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        size: Math.random() * 1.5 + 0.8,
+        color: this.COLORS[Math.floor(Math.random() * this.COLORS.length)]
+      });
+    }
+  }
+
+  private animate(): void {
+    if (!this.ctx) return;
+    const box = this.heroBoxRef.nativeElement;
+    const w = box.offsetWidth;
+    const h = box.offsetHeight;
+
+    this.ctx.clearRect(0, 0, w, h);
+
+    for (let i = 0; i < this.particles.length; i++) {
+      const p = this.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+
+      const dx = this.mouse.x - p.x;
+      const dy = this.mouse.y - p.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 150) {
+        const angle = Math.atan2(dy, dx);
+        const force = (150 - dist) / 150;
+        p.x -= Math.cos(angle) * force * 2;
+        p.y -= Math.sin(angle) * force * 2;
+      }
+
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+
+      this.ctx.fillStyle = p.color;
+      this.ctx.beginPath();
+      this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      for (let j = i + 1; j < this.particles.length; j++) {
+        const p2 = this.particles[j];
+        const distP = Math.sqrt((p.x - p2.x) ** 2 + (p.y - p2.y) ** 2);
+        if (distP < 110) {
+          this.ctx.beginPath();
+          const gradient = this.ctx.createLinearGradient(p.x, p.y, p2.x, p2.y);
+          gradient.addColorStop(0, p.color);
+          gradient.addColorStop(1, p2.color);
+          this.ctx.strokeStyle = gradient;
+          this.ctx.globalAlpha = (1 - distP / 110) * 0.4;
+          this.ctx.lineWidth = 0.8;
+          this.ctx.moveTo(p.x, p.y);
+          this.ctx.lineTo(p2.x, p2.y);
+          this.ctx.stroke();
+          this.ctx.globalAlpha = 1;
+        }
+      }
+    }
+
+    this.animFrame = requestAnimationFrame(() => this.animate());
+  }
+
+  // ── Logica prodotti (invariata) ───────────────────────────
   async caricaProdotti() {
     this.isLoading = true;
     this.errorMessage = '';
@@ -64,15 +214,11 @@ export class Vendi implements OnInit, OnDestroy {
     this.prodottiFiltrati = [];
 
     try {
-      // Recupera tutti i prodotti dal backend
       const response = await fetch(`http://localhost:3000/api/prodotti`);
       if (response.ok) {
         const data = await response.json();
         const allowedCategories = ['Videogiochi', 'Console', 'Accessori', 'Elettronica'];
-        
-        // Filtriamo i prodotti basandoci sulla denominazione della categoria
         this.prodotti = data.filter((p: Prodotto) => allowedCategories.includes(p.categoria_nome));
-        
         this.applicaFiltri();
         console.log('Prodotti caricati per la vendita:', this.prodotti);
       } else {
@@ -89,13 +235,9 @@ export class Vendi implements OnInit, OnDestroy {
 
   applicaFiltri() {
     let result = [...this.prodotti];
-
-    // Filtro per categoria
     if (this.categoriaSelezionata !== 'Tutti') {
       result = result.filter(p => p.categoria_nome === this.categoriaSelezionata);
     }
-
-    // Filtro per ricerca testuale
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       result = result.filter(p =>
@@ -103,9 +245,8 @@ export class Vendi implements OnInit, OnDestroy {
         (p.descrizione && p.descrizione.toLowerCase().includes(term))
       );
     }
-
     this.prodottiFiltrati = result;
-    this.paginaCorrente = 1; // Resetta alla prima pagina quando si applica un filtro
+    this.paginaCorrente = 1;
     this.cdr.detectChanges();
   }
 
@@ -119,7 +260,7 @@ export class Vendi implements OnInit, OnDestroy {
   }
 
   handleImageError(event: any) {
-    event.target.src = 'https://via.placeholder.com/150?text=No+Image'; // Immagine di fallback
+    event.target.src = 'https://via.placeholder.com/150?text=No+Image';
   }
 
   getProdottiPaginati(): Prodotto[] {
@@ -137,10 +278,7 @@ export class Vendi implements OnInit, OnDestroy {
     const maxVisibili = 5;
     let inizio = Math.max(1, this.paginaCorrente - Math.floor(maxVisibili / 2));
     let fine = Math.min(numPagine, inizio + maxVisibili - 1);
-
-    if (fine - inizio < maxVisibili - 1) {
-      inizio = Math.max(1, fine - maxVisibili + 1);
-    }
+    if (fine - inizio < maxVisibili - 1) inizio = Math.max(1, fine - maxVisibili + 1);
     return Array.from({ length: (fine - inizio) + 1 }, (_, i) => inizio + i);
   }
 

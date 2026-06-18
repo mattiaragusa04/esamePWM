@@ -1,76 +1,235 @@
-<div class="container my-5">
-  <h1 class="text-center mb-4">Vendi a PAwerUP</h1>
-  <p class="text-center text-secondary mb-5">Seleziona il prodotto che desideri vendere per ottenere una valutazione.</p>
+<!-- ═══════════════════════════════════════════════════
+     VENDI PAGE — PAwerUP
+     Pattern identici alla home: hero con canvas rete
+     neurale, section-header, product-card, paginazione.
+     ═══════════════════════════════════════════════════ -->
 
-  <div class="row mb-4">
-    <div class="col-md-8 offset-md-2">
+<!-- ── HERO ─────────────────────────────────────────── -->
+<div class="vendi-hero-section" #heroBox>
+  <canvas #particleCanvas class="particle-canvas"></canvas>
+
+  <div class="home-hero-orb vendi-orb-a"></div>
+  <div class="home-hero-orb vendi-orb-b"></div>
+
+  <div class="home-hero-inner">
+    <div class="home-hero-badge">
+      <i class="bi bi-tags-fill"></i>
+      Vendi a PAwerUP
+    </div>
+    <h1 class="home-hero-title">Dai valore al tuo usato</h1>
+    <p class="home-hero-sub">
+      Scegli il prodotto che vuoi vendere e ricevi subito una valutazione.
+      Rapido, trasparente, conveniente.
+    </p>
+    <div class="home-hero-actions">
+      <a href="#vendi-prodotti" class="home-hero-btn-primary">
+        <i class="bi bi-search me-2"></i>Sfoglia i prodotti
+      </a>
+      <a routerLink="/vendite" class="home-hero-btn-ghost">
+        <i class="bi bi-shop me-2"></i>Le mie vendite
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── COME FUNZIONA ─────────────────────────────────── -->
+<div class="home-section mt-4">
+  <div class="home-section-header">
+    <div class="home-section-label">
+      <i class="bi bi-info-circle-fill"></i> Procedura
+    </div>
+    <h2 class="home-section-title">Come <span class="home-accent">funziona</span></h2>
+  </div>
+
+  <div class="vendi-steps-grid">
+    <div class="vendi-step-card">
+      <div class="vendi-step-num">1</div>
+      <div class="vendi-step-body">
+        <h6 class="vendi-step-title">Cerca il prodotto</h6>
+        <p class="vendi-step-desc">Trova il modello esatto che vuoi vendere nel nostro catalogo.</p>
+      </div>
+    </div>
+    <div class="vendi-step-card">
+      <div class="vendi-step-num">2</div>
+      <div class="vendi-step-body">
+        <h6 class="vendi-step-title">Ricevi la valutazione</h6>
+        <p class="vendi-step-desc">Visualizza subito il prezzo che ti offriamo per il tuo usato.</p>
+      </div>
+    </div>
+    <div class="vendi-step-card">
+      <div class="vendi-step-num">3</div>
+      <div class="vendi-step-body">
+        <h6 class="vendi-step-title">Concludi la vendita</h6>
+        <p class="vendi-step-desc">Accetta l'offerta e completa la vendita in pochi clic.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SEZIONE PRODOTTI ───────────────────────────────── -->
+<div class="home-section mt-4" id="vendi-prodotti">
+
+  <div class="home-section-header">
+    <div class="home-section-label">
+      <i class="bi bi-grid-3x3-gap-fill"></i> Catalogo
+    </div>
+    <h2 class="home-section-title">Scegli cosa <span class="home-accent">vendere</span></h2>
+  </div>
+
+  <!-- Search bar -->
+  <div class="vendi-search-wrapper mb-4">
+    <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="Cerca prodotti..." [(ngModel)]="searchTerm" (input)="applicaFiltri()">
-        <button class="btn btn-info" type="button" (click)="applicaFiltri()">Cerca</button>
+        <span class="input-group-text vendi-search-prepend">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control vendi-search-input"
+          placeholder="Cerca prodotti da vendere..."
+          [(ngModel)]="searchTerm"
+          (input)="applicaFiltri()"
+        >
+        <button class="btn vendi-search-btn" type="button" (click)="applicaFiltri()">
+          Cerca
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Filtri Categoria -->
-  <div class="d-flex justify-content-center flex-wrap gap-2 mb-5">
-    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Tutti' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Tutti')">Tutti</button>
-    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Console' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Console')">Console</button>
-    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Videogiochi' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Videogiochi')">Videogiochi</button>
-    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Accessori' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Accessori')">Accessori</button>
-    <button class="btn rounded-pill px-4" [ngClass]="categoriaSelezionata === 'Elettronica' ? 'btn-info' : 'btn-outline-info'" (click)="impostaFiltro('Elettronica')">Elettronica</button>
+  <!-- Filtri categoria -->
+  <div class="vendi-filtri d-flex justify-content-center flex-wrap gap-2 mb-5">
+    <button
+      class="btn rounded-pill px-4"
+      [ngClass]="categoriaSelezionata === 'Tutti' ? 'btn-info' : 'btn-outline-info'"
+      (click)="impostaFiltro('Tutti')">
+      <i class="bi bi-grid me-1"></i>Tutti
+    </button>
+    <button
+      class="btn rounded-pill px-4"
+      [ngClass]="categoriaSelezionata === 'Console' ? 'btn-info' : 'btn-outline-info'"
+      (click)="impostaFiltro('Console')">
+      <i class="bi bi-controller me-1"></i>Console
+    </button>
+    <button
+      class="btn rounded-pill px-4"
+      [ngClass]="categoriaSelezionata === 'Videogiochi' ? 'btn-info' : 'btn-outline-info'"
+      (click)="impostaFiltro('Videogiochi')">
+      <i class="bi bi-joystick me-1"></i>Videogiochi
+    </button>
+    <button
+      class="btn rounded-pill px-4"
+      [ngClass]="categoriaSelezionata === 'Accessori' ? 'btn-info' : 'btn-outline-info'"
+      (click)="impostaFiltro('Accessori')">
+      <i class="bi bi-headset me-1"></i>Accessori
+    </button>
+    <button
+      class="btn rounded-pill px-4"
+      [ngClass]="categoriaSelezionata === 'Elettronica' ? 'btn-info' : 'btn-outline-info'"
+      (click)="impostaFiltro('Elettronica')">
+      <i class="bi bi-cpu me-1"></i>Elettronica
+    </button>
   </div>
 
+  <!-- Spinner -->
   <div *ngIf="isLoading" class="text-center my-5">
-    <div class="spinner-border text-info" role="status">
+    <div class="spinner-border vendi-spinner" role="status">
       <span class="visually-hidden">Caricamento...</span>
     </div>
-    <p class="mt-2">Caricamento prodotti...</p>
+    <p class="mt-3 text-secondary">Caricamento prodotti...</p>
   </div>
 
-  <div *ngIf="errorMessage" class="alert alert-danger text-center my-5">
-    {{ errorMessage }}
+  <!-- Errore -->
+  <div *ngIf="errorMessage" class="alert alert-danger text-center my-5 rounded-4">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
   </div>
 
-  <div *ngIf="!isLoading && !errorMessage && prodottiFiltrati.length === 0" class="alert alert-warning text-center my-5">
-    Nessun prodotto trovato.
+  <!-- Nessun risultato -->
+  <div *ngIf="!isLoading && !errorMessage && prodottiFiltrati.length === 0"
+       class="vendi-empty-state text-center my-5">
+    <i class="bi bi-box-seam vendi-empty-icon"></i>
+    <h5 class="mt-3 mb-1">Nessun prodotto trovato</h5>
+    <p class="text-secondary">Prova a cambiare filtro o termine di ricerca.</p>
   </div>
 
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" *ngIf="!isLoading && prodottiFiltrati.length > 0">
+  <!-- Griglia prodotti -->
+  <div
+    class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4"
+    *ngIf="!isLoading && prodottiFiltrati.length > 0"
+  >
     <div class="col" *ngFor="let prodotto of getProdottiPaginati()">
-      <div class="card h-100 product-card">
-        <img [src]="prodotto.immagine" class="card-img-top" alt="{{ prodotto.nome }}" (error)="handleImageError($event)">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">{{ prodotto.nome }}</h5>
-          <p class="card-text text-secondary flex-grow-1">{{ prodotto.descrizione | slice:0:100 }}...</p>
-          <div class="d-flex justify-content-between align-items-center mt-auto">
-            <span class="fw-bold text-info fs-5">€{{ prodotto.prezzoUnitarioVendita | number:'1.2-2' }}</span>
-            <button class="btn btn-info" (click)="selezionaProdottoPerVendita(prodotto.id)">
-              Vendi questo prodotto
+      <div class="card h-100 shadow-lg product-card">
+
+        <img
+          [src]="prodotto.immagine"
+          class="card-img-top p-3"
+          alt="{{ prodotto.nome }}"
+          style="height:200px;object-fit:contain;"
+          (error)="handleImageError($event)"
+        >
+
+        <div class="card-body d-flex flex-column text-center">
+          <h5 class="card-title fw-bold mb-2">{{ prodotto.nome }}</h5>
+
+          <div class="mb-2">
+            <span class="badge-condizione badge-nuovo">
+              <i class="bi bi-stars"></i> Nuovo
+            </span>
+          </div>
+
+          <p class="card-text text-secondary flex-grow-1" style="font-size:0.88rem;">
+            {{ prodotto.descrizione | slice:0:90 }}...
+          </p>
+
+          <p class="fw-bold text-info fs-5 mb-3">
+            &euro; {{ prodotto.prezzoUnitarioVendita | number:'1.2-2' }}
+          </p>
+
+          <div class="d-flex flex-column align-items-center gap-2 mt-auto">
+            <button
+              class="btn btn-info rounded-pill w-100"
+              (click)="selezionaProdottoPerVendita(prodotto.id)">
+              <i class="bi bi-tags-fill me-2"></i>Vendi questo prodotto
             </button>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 
   <!-- Paginazione -->
-  <nav *ngIf="!isLoading && prodottiFiltrati.length > elementiPerPagina" class="mt-5 mb-4 d-flex justify-content-center">
+  <nav
+    *ngIf="!isLoading && prodottiFiltrati.length > elementiPerPagina"
+    class="mt-5 mb-4 d-flex justify-content-center"
+  >
     <ul class="pagination border-0 mb-0 align-items-center">
       <li class="page-item border-0" [class.disabled]="paginaCorrente === 1">
-        <button class="page-link border-0 bg-transparent text-info shadow-none d-flex align-items-center" (click)="cambiaPagina(paginaCorrente - 1)">
+        <button
+          class="page-link border-0 bg-transparent text-info shadow-none d-flex align-items-center"
+          (click)="cambiaPagina(paginaCorrente - 1)">
           <i class="bi bi-arrow-left-circle fs-4"></i>
         </button>
       </li>
 
-      <li class="page-item border-0" *ngFor="let p of getPagineVisibili()" [class.active]="paginaCorrente === p">
-        <button class="page-link shadow-sm rounded-circle mx-1 d-flex justify-content-center align-items-center pagination-dot" (click)="cambiaPagina(p)">{{ p }}</button>
+      <li
+        class="page-item border-0"
+        *ngFor="let p of getPagineVisibili()"
+        [class.active]="paginaCorrente === p"
+      >
+        <button
+          class="page-link shadow-sm rounded-circle mx-1 d-flex justify-content-center align-items-center pagination-dot"
+          (click)="cambiaPagina(p)">{{ p }}</button>
       </li>
 
       <li class="page-item border-0" [class.disabled]="paginaCorrente === getNumeroPagine()">
-        <button class="page-link border-0 bg-transparent text-info shadow-none d-flex align-items-center" (click)="cambiaPagina(paginaCorrente + 1)">
+        <button
+          class="page-link border-0 bg-transparent text-info shadow-none d-flex align-items-center"
+          (click)="cambiaPagina(paginaCorrente + 1)">
           <i class="bi bi-arrow-right-circle fs-4"></i>
         </button>
       </li>
     </ul>
   </nav>
+
 </div>

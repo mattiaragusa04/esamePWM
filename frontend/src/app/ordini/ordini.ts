@@ -86,14 +86,29 @@ export class Ordini implements OnInit {
   }
 
   /**
-   * Punti fedeltà: usa il valore salvato nell'ordine (calcolato sul totale scontato).
-   * Fallback: ricalcola dal totale scontato se il campo non è presente (ordini vecchi).
+   * True se TUTTI i prodotti dell'ordine sono stati pagati con punti fedeltà.
+   * Usato per mostrare il riepilogo in punti invece che in euro.
+   */
+  get ordinePagatoConPunti(): boolean {
+    if (!this.dettagliOrdine.length) return false;
+    return this.dettagliOrdine.every(item => item.pagato_con_punti == 1);
+  }
+
+  /** Somma totale dei punti spesi per tutti i prodotti dell'ordine */
+  get totalePuntiSpesi(): number {
+    return this.dettagliOrdine.reduce((acc, item) => {
+      return acc + ((item.puntiFedelta ?? 0) * (item.quantita ?? 1));
+    }, 0);
+  }
+
+  /**
+   * Punti fedeltà guadagnati con l'ordine.
+   * Usa il valore salvato nell'ordine; fallback sul totale scontato per ordini vecchi.
    */
   get puntiFedeltaOrdine(): number {
     if (this.ordineSelezionato?.punti_fedelta != null) {
       return this.ordineSelezionato.punti_fedelta;
     }
-    // fallback per ordini precedenti senza punti_fedelta salvato
     const totale = this.ordineSelezionato?.totale_scontato ?? this.ordineSelezionato?.totale ?? 0;
     return Math.floor(totale / 5);
   }

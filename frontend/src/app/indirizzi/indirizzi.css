@@ -13,7 +13,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── HERO (ROSA come ordini/vendite/carte) ───────────── */
+/* ─── HERO (ROSA come ordini/vendite/carte) ──────────────────── */
 .indirizzi-hero {
   position: relative;
   overflow: hidden;
@@ -101,7 +101,7 @@
   color: #fff;
 }
 
-/* ─── FORM ──────────────────────────────────────────── */
+/* ─── FORM ────────────────────────────────────────────── */
 .indirizzi-form-card {
   background: #fff;
   border-radius: 1.25rem;
@@ -246,7 +246,7 @@ body.theme-dark .indirizzi-form-select {
   cursor: not-allowed;
 }
 
-/* ─── GRIGLIA INDIRIZZI ───────────────────────────────── */
+/* ─── GRIGLIA INDIRIZZI ───────────────────────────────────────── */
 .indirizzi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -314,6 +314,57 @@ body.theme-dark .indirizzo-tipo-badge {
   border-color: rgba(239,68,68,0.3);
 }
 
+/* ─── CONFERMA ELIMINAZIONE INLINE (indirizzo) ─────────────── */
+.indirizzo-confirm-delete {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.indirizzo-confirm-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ef4444;
+  white-space: nowrap;
+}
+.indirizzo-confirm-yes,
+.indirizzo-confirm-no {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+  flex-shrink: 0;
+}
+.indirizzo-confirm-yes {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #ef4444;
+}
+.indirizzo-confirm-yes:hover {
+  background: rgba(239,68,68,0.2);
+  border-color: rgba(239,68,68,0.5);
+}
+.indirizzo-confirm-no {
+  background: rgba(100,116,139,0.08);
+  border: 1px solid rgba(100,116,139,0.2);
+  color: #64748b;
+}
+.indirizzo-confirm-no:hover {
+  background: rgba(100,116,139,0.15);
+}
+body.theme-dark .indirizzo-confirm-label { color: #f87171; }
+body.theme-dark .indirizzo-confirm-yes {
+  background: rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.35);
+  color: #f87171;
+}
+body.theme-dark .indirizzo-confirm-no {
+  background: rgba(148,163,184,0.1);
+  border-color: rgba(148,163,184,0.2);
+  color: #94a3b8;
+}
+
 .indirizzo-card-body {
   display: flex;
   flex-direction: column;
@@ -358,7 +409,7 @@ body.theme-dark .indirizzo-provincia { color: #94a3b8; }
 }
 .indirizzo-paese .bi { font-size: 0.75rem; }
 
-/* ─── EMPTY STATE ──────────────────────────────────── */
+/* ─── EMPTY STATE ──────────────────────────────────────────── */
 .indirizzi-empty {
   display: flex;
   flex-direction: column;
