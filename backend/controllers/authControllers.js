@@ -319,13 +319,8 @@ exports.updatePassword = async (req, res) => {
     const user = await User.findByEmail(email);
     if (!user) return res.status(404).json({ message: "Utente non trovato." });
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    db.run("UPDATE utente SET password = ? WHERE email = ?", [hashedPassword, email], function(err) {
-        if (err) {
-            console.error("Errore durante l'aggiornamento della password:", err);
-            return res.status(500).json({ message: "Errore durante l'aggiornamento della password." });
-        }
-        res.status(200).json({ message: "Password aggiornata con successo. Ora puoi effettuare l'accesso." });
-    });
+    await User.updatePassword(user.id, hashedPassword);
+    return res.status(200).json({ message: "Password aggiornata con successo." });
   } catch (err) {
     console.error("Errore updatePassword:", err);
     return res.status(400).json({ message: "Il link di reset non è valido o è scaduto." });

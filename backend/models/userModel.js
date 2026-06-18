@@ -127,6 +127,16 @@ const User = {
       });
     });
   },
+
+  updatePassword: (email, hashedPassword) => {
+    return new Promise((resolve, reject) => {
+      db.run(
+        `UPDATE utente SET password = ? WHERE email = ?`,
+        [hashedPassword, email],
+        function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
+      );
+    });
+  }
 };
 
 module.exports = User;

@@ -12,8 +12,6 @@ router.get('/', cartaDiCreditoController.getAllCarte);
 router.get('/utente', cartaDiCreditoController.getCarteByUserId);
 // Rotta per ottenere una singola carta
 router.get('/:id', cartaDiCreditoController.getCartaById);
-// Rotta per creare una nuova carta
-router.post('/', cartaDiCreditoController.createCarta);
 // Rotta per aggiornare una carta
 router.put('/:id', cartaDiCreditoController.updateCarta);
 // Rotta per eliminare una carta

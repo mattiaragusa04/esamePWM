@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router();
 const ordineController = require('../controllers/ordineControllers');
 const authMiddleware = require('../middleware/authMiddleware');
-
+const adminMiddleware = require('../middleware/adminMiddleware');
 // Applica il middleware a TUTTE le rotte di questo router per proteggerle
 router.use(authMiddleware);
-
 // Rotta per creare un nuovo ordine
 router.post('/create', ordineController.createOrdine);
 
@@ -21,6 +20,6 @@ router.get('/:id/prodotti', ordineController.getProdottiOrdine);
 // Rotta per ottenere i dettagli di un singolo ordine
 router.get('/:id', ordineController.getOrdineById);
 
-router.get('/', ordineController.getAllOrdini);
+router.get('/',adminMiddleware, ordineController.getAllOrdini);
 
 module.exports = router;

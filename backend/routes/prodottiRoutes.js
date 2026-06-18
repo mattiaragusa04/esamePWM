@@ -3,7 +3,8 @@ const router = express.Router();
 const prodottoController = require("../controllers/prodottiControllers");
 const multer = require("multer");
 const path = require("path");
-
+const adminMiddleware = require("../middleware/adminMiddleware");
+const authMiddleware = require("../middleware/authMiddleware"); 
 // Configurazione Multer per il caricamento delle immagini
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -16,8 +17,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+router.use(authMiddleware);
 // Rotta per ottenere tutti i prodotti
-router.get("/", prodottoController.getAllProdotti);
+router.get("/", adminMiddleware, prodottoController.getAllProdotti);
 // Rotta per la ricerca dei prodotti
 router.get("/ricerca", prodottoController.cercaProdotti);
 // Rotta per ottenere tutti i prodotti di una categoria
@@ -25,10 +27,10 @@ router.get("/categoria/:categoriaId", prodottoController.getProdottobyCategoria)
 // Rotta per ottenere un singolo prodotto
 router.get("/:id", prodottoController.getProdottoById);
 
-router.delete("/:id", prodottoController.deleteProdotto);
+router.delete("/:id", adminMiddleware,prodottoController.deleteProdotto);
 
-router.post("/create" , upload.single('immagine'), prodottoController.createProdotto);
+router.post("/create" , upload.single('immagine'), adminMiddleware,prodottoController.createProdotto);
 
-router.put("/:id", upload.single('immagine'), prodottoController.updateProdotto);
+router.put("/:id", upload.single('immagine'), adminMiddleware, prodottoController.updateProdotto);
 
 module.exports = router;
