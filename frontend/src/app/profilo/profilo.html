@@ -41,7 +41,25 @@
     </div>
   </div>
 
-  
+  <!-- ═══ BANNER RECENSIONE (Opzione C) ═══
+       Visibile se l'utente ha almeno un ordine consegnato.
+       Rimane finché non lascia (o modifica) la recensione. -->
+  <div *ngIf="haOrdineConsegnato" class="recensione-banner">
+    <div class="recensione-banner-inner">
+      <div class="recensione-banner-left">
+        <i class="bi bi-star-fill"></i>
+        <div>
+          <strong *ngIf="!miaRecensione">Hai ricevuto un ordine? Lascia la tua recensione!</strong>
+          <strong *ngIf="miaRecensione">Hai già lasciato una recensione. Vuoi modificarla?</strong>
+          <small class="d-block text-muted">La tua opinione aiuta altri clienti.</small>
+        </div>
+      </div>
+      <button class="btn-recensione-banner" (click)="apriPopupRecensione()">
+        <i class="bi" [ngClass]="miaRecensione ? 'bi-pencil-fill' : 'bi-chat-quote-fill'"></i>
+        {{ miaRecensione ? 'Modifica recensione' : 'Scrivi recensione' }}
+      </button>
+    </div>
+  </div>
 
   <!-- ═══ STAT CARDS ═══ -->
   <div class="profilo-stats-row" *ngIf="utente">
