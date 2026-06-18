@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NeuralCanvasService } from '../shared/neural-canvas.service';
 
 @Component({
   selector: 'app-ordini',

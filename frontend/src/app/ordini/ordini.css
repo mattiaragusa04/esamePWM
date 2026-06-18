@@ -17,14 +17,14 @@
   border-radius: 18px;
   padding: 2rem 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 32px rgba(248, 109, 237, 0.15);
 }
 
 .ordini-hero-orb {
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
-  opacity: 0;
+  opacity: 0.35;
   pointer-events: none;
 }
 
@@ -75,14 +75,8 @@
   font-size: 0.95rem;
 }
 
-.ordini-hero-sub {
-  color: #aaa;
-  margin: 0;
-  font-size: 0.95rem;
-}
-
 .ordini-hero-btn {
-    display: inline-flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.55rem 1.2rem;
@@ -101,11 +95,24 @@
   color: #fff;
 }
 
+/* ── Empty state ─────────────────────────────────────────────────────── */
+.ordini-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #aaa;
+}
+
+.ordini-empty-icon {
+  font-size: 3.5rem;
+  color: #f86ded;
+  margin-bottom: 1rem;
+}
+
 /* ── Cards ordine ────────────────────────────────────────────────────── */
 .ordine-card {
-  background: #ffffff;
+  background: #1e1e2e;
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid #2a2a3e;
   overflow: hidden;
   transition: box-shadow 0.2s;
 }
@@ -141,7 +148,7 @@
 .ordine-col-value {
   font-size: 0.97rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #e0e0e0;
 }
 
 .text-pink { color: #f86ded !important; }
@@ -202,21 +209,21 @@
 }
 
 .modal-box {
-  background: #ffffff;
+  background: #1e1e2e;
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid #2a2a3e;
   padding: 1.8rem;
   width: 100%;
   max-width: 560px;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
 }
 
 .modal-header-custom {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #2a2a3e;
 }
 
 .btn-close-modal {
@@ -229,20 +236,20 @@
   transition: color 0.2s;
 }
 
-.btn-close-modal:hover { color: #1a1a2e; }
+.btn-close-modal:hover { color: #fff; }
 
 .prodotto-thumb {
   width: 52px;
   height: 52px;
   object-fit: cover;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid #2a2a3e;
 }
 
 .riepilogo-box {
-  background: #f8fafc;
+  background: #16162a;
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid #2a2a3e;
 }
 
 .punti-box {
@@ -256,16 +263,11 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 .recensione-banner {
-  display: flex;
-  align-items: center;
-  gap: 1.1rem;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-left: 3.5px solid #f86ded;
+  background: linear-gradient(135deg, rgba(248,109,237,0.08) 0%, rgba(167,139,250,0.08) 100%);
+  border: 1px solid rgba(248,109,237,0.25);
   border-radius: 14px;
-  padding: 1.1rem 1.5rem;
+  padding: 1rem 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 
 .recensione-banner-inner {
@@ -274,62 +276,46 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.75rem;
-  flex: 1;
 }
 
 .recensione-banner-left {
   display: flex;
   align-items: center;
   gap: 0.9rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.recensione-banner-left > i {
-  font-size: 1.3rem;
-  color: #f59e0b;
-  flex-shrink: 0;
+  color: #f86ded;
+  font-size: 1.4rem;
 }
 
 .recensione-banner-left div strong {
-  display: block;
-  color: #1a1a2e;
-  font-size: 0.93rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.recensione-banner-left div small {
-  color: #6b7280;
-  font-size: 0.8rem;
+  color: #e0e0e0;
+  font-size: 0.95rem;
 }
 
 .btn-recensione-banner {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.48rem 1.15rem;
+  padding: 0.5rem 1.2rem;
   background: #f86ded;
   color: #fff;
   border: none;
   border-radius: 50px;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition: background 0.2s;
 }
 
 .btn-recensione-banner:hover {
   background: #e055d4;
-  box-shadow: 0 4px 14px rgba(248,109,237,0.35);
 }
 
+/* Modale recensione - dimensioni leggermente più strette */
 .recensione-modal {
   max-width: 480px;
 }
 
+/* Stelle interattive */
 .stelle-container {
   display: flex;
   gap: 0.4rem;
@@ -347,29 +333,31 @@
 }
 
 .stella-piena i  { color: #f59e0b; }
-.stella-vuota i  { color: #d1d5db; }
+.stella-vuota i  { color: #3a3a4e; }
 
+/* Textarea recensione */
 .recensione-textarea {
-  background: #f8fafc;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  color: #1a1a2e;
+  background: #16162a;
+  border: 1px solid #3a3a4e;
+  color: #e0e0e0;
   border-radius: 10px;
   resize: vertical;
   font-size: 0.93rem;
 }
 
 .recensione-textarea:focus {
-  background: #ffffff;
+  background: #16162a;
   border-color: #f86ded;
-  color: #1a1a2e;
+  color: #e0e0e0;
   box-shadow: 0 0 0 3px rgba(248,109,237,0.15);
   outline: none;
 }
 
 .recensione-textarea::placeholder {
-  color: #9ca3af;
+  color: #555;
 }
 
+/* Bottone submit recensione */
 .btn-recensione-submit {
   display: inline-flex;
   align-items: center;
@@ -394,98 +382,7 @@
   cursor: not-allowed;
 }
 
+/* Messaggio successo nel popup */
 .recensione-successo {
   color: #22c55e;
-}
-
-.alert.alert-danger {
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  border-radius: 8px;
-  color: #dc2626;
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   DARK MODE — tutte le regole dark centralizzate qui
-   ════════════════════════════════════════════════════════════════════════ */
-
-body.theme-dark .ordine-card {
-  background: #1e1e2e;
-  border-color: #2a2a3e;
-}
-
-body.theme-dark .ordine-col-value {
-  color: #e0e0e0;
-}
-
-body.theme-dark .ordine-col-label {
-  color: #9ca3af;
-}
-
-body.theme-dark .modal-box {
-  background: #1e1e2e;
-  border-color: #2a2a3e;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-}
-
-body.theme-dark .modal-header-custom {
-  border-bottom-color: #2a2a3e;
-}
-
-body.theme-dark .btn-close-modal {
-  color: #888;
-}
-
-body.theme-dark .btn-close-modal:hover {
-  color: #e0e0e0;
-}
-
-body.theme-dark .prodotto-thumb {
-  border-color: #2a2a3e;
-}
-
-body.theme-dark .riepilogo-box {
-  background: #16162a;
-  border-color: #2a2a3e;
-}
-
-body.theme-dark .recensione-banner {
-  background: #1e1e2e;
-  border-color: #2a2a3e;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-}
-
-body.theme-dark .recensione-banner-left div strong {
-  color: #f0f0f0;
-}
-
-body.theme-dark .recensione-banner-left div small {
-  color: #9ca3af;
-}
-
-body.theme-dark .stella-vuota i {
-  color: #3a3a4e;
-}
-
-body.theme-dark .recensione-textarea {
-  background: #16162a;
-  border-color: #3a3a4e;
-  color: #e0e0e0;
-}
-
-body.theme-dark .recensione-textarea:focus {
-  background: #16162a;
-  border-color: #f86ded;
-  color: #e0e0e0;
-  box-shadow: 0 0 0 3px rgba(248,109,237,0.15);
-}
-
-body.theme-dark .recensione-textarea::placeholder {
-  color: #555;
-}
-
-body.theme-dark .alert.alert-danger {
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.35);
-  color: #fca5a5;
 }
