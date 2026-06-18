@@ -26,7 +26,7 @@ export class Profilo implements OnInit {
   couponRiscattati: CouponRiscattato[] = [];
   private readonly API         = 'http://localhost:3000/api/auth/profile';
   private readonly API_FEDELTA = 'http://localhost:3000/api/coupon';
-  private readonly API_ORDINI  = 'http://localhost:3000/api/ordini/utente';
+  private readonly API_ORDINI  = 'http://localhost:3000/api/ordine/utente';
   private readonly API_VENDI   = 'http://localhost:3000/api/vendi/utente';
 
   constructor(

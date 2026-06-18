@@ -193,7 +193,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
     }
     this.isLoadingCarte = true;
     try {
-      const response = await fetch('http://localhost:3000/api/carte/utente', {
+      const response = await fetch('http://localhost:3000/api/carta/utente', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {

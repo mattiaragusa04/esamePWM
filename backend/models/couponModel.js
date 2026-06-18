@@ -237,7 +237,7 @@ const Coupon = {
   insertCouponGenerato: (userId, couponId) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `INSERT INTO coupon_generati (utente_id, coupon_id) VALUES (?, ?)`,
+        `INSERT INTO coupon_utente (utente_id, coupon_id) VALUES (?, ?)`,
         [userId, couponId],
         function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
       );
@@ -247,11 +247,11 @@ const Coupon = {
   getCouponbyUserId: (userId) => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT c.codice, c.valore AS percentuale, c.data_scadenza AS scadenza, cg.data_generazione AS dataAcquisto
-         FROM coupon_generati cg
-         JOIN Coupon c ON c.id = cg.coupon_id
-         WHERE cg.utente_id = ?
-         ORDER BY cg.data_generazione DESC`,
+        `SELECT c.codice, c.valore AS percentuale, c.data_scadenza AS scadenza, cu.data_generazione AS dataAcquisto
+         FROM coupon_utente cu
+         JOIN Coupon c ON c.id = cu.coupon_id
+         WHERE cu.utente_id = ?
+         ORDER BY cu.data_generazione DESC`,
         [userId],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );
