@@ -140,4 +140,14 @@ export class ImpostazioniComponent implements OnInit, AfterViewInit, OnDestroy {
       this.router.navigate(['/']);
     }
   }
+
+  // === LOGOUT ===
+  logout(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
+    this.toast.success('Logout effettuato con successo!');
+    this.router.navigate(['/']);
+  }
 }

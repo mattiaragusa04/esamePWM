@@ -36,7 +36,7 @@ interface ProdottoUsato {
   templateUrl: './fedelta.html',
   styleUrls: ['./fedelta.css']
 })
-export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
+export class FedeltaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('fedeltaCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('fedeltaHero')   heroRef!:   ElementRef<HTMLDivElement>;
