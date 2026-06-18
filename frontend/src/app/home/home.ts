@@ -36,9 +36,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   public prodottiUsatiLoop: any[] = [];
   public preferiti: number[] = [];
 
-  // ── Recensioni pubbliche ───────────────────────────────────────────────────
   public recensioniPubbliche: any[] = [];
-  // ──────────────────────────────────────────────────────────────────────────
 
   private prezzoNuovoPerNome: Map<string, number> = new Map();
 
@@ -88,7 +86,6 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       const res = await fetch('http://localhost:3000/api/recensioni');
       if (res.ok) {
         const tutte = await res.json();
-        // Mostra al massimo le ultime 6 recensioni, ordinate per data decrescente
         this.recensioniPubbliche = tutte
           .sort((a: any, b: any) => new Date(b.data).getTime() - new Date(a.data).getTime())
           .slice(0, 6);
@@ -99,7 +96,6 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /** Restituisce un array di lunghezza n per *ngFor sulle stelle */
   stelle(n: number): number[] {
     return Array.from({ length: n }, (_, i) => i + 1);
   }
