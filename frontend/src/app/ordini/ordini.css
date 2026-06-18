@@ -17,14 +17,16 @@
   border-radius: 18px;
   padding: 2rem 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(248, 109, 237, 0.15);
+  /* rimossa box-shadow rosa: copriva il canvas neurale */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
+/* Gli orb sono azzerati: il canvas neurale gestisce già l'effetto di sfondo */
 .ordini-hero-orb {
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
-  opacity: 0.35;
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -262,12 +264,18 @@
    [RECENSIONI] Banner + popup recensione
    ════════════════════════════════════════════════════════════════════════ */
 
+/* ── Banner recensione (redesign professionale) ──────────────────────── */
 .recensione-banner {
-  background: linear-gradient(135deg, rgba(248,109,237,0.08) 0%, rgba(167,139,250,0.08) 100%);
-  border: 1px solid rgba(248,109,237,0.25);
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  background: #1e1e2e;
+  border: 1px solid #2a2a3e;
+  border-left: 3.5px solid #f86ded;
   border-radius: 14px;
-  padding: 1rem 1.5rem;
+  padding: 1.1rem 1.5rem;
   margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
 }
 
 .recensione-banner-inner {
@@ -276,38 +284,57 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.75rem;
+  flex: 1;
 }
 
 .recensione-banner-left {
   display: flex;
   align-items: center;
   gap: 0.9rem;
-  color: #f86ded;
-  font-size: 1.4rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Icona stella nel banner */
+.recensione-banner-left > i {
+  font-size: 1.3rem;
+  color: #f59e0b;
+  flex-shrink: 0;
 }
 
 .recensione-banner-left div strong {
-  color: #e0e0e0;
-  font-size: 0.95rem;
+  display: block;
+  color: #f0f0f0;
+  font-size: 0.93rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.recensione-banner-left div small {
+  color: #9ca3af;
+  font-size: 0.8rem;
 }
 
 .btn-recensione-banner {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.5rem 1.2rem;
+  padding: 0.48rem 1.15rem;
   background: #f86ded;
   color: #fff;
   border: none;
   border-radius: 50px;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
 .btn-recensione-banner:hover {
   background: #e055d4;
+  box-shadow: 0 4px 14px rgba(248,109,237,0.35);
 }
 
 /* Modale recensione - dimensioni leggermente più strette */
@@ -385,4 +412,12 @@
 /* Messaggio successo nel popup */
 .recensione-successo {
   color: #22c55e;
+}
+
+/* ── Fix alert errore recensione (leggibilità dark mode) ─────────────── */
+.alert.alert-danger {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 8px;
+  color: #fca5a5;
 }
