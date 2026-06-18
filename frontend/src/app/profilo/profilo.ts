@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit, Inject, PLATFORM_ID, Chang
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { NeuralCanvasService } from '../shared/neural-canvas.service';
 
 export interface CouponRiscattato {
   codice: string;
@@ -58,6 +59,19 @@ export class Profilo implements OnInit, AfterViewInit, OnDestroy {
     this.caricaCouponRiscattati();
     this.caricaContatori();
     this.caricaStatoRecensione();
+  }
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => {
+      const canvas = this.canvasRef?.nativeElement;
+      const hero   = this.heroRef?.nativeElement;
+      if (canvas && hero) this.neuralCanvas.init(canvas, hero);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.canvasRef?.nativeElement) this.neuralCanvas.destroy(this.canvasRef.nativeElement);
   }
 
   async caricaContatori() {
