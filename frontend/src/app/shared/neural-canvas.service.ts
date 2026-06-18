@@ -1,162 +1,143 @@
-import { Injectable } from '@angular/core';
-
-export interface NeuralCanvasOptions {
-  colors?: string[];
-  numParticles?: number;
-  repulsionRadius?: number;
-  connectionRadius?: number;
-}
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 interface Particle {
-  x: number; y: number;
-  vx: number; vy: number;
-  size: number; color: string;
-}
-
-interface CanvasState {
-  ctx: CanvasRenderingContext2D;
-  particles: Particle[];
-  animFrame: number;
-  mouse: { x: number; y: number };
-  resizeListener: () => void;
-  mouseMoveListener: (e: MouseEvent) => void;
-  mouseLeaveListener: () => void;
-  options: Required<NeuralCanvasOptions>;
-  heroBox: HTMLElement;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  color: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class NeuralCanvasService {
-  private readonly DEFAULT_OPTIONS: Required<NeuralCanvasOptions> = {
-    colors: ['#f86ded', '#a78bfa'],
-    numParticles: 200,
-    repulsionRadius: 150,
-    connectionRadius: 110,
-  };
+  private ctx!: CanvasRenderingContext2D;
+  private canvas!: HTMLCanvasElement;
+  private container!: HTMLElement;
+  private particles: Particle[] = [];
+  private animFrame!: number;
+  private mouse = { x: -999, y: -999 };
+  private resizeListener?: () => void;
+  private mouseMoveListener?: (e: MouseEvent) => void;
+  private readonly numParticles = 200;
+  private readonly COLORS = ['#f86ded', '#a78bfa'];
 
-  private states = new Map<HTMLCanvasElement, CanvasState>();
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
-  init(canvas: HTMLCanvasElement, heroBox: HTMLElement, options?: NeuralCanvasOptions): void {
+  /**
+   * Inizializza il canvas neurale dentro il container indicato.
+   * @param canvas  - l'elemento <canvas> del componente
+   * @param container - il wrapper hero/banner che fa da riferimento dimensionale
+   */
+  init(canvas: HTMLCanvasElement, container: HTMLElement): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.canvas = canvas;
+    this.container = container;
+
     const ctx = canvas.getContext('2d');
-    if (!ctx) { console.warn('[NeuralCanvas] impossibile ottenere context 2D'); return; }
+    if (!ctx) return;
+    this.ctx = ctx;
 
-    const opts: Required<NeuralCanvasOptions> = { ...this.DEFAULT_OPTIONS, ...options };
-    const mouse = { x: -999, y: -999 };
-    const particles: Particle[] = [];
+    this.setupCanvas();
+    this.initParticles();
+    this.animate();
 
-    const resizeListener = () => {
-      const dpr = window.devicePixelRatio || 1;
-      const w = heroBox.offsetWidth;
-      const h = heroBox.offsetHeight;
-      if (w === 0 || h === 0) { requestAnimationFrame(resizeListener); return; }
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      canvas.style.width = w + 'px';
-      canvas.style.height = h + 'px';
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-      this.initParticles(particles, w, h, opts);
+    this.resizeListener = () => {
+      this.setupCanvas();
+      this.initParticles();
     };
+    window.addEventListener('resize', this.resizeListener);
 
-    const mouseMoveListener = (e: MouseEvent) => {
-      const rect = heroBox.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
+    this.mouseMoveListener = (e: MouseEvent) => {
+      const rect = this.canvas.getBoundingClientRect();
+      this.mouse.x = e.clientX - rect.left;
+      this.mouse.y = e.clientY - rect.top;
     };
-
-    const mouseLeaveListener = () => { mouse.x = -999; mouse.y = -999; };
-
-    resizeListener();
-    window.addEventListener('resize', resizeListener);
-    heroBox.addEventListener('mousemove', mouseMoveListener);
-    heroBox.addEventListener('mouseleave', mouseLeaveListener);
-
-    const state: CanvasState = {
-      ctx, particles, animFrame: 0, mouse,
-      resizeListener, mouseMoveListener, mouseLeaveListener,
-      options: opts, heroBox,
-    };
-    this.states.set(canvas, state);
-    this.animate(canvas, state);
+    this.canvas.addEventListener('mousemove', this.mouseMoveListener);
   }
 
-  destroy(canvas: HTMLCanvasElement): void {
-    const state = this.states.get(canvas);
-    if (!state) return;
-    cancelAnimationFrame(state.animFrame);
-    window.removeEventListener('resize', state.resizeListener);
-    state.heroBox.removeEventListener('mousemove', state.mouseMoveListener);
-    state.heroBox.removeEventListener('mouseleave', state.mouseLeaveListener);
-    this.states.delete(canvas);
+  /** Ferma l'animazione e rimuove i listener. Da chiamare in ngOnDestroy. */
+  destroy(): void {
+    if (this.animFrame) cancelAnimationFrame(this.animFrame);
+    if (this.resizeListener) window.removeEventListener('resize', this.resizeListener);
+    if (this.mouseMoveListener && this.canvas) {
+      this.canvas.removeEventListener('mousemove', this.mouseMoveListener);
+    }
+    this.particles = [];
   }
 
-  private initParticles(
-    particles: Particle[],
-    w: number,
-    h: number,
-    opts: Required<NeuralCanvasOptions>
-  ): void {
-    particles.length = 0;
-    for (let i = 0; i < opts.numParticles; i++) {
-      particles.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
-        size: Math.random() * 1.5 + 0.8,
-        color: opts.colors[Math.floor(Math.random() * opts.colors.length)],
+  // ── Private ────────────────────────────────────────────────────────────────
+
+  private setupCanvas(): void {
+    this.canvas.width  = this.container.offsetWidth;
+    this.canvas.height = this.container.offsetHeight;
+  }
+
+  private initParticles(): void {
+    this.particles = [];
+    for (let i = 0; i < this.numParticles; i++) {
+      this.particles.push({
+        x:     Math.random() * this.canvas.width,
+        y:     Math.random() * this.canvas.height,
+        vx:    (Math.random() - 0.5) * 0.6,
+        vy:    (Math.random() - 0.5) * 0.6,
+        size:  Math.random() * 2 + 1,
+        color: this.COLORS[Math.floor(Math.random() * this.COLORS.length)],
       });
     }
   }
 
-  private animate(canvas: HTMLCanvasElement, state: CanvasState): void {
-    const { ctx, particles, mouse, options, heroBox } = state;
-    const w = heroBox.offsetWidth;
-    const h = heroBox.offsetHeight;
+  private animate(): void {
+    this.animFrame = requestAnimationFrame(() => this.animate());
 
-    ctx.clearRect(0, 0, w, h);
+    const { width, height } = this.canvas;
+    this.ctx.clearRect(0, 0, width, height);
 
-    for (let i = 0; i < particles.length; i++) {
-      const p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
-
-      const dx = mouse.x - p.x;
-      const dy = mouse.y - p.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < options.repulsionRadius) {
-        const angle = Math.atan2(dy, dx);
-        const force = (options.repulsionRadius - dist) / options.repulsionRadius;
-        p.x -= Math.cos(angle) * force * 2;
-        p.y -= Math.sin(angle) * force * 2;
-      }
-
-      if (p.x < 0 || p.x > w) p.vx *= -1;
-      if (p.y < 0 || p.y > h) p.vy *= -1;
-
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
-
-      for (let j = i + 1; j < particles.length; j++) {
-        const p2 = particles[j];
-        const distP = Math.sqrt((p.x - p2.x) ** 2 + (p.y - p2.y) ** 2);
-        if (distP < options.connectionRadius) {
-          ctx.beginPath();
-          const gradient = ctx.createLinearGradient(p.x, p.y, p2.x, p2.y);
-          gradient.addColorStop(0, p.color);
-          gradient.addColorStop(1, p2.color);
-          ctx.strokeStyle = gradient;
-          ctx.globalAlpha = (1 - distP / options.connectionRadius) * 0.4;
-          ctx.lineWidth = 0.8;
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.stroke();
-          ctx.globalAlpha = 1;
+    // Connessioni tra particelle vicine
+    for (let i = 0; i < this.particles.length; i++) {
+      for (let j = i + 1; j < this.particles.length; j++) {
+        const dx   = this.particles[i].x - this.particles[j].x;
+        const dy   = this.particles[i].y - this.particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 90) {
+          this.ctx.beginPath();
+          this.ctx.strokeStyle = `rgba(168,139,250,${1 - dist / 90})`;
+          this.ctx.lineWidth   = 0.4;
+          this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+          this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+          this.ctx.stroke();
         }
       }
     }
-    state.animFrame = requestAnimationFrame(() => this.animate(canvas, state));
+
+    // Disegno e movimento particelle
+    for (const p of this.particles) {
+      // Repulsione dal mouse
+      const mdx  = p.x - this.mouse.x;
+      const mdy  = p.y - this.mouse.y;
+      const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+      if (mdist < 80) {
+        p.vx += (mdx / mdist) * 0.3;
+        p.vy += (mdy / mdist) * 0.3;
+      }
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Rimbalzo sui bordi
+      if (p.x < 0 || p.x > width)  p.vx *= -1;
+      if (p.y < 0 || p.y > height) p.vy *= -1;
+
+      // Attrito lieve per evitare velocità crescente
+      p.vx *= 0.99;
+      p.vy *= 0.99;
+
+      this.ctx.beginPath();
+      this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      this.ctx.fillStyle = p.color;
+      this.ctx.fill();
+    }
   }
 }
