@@ -17,9 +17,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.use(authMiddleware);
+
 // Rotta per ottenere tutti i prodotti
-router.get("/", adminMiddleware, prodottoController.getAllProdotti);
+router.get("/", prodottoController.getAllProdotti);
 // Rotta per la ricerca dei prodotti
 router.get("/ricerca", prodottoController.cercaProdotti);
 // Rotta per ottenere tutti i prodotti di una categoria

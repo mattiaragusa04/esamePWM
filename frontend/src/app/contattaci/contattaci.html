@@ -7,7 +7,7 @@
     </div>
 
     <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
-      <!-- Nome -->
+      <!-- Nome --> 
       <div class="form-group mb-4">
         <label class="font-weight-bold mb-2">Il tuo nome <span class="text-danger">*</span></label>
         <input type="text" formControlName="nome" class="form-control" placeholder="Es. Mario Rossi" [class.is-invalid]="submitted && contactForm.get('nome')?.errors">
