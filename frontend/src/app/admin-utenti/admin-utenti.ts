@@ -1,7 +1,6 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 type AzioneConferma = 'elimina' | 'admin' | 'utente' | 'operatore';
 
 @Component({
@@ -17,6 +16,7 @@ export class AdminUtenti implements OnInit {
   isLoading = true;
   errorMessage = '';
   searchQuery = '';
+  
 
   // --- Stato modale conferma ---
   modaleVisible = false;
@@ -50,7 +50,7 @@ export class AdminUtenti implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -300,8 +300,8 @@ export class AdminUtenti implements OnInit {
         method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ ruolo: 'utente' })
       });
-      if (response.ok) await this.caricaUtenti();
-      else this.errorMessage = "Errore durante l'aggiornamento del ruolo.";
+      if (response.ok) { await this.caricaUtenti(); }
+      else { this.errorMessage = "Errore durante l'aggiornamento del ruolo."; }
     } catch { this.errorMessage = 'Impossibile connettersi al server.'; }
   }
 

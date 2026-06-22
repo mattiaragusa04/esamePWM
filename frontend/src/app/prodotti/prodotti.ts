@@ -453,46 +453,15 @@ export class Prodotti implements OnInit, OnDestroy {
   }
 
   async aggiungiAlCarrello(prodotto: Prodotto) {
-    const token = localStorage.getItem('token');
     const condizioneScelta: 'Nuovo' | 'Usato' = prodotto.condizioneVariante || 'Nuovo';
     const prezzoFinale = this.getPrezzoVisualizzato(prodotto);
 
-    if (token) {
-      try {
-        const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ prodottoId: prodotto.id, quantita: 1, condizione: condizioneScelta, prezzo: Number(prezzoFinale) })
-        });
-        if (response.ok) {
-          this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
-          if (this.carrelloService && typeof (this.carrelloService as any).aggiornaCarrello === 'function') {
-            (this.carrelloService as any).aggiornaCarrello();
-          }
-        } else {
-          const errorData = await response.json();
-          this.toast.error(`Errore: ${errorData.error || errorData.message || 'Impossibile aggiungere al carrello'}`);
-        }
-      } catch (error) {
-        console.error('Errore di connessione:', error);
-        this.toast.error('Errore di connessione al server.');
-      }
-    } else {
-      let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
-      const index = carrello.findIndex((item: any) => (item.id || item.prodotto_id) === prodotto.id && item.condizione === condizioneScelta);
-      if (index > -1) {
-        carrello[index].quantita += 1;
-      } else {
-        carrello.push({ ...prodotto, quantita: 1, condizione: condizioneScelta, prezzoUnitarioVendita: prezzoFinale });
-      }
-      localStorage.setItem('carrello', JSON.stringify(carrello));
+    const successo = await this.carrelloService.aggiungiProdotto(
+      prodotto, 1, condizioneScelta, prezzoFinale
+    );
+
+    if (successo) {
       this.toast.success(`${prodotto.nome} (${condizioneScelta}) aggiunto al carrello a €${prezzoFinale.toFixed(2)}!`);
-      if (this.carrelloService && typeof (this.carrelloService as any).aggiornaCarrello === 'function') {
-        (this.carrelloService as any).aggiornaCarrello();
-      }
     }
   }
 
