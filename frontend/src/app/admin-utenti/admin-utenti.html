@@ -67,7 +67,6 @@
             <th scope="col" class="text-end pe-4">Elimina Utente</th>
             <th scope="col" class="text-end pe-4">Rendi Admin</th>
             <th scope="col" class="text-end pe-4">Rendi Utente</th>
-            <th scope="col" class="text-end pe-4">Rendi Operatore</th>
           </tr>
         </thead>
         <tbody>
@@ -86,8 +85,7 @@
               <span class="badge rounded-pill"
                 [ngClass]="{
                   'bg-danger':    utente.ruolo === 'admin',
-                  'bg-info':      utente.ruolo === 'operatore',
-                  'bg-secondary': utente.ruolo !== 'admin' && utente.ruolo !== 'operatore'
+                  'bg-secondary': utente.ruolo !== 'admin'
                 }">
                 {{ utente.ruolo | uppercase }}
               </span>
@@ -122,14 +120,6 @@
                 <i class="bi bi-person"></i>
               </button>
             </td>
-            <!-- Rendi Operatore -->
-            <td class="text-end pe-4">
-              <button class="btn btn-sm btn-outline-danger rounded-circle" title="Rendi Operatore"
-                [disabled]="utente.ruolo === 'operatore'"
-                (click)="apriModale(utente, 'operatore')">
-                <i class="bi bi-headset"></i>
-              </button>
-            </td>
           </tr>
         </tbody>
       </table>
@@ -148,7 +138,6 @@
       'au-modal-icon--danger':    modaleAzione === 'elimina',
       'au-modal-icon--warning':   modaleAzione === 'admin',
       'au-modal-icon--secondary': modaleAzione === 'utente',
-      'au-modal-icon--info':      modaleAzione === 'operatore'
     }">
       <i class="bi" [ngClass]="modaleConfig.icon"></i>
     </div>
@@ -197,8 +186,8 @@
       <span class="badge rounded-pill au-panel-hero-badge"
         [ngClass]="{
           'bg-danger':    panelloUtente.ruolo === 'admin',
-          'bg-info':      panelloUtente.ruolo === 'operatore',
-          'bg-secondary': panelloUtente.ruolo !== 'admin' && panelloUtente.ruolo !== 'operatore'
+
+          'bg-secondary': panelloUtente.ruolo !== 'admin'
         }">
         {{ panelloUtente.ruolo | uppercase }}
       </span>

@@ -253,8 +253,6 @@ export class AdminUtenti implements OnInit {
         return { titolo: 'Promuovi ad Amministratore', testo: `Stai per assegnare i privilegi di <strong>Amministratore</strong> a <strong>${email}</strong>.`, btnLabel: 'Promuovi', btnClass: 'btn-warning', icon: 'bi-person-gear' };
       case 'utente':
         return { titolo: 'Imposta come Utente', testo: `Stai per rimuovere eventuali privilegi speciali da <strong>${email}</strong> impostando il ruolo a <strong>Utente</strong>.`, btnLabel: 'Conferma', btnClass: 'btn-secondary', icon: 'bi-person' };
-      case 'operatore':
-        return { titolo: 'Promuovi ad Operatore', testo: `Stai per assegnare il ruolo di <strong>Operatore</strong> a <strong>${email}</strong>.`, btnLabel: 'Promuovi', btnClass: 'btn-info', icon: 'bi-headset' };
       default:
         return { titolo: '', testo: '', btnLabel: 'Conferma', btnClass: 'btn-primary', icon: 'bi-check' };
     }
@@ -268,7 +266,6 @@ export class AdminUtenti implements OnInit {
       case 'elimina':   await this._eliminaUtente(this.modaleUtente);  break;
       case 'admin':     await this._rendiAdmin(this.modaleUtente);     break;
       case 'utente':    await this._rendiUtente(this.modaleUtente);    break;
-      case 'operatore': await this._rendiOperatore(this.modaleUtente); break;
     }
     this.chiudiModale();
   }
@@ -308,15 +305,4 @@ export class AdminUtenti implements OnInit {
     } catch { this.errorMessage = 'Impossibile connettersi al server.'; }
   }
 
-  private async _rendiOperatore(utente: any) {
-    const token = localStorage.getItem('token');
-    try {
-      const response = await fetch(`http://localhost:3000/api/auth/${utente.id}/operatore`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ ruolo: 'operatore' })
-      });
-      if (response.ok) await this.caricaUtenti();
-      else this.errorMessage = "Errore durante l'aggiornamento del ruolo.";
-    } catch { this.errorMessage = 'Impossibile connettersi al server.'; }
-  }
 }

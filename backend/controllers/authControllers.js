@@ -357,12 +357,3 @@ exports.user = async (req, res) => {
   }
 };
 
-exports.operatore = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const adminUser = await User.rendiOperatore(userId);
-    res.json(adminUser);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};

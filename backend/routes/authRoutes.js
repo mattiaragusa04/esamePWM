@@ -19,7 +19,6 @@ router.get('/users', authMiddleware, adminMiddleware, authController.getAllUsers
 router.delete('/:id', authMiddleware, adminMiddleware, authController.deleteUser);
 router.put('/:id/admin', authMiddleware, adminMiddleware, authController.admin);
 router.put('/:id/user', authMiddleware, adminMiddleware, authController.user);
-router.put('/:id/operatore', authMiddleware, adminMiddleware, authController.operatore);
 
 // ── PANNELLO DETTAGLIO UTENTE (admin) ─────────────────────────────────────
 // Dettaglio completo: profilo + indirizzi + carte oscurate + punti

@@ -118,15 +118,6 @@ const User = {
     });
   },
 
-  rendiOperatore: (userId) => {
-    return new Promise((resolve, reject) => {
-      const query = `UPDATE utente SET ruolo = 'operatore' WHERE id = ?`;
-      db.run(query, [userId], function (err) {
-        if (err) reject(err);
-        else resolve({ id: userId, changes: this.changes });
-      });
-    });
-  },
 
   updatePassword: (email, hashedPassword) => {
     return new Promise((resolve, reject) => {
