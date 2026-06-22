@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const nodemailer = require('nodemailer');
 const { bootId } = require("../utils/serverBoot");
-const db = require('../db/database');
 const Indirizzo = require('../models/indirizziModel');
 const CartaDiCredito = require('../models/cartaDiCreditoModel');
 
