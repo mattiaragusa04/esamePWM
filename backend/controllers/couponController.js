@@ -1,6 +1,5 @@
 const Coupon = require('../models/couponModel');
-const User   = require('../models/userModel');
-const Ordine = require('../models/ordineModel');
+const CouponService = require('../services/couponService');
 
 // ═══════════════════════════════════════════════════════════════
 // HELPER
@@ -180,53 +179,14 @@ exports.getPresetCoupon = (req, res) => {
 // UTENTE — POST /api/coupon/acquista-preset-coupon
 // ═══════════════════════════════════════════════════════════════
 exports.acquistaPresetCoupon = async (req, res) => {
-  const userId      = req.user.id;
+  const userId = req.user.id;
   const { percentuale } = req.body;
 
-  const percNum = Number(percentuale);
-  if (![5, 10, 15, 20, 25].includes(percNum)) {
-    return res.status(400).json({ error: 'Percentuale non valida. Valori ammessi: 5, 10, 15, 20, 25.' });
-  }
-
-  const costoInPunti = PUNTI_PER_PRESET[percNum];
-
   try {
-    const utente = await User.findById(userId);
-    if (!utente) return res.status(404).json({ error: 'Utente non trovato.' });
-
-    const puntiDisponibili = utente.puntiFedelta || 0;
-    if (puntiDisponibili < costoInPunti) {
-      return res.status(400).json({
-        error: `Punti insufficienti. Hai ${puntiDisponibili} pt, ne servono ${costoInPunti} pt.`
-      });
-    }
-
-    const chars  = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let codice   = 'SC' + percNum + '-';
-    for (let i = 0; i < 8; i++) codice += chars[Math.floor(Math.random() * chars.length)];
-
-    const scadenza = new Date();
-    scadenza.setMonth(scadenza.getMonth() + 3);
-    const scadenzaStr = scadenza.toISOString().split('T')[0];
-
-    const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
-
-    const nuovoCoupon = await Coupon.createGenerato({ codice, valore: percNum, descrizione, scadenzaStr });
-    await Coupon.insertCouponGenerato(userId, nuovoCoupon.id);
-
-    await User.deductPuntiFedelta(userId, costoInPunti);
-    const utenteAggiornato = await User.findById(userId);
-
-    res.json({
-      message: `Coupon acquistato! Usa il codice entro il ${scadenzaStr}.`,
-      codice,
-      scadenza: scadenzaStr,
-      percentuale: percNum,
-      puntiScalati: costoInPunti,
-      puntiFedeltaRimanenti: utenteAggiornato.puntiFedelta
-    });
-
+    const result = await CouponService.acquistaPresetCoupon(userId, percentuale);
+    res.json(result);
   } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message });
     console.error('acquistaPresetCoupon error:', err);
     res.status(500).json({ error: 'Errore interno del server.' });
   }
@@ -250,48 +210,11 @@ exports.acquistaCoupon = async (req, res) => {
   const userId = req.user.id;
   const { catalogoId } = req.body;
 
-  if (!catalogoId) return res.status(400).json({ error: 'catalogoId obbligatorio.' });
-
   try {
-    const template = await Coupon.findFedeltaById(catalogoId);
-    if (!template) return res.status(404).json({ error: 'Coupon non trovato o non disponibile.' });
-
-    const utente = await User.findById(userId);
-    if (!utente) return res.status(404).json({ error: 'Utente non trovato.' });
-
-    const puntiDisponibili = utente.puntiFedelta || 0;
-    const costoInPunti = template.costo_punti;
-
-    if (puntiDisponibili < costoInPunti) {
-      return res.status(400).json({
-        error: `Punti insufficienti. Hai ${puntiDisponibili} pt, ne servono ${costoInPunti} pt.`
-      });
-    }
-
-    const codice = `FEDELTA${template.valore}-${Date.now()}-${userId}`;
-    const scadenza = new Date();
-    scadenza.setMonth(scadenza.getMonth() + 3);
-    const scadenzaStr = scadenza.toISOString().split('T')[0];
-
-    const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
-
-    const nuovoCoupon = await Coupon.createGenerato({ codice, valore: template.valore, descrizione, scadenzaStr });
-    await Coupon.insertCouponGenerato(userId, nuovoCoupon.id);
-    await Coupon.decrementaDisponibile(catalogoId);
-
-    await User.deductPuntiFedelta(userId, costoInPunti);
-    const utenteAggiornato = await User.findById(userId);
-
-    res.json({
-      message: `Coupon acquistato! Usa il codice entro il ${scadenzaStr}.`,
-      codice,
-      scadenza: scadenzaStr,
-      percentuale: template.valore,
-      puntiScalati: costoInPunti,
-      puntiFedeltaRimanenti: utenteAggiornato.puntiFedelta
-    });
-
+    const result = await CouponService.acquistaCoupon(userId, catalogoId);
+    res.json(result);
   } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message });
     console.error('acquistaCoupon error:', err);
     res.status(500).json({ error: 'Errore interno del server.' });
   }
@@ -317,56 +240,14 @@ exports.getProdottiUsati = async (req, res) => {
 //      passa pagatoConPunti=1 ad addProdottoToOrdine
 // ═══════════════════════════════════════════════════════════════
 exports.acquistaProdottoConPunti = async (req, res) => {
-  const userId    = req.user.id;
+  const userId = req.user.id;
   const { prodottoId } = req.body;
 
-  if (!prodottoId) return res.status(400).json({ error: 'prodottoId obbligatorio.' });
-
   try {
-    const prodotto = await Coupon.findProdottoById(prodottoId);
-
-    if (!prodotto) return res.status(404).json({ error: 'Prodotto non trovato.' });
-
-    const isUsato = prodotto.condizione === 'Usato' || prodotto.usato == 1;
-    if (!isUsato) return res.status(400).json({ error: 'Solo prodotti usati acquistabili con punti.' });
-    if (prodotto.giacenza < 1) return res.status(400).json({ error: 'Prodotto esaurito.' });
-
-    // FIX: usa puntiFedelta del prodotto come costo
-    const costoInPunti = getCostoInPunti(prodotto);
-
-    const utente = await User.findById(userId);
-    if (!utente) return res.status(404).json({ error: 'Utente non trovato.' });
-
-    const puntiDisponibili = utente.puntiFedelta || 0;
-    if (puntiDisponibili < costoInPunti) {
-      return res.status(400).json({
-        error: `Punti insufficienti. Hai ${puntiDisponibili} pt, ne servono ${costoInPunti} pt.`
-      });
-    }
-
-    // Crea l'ordine (pagato_con_punti = 1 a livello ordine)
-    const newOrdine = await Ordine.createConPunti(userId, prodotto.prezzoUnitarioVendita);
-
-    // FIX: aggiunge il prodotto alla tabella composto con pagato_con_punti = 1
-    await Ordine.addProdottoToOrdine(newOrdine.id, prodottoId, 1, prodotto.prezzoUnitarioVendita, 1);
-
-    // Decrementa giacenza in modo atomico; se changes=0 la giacenza era già 0 (race condition)
-    const decResult = await Coupon.decrementaGiacenza(prodottoId);
-    if (decResult.changes === 0) {
-      return res.status(409).json({ error: 'Prodotto esaurito. Riprova.' });
-    }
-
-    await User.deductPuntiFedelta(userId, costoInPunti);
-    const utenteAggiornato = await User.findById(userId);
-
-    res.status(201).json({
-      message: `Acquisto effettuato con ${costoInPunti} punti!`,
-      ordineId: newOrdine.id,
-      costoInPunti,
-      puntiFedeltaRimanenti: utenteAggiornato.puntiFedelta
-    });
-
+    const result = await CouponService.acquistaProdottoConPunti(userId, prodottoId);
+    res.status(201).json(result);
   } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message });
     console.error('acquistaProdottoConPunti error:', err);
     res.status(500).json({ error: 'Errore interno del server.' });
   }
