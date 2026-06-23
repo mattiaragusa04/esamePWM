@@ -1,10 +1,13 @@
 const db = require("../db/database");
+const crypto = require('crypto');
 
 const User = {
   create: (nome, cognome, email, password) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO utente (nome, cognome, email, password) VALUES (?, ?, ?, ?)`;
-      db.run(query, [nome, cognome, email, password], function (err) {
+      // Genera un security stamp iniziale alla creazione dell'utente
+      const securityStamp = crypto.randomBytes(16).toString('hex');
+      const query = `INSERT INTO utente (nome, cognome, email, password, security_stamp) VALUES (?, ?, ?, ?, ?)`;
+      db.run(query, [nome, cognome, email, password, securityStamp], function (err) {
         if (err) reject(err);
         else resolve({ id: this.lastID, nome, cognome, email });
       });
@@ -119,11 +122,13 @@ const User = {
   },
 
 
-  updatePassword: (email, hashedPassword) => {
+  // Aggiorna la password e genera un nuovo security stamp per invalidare le vecchie sessioni
+  updatePasswordAndStamp: (id, hashedPassword) => {
     return new Promise((resolve, reject) => {
+      const newStamp = crypto.randomBytes(16).toString('hex');
       db.run(
-        `UPDATE utente SET password = ? WHERE email = ?`,
-        [hashedPassword, email],
+        `UPDATE utente SET password = ?, security_stamp = ? WHERE id = ?`,
+        [hashedPassword, newStamp, id],
         function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
       );
     });

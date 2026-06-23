@@ -218,7 +218,14 @@ export class Vendi implements OnInit, AfterViewInit, OnDestroy {
       if (response.ok) {
         const data = await response.json();
         const allowedCategories = ['Videogiochi', 'Console', 'Accessori', 'Elettronica'];
-        this.prodotti = data.filter((p: Prodotto) => allowedCategories.includes(p.categoria_nome));
+        
+        // Mostra tutte le righe del DB (sia Nuovo che Usato) senza deduplicare.
+        // Questo permette all'utente di scegliere la versione specifica da vendere.
+        this.prodotti = data
+          .filter((p: Prodotto) => allowedCategories.includes(p.categoria_nome))
+          .map((p: Prodotto) => ({ ...p, condizione: p.condizione === 'Usata' ? 'Usato' : p.condizione }));
+
+
         this.applicaFiltri();
         console.log('Prodotti caricati per la vendita:', this.prodotti);
       } else {

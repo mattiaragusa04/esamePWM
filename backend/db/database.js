@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS utente (
     email TEXT NOT NULL,
     password TEXT NOT NULL,
     puntiFedelta INTEGER DEFAULT 0,
-    ruolo TEXT DEFAULT 'user'
+    ruolo TEXT DEFAULT 'user',
+    security_stamp TEXT
 );
 CREATE TABLE IF NOT EXISTS indirizzo(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -183,6 +184,12 @@ db.run(`ALTER TABLE vendi ADD COLUMN tipo_compenso TEXT NOT NULL DEFAULT 'euro'`
 db.run(`ALTER TABLE vendi ADD COLUMN punti_offerti INTEGER DEFAULT 0`, (err) => {
     if (err && !err.message.includes('duplicate column name')) {
         console.error('Migration vendi.punti_offerti:', err.message);
+    }
+});
+// Migration: aggiunge colonna 'security_stamp' a utente se non esiste
+db.run(`ALTER TABLE utente ADD COLUMN security_stamp TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+        console.error('Migration utente.security_stamp:', err.message);
     }
 });
 

@@ -104,7 +104,7 @@ exports.inviaEmailBenvenuto = function(emailUtente, nomeUtente, cognomeUtente) {
 
 // 4. Funzione per inviare l'email di reset password
 exports.inviaEmailResetPassword = async function(emailUtente, token) {
-    const linkReset = `http://localhost:4200/#/reset-password/${token}`;
+    const linkReset = `http://localhost:4200/reset-password/${token}`;
     const mailOptions = {
         from: '"PAwerUP Store" <pawerupecommerce@gmail.com>',
         to: emailUtente,
@@ -187,15 +187,22 @@ exports.updatePassword = async (token, nuovaPassword) => {
     err.status = 400;
     throw err;
   }
-  const decoded = jwt.verify(token, SECRET);
-  const email = decoded.email;
-  const user = await User.findByEmail(email);
+  let decoded;
+  try {
+    decoded = jwt.verify(token, SECRET);
+  } catch (err) {
+    const error = new Error("Il link di reset non è valido o è scaduto.");
+    error.status = 400;
+    throw error;
+  }
+
+  const user = await User.findByEmail(decoded.email);
   if (!user) {
     const err = new Error("Utente non trovato.");
     err.status = 404;
     throw err;
   }
   const hashedPassword = await bcrypt.hash(nuovaPassword, 10);
-  await User.updatePassword(user.id, hashedPassword);
+  await User.updatePasswordAndStamp(user.id, hashedPassword);
   return { message: "Password aggiornata con successo." };
 };

@@ -28,6 +28,7 @@ import { AdminAcquisti } from './admin-acquisti/admin-acquisti';
 import { AdminCoupon } from './admin-coupon/admin-coupon';
 import { FedeltaComponent } from './fedelta/fedelta';
 import { AdminShopFedelta } from './admin-shop-fedelta/admin-shop-fedelta'; // ← NUOVO
+import { ResetPasswordComponent } from './password/reset-password.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -69,5 +70,6 @@ export const routes: Routes = [
       { path: 'coupon', component: AdminCoupon },
       { path: 'shop-fedelta', component: AdminShopFedelta }, // ← NUOVO
     ]
-  }
+  },
+  { path: 'reset-password/:token', component: ResetPasswordComponent },
 ];

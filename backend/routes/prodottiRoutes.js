@@ -27,10 +27,10 @@ router.get("/categoria/:categoriaId", prodottoController.getProdottobyCategoria)
 // Rotta per ottenere un singolo prodotto
 router.get("/:id", prodottoController.getProdottoById);
 
-router.delete("/:id", adminMiddleware,prodottoController.deleteProdotto);
+router.delete("/:id", authMiddleware, adminMiddleware, prodottoController.deleteProdotto);
 
-router.post("/create" , upload.single('immagine'), adminMiddleware,prodottoController.createProdotto);
+router.post("/create", authMiddleware, upload.single('immagine'), adminMiddleware, prodottoController.createProdotto);
 
-router.put("/:id", upload.single('immagine'), adminMiddleware, prodottoController.updateProdotto);
+router.put("/:id", authMiddleware, upload.single('immagine'), adminMiddleware, prodottoController.updateProdotto);
 
 module.exports = router;

@@ -1,29 +1,36 @@
-const jwt = require("jsonwebtoken");
-const { bootId } = require("../utils/serverBoot");
+const jwt = require('jsonwebtoken');
+const { bootId } = require('../utils/serverBoot');
+const User = require('../models/userModel');
 
-const SECRET = process.env.JWT_SECRET || "supersecretkey";
+const SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
-module.exports = (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-
-    if (!authHeader) {
-        return res.status(401).json({ message: "Accesso negato" });
+const authMiddleware = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'Token non fornito o malformato.' });
     }
 
-    const token = authHeader.split(" ")[1];
+    const token = authHeader.split(' ')[1];
 
     try {
-        const verified = jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, SECRET);
 
-        // Controllo bootId: se il server e' stato riavviato dopo l'emissione
-        // di questo token, il bootId non combacia piu' -> sloggare l'utente.
-        if (verified.bootId && verified.bootId !== bootId) {
-            return res.status(401).json({ message: "Sessione scaduta. Effettua nuovamente il login.", code: "SERVER_RESTARTED" });
+        // 1. Verifica che il token sia stato emesso dopo l'ultimo riavvio del server
+        if (decoded.bootId !== bootId) {
+            return res.status(401).json({ message: 'Sessione scaduta a causa di un aggiornamento del server. Effettua nuovamente il login.' });
         }
 
-        req.user = verified;
+        // 2. Verifica che il security stamp non sia cambiato (es. dopo reset password)
+        const user = await User.findById(decoded.id);
+        if (!user || decoded.securityStamp !== user.security_stamp) {
+            return res.status(401).json({ message: 'La sessione è stata invalidata per motivi di sicurezza. Effettua nuovamente il login.' });
+        }
+
+        req.user = decoded;
         next();
     } catch (err) {
-        res.status(401).json({ message: "Token non valido o scaduto" });
+        return res.status(401).json({ message: 'Token non valido o scaduto.' });
     }
 };
+
+module.exports = authMiddleware;
