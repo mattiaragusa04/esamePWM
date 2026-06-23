@@ -89,7 +89,8 @@
     </div>
 
     <!-- Modal Aggiungi/Modifica Prodotto -->
-    <div class="modal fade" [class.show]="mostraModale" [style.display]="mostraModale ? 'block' : 'none'" [style.background]="'rgba(0,0,0,0.5)'" id="nuovoProdottoModal" tabindex="-1" aria-labelledby="nuovoProdottoModalLabel" aria-modal="true" role="dialog">
+    <div class="modal fade" [class.show]="mostraModale" [style.display]="mostraModale ? 'block' : 'none'"
+        [style.background]="'rgba(0,0,0,0.5)'" tabindex="-1" aria-modal="true" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content border-0 shadow" style="border-radius: 1rem;">
                 <div class="modal-header border-bottom-0 pb-0">
@@ -158,20 +159,47 @@
                                 <label for="descrizione" class="form-label font-weight-bold">Descrizione</label>
                                 <textarea class="form-control" id="descrizione" name="descrizione" rows="3" [(ngModel)]="nuovoProdotto.descrizione" required></textarea>
                             </div>
-                            <div class="col-md-6">
-                                <label for="prezzo" class="form-label font-weight-bold">Prezzo (€)</label>
-                                <input type="number" step="0.01" class="form-control" id="prezzo" name="prezzoUnitarioVendita" [(ngModel)]="nuovoProdotto.prezzoUnitarioVendita" required>
-                            </div>
 
-                            <!-- CREAZIONE: doppia giacenza -->
+                            <!-- Solo in creazione: scelta tipo prezzo + doppia giacenza -->
                             <ng-container *ngIf="!isModifica">
-                                <div class="col-md-3">
+                                <!-- Tipo prezzo inserito -->
+                                <div class="col-12">
+                                    <label class="form-label font-weight-bold">Stai inserendo il prezzo di:</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="tipoNuovo" name="tipoPrezzoInserito" value="Nuovo" [(ngModel)]="nuovoProdotto.tipoPrezzoInserito">
+                                            <label class="form-check-label" for="tipoNuovo">
+                                                <span class="badge bg-primary me-1">Nuovo</span> Il prezzo che inserisci è quello del prodotto <strong>Nuovo</strong> (l'Usato verrà calcolato a <strong>-25%</strong>)
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="tipoUsato" name="tipoPrezzoInserito" value="Usato" [(ngModel)]="nuovoProdotto.tipoPrezzoInserito">
+                                            <label class="form-check-label" for="tipoUsato">
+                                                <span class="badge bg-warning text-dark me-1">Usato</span> Il prezzo che inserisci è quello del prodotto <strong>Usato</strong> (il Nuovo verrà calcolato a <strong>+33%</strong>)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="prezzo" class="form-label font-weight-bold">
+                                        Prezzo (€)
+                                        <span class="badge ms-1" [ngClass]="nuovoProdotto.tipoPrezzoInserito === 'Nuovo' ? 'bg-primary' : 'bg-warning text-dark'">{{ nuovoProdotto.tipoPrezzoInserito }}</span>
+                                    </label>
+                                    <input type="number" step="0.01" min="0" class="form-control" id="prezzo" name="prezzoUnitarioVendita" [(ngModel)]="nuovoProdotto.prezzoUnitarioVendita" required>
+                                    <small class="text-muted" *ngIf="nuovoProdotto.tipoPrezzoInserito === 'Nuovo' && nuovoProdotto.prezzoUnitarioVendita > 0">
+                                        Prezzo Usato calcolato: <strong>{{ (nuovoProdotto.prezzoUnitarioVendita * 0.75) | currency:'EUR':'symbol' }}</strong>
+                                    </small>
+                                    <small class="text-muted" *ngIf="nuovoProdotto.tipoPrezzoInserito === 'Usato' && nuovoProdotto.prezzoUnitarioVendita > 0">
+                                        Prezzo Nuovo calcolato: <strong>{{ (nuovoProdotto.prezzoUnitarioVendita / 0.75) | currency:'EUR':'symbol' }}</strong>
+                                    </small>
+                                </div>
+                                <div class="col-md-4">
                                     <label for="giacenzaNuovo" class="form-label font-weight-bold">
                                         <span class="badge bg-primary me-1">Nuovo</span> Giacenza
                                     </label>
                                     <input type="number" min="0" class="form-control" id="giacenzaNuovo" name="giacenzaNuovo" [(ngModel)]="nuovoProdotto.giacenzaNuovo" required>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="giacenzaUsato" class="form-label font-weight-bold">
                                         <span class="badge bg-warning text-dark me-1">Usato</span> Giacenza
                                     </label>
@@ -179,13 +207,17 @@
                                 </div>
                             </ng-container>
 
-                            <!-- MODIFICA: giacenza e condizione singola -->
+                            <!-- Solo in modifica: giacenza e condizione singola -->
                             <ng-container *ngIf="isModifica">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
+                                    <label for="prezzo" class="form-label font-weight-bold">Prezzo (€)</label>
+                                    <input type="number" step="0.01" class="form-control" id="prezzo" name="prezzoUnitarioVendita" [(ngModel)]="nuovoProdotto.prezzoUnitarioVendita" required>
+                                </div>
+                                <div class="col-md-4">
                                     <label for="giacenza" class="form-label font-weight-bold">Giacenza</label>
                                     <input type="number" class="form-control" id="giacenza" name="giacenza" [(ngModel)]="nuovoProdotto.giacenza" required>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="condizione" class="form-label font-weight-bold">Condizione</label>
                                     <select class="form-select" id="condizione" name="condizione" [(ngModel)]="nuovoProdotto.condizione" required>
                                         <option value="Nuovo">Nuovo</option>
@@ -196,9 +228,10 @@
 
                             <div class="col-12">
                                 <label class="form-label font-weight-bold">Immagine Prodotto</label>
-                                <div class="drop-zone border rounded p-4 text-center" style="border: 2px dashed #dee2e6 !important; cursor: pointer;"
-                                     (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
-                                     (click)="fileInput.click()" [class.bg-light]="isDragging">
+                                <div class="drop-zone border rounded p-4 text-center"
+                                    style="border: 2px dashed #dee2e6 !important; cursor: pointer;"
+                                    (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
+                                    (click)="fileInput.click()" [class.bg-light]="isDragging">
                                     <i class="bi bi-cloud-arrow-up-fill text-danger" style="font-size: 2rem;"></i>
                                     <p class="mb-0 mt-2 text-muted">Trascina qui l'immagine o <strong class="text-danger">clicca per sfogliare</strong></p>
                                     <input type="file" #fileInput class="d-none" accept="image/*" (change)="onFileSelected($event)">
