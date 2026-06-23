@@ -1,7 +1,3 @@
-/* ═════════════════════════════════════════════════════
-   PAGINA PROFILO — redesign accattivante
-   ═════════════════════════════════════════════════════ */
-
 .profilo-page {
   padding: 0.5rem 0 2rem;
   animation: profiloFadeIn 0.45s ease-out both;
@@ -12,8 +8,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── HERO BANNER ──────────────────────────────────────────── */
-/* Sfondo scuro per permettere al canvas neurale di essere visibile */
 .profilo-hero {
   position: relative;
   overflow: hidden;
@@ -24,7 +18,6 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
-/* Orb azzerati: il canvas neurale gestisce già l'effetto visivo */
 .profilo-hero-orb {
   position: absolute;
   border-radius: 50%;
@@ -65,7 +58,6 @@
   flex-wrap: wrap;
 }
 
-/* Avatar hero */
 .profilo-hero-avatar {
   position: relative;
   width: 80px;
@@ -104,7 +96,6 @@
   50%       { transform: scale(1.1); opacity: 0.15; }
 }
 
-/* Testi hero */
 .profilo-hero-text {
   flex: 1;
   min-width: 0;
@@ -140,7 +131,6 @@
   gap: 0.35rem;
 }
 
-/* Badge livello */
 .profilo-hero-level {
   display: flex;
   flex-direction: column;
@@ -195,7 +185,6 @@
   font-weight: 600;
 }
 
-/* ─── STAT CARDS ─────────────────────────────────────────────── */
 .profilo-stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -281,10 +270,9 @@ body.theme-dark .profilo-stat-card {
 body.theme-dark .profilo-stat-value { color: #f1f5f9; }
 body.theme-dark .profilo-stat-label { color: #94a3b8; }
 
-/* ─── BOTTOM GRID ──────────────────────────────────────────── */
 .profilo-bottom-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1.25rem;
   animation: profiloFadeIn 0.5s ease 0.15s both;
 }
@@ -300,6 +288,7 @@ body.theme-dark .profilo-stat-label { color: #94a3b8; }
   padding: 1.5rem;
   border: 1px solid rgba(0,0,0,0.06);
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  display: none;
 }
 
 body.theme-dark .profilo-info-card,
@@ -307,6 +296,10 @@ body.theme-dark .profilo-actions-card {
   background: linear-gradient(160deg, #1e293b, #0f172a);
   border-color: rgba(148,163,184,0.2);
   box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.profilo-info-card {
+  display: block;
 }
 
 .profilo-card-header {

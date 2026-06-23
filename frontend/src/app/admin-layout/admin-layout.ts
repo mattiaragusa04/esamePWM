@@ -9,10 +9,8 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css'
 })
-export class AdminLayout implements OnInit, OnDestroy {
+export class AdminLayout implements OnInit {
   adminNome: string = 'Amministratore';
-  oraCorrente: string = '';
-  private timerOra: any;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -24,17 +22,7 @@ export class AdminLayout implements OnInit, OnDestroy {
         this.adminNome = (user.nome || '') + (user.cognome ? ' ' + user.cognome : '');
         if (!this.adminNome.trim()) this.adminNome = 'Amministratore';
       }
-      this.aggiornaOra();
-      this.timerOra = setInterval(() => this.aggiornaOra(), 1000);
     }
   }
 
-  ngOnDestroy() {
-    if (this.timerOra) clearInterval(this.timerOra);
-  }
-
-  private aggiornaOra() {
-    const now = new Date();
-    this.oraCorrente = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  }
 }

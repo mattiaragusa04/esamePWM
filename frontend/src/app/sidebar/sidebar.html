@@ -1,35 +1,30 @@
 <div class="profilo-sidebar" [class.collapsed]="isMenuCollapsed" [class.no-transition]="!isAnimationEnabled">
-
-  <!-- ══ HEADER ═══════════════════════════════════════════════ -->
+  
   <div class="profilo-sidebar-header">
     <div class="profilo-sidebar-bg-deco"></div>
 
-    <!-- Toggle button -->
     <button class="profilo-toggle-btn" (click)="toggleMenu()" title="Espandi/Comprimi">
       <i class="bi" [ngClass]="isMenuCollapsed ? 'bi-layout-sidebar' : 'bi-layout-sidebar-reverse'"></i>
     </button>
 
-    <!-- Avatar con iniziali -->
     <div class="profilo-avatar-wrap">
       <div class="profilo-avatar">
         <span class="nav-text">{{ iniziali }}</span>
       </div>
     </div>
 
-    <!-- Nome e email -->
     <div class="nav-text profilo-header-info">
       <h5 class="profilo-sidebar-name">{{ utente?.nome }} {{ utente?.cognome }}</h5>
       <p class="profilo-sidebar-email">{{ utente?.email }}</p>
     </div>
 
-    <!-- Card punti fedeltà -->
     <div class="profilo-points-card nav-text">
       <div class="profilo-points-top">
         <span class="profilo-points-icon"><i class="bi bi-star-fill"></i></span>
         <span class="profilo-points-value">{{ utente?.puntiFedelta || 0 }}</span>
         <span class="profilo-points-label">Punti Fedeltà</span>
       </div>
-      <!-- Barra livello -->
+
       <div class="profilo-level-bar-wrap">
         <div class="profilo-level-bar">
           <div class="profilo-level-fill" [style.width.%]="progressoPunti"></div>
@@ -42,12 +37,10 @@
     </div>
   </div>
 
-  <!-- ══ DIVIDER ══════════════════════════════════════════════ -->
   <div class="profilo-sidebar-divider">
     <span class="nav-text">MENU</span>
   </div>
 
-  <!-- ══ NAVIGAZIONE ═══════════════════════════════════════════ -->
   <nav class="profilo-nav">
     <a routerLink="/profilo" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="profilo-nav-link" title="Dati Personali">
       <span class="profilo-nav-icon"><i class="bi bi-house"></i></span>
@@ -74,7 +67,6 @@
       <span class="profilo-nav-label nav-text">Indirizzi Salvati</span>
       <i class="bi bi-chevron-right profilo-nav-arrow"></i>
     </a>
-    <!-- ★ NUOVO: Spendi i tuoi punti fedeltà ★ -->
     <a routerLink="/profilo/fedelta" routerLinkActive="active" class="profilo-nav-link" title="Spendi i tuoi punti fedeltà">
       <span class="profilo-nav-icon"><i class="bi bi-trophy-fill"></i></span>
       <span class="profilo-nav-label nav-text">Spendi i tuoi punti fedeltà</span>
@@ -87,7 +79,6 @@
     </a>
   </nav>
 
-  <!-- ══ FOOTER / LOGOUT ═══════════════════════════════════════ -->
   <div class="profilo-sidebar-footer">
     <button class="profilo-logout-btn" (click)="logout()" title="Logout">
       <i class="bi bi-box-arrow-right"></i>

@@ -1,15 +1,4 @@
-/* ═══════════════════════════════════════════════════════
-   SIDEBAR PROFILO UTENTE — palette rosa PAwerUP
-   Colori dal styles.css globale:
-     --main-color:       #f86ded
-     --main-color-hover: #ff9ef8
-     gradient active:    135deg, #f86ded → #fb7185
-     dark bg:            #020617
-   ═══════════════════════════════════════════════════════ */
-
-/* ── Container ──────────────────────────────────────────── */
 .profilo-sidebar {
-  /* Gradiente scuro caldo che richiama il rosa del brand */
   background: linear-gradient(160deg, #1a0820 0%, #2d0d2a 45%, #3a1035 100%);
   border-radius: 1.25rem;
   overflow: hidden;
@@ -20,11 +9,10 @@
   position: sticky;
   top: 1.5rem;
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  width: 280px; /* Larghezza fissa base della sidebar */
+  width: 280px;
   min-width: 80px;
 }
 
-/* ── Header ───────────────────────────────────────────── */
 .profilo-sidebar-header {
   position: relative;
   padding: 1.75rem 1.5rem 1.25rem;
@@ -32,7 +20,6 @@
   overflow: hidden;
 }
 
-/* Cerchi decorativi di sfondo con il rosa del sito */
 .profilo-sidebar-bg-deco::before,
 .profilo-sidebar-bg-deco::after {
   content: '';
@@ -41,6 +28,7 @@
   opacity: 0.13;
   pointer-events: none;
 }
+
 .profilo-sidebar-bg-deco::before {
   width: 200px;
   height: 200px;
@@ -48,6 +36,7 @@
   top: -70px;
   left: -50px;
 }
+
 .profilo-sidebar-bg-deco::after {
   width: 130px;
   height: 130px;
@@ -56,7 +45,6 @@
   right: -30px;
 }
 
-/* Pulsante toggle */
 .profilo-toggle-btn {
   position: absolute;
   top: 0.9rem;
@@ -74,12 +62,12 @@
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
+
 .profilo-toggle-btn:hover {
   background: rgba(248, 109, 237, 0.18);
   color: #f86ded;
 }
 
-/* Avatar con iniziali */
 .profilo-avatar-wrap {
   display: inline-block;
   margin-bottom: 0.8rem;
@@ -114,7 +102,6 @@
   }
 }
 
-/* Nome e email */
 .profilo-sidebar-name {
   color: #fff;
   font-weight: 700;
@@ -133,7 +120,6 @@
   transition: all 0.3s ease;
 }
 
-/* Card punti fedeltà */
 .profilo-points-card {
   background: rgba(248, 109, 237, 0.1);
   border: 1px solid rgba(248, 109, 237, 0.2);
@@ -171,7 +157,6 @@
   letter-spacing: 0.03em;
 }
 
-/* Barra livello */
 .profilo-level-bar {
   height: 5px;
   background: rgba(255,255,255,0.12);
@@ -196,13 +181,13 @@
   font-weight: 600;
 }
 
-/* ── Divider ───────────────────────────────────────────── */
 .profilo-sidebar-divider {
   display: flex;
   align-items: center;
   padding: 0 1.25rem;
   margin: 0.4rem 0;
 }
+
 .profilo-sidebar-divider::before,
 .profilo-sidebar-divider::after {
   content: '';
@@ -210,6 +195,7 @@
   height: 1px;
   background: rgba(255,255,255,0.09);
 }
+
 .profilo-sidebar-divider span {
   color: rgba(255,255,255,0.28);
   font-size: 0.63rem;
@@ -220,7 +206,6 @@
   transition: all 0.3s ease;
 }
 
-/* ── Navigazione ───────────────────────────────────────── */
 .profilo-nav {
   padding: 0.4rem 0.75rem;
   display: flex;
@@ -247,7 +232,6 @@
   transform: translateX(3px);
 }
 
-/* Voce attiva: stesso gradiente rosa usato ovunque nel sito */
 .profilo-nav-link.active {
   background: linear-gradient(135deg, rgba(248,109,237,0.85), rgba(251,113,133,0.7));
   color: #fff !important;
@@ -294,12 +278,12 @@
   transition: opacity 0.18s ease;
   color: rgba(255,255,255,0.4);
 }
+
 .profilo-nav-link:hover .profilo-nav-arrow,
 .profilo-nav-link.active .profilo-nav-arrow {
   opacity: 1;
 }
 
-/* ── Footer / Logout ───────────────────────────────────── */
 .profilo-sidebar-footer {
   padding: 0.9rem 1.25rem 1.5rem;
   border-top: 1px solid rgba(255,255,255,0.07);
@@ -323,13 +307,13 @@
   overflow: hidden;
   white-space: nowrap;
 }
+
 .profilo-logout-btn:hover {
   background: rgba(239,68,68,0.2);
   color: #ef4444;
   border-color: rgba(239,68,68,0.4);
 }
 
-/* ── STATO CHIUSO (COLLAPSED) ──────────────────────────── */
 .profilo-sidebar.collapsed {
   width: 80px;
 }
@@ -380,7 +364,6 @@
   justify-content: center;
 }
 
-/* ── Responsive ───────────────────────────────────────── */
 @media (max-width: 991px) {
   .profilo-sidebar {
     position: static;
