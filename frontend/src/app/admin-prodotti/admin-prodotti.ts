@@ -37,7 +37,6 @@ export class AdminProdotti implements OnInit {
     prezzoUnitarioVendita: 0,
     giacenzaNuovo: 0,
     giacenzaUsato: 0,
-    tipoPrezzoInserito: 'Nuovo', // 'Nuovo' | 'Usato'
     condizione: '',
     genere: '',
     immagine: ''
@@ -124,7 +123,6 @@ export class AdminProdotti implements OnInit {
         prezzoUnitarioVendita: 0,
         giacenzaNuovo: 0,
         giacenzaUsato: 0,
-        tipoPrezzoInserito: 'Nuovo',
         condizione: '',
         genere: '',
         immagine: ''
@@ -143,19 +141,24 @@ export class AdminProdotti implements OnInit {
     this.prodottoInModificaId = null;
   }
 
-  // Calcola i due prezzi in base a tipoPrezzoInserito
-  calcolaPrezzi(): { prezzoNuovo: number; prezzoUsato: number } {
-    const prezzo = parseFloat(this.nuovoProdotto.prezzoUnitarioVendita) || 0;
-    if (this.nuovoProdotto.tipoPrezzoInserito === 'Nuovo') {
-      return {
-        prezzoNuovo: prezzo,
-        prezzoUsato: Math.round(prezzo * 0.75 * 100) / 100
-      };
-    } else {
-      return {
-        prezzoNuovo: Math.round((prezzo / 0.75) * 100) / 100,
-        prezzoUsato: prezzo
-      };
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      this.gestisciFile(event.dataTransfer.files[0]);
     }
   }
 
@@ -180,28 +183,38 @@ export class AdminProdotti implements OnInit {
     this.mostraRiepilogo = true;
   }
 
-  annullaRiepilogo() {
-    this.mostraRiepilogo = false;
-  }
-
-  // Chiamato solo dopo che l'admin ha confermato il riepilogo
   async salvaNuovoProdotto(form: any) {
+    if (form.invalid || (!this.fileImmagine && !this.nuovoProdotto.immagine)) return;
+
+    // Validazione: in creazione almeno una giacenza deve essere > 0
+    if (!this.isModifica) {
+      const gNuovo = Number(this.nuovoProdotto.giacenzaNuovo) || 0;
+      const gUsato = Number(this.nuovoProdotto.giacenzaUsato) || 0;
+      if (gNuovo < 0 || gUsato < 0) {
+        this.toast.error('Le giacenze non possono essere negative.');
+        return;
+      }
+      if (gNuovo === 0 && gUsato === 0) {
+        this.toast.error('Inserisci almeno una giacenza maggiore di 0.');
+        return;
+      }
+    }
+
     const formData = new FormData();
     formData.append('nome', this.nuovoProdotto.nome);
     formData.append('categoria_id', this.nuovoProdotto.categoria_id);
     formData.append('descrizione', this.nuovoProdotto.descrizione);
+    formData.append('prezzoUnitarioVendita', this.nuovoProdotto.prezzoUnitarioVendita);
     formData.append('pubblicatoVetrina', this.nuovoProdotto.pubblicatoVetrina !== undefined ? (this.nuovoProdotto.pubblicatoVetrina ? '1' : '0') : '1');
 
     if (this.isModifica) {
+      // In modifica: usa il campo giacenza singolo e condizione esistente
       formData.append('giacenza', this.nuovoProdotto.giacenza);
       formData.append('condizione', this.nuovoProdotto.condizione);
-      formData.append('prezzoUnitarioVendita', this.nuovoProdotto.prezzoUnitarioVendita);
     } else {
-      // Invia le giacenze e i prezzi già calcolati
+      // In creazione: invia le due giacenze separate, il backend crea le due righe
       formData.append('giacenzaNuovo', this.nuovoProdotto.giacenzaNuovo);
       formData.append('giacenzaUsato', this.nuovoProdotto.giacenzaUsato);
-      formData.append('prezzoNuovo', this.prezzoNuovoCalcolato.toString());
-      formData.append('prezzoUsato', this.prezzoUsatoCalcolato.toString());
     }
 
     if (this.nuovoProdotto.categoria_id == 2 && this.nuovoProdotto.genere) {
@@ -216,21 +229,24 @@ export class AdminProdotti implements OnInit {
 
     try {
       const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('token') : '';
+
       const url = this.isModifica
         ? `http://localhost:3000/api/prodotti/${this.prodottoInModificaId}`
         : 'http://localhost:3000/api/prodotti/create';
       const method = this.isModifica ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
-        method,
-        headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+        method: method,
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: formData
       });
 
       if (response.ok) {
         this.caricaProdotti();
         form.resetForm();
-        this.nuovoProdotto = { nome: '', categoria_id: '', descrizione: '', prezzoUnitarioVendita: 0, giacenzaNuovo: 0, giacenzaUsato: 0, tipoPrezzoInserito: 'Nuovo', condizione: '', genere: '', immagine: '' };
+        this.nuovoProdotto = { nome: '', categoria_id: '', descrizione: '', prezzoUnitarioVendita: 0, giacenzaNuovo: 0, giacenzaUsato: 0, condizione: '', genere: '', immagine: '' };
         this.rimuoviImmagine();
         this.mostraRiepilogo = false;
         this.toast.success('Prodotto salvato con successo!');
@@ -245,27 +261,5 @@ export class AdminProdotti implements OnInit {
       this.errorMessage = 'Impossibile connettersi al server.';
       this.mostraRiepilogo = false;
     }
-  }
-
-  onDragOver(event: DragEvent) { event.preventDefault(); event.stopPropagation(); this.isDragging = true; }
-  onDragLeave(event: DragEvent) { event.preventDefault(); event.stopPropagation(); this.isDragging = false; }
-  onDrop(event: DragEvent) {
-    event.preventDefault(); event.stopPropagation(); this.isDragging = false;
-    if (event.dataTransfer && event.dataTransfer.files.length > 0) this.gestisciFile(event.dataTransfer.files[0]);
-  }
-  onFileSelected(event: any) {
-    if (event.target.files && event.target.files.length > 0) this.gestisciFile(event.target.files[0]);
-  }
-  gestisciFile(file: File) {
-    if (!file.type.match(/image\/*/)) { this.toast.error("Formato non supportato. Carica un'immagine."); return; }
-    this.fileImmagine = file;
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => { this.immaginePreview = reader.result; };
-  }
-  rimuoviImmagine() {
-    this.fileImmagine = null;
-    this.immaginePreview = null;
-    if (this.nuovoProdotto) this.nuovoProdotto.immagine = '';
   }
 }
