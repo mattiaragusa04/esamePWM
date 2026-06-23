@@ -31,6 +31,9 @@ export class AdminProdotti implements OnInit {
     genere: '',
     immagine: ''
   };
+
+  // Array dei generi disponibili per la categoria "Videogiochi"
+  availableGenres: string[] = ['Azione', 'Avventura', 'Sport', 'Sparatutto'];
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef, private toast: ToastService) {}

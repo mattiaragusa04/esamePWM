@@ -118,11 +118,11 @@
                             <div class="col-md-6" *ngIf="nuovoProdotto.categoria_id == 2">
                                 <label for="genere" class="form-label font-weight-bold">Genere</label>
                                 <select class="form-select" id="genere" name="genere" [(ngModel)]="nuovoProdotto.genere" required>
-                                    <option value="" disabled selected>Seleziona un genere</option>
-                                    <option value="1">Azione</option>
-                                    <option value="2">Avventura</option>
-                                    <option value="3">Sport</option>
-                                    <option value="4">Sparatutto</option>
+                                    <option value="" disabled>Seleziona un genere</option>
+                                    <!-- Itera sull'array per creare le opzioni dinamicamente -->
+                                    <option *ngFor="let genre of availableGenres" [value]="genre">
+                                        {{ genre }}
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-12">

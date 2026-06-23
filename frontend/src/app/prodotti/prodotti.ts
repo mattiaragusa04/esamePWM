@@ -72,6 +72,13 @@ export class Prodotti implements OnInit, OnDestroy {
     'elettronica': 4
   };
 
+  // Mappatura inversa per gestire eventuali dati legacy nel DB
+  private genreMap: { [key: string]: string } = {
+    '1': 'Azione',
+    '2': 'Avventura',
+    '3': 'Sport',
+    '4': 'Sparatutto'
+  };
   private routeSub: Subscription | undefined;
 
   constructor(
@@ -253,8 +260,15 @@ export class Prodotti implements OnInit, OnDestroy {
 
   getSottoCategoria(prodotto: Prodotto): string | null {
     // Se il prodotto possiede già il campo 'genere' assegnato dal database (es. Videogiochi), lo restituiamo direttamente
-    if (prodotto.genere) return prodotto.genere.trim();
-
+    if (prodotto.genere) {
+      const genere = prodotto.genere.trim();
+      // Se il genere è un numero (dato legacy), lo convertiamo nel nome corretto.
+      if (this.genreMap[genere]) {
+        return this.genreMap[genere];
+      }
+      // Altrimenti, se è già una stringa corretta, la restituiamo.
+      return genere;
+    }
     if (!this.sottoCategorie || this.sottoCategorie.length === 0) return null;
     
     const nomeLower = prodotto.nome.toLowerCase();
@@ -274,8 +288,8 @@ export class Prodotti implements OnInit, OnDestroy {
         if (sub.keywords.some((kw: string) => nomeLower.includes(kw) || descLower.includes(kw))) {
           // Specializzazione visiva del badge per Tastiere e Mouse
           if (sub.nome === 'Tastiere e Mouse') {
-            const isTastiera = ['tastier', 'keyboard'].some(kw => nomeLower.includes(kw) || descLower.includes(kw));
-            const isMouse = ['mouse', 'mice'].some(kw => nomeLower.includes(kw) || descLower.includes(kw));
+            const isTastiera = ['Tastiere', 'keyboard'].some(kw => nomeLower.includes(kw) || descLower.includes(kw));
+            const isMouse = ['Mouse', 'mice'].some(kw => nomeLower.includes(kw) || descLower.includes(kw));
             if (isTastiera) return 'Tastiera';
             if (isMouse) return 'Mouse';
           }
@@ -319,25 +333,10 @@ export class Prodotti implements OnInit, OnDestroy {
 
     // 1. Filtro per Sottocategoria (Azione, PS5, Sport, etc.)
     if (this.filtroAttivo !== 'Tutti') {
-      const subCat = this.sottoCategorie.find(s => s.nome === this.filtroAttivo);
-      if (subCat && subCat.keywords) {
-        result = result.filter(p => {
-          // Se il prodotto ha un genere definito nel DB, usiamo ESCLUSIVAMENTE quello per evitare falsi positivi
-          if (p.genere) {
-            return p.genere.trim().toLowerCase() === subCat.nome.toLowerCase();
-          }
-
-          // Fallback per i prodotti senza genere (es. Accessori, Console, Elettronica)
-          const appartenenza = this.getSottoCategoria(p);
-          if (subCat.nome === 'Tastiere e Mouse') {
-            return appartenenza === 'Tastiera' || appartenenza === 'Mouse' || appartenenza === 'Tastiere e Mouse';
-          }
-          return appartenenza === subCat.nome;
-        });
-      } else {
-        const f = this.filtroAttivo.toLowerCase();
-        result = result.filter(p => p.nome.toLowerCase().includes(f) || (p.descrizione && p.descrizione.toLowerCase().includes(f)));
-      }
+      result = result.filter(p => {
+        const appartenenza = this.getSottoCategoria(p);
+        return appartenenza === this.filtroAttivo;
+      });
     }
 
     // 2. Filtro per Range di Prezzo (usa prezzoVariante)
