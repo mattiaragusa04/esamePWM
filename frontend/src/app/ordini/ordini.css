@@ -101,19 +101,6 @@
   color: #fff;
 }
 
-/* ── Empty state ─────────────────────────────────────────────────────── */
-.ordini-empty {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: #aaa;
-}
-
-.ordini-empty-icon {
-  font-size: 3.5rem;
-  color: #f86ded;
-  margin-bottom: 1rem;
-}
-
 /* ── Cards ordine ────────────────────────────────────────────────────── */
 .ordine-card {
   background: #ffffff;

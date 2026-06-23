@@ -48,6 +48,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
   prodottoId: number | null = null;
   estimatedPrice: number = 0;
   selectedFiles: File[] = [];
+  imagePreviews: string[] = [];
 
   // Scelta compenso
   tipoCompenso: 'euro' | 'punti' = 'euro';
@@ -183,6 +184,8 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeSub?.unsubscribe();
+    // Revoca gli URL degli oggetti per liberare memoria
+    this.imagePreviews.forEach(url => URL.revokeObjectURL(url));
   }
 
   async verificaCartaDiCredito() {
@@ -278,12 +281,45 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
   }
 
   onFileSelected(event: any) {
-    if (event.target.files) {
-      this.selectedFiles = Array.from(event.target.files);
+    const files: FileList | null = event.target.files;
+    if (!files) return;
+
+    const maxFiles = 5;
+    const currentFilesCount = this.selectedFiles.length;
+    const newFilesCount = files.length;
+
+    if (currentFilesCount + newFilesCount > maxFiles) {
+      this.toast.warning(`Puoi caricare al massimo ${maxFiles} immagini.`);
+      // Resetta l'input per permettere una nuova selezione
+      (event.target as HTMLInputElement).value = '';
+      return;
     }
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (this.selectedFiles.length < maxFiles) {
+        this.selectedFiles.push(file);
+        const url = URL.createObjectURL(file);
+        this.imagePreviews.push(url);
+      }
+    }
+
+    // Resetta l'input per permettere di aggiungere altri file in seguito
+    (event.target as HTMLInputElement).value = '';
+  }
+
+  removeImage(index: number): void {
+    this.selectedFiles.splice(index, 1);
+    const urlToRemove = this.imagePreviews.splice(index, 1)[0];
+    URL.revokeObjectURL(urlToRemove);
   }
 
   async submitSellOffer() {
+    if (this.selectedFiles.length === 0) {
+      this.toast.warning('È obbligatorio caricare almeno una foto del prodotto.');
+      return;
+    }
+
     if (!this.prodotto || this.estimatedPrice <= 0) {
       this.toast.error('Impossibile inviare l\'offerta. Prodotto non valido o prezzo stimato non calcolabile.');
       return;
@@ -297,24 +333,25 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const offerData = {
+    const formData = new FormData();
+    const offerDetails = {
       prodottoId: this.prodotto.id,
       estimatedPrice: this.estimatedPrice,
       tipoCompenso: this.tipoCompenso,
       conditions: this.currentConditionCategories.map(cat => ({
         category: cat.name,
         selectedOption: cat.selectedValue
-      }))
+      })),
     };
+
+    formData.append('offer', JSON.stringify(offerDetails));
+    this.selectedFiles.forEach(file => formData.append('images', file));
 
     try {
       const response = await fetch('http://localhost:3000/api/vendi/offerta', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(offerData)
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
       });
 
       if (response.ok) {

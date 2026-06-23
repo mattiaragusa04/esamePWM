@@ -71,9 +71,19 @@
               accept="image/*">
           </div>
           <div class="mt-3 d-flex gap-2" *ngIf="selectedFiles.length > 0">
-            <div class="badge bg-secondary rounded-pill px-3 py-2">
+            <div class="badge bg-success-subtle text-success-emphasis rounded-pill px-3 py-2 border border-success-subtle" style="font-size: 0.8rem;">
               <i class="bi bi-check2-circle me-1"></i> {{ selectedFiles.length }} foto selezionate
             </div>
+          </div>
+        </div>
+
+        <!-- Anteprima immagini caricate -->
+        <div class="image-previews-container mb-4" *ngIf="imagePreviews.length > 0">
+          <div *ngFor="let preview of imagePreviews; let i = index" class="preview-item">
+            <img [src]="preview" alt="Anteprima immagine {{ i + 1 }}" class="preview-image">
+            <button class="btn-remove-preview" (click)="removeImage(i)" title="Rimuovi immagine">
+              <i class="bi bi-x"></i>
+            </button>
           </div>
         </div>
 
@@ -145,7 +155,7 @@
             <div class="price-display price-display--punti" *ngIf="tipoCompenso === 'punti'">{{ puntiFedeltatOfferti }} <span class="price-display-unit">pt</span></div>
           </div>
           <button class="btn btn-info btn-lg rounded-pill px-5 py-3 fw-bold shadow" (click)="submitSellOffer()" [disabled]="estimatedPrice <= 0">
-            <i class="bi bi-send-check-fill me-2"></i> Invia Offerta al Sito
+            <i class="bi bi-send-check-fill me-2"></i> Invia offerta a PAwerUP
           </button>
         </div>
       </div>

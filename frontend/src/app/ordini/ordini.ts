@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { isPlatformBrowser } from '@angular/common';
-import { Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NeuralCanvasService } from '../shared/neural-canvas.service';
@@ -10,7 +9,7 @@ import { NeuralCanvasService } from '../shared/neural-canvas.service';
   selector: 'app-ordini',
   imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './ordini.html',
-  styleUrl: './ordini.css',
+  styleUrls: ['./ordini.css', '../vendite/vendite.css'],
 })
 export class Ordini implements OnInit, AfterViewInit, OnDestroy {
 

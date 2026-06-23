@@ -74,10 +74,10 @@
 
         <!-- Footer sidebar -->
         <div class="admin-sidebar-footer">
-          <a routerLink="/" class="admin-back-link">
-            <i class="bi bi-arrow-left-circle me-2"></i>
-            Torna al Sito
-          </a>
+          <button (click)="logout()" class="admin-logout-btn">
+            <i class="bi bi-box-arrow-right me-2"></i>
+            Logout
+          </button>
         </div>
 
       </div>

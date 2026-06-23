@@ -425,3 +425,76 @@ body.theme-dark .home-cat-desc { color: #94a3b8; /* TODO */ }
   .home-categories-grid { grid-template-columns: 1fr; }
   .home-hero-actions { flex-direction: column; align-items: center; }
 }
+
+/* ── SEZIONE: RECENSIONI CLIENTI ───────────────────── */
+
+.home-recensioni-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.home-recensione-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home-recensione-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(248,109,237,0.12);
+}
+
+.home-rec-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.home-rec-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f86ded, #fb7185);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.home-rec-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.home-rec-nome {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.home-rec-data {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.home-rec-stelle {
+  color: #f59e0b; /* Giallo/oro per le stelle */
+  font-size: 1.1rem;
+}
+
+.home-rec-testo {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+}

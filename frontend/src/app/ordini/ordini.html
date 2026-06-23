@@ -45,12 +45,12 @@
   </div>
 
   <!-- Empty state -->
-  <div *ngIf="!isLoading && ordini.length === 0" class="ordini-empty">
-    <div class="ordini-empty-icon"><i class="bi bi-bag-x"></i></div>
+  <div *ngIf="!isLoading && ordini.length === 0" class="vendite-empty">
+    <div class="vendite-empty-icon"><i class="bi bi-bag-x"></i></div>
     <h4>Non hai ancora effettuato nessun ordine.</h4>
     <p>Il tuo storico acquisti è vuoto, inizia a esplorare il nostro catalogo!</p>
-    <a routerLink="/" class="ordini-hero-btn">
-      <i class="bi bi-shop"></i> Esplora il catalogo
+    <a routerLink="/" class="vendite-hero-btn">
+      <i class="bi bi-cart3"></i> Esplora il catalogo
     </a>
   </div>
 

@@ -140,9 +140,19 @@
       <span class="pw-side-vendi-icon"><i class="bi bi-tags-fill"></i></span>
       <span class="pw-side-vendi-text">
         <strong>Vendi a PAwerUP</strong>
-        <small>Svuota i cassetti, guadagna</small>
+        <small>Svuota i cassetti e guadagna</small>
       </span>
       <i class="bi bi-arrow-right-short pw-side-vendi-arrow"></i>
+    </button>
+  </div>
+
+  <div class="pw-side-vendi-wrap">
+    <button class="pw-side-vendi-btn" routerLink="/profilo/fedelta" (click)="toggleMenu()">
+      <span class="pw-side-vendi-icon"><i class="bi bi-stars"></i></span>
+      <span class="pw-side-vendi-text">
+        <strong>Spendi i tuoi punti fedeltà</strong>
+        <small>Riscatta coupon o fai acquisti</small>
+      </span>
     </button>
   </div>
 
@@ -239,7 +249,7 @@
           <li><a [routerLink]="['/categoria', 'videogiochi']"><i class="bi bi-joystick"></i>Videogiochi</a></li>
           <li><a [routerLink]="['/categoria', 'elettronica']"><i class="bi bi-cpu"></i>Elettronica</a></li>
           <li><a [routerLink]="['/categoria', 'accessori']"><i class="bi bi-headset"></i>Accessori</a></li>
-          <li><a routerLink="/vendi"><i class="bi bi-tags-fill"></i>Vendi a PAwerUP</a></li>
+          <li><a (click)="vaiAVendi()" style="cursor: pointer;"><i class="bi bi-tags-fill"></i>Vendi a PAwerUP</a></li>
         </ul>
       </div>
 

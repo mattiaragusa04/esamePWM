@@ -1,10 +1,3 @@
-<!-- ═══════════════════════════════════════════════════
-     VENDI PAGE — PAwerUP
-     Pattern identici alla home: hero con canvas rete
-     neurale, section-header, product-card, paginazione.
-     ═══════════════════════════════════════════════════ -->
-
-<!-- ── HERO ─────────────────────────────────────────── -->
 <div class="vendi-hero-section" #heroBox>
   <canvas #particleCanvas class="particle-canvas"></canvas>
 
@@ -12,27 +5,18 @@
   <div class="home-hero-orb vendi-orb-b"></div>
 
   <div class="home-hero-inner">
-    <div class="home-hero-badge">
-      <i class="bi bi-tags-fill"></i>
-      Vendi a PAwerUP
-    </div>
-    <h1 class="home-hero-title">Dai valore al tuo usato</h1>
+    <h1 class="home-hero-title">Vendi il tuo usato</h1>
     <p class="home-hero-sub">
-      Scegli il prodotto che vuoi vendere e ricevi subito una valutazione.
-      Rapido, trasparente, conveniente.
+      Scegli il prodotto che vuoi vendere e ricevi subito una valutazione rapida, trasparente e conveniente.
     </p>
     <div class="home-hero-actions">
-      <a href="#vendi-prodotti" class="home-hero-btn-primary">
-        <i class="bi bi-search me-2"></i>Sfoglia i prodotti
-      </a>
-      <a routerLink="/vendite" class="home-hero-btn-ghost">
+      <a routerLink="/profilo/vendite" class="home-hero-btn-primary">
         <i class="bi bi-shop me-2"></i>Le mie vendite
       </a>
     </div>
   </div>
 </div>
 
-<!-- ── COME FUNZIONA ─────────────────────────────────── -->
 <div class="home-section mt-4">
   <div class="home-section-header">
     <div class="home-section-label">
@@ -105,29 +89,33 @@
       (click)="impostaFiltro('Tutti')">
       <i class="bi bi-grid me-1"></i>Tutti
     </button>
+
     <button
       class="btn rounded-pill px-4"
       [ngClass]="categoriaSelezionata === 'Console' ? 'btn-info' : 'btn-outline-info'"
       (click)="impostaFiltro('Console')">
       <i class="bi bi-controller me-1"></i>Console
     </button>
+
     <button
       class="btn rounded-pill px-4"
       [ngClass]="categoriaSelezionata === 'Videogiochi' ? 'btn-info' : 'btn-outline-info'"
       (click)="impostaFiltro('Videogiochi')">
       <i class="bi bi-joystick me-1"></i>Videogiochi
     </button>
-    <button
-      class="btn rounded-pill px-4"
-      [ngClass]="categoriaSelezionata === 'Accessori' ? 'btn-info' : 'btn-outline-info'"
-      (click)="impostaFiltro('Accessori')">
-      <i class="bi bi-headset me-1"></i>Accessori
-    </button>
+
     <button
       class="btn rounded-pill px-4"
       [ngClass]="categoriaSelezionata === 'Elettronica' ? 'btn-info' : 'btn-outline-info'"
       (click)="impostaFiltro('Elettronica')">
       <i class="bi bi-cpu me-1"></i>Elettronica
+    </button>
+
+    <button
+      class="btn rounded-pill px-4"
+      [ngClass]="categoriaSelezionata === 'Accessori' ? 'btn-info' : 'btn-outline-info'"
+      (click)="impostaFiltro('Accessori')">
+      <i class="bi bi-headset me-1"></i>Accessori
     </button>
   </div>
 
@@ -200,7 +188,6 @@
     </div>
   </div>
 
-  <!-- Paginazione -->
   <nav
     *ngIf="!isLoading && prodottiFiltrati.length > elementiPerPagina"
     class="mt-5 mb-4 d-flex justify-content-center"
