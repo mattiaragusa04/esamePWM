@@ -1203,3 +1203,115 @@ body.theme-dark .cart-total-preview {
   border-color: var(--color-border);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
+
+/* =====================================================
+   FIX DARK MODE — PATCH CHIRURGICA
+   Aggiunge !important mirati + regole mancanti.
+   Nessun blocco rimosso, nessun stile preesistente
+   alterato fuori dal necessario.
+   ===================================================== */
+
+/* ── 1. btn-info SOLIDO — brand rosa in light e dark ──
+   Bootstrap sovrascrive con #0dcaf0; forziamo il brand.  */
+.btn-info {
+  background-color: var(--main-color) !important;
+  border-color: var(--main-color) !important;
+  color: #ffffff !important;
+}
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active {
+  background-color: var(--main-color-hover) !important;
+  border-color: var(--main-color-hover) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(248, 109, 237, 0.45) !important;
+}
+
+/* ── 2. Navbar background in dark ──
+   Bootstrap .navbar { background-color } batte il nostro
+   selettore senza !important.                           */
+html[data-theme="dark"] .navbar,
+body.theme-dark .navbar {
+  background: rgba(2, 6, 23, 0.95) !important;
+}
+
+/* ── 3. Tabelle — background + colore celle ──
+   Bootstrap usa --bs-table-bg con alta specificità;
+   serve !important su background-color e color.         */
+html[data-theme="dark"] .table,
+body.theme-dark .table {
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+  --bs-table-bg: transparent !important;
+  --bs-table-color: var(--color-text) !important;
+  --bs-table-border-color: var(--color-border) !important;
+  --bs-table-striped-bg: rgba(15, 23, 42, 0.5) !important;
+  --bs-table-hover-bg: rgba(248, 109, 237, 0.06) !important;
+}
+html[data-theme="dark"] .table td,
+html[data-theme="dark"] .table th,
+body.theme-dark .table td,
+body.theme-dark .table th {
+  background-color: transparent !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+html[data-theme="dark"] .table thead th,
+body.theme-dark .table thead th {
+  color: var(--color-text-muted) !important;
+  border-bottom-color: var(--color-border) !important;
+}
+html[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > *,
+body.theme-dark .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(15, 23, 42, 0.5) !important;
+  color: var(--color-text) !important;
+}
+
+/* ── 4. list-group-item in dark (regola mancante) ──     */
+html[data-theme="dark"] .list-group-item,
+body.theme-dark .list-group-item {
+  background-color: var(--color-card) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+}
+html[data-theme="dark"] .list-group-item:hover,
+body.theme-dark .list-group-item:hover {
+  background-color: rgba(248, 109, 237, 0.06) !important;
+  color: var(--color-text) !important;
+}
+
+/* ── 5. Badge condizione — !important contro Angular
+   ViewEncapsulation emulated ([_ngcontent-xxx] batte
+   selettori semplici di specificità uguale)             */
+html[data-theme="dark"] .badge-nuovo,
+body.theme-dark .badge-nuovo {
+  background-color: rgba(34, 197, 94, 0.2) !important;
+  color: #4ade80 !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+}
+html[data-theme="dark"] .badge-usato,
+body.theme-dark .badge-usato {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+/* ── 6. Label h6 dentro .category-filter-card in dark ──
+   Bootstrap applica color: inherit su .text-info
+   quando filtroAttivo === sub.nome; forziamo il testo.  */
+html[data-theme="dark"] .category-filter-card h6,
+html[data-theme="dark"] .category-filter-card p,
+html[data-theme="dark"] .category-filter-card span,
+body.theme-dark .category-filter-card h6,
+body.theme-dark .category-filter-card p,
+body.theme-dark .category-filter-card span {
+  color: var(--color-text) !important;
+}
+html[data-theme="dark"] .category-filter-card.active-filter h6,
+html[data-theme="dark"] .category-filter-card.active-filter p,
+html[data-theme="dark"] .category-filter-card.active-filter span,
+body.theme-dark .category-filter-card.active-filter h6,
+body.theme-dark .category-filter-card.active-filter p,
+body.theme-dark .category-filter-card.active-filter span {
+  color: var(--main-color) !important;
+}
