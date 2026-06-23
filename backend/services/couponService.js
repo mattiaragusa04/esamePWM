@@ -83,6 +83,7 @@ exports.acquistaPresetCoupon = async (userId, valore) => {
 // Acquista un coupon dal catalogo fedeltà con i punti fedeltà
 // ─────────────────────────────────────────────────────────────────────────────
 exports.acquistaCoupon = async (userId, couponId) => {
+
   if (!couponId) {
     const err = new Error('catalogoId obbligatorio.');
     err.status = 400;
@@ -112,7 +113,7 @@ exports.acquistaCoupon = async (userId, couponId) => {
     throw err;
   }
 
-  const codice = `FEDELTA${template.valore}-${Date.now()}-${userId}`;
+  const codice = `${template.codice}${template.valore}-${Date.now()}-${userId}`;
   const scadenza = new Date();
   scadenza.setMonth(scadenza.getMonth() + 3);
   const scadenzaStr = scadenza.toISOString().split('T')[0];

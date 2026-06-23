@@ -11,6 +11,7 @@ import { ToastService } from '../shared/toast.service';
   styleUrl: './admin-prodotti.css'
 })
 export class AdminProdotti implements OnInit {
+  availableGenres : any[] = ['Azione ', 'Avventura', 'Sport', 'Sparatutto'];
   prodotti: any[] = [];
   prodottiFiltrati: any[] = [];
   searchQuery: string = '';
@@ -26,6 +27,7 @@ export class AdminProdotti implements OnInit {
   // Stato riepilogo pre-salvataggio (solo creazione)
   mostraRiepilogo: boolean = false;
   prezzoNuovoCalcolato: number = 0;
+  
   prezzoUsatoCalcolato: number = 0;
 
   nuovoProdotto: any = {

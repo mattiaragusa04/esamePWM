@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../shared/toast.service';
+
 
 @Component({
   selector: 'app-admin-acquisti',
@@ -24,7 +26,8 @@ export class AdminAcquisti implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -123,15 +126,17 @@ export class AdminAcquisti implements OnInit {
         this.cdr.detectChanges();
         // Mostra info punti accreditati se compenso è punti
         if (data.puntiAccreditati > 0) {
-          alert(`✅ Offerta accettata! Accreditati ${data.puntiAccreditati} punti fedeltà all'utente.`);
+          this.toast.success(`✅ Offerta accettata! Accreditati ${data.puntiAccreditati} punti fedeltà all'utente.`);
+        } else {
+          this.toast.success(`✅ Offerta accettata e prodotto usato creato!`);
         }
       } else {
         const err = await response.json();
-        alert(`Errore: ${err.message || 'Impossibile accettare l\'offerta.'}`);
+        this.toast.error(err.error || 'Errore durante l\'accettazione.'); 
       }
     } catch (error) {
       console.error('Errore di rete:', error);
-      alert('Impossibile connettersi al server.');
+      this.toast.error('Errore di connessione al server.');
     }
   }
 
@@ -140,7 +145,7 @@ export class AdminAcquisti implements OnInit {
     if (!this.offertaSelezionata) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/vendi/${this.offertaSelezionata.id}`, {
+      const response = await fetch(`http://localhost:3000/api/vendi/${this.offertaSelezionata.id}/stato`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -155,11 +160,11 @@ export class AdminAcquisti implements OnInit {
         this.filtraOfferte();
         this.cdr.detectChanges();
       } else {
-        alert('Errore durante l\'aggiornamento dello stato.');
+        this.toast.error('Errore durante l\'aggiornamento dello stato.');
       }
     } catch (error) {
       console.error('Errore di rete:', error);
-      alert('Impossibile connettersi al server.');
+      this.toast.error('Errore di connessione al server.');
     }
   }
 }
