@@ -26,7 +26,7 @@ import { AdminOrdini } from './admin-ordini/admin-ordini';
 import { ImpostazioniComponent } from './impostazioni/impostazioni.component';
 import { AdminAcquisti } from './admin-acquisti/admin-acquisti';
 import { AdminCoupon } from './admin-coupon/admin-coupon';
-import { FedeltaComponent } from './fedelta/fedelta';
+import { Fedelta } from './fedelta/fedelta';
 import { AdminShopFedelta } from './admin-shop-fedelta/admin-shop-fedelta'; // ← NUOVO
 import { ResetPasswordComponent } from './password/reset-password.component';
 
@@ -54,7 +54,7 @@ export const routes: Routes = [
       { path: 'carte-di-credito', component: CarteDiCredito },
       { path: 'indirizzi', component: Indirizzi },
       { path: 'impostazioni', component: ImpostazioniComponent },
-      { path: 'fedelta', component: FedeltaComponent },
+      { path: 'fedelta', component: Fedelta },
     ]
   },
   {

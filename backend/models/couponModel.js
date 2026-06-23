@@ -6,7 +6,7 @@ const Coupon = {
     const oggi = new Date().toISOString().split('T')[0];
     return new Promise((resolve, reject) => {
       db.get(
-        `SELECT * FROM Coupon
+        `SELECT * FROM coupon
          WHERE codice = ?
            AND attivo = 1
            AND (data_scadenza IS NULL OR data_scadenza >= ?)
@@ -19,7 +19,7 @@ const Coupon = {
 
   findById: (id) => {
     return new Promise((resolve, reject) => {
-      db.get(`SELECT * FROM Coupon WHERE id = ?`, [id],
+      db.get(`SELECT * FROM coupon WHERE id = ?`, [id],
         (err, row) => { if (err) reject(err); else resolve(row); }
       );
     });
@@ -27,7 +27,7 @@ const Coupon = {
 
   findAll: () => {
     return new Promise((resolve, reject) => {
-      db.all(`SELECT * FROM Coupon ORDER BY id DESC`, [],
+      db.all(`SELECT * FROM coupon ORDER BY id DESC`, [],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );
     });
@@ -36,7 +36,7 @@ const Coupon = {
   create: ({ codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi }) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `INSERT INTO Coupon (codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, utilizzi_attuali, attivo)
+        `INSERT INTO coupon (codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, utilizzi_attuali, attivo)
          VALUES (?, ?, ?, ?, ?, ?, 0, 1)`,
         [codice.toUpperCase().trim(), tipo, valore, descrizione || null, data_scadenza || null, utilizzi_massimi || null],
         function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
@@ -47,7 +47,7 @@ const Coupon = {
   update: (id, { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi }) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `UPDATE Coupon
+        `UPDATE coupon
          SET codice = ?, tipo = ?, valore = ?, descrizione = ?,
              data_scadenza = ?, utilizzi_massimi = ?
          WHERE id = ?`,
@@ -61,7 +61,7 @@ const Coupon = {
   toggle: (id) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `UPDATE Coupon SET attivo = CASE WHEN attivo = 1 THEN 0 ELSE 1 END WHERE id = ?`,
+        `UPDATE coupon SET attivo = CASE WHEN attivo = 1 THEN 0 ELSE 1 END WHERE id = ?`,
         [id],
         function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
       );
@@ -71,7 +71,7 @@ const Coupon = {
   incrementaUtilizzi: (id) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `UPDATE Coupon SET utilizzi_attuali = utilizzi_attuali + 1 WHERE id = ?`,
+        `UPDATE coupon SET utilizzi_attuali = utilizzi_attuali + 1 WHERE id = ?`,
         [id],
         (err) => { if (err) reject(err); else resolve(); }
       );
@@ -81,7 +81,7 @@ const Coupon = {
   createGenerato: ({ codice, valore, descrizione, scadenzaStr }) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `INSERT INTO Coupon
+        `INSERT INTO coupon
            (codice, tipo, valore, descrizione, data_scadenza,
             utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
          VALUES (?, 'percentuale', ?, ?, ?, 1, 0, 1, 0)`,
@@ -94,7 +94,7 @@ const Coupon = {
   findFedeltaById: (id) => {
     return new Promise((resolve, reject) => {
       db.get(
-        `SELECT * FROM Coupon WHERE id = ? AND attivo = 1 AND costo_punti > 0`,
+        `SELECT * FROM coupon WHERE id = ? AND attivo = 1 AND costo_punti > 0`,
         [id],
         (err, row) => { if (err) reject(err); else resolve(row); }
       );
@@ -107,7 +107,7 @@ const Coupon = {
         `SELECT id, codice, tipo, valore AS percentuale, descrizione,
                 data_scadenza, utilizzi_massimi, utilizzi_attuali,
                 costo_punti AS costoInPunti, disponibile
-         FROM Coupon
+         FROM coupon
          WHERE attivo = 1
            AND costo_punti > 0
            AND (disponibile = -1 OR disponibile > 0)
@@ -122,7 +122,7 @@ const Coupon = {
   decrementaDisponibile: (id) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `UPDATE Coupon SET disponibile = MAX(0, disponibile - 1) WHERE id = ? AND disponibile != -1`,
+        `UPDATE coupon SET disponibile = MAX(0, disponibile - 1) WHERE id = ? AND disponibile != -1`,
         [id],
         function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
       );
@@ -132,7 +132,7 @@ const Coupon = {
   findAllFedelta: () => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT * FROM Coupon WHERE costo_punti > 0 ORDER BY id DESC`,
+        `SELECT * FROM coupon WHERE costo_punti > 0 ORDER BY id DESC`,
         [],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );
@@ -143,7 +143,7 @@ const Coupon = {
     const disp = disponibile !== undefined ? Number(disponibile) : -1;
     return new Promise((resolve, reject) => {
       db.run(
-        `INSERT INTO Coupon
+        `INSERT INTO coupon
            (codice, tipo, valore, descrizione, data_scadenza,
             utilizzi_massimi, utilizzi_attuali, attivo, costo_punti, disponibile)
          VALUES (?, 'percentuale', ?, ?, ?, -1, 0, 1, ?, ?)`,
@@ -158,7 +158,7 @@ const Coupon = {
   toggleFedelta: (id, attivo) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `UPDATE Coupon SET attivo = ? WHERE id = ? AND costo_punti > 0`,
+        `UPDATE coupon SET attivo = ? WHERE id = ? AND costo_punti > 0`,
         [attivo ? 1 : 0, id],
         function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
       );
@@ -168,7 +168,7 @@ const Coupon = {
   deleteFedelta: (id) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `DELETE FROM Coupon WHERE id = ? AND costo_punti > 0`,
+        `DELETE FROM coupon WHERE id = ? AND costo_punti > 0`,
         [id],
         function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
       );
@@ -237,7 +237,7 @@ const Coupon = {
   insertCouponGenerato: (userId, couponId) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `INSERT INTO coupon_utente (utente_id, coupon_id) VALUES (?, ?)`,
+        `INSERT INTO riscatta (utente_id, coupon_id) VALUES (?, ?)`,
         [userId, couponId],
         function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
       );
@@ -247,11 +247,11 @@ const Coupon = {
   getCouponbyUserId: (userId) => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT c.codice, c.valore AS percentuale, c.data_scadenza AS scadenza, cu.data_generazione AS dataAcquisto
-         FROM coupon_utente cu
-         JOIN Coupon c ON c.id = cu.coupon_id
-         WHERE cu.utente_id = ?
-         ORDER BY cu.data_generazione DESC`,
+        `SELECT c.codice, c.valore AS percentuale, c.data_scadenza AS scadenza, r.data_generazione AS dataAcquisto
+         FROM riscatta r
+         JOIN coupon c ON c.id = r.coupon_id
+         WHERE r.utente_id = ?
+         ORDER BY r.data_generazione DESC`,
         [userId],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );

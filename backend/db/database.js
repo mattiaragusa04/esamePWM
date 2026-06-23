@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS ordine (
     FOREIGN KEY (utente_id) REFERENCES utente(id),
     FOREIGN KEY (carta_id) REFERENCES carta_di_credito(id),
     FOREIGN KEY (indirizzo_id) REFERENCES indirizzo(id),
-    FOREIGN KEY (coupon_id) REFERENCES Coupon(id)
+    FOREIGN KEY (coupon_id) REFERENCES coupon(id)
 );
 CREATE TABLE IF NOT EXISTS composto (
     ordine_id INTEGER,
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS contiene (
     FOREIGN KEY (carrello_id) REFERENCES carrello(id),
     FOREIGN KEY (prodotto_id) REFERENCES prodotto(id)
 );
-CREATE TABLE IF NOT EXISTS Coupon (
+CREATE TABLE IF NOT EXISTS coupon (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     codice TEXT NOT NULL UNIQUE,
     tipo TEXT NOT NULL CHECK(tipo IN ('percentuale', 'fisso')),
@@ -123,18 +123,18 @@ CREATE TABLE IF NOT EXISTS Coupon (
     costo_punti INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE TABLE IF NOT EXISTS coupon_utente (
+CREATE TABLE IF NOT EXISTS riscatta (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     utente_id INTEGER NOT NULL REFERENCES Utente(id) ON DELETE CASCADE,
-    coupon_id INTEGER NOT NULL REFERENCES Coupon(id) ON DELETE CASCADE,
+    coupon_id INTEGER NOT NULL REFERENCES coupon(id) ON DELETE CASCADE,
     data_generazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE TABLE IF NOT EXISTS vendi (
+CREATE TABLE IF NOT EXISTS vende (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     utente_id INTEGER NOT NULL,
     prodotto_id INTEGER NOT NULL,
     prezzo_stimato REAL NOT NULL,
-    condizioni_json TEXT NOT NULL,
+    condizione TEXT NOT NULL,
     allegati_foto TEXT,
     stato_offerta TEXT NOT NULL DEFAULT 'In attesa',
     data_offerta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS vendi (
     FOREIGN KEY (utente_id) REFERENCES utente(id),
     FOREIGN KEY (prodotto_id) REFERENCES prodotto(id)
 );
-CREATE TABLE IF NOT EXISTS messaggio_contatto (
+CREATE TABLE IF NOT EXISTS messaggio (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     indirizzo TEXT,

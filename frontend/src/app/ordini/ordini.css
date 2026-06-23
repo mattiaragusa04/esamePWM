@@ -76,18 +76,20 @@
 }
 
 .ordini-hero-btn {
-  display: inline-flex;
+    display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 1.2rem;
+  gap: 0.45rem;
   background: transparent;
+  backdrop-filter: blur(6px);
   border: 1.5px solid #f86ded;
   color: #f86ded;
-  border-radius: 50px;
+  font-weight: 700;
+  padding: 0.55rem 1.4rem;
+  border-radius: 50rem;
   text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 600;
   transition: background 0.2s, color 0.2s;
+  font-size: 0.92rem;
+  white-space: nowrap;
 }
 
 .ordini-hero-btn:hover {

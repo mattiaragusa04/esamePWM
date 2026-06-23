@@ -2,13 +2,13 @@ const db = require("../db/database");
 
 const Vendi = {
   // tipo_compenso: 'euro' | 'punti'
-  create: (utente_id, prodotto_id, prezzo_stimato, condizioni_json, allegati_foto, tipo_compenso) => {
+  create: (utente_id, prodotto_id, prezzo_stimato, condizione, allegati_foto, tipo_compenso) => {
     return new Promise((resolve, reject) => {
       const compenso = tipo_compenso === 'punti' ? 'punti' : 'euro';
-      const query = `INSERT INTO vendi (utente_id, prodotto_id, prezzo_stimato, condizioni_json, allegati_foto, stato_offerta, tipo_compenso) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-      db.run(query, [utente_id, prodotto_id, prezzo_stimato, condizioni_json, allegati_foto, 'In attesa', compenso], function (err) {
+      const query = `INSERT INTO vende (utente_id, prodotto_id, prezzo_stimato, condizione, allegati_foto, stato_offerta, tipo_compenso) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+      db.run(query, [utente_id, prodotto_id, prezzo_stimato, condizione, allegati_foto, 'In attesa', compenso], function (err) {
         if (err) reject(err);
-        else resolve({ id: this.lastID, utente_id, prodotto_id, prezzo_stimato, condizioni_json, allegati_foto, stato_offerta: 'In attesa', tipo_compenso: compenso });
+        else resolve({ id: this.lastID, utente_id, prodotto_id, prezzo_stimato, condizione, allegati_foto, stato_offerta: 'In attesa', tipo_compenso: compenso });
       });
     });
   },
@@ -17,7 +17,7 @@ const Vendi = {
     return new Promise((resolve, reject) => {
       const query = `
         SELECT v.*, p.nome AS nome_prodotto, u.nome AS nome_utente, u.cognome AS cognome_utente
-        FROM vendi v
+        FROM vende v
         LEFT JOIN prodotto p ON v.prodotto_id = p.id
         LEFT JOIN utente u ON v.utente_id = u.id
       `;
@@ -30,7 +30,7 @@ const Vendi = {
 
   findById: (id) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM vendi WHERE id = ?`;
+      const query = `SELECT * FROM vende WHERE id = ?`;
       db.get(query, [id], (err, row) => {
         if (err) reject(err);
         else resolve(row);
@@ -42,7 +42,7 @@ const Vendi = {
     return new Promise((resolve, reject) => {
       const query = `
         SELECT v.*, p.nome AS nome_prodotto
-        FROM vendi v
+        FROM vende v
         LEFT JOIN prodotto p ON v.prodotto_id = p.id
         WHERE v.utente_id = ?
         ORDER BY v.data_offerta DESC
@@ -56,7 +56,7 @@ const Vendi = {
 
   updateStatus: (id, stato_offerta) => {
     return new Promise((resolve, reject) => {
-      const query = `UPDATE vendi SET stato_offerta = ?, data_aggiornamento_stato = CURRENT_TIMESTAMP WHERE id = ?`;
+      const query = `UPDATE vende SET stato_offerta = ?, data_aggiornamento_stato = CURRENT_TIMESTAMP WHERE id = ?`;
       db.run(query, [stato_offerta, id], function (err) {
         if (err) reject(err);
         else resolve({ id: id, changes: this.changes });
