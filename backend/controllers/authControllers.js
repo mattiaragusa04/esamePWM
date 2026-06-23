@@ -51,8 +51,8 @@ exports.login = async (req, res) => {
     const user = await User.findByEmail(email);
     if (!user) return res.status(400).json({ message: "Credenziali non valide" });
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Credenziali non valide" });
-    const token = jwt.sign({ id: user.id, email: user.email, ruolo: user.ruolo, bootId, securityStamp: user.security_stamp }, SECRET, { expiresIn: "1h" });
+    if (!isMatch) return res.status(400).json({ message: "Credenziali non valide" }); // Rimosso securityStamp dal token
+    const token = jwt.sign({ id: user.id, email: user.email, ruolo: user.ruolo, bootId }, SECRET, { expiresIn: "1h" });
     const { password: userPassword, ...safeUser } = user;
     res.json({ token, utente: normalizzaUtente(safeUser) });
   } catch (err) {

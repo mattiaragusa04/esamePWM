@@ -57,6 +57,8 @@ export class ResetPasswordComponent implements OnInit {
       if (res.ok) {
         this.toast.success(data.message || 'Password aggiornata con successo!');
         this.router.navigate(['/login']);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
       } else {
         this.toast.error(data.message || 'Errore durante l\'aggiornamento della password.');
       }

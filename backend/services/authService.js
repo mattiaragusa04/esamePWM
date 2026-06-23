@@ -203,6 +203,6 @@ exports.updatePassword = async (token, nuovaPassword) => {
     throw err;
   }
   const hashedPassword = await bcrypt.hash(nuovaPassword, 10);
-  await User.updatePasswordAndStamp(user.id, hashedPassword);
+  await User.updatePassword(user.id, hashedPassword); // Aggiorna solo la password
   return { message: "Password aggiornata con successo." };
 };
