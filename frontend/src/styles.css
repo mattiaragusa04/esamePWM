@@ -1315,3 +1315,184 @@ body.theme-dark .category-filter-card.active-filter p,
 body.theme-dark .category-filter-card.active-filter span {
   color: var(--main-color) !important;
 }
+
+/* =============================================================
+   DARK MODE — Navbar, Footer, Side Menu (classi pw-*)
+   Queste regole devono stare in styles.css (foglio globale)
+   e NON in app.css, perché Angular ViewEncapsulation scopa
+   i selettori dei component-styles aggiungendo [_ngcontent-xxx].
+   Un selettore come html[data-theme="dark"] .pw-navbar-wrapper
+   dentro app.css diventerebbe:
+   html[data-theme="dark"] .pw-navbar-wrapper[_ngcontent-xxx]
+   che non matcha mai perché l'attributo Angular è sull'host,
+   non sull'elemento target.
+   ============================================================= */
+
+/* ── Logo ── */
+html[data-theme="dark"] .pw-logo-main,
+body.theme-dark .pw-logo-main {
+  color: #f0f0f0;
+}
+
+/* ── Navbar wrapper ── */
+html[data-theme="dark"] .pw-navbar-wrapper,
+body.theme-dark .pw-navbar-wrapper {
+  background: rgba(10, 7, 22, 0.90) !important;
+  border-bottom-color: rgba(248, 109, 237, 0.18) !important;
+}
+
+/* ── Icon buttons ── */
+html[data-theme="dark"] .pw-nav-icon-btn,
+body.theme-dark .pw-nav-icon-btn {
+  color: #c8c8d0;
+}
+html[data-theme="dark"] .pw-nav-icon-btn:hover,
+body.theme-dark .pw-nav-icon-btn:hover {
+  color: #f86ded;
+  background: rgba(248, 109, 237, 0.1);
+}
+
+/* ── Search bar ── */
+html[data-theme="dark"] .pw-search-bar,
+body.theme-dark .pw-search-bar {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+html[data-theme="dark"] .pw-search-bar:focus-within,
+body.theme-dark .pw-search-bar:focus-within {
+  border-color: rgba(248, 109, 237, 0.4);
+  box-shadow: 0 0 0 3px rgba(248, 109, 237, 0.08);
+}
+html[data-theme="dark"] .pw-search-icon,
+body.theme-dark .pw-search-icon {
+  color: #555;
+}
+html[data-theme="dark"] .pw-search-input,
+body.theme-dark .pw-search-input {
+  color: #e0e0e0;
+}
+html[data-theme="dark"] .pw-search-input::placeholder,
+body.theme-dark .pw-search-input::placeholder {
+  color: #555;
+}
+
+/* ── Chip Vendi ── */
+html[data-theme="dark"] .pw-chip-vendi,
+body.theme-dark .pw-chip-vendi {
+  background: rgba(248, 109, 237, 0.1);
+  border-color: rgba(248, 109, 237, 0.3);
+}
+html[data-theme="dark"] .pw-chip-vendi:hover,
+body.theme-dark .pw-chip-vendi:hover {
+  background: rgba(248, 109, 237, 0.2);
+}
+
+/* ── Nav divider ── */
+html[data-theme="dark"] .pw-nav-divider,
+body.theme-dark .pw-nav-divider {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Avatar pill ── */
+html[data-theme="dark"] .pw-avatar-pill,
+body.theme-dark .pw-avatar-pill {
+  background: rgba(248, 109, 237, 0.1);
+  border-color: rgba(248, 109, 237, 0.3);
+}
+
+/* ── Cart preview ── */
+html[data-theme="dark"] .pw-cart-preview,
+body.theme-dark .pw-cart-preview {
+  background: rgba(15, 10, 30, 0.97);
+  border-color: rgba(248, 109, 237, 0.22);
+}
+
+/* ── Categorie desktop ── */
+html[data-theme="dark"] .pw-categories,
+body.theme-dark .pw-categories {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+html[data-theme="dark"] .pw-category-link,
+body.theme-dark .pw-category-link {
+  color: #94a3b8;
+}
+html[data-theme="dark"] .pw-category-link:hover,
+body.theme-dark .pw-category-link:hover {
+  color: #f86ded;
+}
+
+/* ── Side menu ── */
+html[data-theme="dark"] .pw-side-menu,
+body.theme-dark .pw-side-menu {
+  background: rgba(10, 7, 22, 0.97);
+  border-right-color: rgba(248, 109, 237, 0.15);
+}
+html[data-theme="dark"] .pw-side-vendi-text strong,
+body.theme-dark .pw-side-vendi-text strong {
+  color: #e5e7eb;
+}
+html[data-theme="dark"] .pw-side-link,
+body.theme-dark .pw-side-link {
+  color: #c8c8d8;
+}
+html[data-theme="dark"] .pw-side-link:hover,
+body.theme-dark .pw-side-link:hover {
+  color: #f86ded;
+  background: rgba(248, 109, 237, 0.1);
+}
+
+/* ── Footer pw-* ── */
+html[data-theme="dark"] .pw-footer,
+body.theme-dark .pw-footer {
+  background: #0d0b18 !important;
+  border-top-color: rgba(248, 109, 237, 0.18) !important;
+}
+html[data-theme="dark"] .pw-footer-glow,
+body.theme-dark .pw-footer-glow {
+  background: radial-gradient(ellipse at center, rgba(248, 109, 237, 0.12) 0%, transparent 70%);
+}
+html[data-theme="dark"] .pw-footer-tagline,
+body.theme-dark .pw-footer-tagline {
+  color: #64748b;
+}
+html[data-theme="dark"] .pw-footer-map,
+body.theme-dark .pw-footer-map {
+  border-color: rgba(248, 109, 237, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+html[data-theme="dark"] .pw-footer-links a,
+html[data-theme="dark"] .pw-footer-links .pw-footer-hours,
+body.theme-dark .pw-footer-links a,
+body.theme-dark .pw-footer-links .pw-footer-hours {
+  color: #94a3b8;
+}
+html[data-theme="dark"] .pw-footer-links a:hover,
+body.theme-dark .pw-footer-links a:hover {
+  color: #f86ded;
+}
+html[data-theme="dark"] .pw-social-btn,
+body.theme-dark .pw-social-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.07);
+  color: #94a3b8;
+}
+html[data-theme="dark"] .pw-footer-badge,
+body.theme-dark .pw-footer-badge {
+  color: #64748b;
+}
+html[data-theme="dark"] .pw-footer-copy,
+body.theme-dark .pw-footer-copy {
+  color: #4b5563;
+}
+html[data-theme="dark"] .pw-footer-bottom-links a,
+body.theme-dark .pw-footer-bottom-links a {
+  color: #4b5563;
+}
+html[data-theme="dark"] .pw-footer-bottom-links a:hover,
+body.theme-dark .pw-footer-bottom-links a:hover {
+  color: #f86ded;
+}
+html[data-theme="dark"] .pw-footer-bottom-links span,
+body.theme-dark .pw-footer-bottom-links span {
+  color: rgba(75, 85, 99, 0.5);
+}
