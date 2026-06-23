@@ -10,78 +10,22 @@
   /* ---- Brand colors ---- */
   --main-color: #f86ded;       /* Rosa principale */
   --main-color-hover: #ff9ef8; /* Rosa più luminoso e acceso */
-  --accent-secondary: #bc4ec6; /* Viola secondario — usato nel gradiente profile-header-card */
+  --bg-light: #f8fafc;         /* Grigio chiarissimo per lo sfondo */
+  --card-bg: #ffffff;          /* Bianco puro per le card */
+  --text-main: #0f172a;        /* Testo scuro principale */
+  --text-secondary: #64748b;   /* Testo attenuato (grigio ardesia) */
 
-  /* ---- Superfici (light) ---- */
-  --color-bg:      #f8fafc;
-  --color-surface: #ffffff;
-  --color-card:    #ffffff;
-  --color-input-bg:#ffffff;
-
-  /* ---- Testi (light) ---- */
-  --color-text:      #0f172a;
-  --color-text-muted:#64748b;
-
-  /* ---- Bordi (light) ---- */
-  --color-border: rgba(0, 0, 0, 0.08);
-
-  /* ---- Alias storici (non rinominare: usati in molti componenti) ---- */
-  --bg-light:       var(--color-bg);
-  --card-bg:        var(--color-card);
-  --text-main:      var(--color-text);
-  --text-secondary: var(--color-text-muted);
-
-  /* Font stack uniforme — identico a Bootstrap 5 */
+  /* Font stack uniforme — identico a Bootstrap 5, garantisce coerenza su tutti i sistemi:
+     macOS/iOS → SF Pro  |  Windows → Segoe UI  |  Android → Roboto  |  Linux → Noto Sans */
   --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "Helvetica Neue", Arial, "Noto Sans", sans-serif,
                "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-/* =============================================================
-   VARIABILI SEMANTICHE — Dark mode
-   Attivata da:
-     1. html[data-theme="dark"]  ← script anti-FOUC + ThemeService
-     2. body.theme-dark          ← retrocompatibilità
-   ============================================================= */
-html[data-theme="dark"],
-body.theme-dark {
-  --color-bg:       #020617;
-  --color-surface:  #0f172a;
-  --color-card:     #1e293b;
-  --color-input-bg: #020617;
-
-  --color-text:       #e5e7eb;
-  --color-text-muted: #cbd5e1;
-
-  --color-border: rgba(148, 163, 184, 0.35);
-
-  /* Alias storici in dark */
-  --bg-light:       var(--color-bg);
-  --card-bg:        var(--color-card);
-  --text-main:      var(--color-text);
-  --text-secondary: var(--color-text-muted);
-}
-
-/* =============================================================
-   TRANSIZIONE GLOBALE FLUIDA AL CAMBIO TEMA
-   Evita il "lampeggio" quando si toglia il tema.
-   Applicata su tutti gli elementi tranne SVG e canvas
-   (dove la transizione sarebbe inutile o dannosa).
-   ============================================================= */
-*:not(svg):not(canvas),
-*:not(svg):not(canvas)::before,
-*:not(svg):not(canvas)::after {
-  transition:
-    background-color 0.25s ease,
-    color            0.15s ease,
-    border-color     0.25s ease,
-    box-shadow       0.25s ease;
-}
-
 /* Applichiamo lo sfondo chiaro globale al body */
 body {
   font-family: var(--font-main);
-  background-color: var(--color-bg);
+  background-color: var(--bg-light);
   background-image: linear-gradient(
     180deg,
     rgba(248, 109, 237, 0.15) 0%,
