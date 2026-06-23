@@ -69,19 +69,13 @@ exports.createProdotto = async (req, res) => {
             return res.status(400).json({ error: "Nessun dato fornito per il prodotto" });
         }
 
+        // Conversione campi numerici inviati via FormData
+        if (prodottoData.prezzoUnitarioVendita) prodottoData.prezzoUnitarioVendita = parseFloat(prodottoData.prezzoUnitarioVendita);
         if (prodottoData.categoria_id) prodottoData.categoria_id = parseInt(prodottoData.categoria_id, 10);
 
-        // Giacenze separate
+        // Giacenze separate per Nuovo e Usato
         const giacenzaNuovo = parseInt(prodottoData.giacenzaNuovo, 10) || 0;
         const giacenzaUsato = parseInt(prodottoData.giacenzaUsato, 10) || 0;
-
-        // Prezzi distinti già calcolati dal frontend
-        const prezzoNuovo = parseFloat(prodottoData.prezzoNuovo) || 0;
-        const prezzoUsato = parseFloat(prodottoData.prezzoUsato) || 0;
-
-        if (prezzoNuovo <= 0 || prezzoUsato <= 0) {
-            return res.status(400).json({ error: "I prezzi devono essere maggiori di zero" });
-        }
 
         // Impostazione URL immagine se caricata
         if (req.file) {
@@ -92,7 +86,6 @@ exports.createProdotto = async (req, res) => {
         const prodottoNuovo = await prodotto.create({
             ...prodottoData,
             giacenza: giacenzaNuovo,
-            prezzoUnitarioVendita: prezzoNuovo,
             condizione: 'Nuovo'
         });
 
@@ -100,7 +93,6 @@ exports.createProdotto = async (req, res) => {
         const prodottoUsato = await prodotto.create({
             ...prodottoData,
             giacenza: giacenzaUsato,
-            prezzoUnitarioVendita: prezzoUsato,
             condizione: 'Usato'
         });
 
