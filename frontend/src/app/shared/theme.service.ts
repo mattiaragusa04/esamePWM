@@ -8,13 +8,13 @@ const STORAGE_KEY = 'tema';
 /**
  * Servizio centralizzato per la gestione del tema (chiaro/scuro).
  *
- * - Si carica all'avvio dell'app (iniettato in AppComponent).
- * - Applica la classe `theme-light` o `theme-dark` sul tag <body>.
- * - Persiste la scelta in localStorage.
- * - Espone un signal `theme` cui i componenti possono reagire.
- *
- * Cos\u00ec navigando tra pagine il tema resta coerente ovunque,
- * senza dipendere dal singolo componente Impostazioni.
+ * — Legge la preferenza salvata in localStorage al boot.
+ * — Fallback su prefers-color-scheme se nessuna preferenza è salvata.
+ * — Applica data-theme="dark"|"light" su <html> (necessario per lo script
+ *   anti-FOUC in index.html che gira prima di Angular).
+ * — Mantiene retrocompatibilità aggiungendo anche body.theme-dark / body.theme-light
+ *   per i selettori CSS esistenti che usano quella classe.
+ * — Espone il signal `theme` cui i componenti possono reagire.
  */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -23,9 +23,14 @@ export class ThemeService {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Forza sempre il tema chiaro all'avvio (ignorando i vecchi salvataggi)
-    this.applyTheme('light');
-    localStorage.setItem(STORAGE_KEY, 'light');
+    // 1. Cerca preferenza salvata
+    const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
+
+    // 2. Fallback su preferenza di sistema
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initial: Theme = saved ?? (prefersDark ? 'dark' : 'light');
+
+    this.applyTheme(initial);
   }
 
   setTheme(theme: Theme): void {
@@ -39,9 +44,18 @@ export class ThemeService {
   }
 
   private applyTheme(theme: Theme): void {
+    const html = document.documentElement;
     const body = document.body;
+
+    // Attributo su <html> — necessario per selettori CSS moderni e per lo
+    // script anti-FOUC che gira prima di Angular
+    html.setAttribute('data-theme', theme);
+
+    // Classi su <body> — retrocompatibilità con i selettori body.theme-dark
+    // già presenti in styles.css
     body.classList.remove('theme-light', 'theme-dark');
     body.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light');
+
     this.theme.set(theme);
   }
 }

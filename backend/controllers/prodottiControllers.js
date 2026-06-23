@@ -59,29 +59,52 @@ exports.deleteProdotto = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-
 }
 
 exports.createProdotto = async (req, res) => {
     try {
         const prodottoData = req.body || {};
-        
+
         if (Object.keys(prodottoData).length === 0) {
             return res.status(400).json({ error: "Nessun dato fornito per il prodotto" });
         }
 
-        // Assicuriamoci che i campi numerici inviati dal FormData vengano convertiti
-        if (prodottoData.prezzoUnitarioVendita) prodottoData.prezzoUnitarioVendita = parseFloat(prodottoData.prezzoUnitarioVendita);
-        if (prodottoData.giacenza) prodottoData.giacenza = parseInt(prodottoData.giacenza, 10);
         if (prodottoData.categoria_id) prodottoData.categoria_id = parseInt(prodottoData.categoria_id, 10);
 
-        // Se è stata caricata un'immagine, impostiamo l'URL
+        // Giacenze separate
+        const giacenzaNuovo = parseInt(prodottoData.giacenzaNuovo, 10) || 0;
+        const giacenzaUsato = parseInt(prodottoData.giacenzaUsato, 10) || 0;
+
+        // Prezzi distinti già calcolati dal frontend
+        const prezzoNuovo = parseFloat(prodottoData.prezzoNuovo) || 0;
+        const prezzoUsato = parseFloat(prodottoData.prezzoUsato) || 0;
+
+        if (prezzoNuovo <= 0 || prezzoUsato <= 0) {
+            return res.status(400).json({ error: "I prezzi devono essere maggiori di zero" });
+        }
+
+        // Impostazione URL immagine se caricata
         if (req.file) {
             prodottoData.immagine = 'http://localhost:3000/public/immagini/upload-admin/' + req.file.filename;
         }
-        
-        const newProdotto = await prodotto.create(prodottoData);
-        res.json(newProdotto);
+
+        // Crea la riga con condizione 'Nuovo'
+        const prodottoNuovo = await prodotto.create({
+            ...prodottoData,
+            giacenza: giacenzaNuovo,
+            prezzoUnitarioVendita: prezzoNuovo,
+            condizione: 'Nuovo'
+        });
+
+        // Crea la riga con condizione 'Usato'
+        const prodottoUsato = await prodotto.create({
+            ...prodottoData,
+            giacenza: giacenzaUsato,
+            prezzoUnitarioVendita: prezzoUsato,
+            condizione: 'Usato'
+        });
+
+        res.json({ nuovo: prodottoNuovo, usato: prodottoUsato });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -92,18 +115,16 @@ exports.updateProdotto = async (req, res) => {
         const prodottoId = req.params.id;
         const prodottoData = req.body || {};
         prodottoData.id = prodottoId;
-        
+
         if (Object.keys(prodottoData).length === 0) {
             return res.status(400).json({ error: "Nessun dato fornito per l'aggiornamento" });
         }
 
-        // Assicuriamoci che i campi numerici inviati dal FormData vengano convertiti
         if (prodottoData.prezzoUnitarioVendita) prodottoData.prezzoUnitarioVendita = parseFloat(prodottoData.prezzoUnitarioVendita);
         if (prodottoData.giacenza) prodottoData.giacenza = parseInt(prodottoData.giacenza, 10);
         if (prodottoData.categoria_id) prodottoData.categoria_id = parseInt(prodottoData.categoria_id, 10);
         if (prodottoData.pubblicatoVetrina) prodottoData.pubblicatoVetrina = parseInt(prodottoData.pubblicatoVetrina, 10);
 
-        // Se è stata caricata un'immagine nuova, impostiamo l'URL
         if (req.file) {
             prodottoData.immagine = 'http://localhost:3000/public/immagini/upload-admin/' + req.file.filename;
         }
