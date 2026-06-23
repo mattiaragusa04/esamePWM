@@ -47,6 +47,9 @@ body {
   transition: all 0.3s ease-in-out !important;
 }
 
+/* [#2 rimosso] .btn-info e .btn-home con background-color semplice —
+   sovrascritto completamente dal blocco gradient in FIX #8, era codice morto */
+
 .btn-outline-info {
   color: var(--main-color) !important;
   border-color: var(--main-color) !important;
@@ -58,6 +61,9 @@ body {
   background-color: var(--main-color) !important;
   color: white !important;
 }
+
+/* [#3 rimosso] .btn-info:hover/.btn-home:hover con background-color semplice —
+   sovrascritto dal blocco gradient hover in FIX #8, era codice morto */
 
 /* Stile per far sembrare il bottone un input (es. nel form di registrazione) */
 .btn-custom-select {
@@ -110,6 +116,7 @@ app-dettagli-prodotto img:hover {
 }
 
 /* Tronca i titoli dei prodotti troppo lunghi */
+/* [#9] Rimosso line-clamp: 2 non-standard (non supportato universalmente) */
 .product-card .card-title {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -202,7 +209,7 @@ h6 {
   border-radius: 10px;
 }
 
-/* Badge Condizione Prodotto */
+/* Badge Condizione Prodotto — [#1] unito in un unico blocco */
 .badge-condizione {
   display: inline-flex !important;
   align-items: center;
@@ -562,14 +569,14 @@ body.theme-dark {
 }
 
 /* Card e contenitori principali
-   [#C fix] Rimosso .profile-header-card: mantiene il gradiente rosa anche in dark */
-html[data-theme="dark"] .card,
+   [#5] Rimosso .sidebar-container da questa lista: veniva in conflitto con FIX #5
+   che ha la definizione corretta e più specifica con linear-gradient */
 body.theme-dark .card,
 html[data-theme="dark"] .settings-shell,
 body.theme-dark .settings-shell,
-html[data-theme="dark"] .personal-info-card,
-body.theme-dark .personal-info-card {
-  background: radial-gradient(circle at top left, rgba(248, 109, 237, 0.06), #020617) !important;
+body.theme-dark .personal-info-card,
+body.theme-dark .profile-header-card {
+  background: radial-gradient(circle at top left, rgba(248, 109, 237, 0.06), #020617);
   border-radius: 1.25rem;
   border: 1px solid var(--color-border) !important;
   color: var(--color-text) !important;
@@ -591,7 +598,10 @@ body.theme-dark .settings-muted-box {
   border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-/* Font impostazioni */
+/* [#6] Rimossa sezione generica 'Sidebar profilo in dark' —
+   tutte le regole .sidebar-container in dark sono consolidate nel FIX #5 */
+
+/* Aumento font dei sottoparagrafi nelle impostazioni */
 .settings-subtitle,
 .settings-section-desc,
 .settings-note {
@@ -632,7 +642,7 @@ body.theme-dark .settings-section-desc,
 body.theme-dark .settings-note,
 body.theme-dark .text-muted,
 body.theme-dark .info-label {
-  color: var(--color-text) !important;
+  color: #e5e7eb !important;
 }
 
 /* Forza testo chiaro */
@@ -650,19 +660,16 @@ body.theme-dark .nav-text,
 body.theme-dark .brand-text,
 body.theme-dark .sidebar-container .nav-link .nav-text,
 body.theme-dark .navbar-brand {
-  color: var(--color-text) !important;
+  color: #e5e7eb !important;
 }
 
-html[data-theme="dark"] .text-secondary,
+/* [#7] body.theme-dark .text-secondary unificato qui con valore #cbd5e1
+   (rimosse le due definizioni precedenti con valori diversi #e5e7eb e #cbd5e1) */
 body.theme-dark .text-secondary {
-  color: var(--color-text-muted) !important;
+  color: #cbd5e1 !important;
 }
 
-/* Background chiari riadattati */
-html[data-theme="dark"] .bg-light,
-html[data-theme="dark"] .bg-white,
-html[data-theme="dark"] .stat-card,
-html[data-theme="dark"] .auth-card,
+/* Background chiari riadattati e fix elementi con sfondo bianco hardcoded */
 body.theme-dark .bg-light,
 body.theme-dark .bg-white,
 body.theme-dark .stat-card,
@@ -741,6 +748,9 @@ body.theme-dark .btn-outline-secondary:hover {
   background-color: rgba(248, 109, 237, 0.12);
   color: #fff;
 }
+
+/* [#4] Rimossa seconda definizione duplicata di body.theme-dark .btn-outline-info —
+   la definizione canonica rimane nel blocco 'FIX DARK MODE leggibilità generale' */
 
 /* Bottoni settings */
 html[data-theme="dark"] .settings-btn-primary,
@@ -893,31 +903,17 @@ body.theme-dark .footer .social-icon:hover {
   transform: translateY(-3px);
 }
 
-/* Bottoni outline-info */
-html[data-theme="dark"] .btn-outline-info,
+/* Bottoni outline-info usati in molte card/footer */
 body.theme-dark .btn-outline-info {
   border-color: var(--main-color) !important;
   color: var(--main-color) !important;
 }
-
-html[data-theme="dark"] .btn-outline-info:hover,
 body.theme-dark .btn-outline-info:hover {
   background-color: var(--main-color) !important;
   color: #fff !important;
 }
 
-/* Titoli di pagina */
-html[data-theme="dark"] .section-title,
-html[data-theme="dark"] .page-title,
-html[data-theme="dark"] .titolo-pagina,
-html[data-theme="dark"] .titolo-sezione,
-html[data-theme="dark"] .categoria-title,
-html[data-theme="dark"] .display-1,
-html[data-theme="dark"] .display-2,
-html[data-theme="dark"] .display-3,
-html[data-theme="dark"] .display-4,
-html[data-theme="dark"] .display-5,
-html[data-theme="dark"] .display-6,
+/* Titoli di pagina (es. "PRODOTTI CONSOLE", "CONSIGLIATI PER TE") */
 body.theme-dark .section-title,
 body.theme-dark .page-title,
 body.theme-dark .titolo-pagina,
@@ -936,7 +932,7 @@ html[data-theme="dark"] h1.text-secondary,
 html[data-theme="dark"] h2.text-secondary,
 body.theme-dark h1.text-secondary,
 body.theme-dark h2.text-secondary {
-  color: var(--color-text-muted) !important;
+  color: #cbd5e1 !important;
 }
 
 /* Card prodotti */
@@ -1014,10 +1010,30 @@ body.theme-dark .category-filter-card {
   color: var(--color-text) !important;
 }
 
-html[data-theme="dark"] .category-filter-card.active-filter,
-body.theme-dark .category-filter-card.active-filter {
-  border-color: var(--main-color) !important;
-  background-color: rgba(248, 109, 237, 0.1) !important;
+/* Override classi colorate Bootstrap globali per Dark Mode
+   (migliora il contrasto su sfondi scuri ovunque) */
+body.theme-dark .text-success,
+body.theme-dark .form-check label.text-success { color: #34d399 !important; }
+
+body.theme-dark .text-danger,
+body.theme-dark .form-check label.text-danger { color: #f87171 !important; }
+
+body.theme-dark .text-primary,
+body.theme-dark .form-check label.text-primary { color: #93c5fd !important; }
+
+body.theme-dark .text-warning,
+body.theme-dark .form-check label.text-warning { color: #fcd34d !important; }
+
+/* Badge di stato in Dark Mode */
+body.theme-dark .badge-pending {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #fcd34d !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+body.theme-dark .badge-success {
+  background: rgba(34, 197, 94, 0.2) !important;
+  color: #86efac !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
 }
 
 /* Navbar */
@@ -1080,9 +1096,212 @@ body.theme-dark .pagination .page-link {
   color: var(--color-text);
 }
 
-html[data-theme="dark"] .pagination .page-item.active .page-link,
-body.theme-dark .pagination .page-item.active .page-link {
-  background-color: var(--main-color);
+/* Navbar pillole categorie selezionate (PS5, PS4, Switch) e card categorie */
+body.theme-dark .categoria-pill,
+body.theme-dark .categoria-card {
+  background: rgba(30, 41, 59, 0.85) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #e5e7eb !important;
+}
+body.theme-dark .categoria-pill.active,
+body.theme-dark .categoria-card.active {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.45);
+}
+
+/* [#8] Badge Nuovo/Usato dark — consolidati in un unico blocco */
+body.theme-dark .badge.bg-success,
+body.theme-dark .badge-nuovo {
+  background-color: rgba(46, 204, 113, 0.25) !important;
+  color: #5ee08a !important;
+  border: 1px solid rgba(46, 204, 113, 0.5) !important;
+}
+body.theme-dark .badge.bg-secondary,
+body.theme-dark .badge-usato {
+  background-color: rgba(148, 163, 184, 0.25) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(148, 163, 184, 0.5) !important;
+}
+
+/* Prezzo prodotto */
+body.theme-dark .price-current,
+body.theme-dark .prezzo,
+body.theme-dark .product-price {
+  color: var(--main-color) !important;
+}
+
+/* "CENTRO IMPOSTAZIONI" e altre pill informative */
+body.theme-dark .badge.bg-light,
+body.theme-dark .info-pill {
+  background: rgba(248, 109, 237, 0.18) !important;
+  color: #f9a8e0 !important;
+  border: 1px solid rgba(248, 109, 237, 0.35);
+}
+
+/* ============================================================
+   DARK MODE POLISH — fix specifici (8 issue)
+   ============================================================ */
+
+/* FIX #1 — Pannello filtri card (prodotti.html: .col-lg-3 > .card.shadow-sm)
+   Bootstrap .card di base ha bg bianco e text muted, qui forziamo dark */
+body.theme-dark .col-lg-3 > .card.shadow-sm,
+body.theme-dark .col-lg-3 > .card {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #e5e7eb !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+body.theme-dark .col-lg-3 > .card h5,
+body.theme-dark .col-lg-3 > .card h6 {
+  color: #ffffff !important;
+  border-color: rgba(148, 163, 184, 0.3) !important;
+}
+body.theme-dark .col-lg-3 > .card .form-check-label,
+body.theme-dark .col-lg-3 > .card label {
+  color: #e5e7eb !important;
+}
+/* Etichette colorate "Immediata"/"Non disponibile"/"Nuovo"/"Usato" nei filtri */
+body.theme-dark .col-lg-3 > .card .form-check-label.text-success {
+  color: #5ee08a !important;
+}
+body.theme-dark .col-lg-3 > .card .form-check-label.text-danger {
+  color: #f87171 !important;
+}
+body.theme-dark .col-lg-3 > .card .form-check-label.text-muted {
+  color: #cbd5e1 !important;
+}
+/* Input numerici "Min €"/"Max €" — overridano bg-light */
+body.theme-dark .col-lg-3 > .card input.form-control.bg-light,
+body.theme-dark .col-lg-3 > .card input.bg-light {
+  background-color: rgba(2, 6, 23, 0.85) !important;
+  color: #e5e7eb !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+}
+body.theme-dark .col-lg-3 > .card input.form-control::placeholder {
+  color: #94a3b8 !important;
+}
+/* Bottone "Resetta Filtri" */
+body.theme-dark .col-lg-3 > .card .btn-outline-secondary {
+  background: rgba(148, 163, 184, 0.12) !important;
+  border-color: rgba(148, 163, 184, 0.45) !important;
+  color: #e5e7eb !important;
+}
+body.theme-dark .col-lg-3 > .card .btn-outline-secondary:hover {
+  background: var(--main-color) !important;
+  border-color: var(--main-color) !important;
+  color: #fff !important;
+}
+
+/* FIX #3 — Card filtro categoria (Tutte/PS5/PS4/Switch/Xbox/Retrogaming) */
+body.theme-dark .category-filter-card {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #e5e7eb !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+body.theme-dark .category-filter-card .text-muted {
+  color: #cbd5e1 !important;
+}
+body.theme-dark .category-filter-card .bi {
+  color: #e5e7eb !important;
+}
+body.theme-dark .category-filter-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(248, 109, 237, 0.55) !important;
+  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.25) !important;
+}
+body.theme-dark .category-filter-card.active-filter {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  border-color: var(--main-color) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.45) !important;
+}
+body.theme-dark .category-filter-card.active-filter .text-muted,
+body.theme-dark .category-filter-card.active-filter .bi {
+  color: #fff !important;
+}
+/* Label "Tutte/PS5/..." sotto la card */
+body.theme-dark .text-info {
+  color: var(--main-color) !important;
+}
+
+/* FIX #4 — Icona carrello in navbar visibile in dark */
+body.theme-dark .cart-nav-item,
+body.theme-dark .cart-nav-item .bi,
+body.theme-dark .cart-nav-item i {
+  color: #f1f5f9 !important;
+}
+body.theme-dark .cart-nav-item:hover .bi,
+body.theme-dark .cart-nav-item:hover i {
+  color: var(--main-color) !important;
+}
+/* Anche heart e person nella stessa zona */
+body.theme-dark .navbar .nav-link.text-dark,
+body.theme-dark .navbar .nav-link.text-dark .bi,
+body.theme-dark .navbar .nav-link.text-dark svg {
+  color: #f1f5f9 !important;
+  fill: #f1f5f9 !important;
+}
+body.theme-dark .navbar .nav-link.text-dark:hover .bi,
+body.theme-dark .navbar .nav-link.text-dark:hover svg {
+  color: var(--main-color) !important;
+  fill: var(--main-color) !important;
+}
+/* Cart total preview tooltip box */
+body.theme-dark .cart-total-preview {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #e5e7eb !important;
+}
+body.theme-dark .cart-total-preview .text-muted {
+  color: #cbd5e1 !important;
+}
+
+/* FIX #5 — Sidebar /profilo in dark mode (sidebar.html usa .sidebar-container + text-bg-white) */
+body.theme-dark .sidebar-container {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  color: #e5e7eb !important;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+body.theme-dark .sidebar-container.text-bg-white {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  color: #e5e7eb !important;
+}
+body.theme-dark .sidebar-container .brand-text,
+body.theme-dark .sidebar-container .brand-text .fs-4,
+body.theme-dark .sidebar-container .brand-text .bi {
+  color: #ffffff !important;
+}
+body.theme-dark .sidebar-container hr {
+  border-color: rgba(148, 163, 184, 0.25);
+  opacity: 1;
+}
+body.theme-dark .sidebar-container .nav-link {
+  color: #e5e7eb !important;
+}
+body.theme-dark .sidebar-container .nav-link .bi {
+  color: #e5e7eb !important;
+}
+body.theme-dark .sidebar-container .nav-link:hover:not(.active) {
+  background-color: rgba(248, 109, 237, 0.12) !important;
+  color: var(--main-color) !important;
+}
+body.theme-dark .sidebar-container .nav-link:hover:not(.active) .bi {
+  color: var(--main-color) !important;
+}
+body.theme-dark .sidebar-container .nav-link.active,
+body.theme-dark .sidebar-container .nav-link.active .bi {
+  color: #fff !important;
+}
+body.theme-dark .sidebar-container .menu-toggler-btn,
+body.theme-dark .sidebar-container .menu-toggler-btn .bi {
+  color: #e5e7eb !important;
+  border-color: rgba(148, 163, 184, 0.45);
+}
+body.theme-dark .sidebar-container .menu-toggler-btn:hover {
+  background: rgba(248, 109, 237, 0.15);
   border-color: var(--main-color);
 }
 
@@ -1163,6 +1382,50 @@ body.theme-dark .cart-total-preview {
   border-color: var(--main-color) !important;
   color: #ffffff !important;
 }
+body.theme-dark h2.text-white .text-info,
+body.theme-dark h2 .text-info {
+  color: var(--main-color) !important;
+}
+
+/* FIX #7 — Card categorie nella home (.category-card)
+   Sono <div class="card h-100 shadow-sm border-0 category-card"> */
+body.theme-dark .category-card {
+  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #e5e7eb !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+body.theme-dark .category-card .card-body {
+  color: #e5e7eb !important;
+}
+body.theme-dark .category-card h4,
+body.theme-dark .category-card .card-title {
+  color: #ffffff !important;
+}
+body.theme-dark .category-card .card-text,
+body.theme-dark .category-card .text-muted {
+  color: #cbd5e1 !important;
+}
+body.theme-dark .category-card .bi {
+  color: var(--main-color) !important;
+}
+body.theme-dark .category-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(248, 109, 237, 0.55) !important;
+  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.25) !important;
+}
+
+/* FIX #8 — Applica il gradient rosa a TUTTI i bottoni "accesi" di rosa nell'app */
+
+/* Bottoni primary/info ovunque (light + dark) */
+.btn-info,
+.btn-primary {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.32) !important;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
 .btn-info:hover,
 .btn-info:focus,
 .btn-info:active {
@@ -1172,12 +1435,11 @@ body.theme-dark .cart-total-preview {
   box-shadow: 0 0 14px rgba(248, 109, 237, 0.45) !important;
 }
 
-/* ── 2. Navbar background in dark ──
-   Bootstrap .navbar { background-color } batte il nostro
-   selettore senza !important.                           */
-html[data-theme="dark"] .navbar,
-body.theme-dark .navbar {
-  background: rgba(2, 6, 23, 0.95) !important;
+/* Bottoni circle scroll della home */
+.scroll-btn {
+  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
+  border: none !important;
+  color: #fff !important;
 }
 
 /* ── 3. Tabelle — background + colore celle ──
@@ -1273,17 +1535,25 @@ body.theme-dark .category-filter-card.active-filter span {
    non sull'elemento target.
    ============================================================= */
 
-/* ── Logo ── */
-html[data-theme="dark"] .pw-logo-main,
-body.theme-dark .pw-logo-main {
-  color: #f0f0f0;
+/* [#1 consolidato sopra] .badge-condizione è già definito in blocco unico */
+.badge-condizione i {
+  font-size: 0.85rem;
 }
 
-/* ── Navbar wrapper ── */
-html[data-theme="dark"] .pw-navbar-wrapper,
-body.theme-dark .pw-navbar-wrapper {
-  background: rgba(10, 7, 22, 0.90) !important;
-  border-bottom-color: rgba(248, 109, 237, 0.18) !important;
+/* Badge angolare "-25%" per card variante Usato (corner top-left) */
+.product-card .discount-corner-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: linear-gradient(135deg, #dc3545, #b91c1c);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(220, 53, 69, 0.45);
 }
 
 /* ── Icon buttons ── */
@@ -1348,126 +1618,26 @@ body.theme-dark .pw-chip-vendi:hover {
   background: rgba(248, 109, 237, 0.2);
 }
 
-/* ── Nav divider ── */
-html[data-theme="dark"] .pw-nav-divider,
-body.theme-dark .pw-nav-divider {
-  background: rgba(255, 255, 255, 0.1);
+/* [#10] Sostituito il selettore universale [class$="-container"] con classi specifiche
+   per evitare di catturare .modal-container, .toast-container e altri container Bootstrap */
+body.theme-dark .profilo-container,
+body.theme-dark .ordini-container,
+body.theme-dark .vendi-container,
+body.theme-dark .carrello-container,
+body.theme-dark .preferiti-container,
+body.theme-dark .pagamento-container,
+body.theme-dark .fedelta-container,
+body.theme-dark .contattaci-container,
+body.theme-dark .ricerca-container,
+body.theme-dark .dettagli-container {
+  background-color: #0f172a !important;
+  color: #e5e7eb !important;
 }
 
-/* ── Avatar pill ── */
-html[data-theme="dark"] .pw-avatar-pill,
-body.theme-dark .pw-avatar-pill {
-  background: rgba(248, 109, 237, 0.1);
-  border-color: rgba(248, 109, 237, 0.3);
-}
-
-/* ── Cart preview ── */
-html[data-theme="dark"] .pw-cart-preview,
-body.theme-dark .pw-cart-preview {
-  background: rgba(15, 10, 30, 0.97);
-  border-color: rgba(248, 109, 237, 0.22);
-}
-
-/* ── Categorie desktop ── */
-html[data-theme="dark"] .pw-categories,
-body.theme-dark .pw-categories {
-  border-top-color: rgba(255, 255, 255, 0.06);
-}
-html[data-theme="dark"] .pw-category-link,
-body.theme-dark .pw-category-link {
-  color: #94a3b8;
-}
-html[data-theme="dark"] .pw-category-link:hover,
-body.theme-dark .pw-category-link:hover {
-  color: #f86ded;
-}
-
-/* ── Side menu ── */
-html[data-theme="dark"] .pw-side-menu,
-body.theme-dark .pw-side-menu {
-  background: rgba(10, 7, 22, 0.97);
-  border-right-color: rgba(248, 109, 237, 0.15);
-}
-html[data-theme="dark"] .pw-side-vendi-text strong,
-body.theme-dark .pw-side-vendi-text strong {
-  color: #e5e7eb;
-}
-html[data-theme="dark"] .pw-side-link,
-body.theme-dark .pw-side-link {
-  color: #c8c8d8;
-}
-html[data-theme="dark"] .pw-side-link:hover,
-body.theme-dark .pw-side-link:hover {
-  color: #f86ded;
-  background: rgba(248, 109, 237, 0.1);
-}
-
-/* Pulsante Punti Fedeltà (verde) */
-.pw-side-vendi-btn--fedelta {
-  background: rgba(80, 211, 138, 0.15);
-  border-color: rgba(80, 211, 138, 0.3);
-}
-.pw-side-vendi-btn--fedelta .pw-side-vendi-icon {
-  color: #50d38a;
-}
-.pw-side-vendi-btn--fedelta:hover {
-  background: rgba(80, 211, 138, 0.25);
-  border-color: rgba(80, 211, 138, 0.5);
-}
-
-
-/* ── Footer pw-* ── */
-html[data-theme="dark"] .pw-footer,
-body.theme-dark .pw-footer {
-  background: #0d0b18 !important;
-  border-top-color: rgba(248, 109, 237, 0.18) !important;
-}
-html[data-theme="dark"] .pw-footer-glow,
-body.theme-dark .pw-footer-glow {
-  background: radial-gradient(ellipse at center, rgba(248, 109, 237, 0.12) 0%, transparent 70%);
-}
-html[data-theme="dark"] .pw-footer-tagline,
-body.theme-dark .pw-footer-tagline {
-  color: #64748b;
-}
-html[data-theme="dark"] .pw-footer-map,
-body.theme-dark .pw-footer-map {
-  border-color: rgba(248, 109, 237, 0.2);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-}
-html[data-theme="dark"] .pw-footer-links a,
-html[data-theme="dark"] .pw-footer-links .pw-footer-hours,
-body.theme-dark .pw-footer-links a,
-body.theme-dark .pw-footer-links .pw-footer-hours {
-  color: #94a3b8;
-}
-html[data-theme="dark"] .pw-footer-links a:hover,
-body.theme-dark .pw-footer-links a:hover {
-  color: #f86ded;
-}
-html[data-theme="dark"] .pw-social-btn,
-body.theme-dark .pw-social-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.07);
-  color: #94a3b8;
-}
-html[data-theme="dark"] .pw-footer-badge,
-body.theme-dark .pw-footer-badge {
-  color: #64748b;
-}
-html[data-theme="dark"] .pw-footer-copy,
-body.theme-dark .pw-footer-copy {
-  color: #4b5563;
-}
-html[data-theme="dark"] .pw-footer-bottom-links a,
-body.theme-dark .pw-footer-bottom-links a {
-  color: #4b5563;
-}
-html[data-theme="dark"] .pw-footer-bottom-links a:hover,
-body.theme-dark .pw-footer-bottom-links a:hover {
-  color: #f86ded;
-}
-html[data-theme="dark"] .pw-footer-bottom-links span,
-body.theme-dark .pw-footer-bottom-links span {
-  color: rgba(75, 85, 99, 0.5);
+/* [#10] Selettori *-page, *-wrapper, *-section rimangono sicuri (Bootstrap non li usa) */
+body.theme-dark [class$="-page"],
+body.theme-dark [class$="-wrapper"],
+body.theme-dark [class$="-section"] {
+  background-color: #0f172a !important;
+  color: #e5e7eb !important;
 }
