@@ -10,6 +10,7 @@
   /* ---- Brand colors ---- */
   --main-color: #f86ded;       /* Rosa principale */
   --main-color-hover: #ff9ef8; /* Rosa più luminoso e acceso */
+  --accent-secondary: #bc4ec6; /* Viola secondario — usato nel gradiente profile-header-card */
   --bg-light: #f8fafc;         /* Grigio chiarissimo per lo sfondo */
   --card-bg: #ffffff;          /* Bianco puro per le card */
   --text-main: #0f172a;        /* Testo scuro principale */
@@ -356,6 +357,7 @@ h6 {
   border-radius: 50%;
 }
 
+/* Utility per Dashboard Profilo */
 /* [#C fix] .profile-header-card mantiene il gradiente rosa in entrambi i temi;
    rimossa dal blocco dark generico che la sovrascriveva con uno sfondo scuro */
 .profile-header-card {
@@ -570,12 +572,13 @@ body.theme-dark {
 
 /* Card e contenitori principali
    [#5] Rimosso .sidebar-container da questa lista: veniva in conflitto con FIX #5
-   che ha la definizione corretta e più specifica con linear-gradient */
+   che ha la definizione corretta e più specifica con linear-gradient
+   [#C fix] Rimosso .profile-header-card: mantiene intenzionalmente il gradiente rosa
+   anche in dark mode — non deve essere azzerato a sfondo scuro */
 body.theme-dark .card,
 html[data-theme="dark"] .settings-shell,
 body.theme-dark .settings-shell,
-body.theme-dark .personal-info-card,
-body.theme-dark .profile-header-card {
+body.theme-dark .personal-info-card {
   background: radial-gradient(circle at top left, rgba(248, 109, 237, 0.06), #020617);
   border-radius: 1.25rem;
   border: 1px solid var(--color-border) !important;
@@ -1536,9 +1539,7 @@ body.theme-dark .category-filter-card.active-filter span {
    ============================================================= */
 
 /* [#1 consolidato sopra] .badge-condizione è già definito in blocco unico */
-.badge-condizione i {
-  font-size: 0.85rem;
-}
+/* [#A fix] Rimossa seconda definizione duplicata di .badge-condizione i — rimane solo quella nel blocco principale */
 
 /* Badge angolare "-25%" per card variante Usato (corner top-left) */
 .product-card .discount-corner-badge {
@@ -1634,10 +1635,29 @@ body.theme-dark .dettagli-container {
   color: #e5e7eb !important;
 }
 
-/* [#10] Selettori *-page, *-wrapper, *-section rimangono sicuri (Bootstrap non li usa) */
+/* [#10 + #B fix] Selettori *-page e *-wrapper rimangono sicuri (Bootstrap non li usa).
+   Selettore *-section rimosso e sostituito con classi esplicite per evitare
+   potenziali collisioni con classi Bootstrap come .modal-section o .tab-section */
 body.theme-dark [class$="-page"],
-body.theme-dark [class$="-wrapper"],
-body.theme-dark [class$="-section"] {
+body.theme-dark [class$="-wrapper"] {
+  background-color: #0f172a !important;
+  color: #e5e7eb !important;
+}
+
+/* [#B fix] Classi *-section esplicite (ricavate dai template Angular del progetto) */
+body.theme-dark .settings-section,
+body.theme-dark .profilo-section,
+body.theme-dark .ordini-section,
+body.theme-dark .prodotti-section,
+body.theme-dark .home-section,
+body.theme-dark .fedelta-section,
+body.theme-dark .vendi-section,
+body.theme-dark .ricerca-section,
+body.theme-dark .dettagli-section,
+body.theme-dark .carrello-section,
+body.theme-dark .pagamento-section,
+body.theme-dark .contattaci-section,
+body.theme-dark .preferiti-section {
   background-color: #0f172a !important;
   color: #e5e7eb !important;
 }
