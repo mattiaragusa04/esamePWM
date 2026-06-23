@@ -11,22 +11,77 @@
   --main-color: #f86ded;       /* Rosa principale */
   --main-color-hover: #ff9ef8; /* Rosa più luminoso e acceso */
   --accent-secondary: #bc4ec6; /* Viola secondario — usato nel gradiente profile-header-card */
-  --bg-light: #f8fafc;         /* Grigio chiarissimo per lo sfondo */
-  --card-bg: #ffffff;          /* Bianco puro per le card */
-  --text-main: #0f172a;        /* Testo scuro principale */
-  --text-secondary: #64748b;   /* Testo attenuato (grigio ardesia) */
 
-  /* Font stack uniforme — identico a Bootstrap 5, garantisce coerenza su tutti i sistemi:
-     macOS/iOS → SF Pro  |  Windows → Segoe UI  |  Android → Roboto  |  Linux → Noto Sans */
+  /* ---- Superfici (light) ---- */
+  --color-bg:      #f8fafc;
+  --color-surface: #ffffff;
+  --color-card:    #ffffff;
+  --color-input-bg:#ffffff;
+
+  /* ---- Testi (light) ---- */
+  --color-text:      #0f172a;
+  --color-text-muted:#64748b;
+
+  /* ---- Bordi (light) ---- */
+  --color-border: rgba(0, 0, 0, 0.08);
+
+  /* ---- Alias storici (non rinominare: usati in molti componenti) ---- */
+  --bg-light:       var(--color-bg);
+  --card-bg:        var(--color-card);
+  --text-main:      var(--color-text);
+  --text-secondary: var(--color-text-muted);
+
+  /* Font stack uniforme — identico a Bootstrap 5 */
   --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "Helvetica Neue", Arial, "Noto Sans", sans-serif,
                "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+/* =============================================================
+   VARIABILI SEMANTICHE — Dark mode
+   Attivata da:
+     1. html[data-theme="dark"]  ← script anti-FOUC + ThemeService
+     2. body.theme-dark          ← retrocompatibilità
+   ============================================================= */
+html[data-theme="dark"],
+body.theme-dark {
+  --color-bg:       #020617;
+  --color-surface:  #0f172a;
+  --color-card:     #1e293b;
+  --color-input-bg: #020617;
+
+  --color-text:       #e5e7eb;
+  --color-text-muted: #cbd5e1;
+
+  --color-border: rgba(148, 163, 184, 0.35);
+
+  /* Alias storici in dark */
+  --bg-light:       var(--color-bg);
+  --card-bg:        var(--color-card);
+  --text-main:      var(--color-text);
+  --text-secondary: var(--color-text-muted);
+}
+
+/* =============================================================
+   TRANSIZIONE GLOBALE FLUIDA AL CAMBIO TEMA
+   Evita il "lampeggio" quando si toglia il tema.
+   Applicata su tutti gli elementi tranne SVG e canvas
+   (dove la transizione sarebbe inutile o dannosa).
+   ============================================================= */
+*:not(svg):not(canvas),
+*:not(svg):not(canvas)::before,
+*:not(svg):not(canvas)::after {
+  transition:
+    background-color 0.25s ease,
+    color            0.15s ease,
+    border-color     0.25s ease,
+    box-shadow       0.25s ease;
+}
+
 /* Applichiamo lo sfondo chiaro globale al body */
 body {
   font-family: var(--font-main);
-  background-color: var(--bg-light);
+  background-color: var(--color-bg);
   background-image: linear-gradient(
     180deg,
     rgba(248, 109, 237, 0.15) 0%,
@@ -48,9 +103,6 @@ body {
   transition: all 0.3s ease-in-out !important;
 }
 
-/* [#2 rimosso] .btn-info e .btn-home con background-color semplice —
-   sovrascritto completamente dal blocco gradient in FIX #8, era codice morto */
-
 .btn-outline-info {
   color: var(--main-color) !important;
   border-color: var(--main-color) !important;
@@ -62,9 +114,6 @@ body {
   background-color: var(--main-color) !important;
   color: white !important;
 }
-
-/* [#3 rimosso] .btn-info:hover/.btn-home:hover con background-color semplice —
-   sovrascritto dal blocco gradient hover in FIX #8, era codice morto */
 
 /* Stile per far sembrare il bottone un input (es. nel form di registrazione) */
 .btn-custom-select {
@@ -117,7 +166,6 @@ app-dettagli-prodotto img:hover {
 }
 
 /* Tronca i titoli dei prodotti troppo lunghi */
-/* [#9] Rimosso line-clamp: 2 non-standard (non supportato universalmente) */
 .product-card .card-title {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -210,7 +258,7 @@ h6 {
   border-radius: 10px;
 }
 
-/* Badge Condizione Prodotto — [#1] unito in un unico blocco */
+/* Badge Condizione Prodotto */
 .badge-condizione {
   display: inline-flex !important;
   align-items: center;
@@ -357,7 +405,6 @@ h6 {
   border-radius: 50%;
 }
 
-/* Utility per Dashboard Profilo */
 /* [#C fix] .profile-header-card mantiene il gradiente rosa in entrambi i temi;
    rimossa dal blocco dark generico che la sovrascriveva con uno sfondo scuro */
 .profile-header-card {
@@ -571,15 +618,14 @@ body.theme-dark {
 }
 
 /* Card e contenitori principali
-   [#5] Rimosso .sidebar-container da questa lista: veniva in conflitto con FIX #5
-   che ha la definizione corretta e più specifica con linear-gradient
-   [#C fix] Rimosso .profile-header-card: mantiene intenzionalmente il gradiente rosa
-   anche in dark mode — non deve essere azzerato a sfondo scuro */
+   [#C fix] Rimosso .profile-header-card: mantiene il gradiente rosa anche in dark */
+html[data-theme="dark"] .card,
 body.theme-dark .card,
 html[data-theme="dark"] .settings-shell,
 body.theme-dark .settings-shell,
+html[data-theme="dark"] .personal-info-card,
 body.theme-dark .personal-info-card {
-  background: radial-gradient(circle at top left, rgba(248, 109, 237, 0.06), #020617);
+  background: radial-gradient(circle at top left, rgba(248, 109, 237, 0.06), #020617) !important;
   border-radius: 1.25rem;
   border: 1px solid var(--color-border) !important;
   color: var(--color-text) !important;
@@ -601,10 +647,7 @@ body.theme-dark .settings-muted-box {
   border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-/* [#6] Rimossa sezione generica 'Sidebar profilo in dark' —
-   tutte le regole .sidebar-container in dark sono consolidate nel FIX #5 */
-
-/* Aumento font dei sottoparagrafi nelle impostazioni */
+/* Font impostazioni */
 .settings-subtitle,
 .settings-section-desc,
 .settings-note {
@@ -645,7 +688,7 @@ body.theme-dark .settings-section-desc,
 body.theme-dark .settings-note,
 body.theme-dark .text-muted,
 body.theme-dark .info-label {
-  color: #e5e7eb !important;
+  color: var(--color-text) !important;
 }
 
 /* Forza testo chiaro */
@@ -663,16 +706,19 @@ body.theme-dark .nav-text,
 body.theme-dark .brand-text,
 body.theme-dark .sidebar-container .nav-link .nav-text,
 body.theme-dark .navbar-brand {
-  color: #e5e7eb !important;
+  color: var(--color-text) !important;
 }
 
-/* [#7] body.theme-dark .text-secondary unificato qui con valore #cbd5e1
-   (rimosse le due definizioni precedenti con valori diversi #e5e7eb e #cbd5e1) */
+html[data-theme="dark"] .text-secondary,
 body.theme-dark .text-secondary {
-  color: #cbd5e1 !important;
+  color: var(--color-text-muted) !important;
 }
 
-/* Background chiari riadattati e fix elementi con sfondo bianco hardcoded */
+/* Background chiari riadattati */
+html[data-theme="dark"] .bg-light,
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .auth-card,
 body.theme-dark .bg-light,
 body.theme-dark .bg-white,
 body.theme-dark .stat-card,
@@ -710,7 +756,6 @@ body.theme-dark .form-control:focus,
 body.theme-dark .form-select:focus,
 body.theme-dark textarea:focus {
   background-color: var(--color-input-bg);
-  background-color: var(--color-input-bg) !important;
   border-color: var(--main-color);
   box-shadow: 0 0 0 1px rgba(248, 109, 237, 0.65);
 }
@@ -751,9 +796,6 @@ body.theme-dark .btn-outline-secondary:hover {
   background-color: rgba(248, 109, 237, 0.12);
   color: #fff;
 }
-
-/* [#4] Rimossa seconda definizione duplicata di body.theme-dark .btn-outline-info —
-   la definizione canonica rimane nel blocco 'FIX DARK MODE leggibilità generale' */
 
 /* Bottoni settings */
 html[data-theme="dark"] .settings-btn-primary,
@@ -906,17 +948,31 @@ body.theme-dark .footer .social-icon:hover {
   transform: translateY(-3px);
 }
 
-/* Bottoni outline-info usati in molte card/footer */
+/* Bottoni outline-info */
+html[data-theme="dark"] .btn-outline-info,
 body.theme-dark .btn-outline-info {
   border-color: var(--main-color) !important;
   color: var(--main-color) !important;
 }
+
+html[data-theme="dark"] .btn-outline-info:hover,
 body.theme-dark .btn-outline-info:hover {
   background-color: var(--main-color) !important;
   color: #fff !important;
 }
 
-/* Titoli di pagina (es. "PRODOTTI CONSOLE", "CONSIGLIATI PER TE") */
+/* Titoli di pagina */
+html[data-theme="dark"] .section-title,
+html[data-theme="dark"] .page-title,
+html[data-theme="dark"] .titolo-pagina,
+html[data-theme="dark"] .titolo-sezione,
+html[data-theme="dark"] .categoria-title,
+html[data-theme="dark"] .display-1,
+html[data-theme="dark"] .display-2,
+html[data-theme="dark"] .display-3,
+html[data-theme="dark"] .display-4,
+html[data-theme="dark"] .display-5,
+html[data-theme="dark"] .display-6,
 body.theme-dark .section-title,
 body.theme-dark .page-title,
 body.theme-dark .titolo-pagina,
@@ -935,7 +991,7 @@ html[data-theme="dark"] h1.text-secondary,
 html[data-theme="dark"] h2.text-secondary,
 body.theme-dark h1.text-secondary,
 body.theme-dark h2.text-secondary {
-  color: #cbd5e1 !important;
+  color: var(--color-text-muted) !important;
 }
 
 /* Card prodotti */
@@ -1013,30 +1069,10 @@ body.theme-dark .category-filter-card {
   color: var(--color-text) !important;
 }
 
-/* Override classi colorate Bootstrap globali per Dark Mode
-   (migliora il contrasto su sfondi scuri ovunque) */
-body.theme-dark .text-success,
-body.theme-dark .form-check label.text-success { color: #34d399 !important; }
-
-body.theme-dark .text-danger,
-body.theme-dark .form-check label.text-danger { color: #f87171 !important; }
-
-body.theme-dark .text-primary,
-body.theme-dark .form-check label.text-primary { color: #93c5fd !important; }
-
-body.theme-dark .text-warning,
-body.theme-dark .form-check label.text-warning { color: #fcd34d !important; }
-
-/* Badge di stato in Dark Mode */
-body.theme-dark .badge-pending {
-  background: rgba(245, 158, 11, 0.2) !important;
-  color: #fcd34d !important;
-  border-color: rgba(245, 158, 11, 0.3) !important;
-}
-body.theme-dark .badge-success {
-  background: rgba(34, 197, 94, 0.2) !important;
-  color: #86efac !important;
-  border-color: rgba(34, 197, 94, 0.3) !important;
+html[data-theme="dark"] .category-filter-card.active-filter,
+body.theme-dark .category-filter-card.active-filter {
+  border-color: var(--main-color) !important;
+  background-color: rgba(248, 109, 237, 0.1) !important;
 }
 
 /* Navbar */
@@ -1099,212 +1135,9 @@ body.theme-dark .pagination .page-link {
   color: var(--color-text);
 }
 
-/* Navbar pillole categorie selezionate (PS5, PS4, Switch) e card categorie */
-body.theme-dark .categoria-pill,
-body.theme-dark .categoria-card {
-  background: rgba(30, 41, 59, 0.85) !important;
-  border: 1px solid rgba(148, 163, 184, 0.25) !important;
-  color: #e5e7eb !important;
-}
-body.theme-dark .categoria-pill.active,
-body.theme-dark .categoria-card.active {
-  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
-  color: #fff !important;
-  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.45);
-}
-
-/* [#8] Badge Nuovo/Usato dark — consolidati in un unico blocco */
-body.theme-dark .badge.bg-success,
-body.theme-dark .badge-nuovo {
-  background-color: rgba(46, 204, 113, 0.25) !important;
-  color: #5ee08a !important;
-  border: 1px solid rgba(46, 204, 113, 0.5) !important;
-}
-body.theme-dark .badge.bg-secondary,
-body.theme-dark .badge-usato {
-  background-color: rgba(148, 163, 184, 0.25) !important;
-  color: #cbd5e1 !important;
-  border: 1px solid rgba(148, 163, 184, 0.5) !important;
-}
-
-/* Prezzo prodotto */
-body.theme-dark .price-current,
-body.theme-dark .prezzo,
-body.theme-dark .product-price {
-  color: var(--main-color) !important;
-}
-
-/* "CENTRO IMPOSTAZIONI" e altre pill informative */
-body.theme-dark .badge.bg-light,
-body.theme-dark .info-pill {
-  background: rgba(248, 109, 237, 0.18) !important;
-  color: #f9a8e0 !important;
-  border: 1px solid rgba(248, 109, 237, 0.35);
-}
-
-/* ============================================================
-   DARK MODE POLISH — fix specifici (8 issue)
-   ============================================================ */
-
-/* FIX #1 — Pannello filtri card (prodotti.html: .col-lg-3 > .card.shadow-sm)
-   Bootstrap .card di base ha bg bianco e text muted, qui forziamo dark */
-body.theme-dark .col-lg-3 > .card.shadow-sm,
-body.theme-dark .col-lg-3 > .card {
-  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
-  border: 1px solid rgba(148, 163, 184, 0.25) !important;
-  color: #e5e7eb !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
-}
-body.theme-dark .col-lg-3 > .card h5,
-body.theme-dark .col-lg-3 > .card h6 {
-  color: #ffffff !important;
-  border-color: rgba(148, 163, 184, 0.3) !important;
-}
-body.theme-dark .col-lg-3 > .card .form-check-label,
-body.theme-dark .col-lg-3 > .card label {
-  color: #e5e7eb !important;
-}
-/* Etichette colorate "Immediata"/"Non disponibile"/"Nuovo"/"Usato" nei filtri */
-body.theme-dark .col-lg-3 > .card .form-check-label.text-success {
-  color: #5ee08a !important;
-}
-body.theme-dark .col-lg-3 > .card .form-check-label.text-danger {
-  color: #f87171 !important;
-}
-body.theme-dark .col-lg-3 > .card .form-check-label.text-muted {
-  color: #cbd5e1 !important;
-}
-/* Input numerici "Min €"/"Max €" — overridano bg-light */
-body.theme-dark .col-lg-3 > .card input.form-control.bg-light,
-body.theme-dark .col-lg-3 > .card input.bg-light {
-  background-color: rgba(2, 6, 23, 0.85) !important;
-  color: #e5e7eb !important;
-  border: 1px solid rgba(148, 163, 184, 0.4) !important;
-}
-body.theme-dark .col-lg-3 > .card input.form-control::placeholder {
-  color: #94a3b8 !important;
-}
-/* Bottone "Resetta Filtri" */
-body.theme-dark .col-lg-3 > .card .btn-outline-secondary {
-  background: rgba(148, 163, 184, 0.12) !important;
-  border-color: rgba(148, 163, 184, 0.45) !important;
-  color: #e5e7eb !important;
-}
-body.theme-dark .col-lg-3 > .card .btn-outline-secondary:hover {
-  background: var(--main-color) !important;
-  border-color: var(--main-color) !important;
-  color: #fff !important;
-}
-
-/* FIX #3 — Card filtro categoria (Tutte/PS5/PS4/Switch/Xbox/Retrogaming) */
-body.theme-dark .category-filter-card {
-  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
-  border: 1px solid rgba(148, 163, 184, 0.3) !important;
-  color: #e5e7eb !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-body.theme-dark .category-filter-card .text-muted {
-  color: #cbd5e1 !important;
-}
-body.theme-dark .category-filter-card .bi {
-  color: #e5e7eb !important;
-}
-body.theme-dark .category-filter-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(248, 109, 237, 0.55) !important;
-  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.25) !important;
-}
-body.theme-dark .category-filter-card.active-filter {
-  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
-  border-color: var(--main-color) !important;
-  color: #fff !important;
-  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.45) !important;
-}
-body.theme-dark .category-filter-card.active-filter .text-muted,
-body.theme-dark .category-filter-card.active-filter .bi {
-  color: #fff !important;
-}
-/* Label "Tutte/PS5/..." sotto la card */
-body.theme-dark .text-info {
-  color: var(--main-color) !important;
-}
-
-/* FIX #4 — Icona carrello in navbar visibile in dark */
-body.theme-dark .cart-nav-item,
-body.theme-dark .cart-nav-item .bi,
-body.theme-dark .cart-nav-item i {
-  color: #f1f5f9 !important;
-}
-body.theme-dark .cart-nav-item:hover .bi,
-body.theme-dark .cart-nav-item:hover i {
-  color: var(--main-color) !important;
-}
-/* Anche heart e person nella stessa zona */
-body.theme-dark .navbar .nav-link.text-dark,
-body.theme-dark .navbar .nav-link.text-dark .bi,
-body.theme-dark .navbar .nav-link.text-dark svg {
-  color: #f1f5f9 !important;
-  fill: #f1f5f9 !important;
-}
-body.theme-dark .navbar .nav-link.text-dark:hover .bi,
-body.theme-dark .navbar .nav-link.text-dark:hover svg {
-  color: var(--main-color) !important;
-  fill: var(--main-color) !important;
-}
-/* Cart total preview tooltip box */
-body.theme-dark .cart-total-preview {
-  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
-  border: 1px solid rgba(148, 163, 184, 0.3) !important;
-  color: #e5e7eb !important;
-}
-body.theme-dark .cart-total-preview .text-muted {
-  color: #cbd5e1 !important;
-}
-
-/* FIX #5 — Sidebar /profilo in dark mode (sidebar.html usa .sidebar-container + text-bg-white) */
-body.theme-dark .sidebar-container {
-  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
-  color: #e5e7eb !important;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-}
-body.theme-dark .sidebar-container.text-bg-white {
-  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
-  color: #e5e7eb !important;
-}
-body.theme-dark .sidebar-container .brand-text,
-body.theme-dark .sidebar-container .brand-text .fs-4,
-body.theme-dark .sidebar-container .brand-text .bi {
-  color: #ffffff !important;
-}
-body.theme-dark .sidebar-container hr {
-  border-color: rgba(148, 163, 184, 0.25);
-  opacity: 1;
-}
-body.theme-dark .sidebar-container .nav-link {
-  color: #e5e7eb !important;
-}
-body.theme-dark .sidebar-container .nav-link .bi {
-  color: #e5e7eb !important;
-}
-body.theme-dark .sidebar-container .nav-link:hover:not(.active) {
-  background-color: rgba(248, 109, 237, 0.12) !important;
-  color: var(--main-color) !important;
-}
-body.theme-dark .sidebar-container .nav-link:hover:not(.active) .bi {
-  color: var(--main-color) !important;
-}
-body.theme-dark .sidebar-container .nav-link.active,
-body.theme-dark .sidebar-container .nav-link.active .bi {
-  color: #fff !important;
-}
-body.theme-dark .sidebar-container .menu-toggler-btn,
-body.theme-dark .sidebar-container .menu-toggler-btn .bi {
-  color: #e5e7eb !important;
-  border-color: rgba(148, 163, 184, 0.45);
-}
-body.theme-dark .sidebar-container .menu-toggler-btn:hover {
-  background: rgba(248, 109, 237, 0.15);
+html[data-theme="dark"] .pagination .page-item.active .page-link,
+body.theme-dark .pagination .page-item.active .page-link {
+  background-color: var(--main-color);
   border-color: var(--main-color);
 }
 
@@ -1369,295 +1202,4 @@ body.theme-dark .cart-total-preview {
   background: var(--color-surface);
   border-color: var(--color-border);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-}
-
-/* =====================================================
-   FIX DARK MODE — PATCH CHIRURGICA
-   Aggiunge !important mirati + regole mancanti.
-   Nessun blocco rimosso, nessun stile preesistente
-   alterato fuori dal necessario.
-   ===================================================== */
-
-/* ── 1. btn-info SOLIDO — brand rosa in light e dark ──
-   Bootstrap sovrascrive con #0dcaf0; forziamo il brand.  */
-.btn-info {
-  background-color: var(--main-color) !important;
-  border-color: var(--main-color) !important;
-  color: #ffffff !important;
-}
-body.theme-dark h2.text-white .text-info,
-body.theme-dark h2 .text-info {
-  color: var(--main-color) !important;
-}
-
-/* FIX #7 — Card categorie nella home (.category-card)
-   Sono <div class="card h-100 shadow-sm border-0 category-card"> */
-body.theme-dark .category-card {
-  background: linear-gradient(160deg, #1e293b, #0f172a) !important;
-  border: 1px solid rgba(148, 163, 184, 0.25) !important;
-  color: #e5e7eb !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
-}
-body.theme-dark .category-card .card-body {
-  color: #e5e7eb !important;
-}
-body.theme-dark .category-card h4,
-body.theme-dark .category-card .card-title {
-  color: #ffffff !important;
-}
-body.theme-dark .category-card .card-text,
-body.theme-dark .category-card .text-muted {
-  color: #cbd5e1 !important;
-}
-body.theme-dark .category-card .bi {
-  color: var(--main-color) !important;
-}
-body.theme-dark .category-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(248, 109, 237, 0.55) !important;
-  box-shadow: 0 14px 30px rgba(248, 109, 237, 0.25) !important;
-}
-
-/* FIX #8 — Applica il gradient rosa a TUTTI i bottoni "accesi" di rosa nell'app */
-
-/* Bottoni primary/info ovunque (light + dark) */
-.btn-info,
-.btn-primary {
-  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
-  border-color: transparent !important;
-  color: #fff !important;
-  box-shadow: 0 10px 24px rgba(248, 109, 237, 0.32) !important;
-  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
-}
-.btn-info:hover,
-.btn-info:focus,
-.btn-info:active {
-  background-color: var(--main-color-hover) !important;
-  border-color: var(--main-color-hover) !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 14px rgba(248, 109, 237, 0.45) !important;
-}
-
-/* Bottoni circle scroll della home */
-.scroll-btn {
-  background: linear-gradient(135deg, var(--main-color), #fb7185) !important;
-  border: none !important;
-  color: #fff !important;
-}
-
-/* ── 3. Tabelle — background + colore celle ──
-   Bootstrap usa --bs-table-bg con alta specificità;
-   serve !important su background-color e color.         */
-html[data-theme="dark"] .table,
-body.theme-dark .table {
-  color: var(--color-text) !important;
-  border-color: var(--color-border) !important;
-  --bs-table-bg: transparent !important;
-  --bs-table-color: var(--color-text) !important;
-  --bs-table-border-color: var(--color-border) !important;
-  --bs-table-striped-bg: rgba(15, 23, 42, 0.5) !important;
-  --bs-table-hover-bg: rgba(248, 109, 237, 0.06) !important;
-}
-html[data-theme="dark"] .table td,
-html[data-theme="dark"] .table th,
-body.theme-dark .table td,
-body.theme-dark .table th {
-  background-color: transparent !important;
-  color: var(--color-text) !important;
-  border-color: var(--color-border) !important;
-}
-html[data-theme="dark"] .table thead th,
-body.theme-dark .table thead th {
-  color: var(--color-text-muted) !important;
-  border-bottom-color: var(--color-border) !important;
-}
-html[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > *,
-body.theme-dark .table-striped > tbody > tr:nth-of-type(odd) > * {
-  background-color: rgba(15, 23, 42, 0.5) !important;
-  color: var(--color-text) !important;
-}
-
-/* ── 4. list-group-item in dark (regola mancante) ──     */
-html[data-theme="dark"] .list-group-item,
-body.theme-dark .list-group-item {
-  background-color: var(--color-card) !important;
-  border-color: var(--color-border) !important;
-  color: var(--color-text) !important;
-}
-html[data-theme="dark"] .list-group-item:hover,
-body.theme-dark .list-group-item:hover {
-  background-color: rgba(248, 109, 237, 0.06) !important;
-  color: var(--color-text) !important;
-}
-
-/* ── 5. Badge condizione — !important contro Angular
-   ViewEncapsulation emulated ([_ngcontent-xxx] batte
-   selettori semplici di specificità uguale)             */
-html[data-theme="dark"] .badge-nuovo,
-body.theme-dark .badge-nuovo {
-  background-color: rgba(34, 197, 94, 0.2) !important;
-  color: #4ade80 !important;
-  border-color: rgba(34, 197, 94, 0.4) !important;
-}
-html[data-theme="dark"] .badge-usato,
-body.theme-dark .badge-usato {
-  background-color: rgba(245, 158, 11, 0.2) !important;
-  color: #fbbf24 !important;
-  border-color: rgba(245, 158, 11, 0.4) !important;
-}
-
-/* ── 6. Label h6 dentro .category-filter-card in dark ──
-   Bootstrap applica color: inherit su .text-info
-   quando filtroAttivo === sub.nome; forziamo il testo.  */
-html[data-theme="dark"] .category-filter-card h6,
-html[data-theme="dark"] .category-filter-card p,
-html[data-theme="dark"] .category-filter-card span,
-body.theme-dark .category-filter-card h6,
-body.theme-dark .category-filter-card p,
-body.theme-dark .category-filter-card span {
-  color: var(--color-text) !important;
-}
-html[data-theme="dark"] .category-filter-card.active-filter h6,
-html[data-theme="dark"] .category-filter-card.active-filter p,
-html[data-theme="dark"] .category-filter-card.active-filter span,
-body.theme-dark .category-filter-card.active-filter h6,
-body.theme-dark .category-filter-card.active-filter p,
-body.theme-dark .category-filter-card.active-filter span {
-  color: var(--main-color) !important;
-}
-
-/* =============================================================
-   DARK MODE — Navbar, Footer, Side Menu (classi pw-*)
-   Queste regole devono stare in styles.css (foglio globale)
-   e NON in app.css, perché Angular ViewEncapsulation scopa
-   i selettori dei component-styles aggiungendo [_ngcontent-xxx].
-   Un selettore come html[data-theme="dark"] .pw-navbar-wrapper
-   dentro app.css diventerebbe:
-   html[data-theme="dark"] .pw-navbar-wrapper[_ngcontent-xxx]
-   che non matcha mai perché l'attributo Angular è sull'host,
-   non sull'elemento target.
-   ============================================================= */
-
-/* [#1 consolidato sopra] .badge-condizione è già definito in blocco unico */
-/* [#A fix] Rimossa seconda definizione duplicata di .badge-condizione i — rimane solo quella nel blocco principale */
-
-/* Badge angolare "-25%" per card variante Usato (corner top-left) */
-.product-card .discount-corner-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-  background: linear-gradient(135deg, #dc3545, #b91c1c);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
-  padding: 0.35rem 0.7rem;
-  border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(220, 53, 69, 0.45);
-}
-
-/* ── Icon buttons ── */
-html[data-theme="dark"] .pw-nav-icon-btn,
-body.theme-dark .pw-nav-icon-btn {
-  color: #c8c8d0;
-}
-html[data-theme="dark"] .pw-nav-icon-btn:hover,
-body.theme-dark .pw-nav-icon-btn:hover {
-  color: #f86ded;
-  background: rgba(248, 109, 237, 0.1);
-}
-
-/* ── Search bar ── */
-html[data-theme="dark"] .pw-search-bar,
-body.theme-dark .pw-search-bar {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.08);
-}
-html[data-theme="dark"] .pw-search-bar:focus-within,
-body.theme-dark .pw-search-bar:focus-within {
-  border-color: rgba(248, 109, 237, 0.4);
-  box-shadow: 0 0 0 3px rgba(248, 109, 237, 0.08);
-}
-
-.pw-search-bar {
-  border-color: rgba(248, 109, 237, 0.3) !important;
-}
-
-.pw-search-bar:focus-within {
-  border-color: var(--main-color) !important;
-  box-shadow: 0 0 0 3px rgba(248, 109, 237, 0.2) !important;
-}
-
-.pw-search-icon {
-  color: var(--main-color) !important;
-  opacity: 0.7;
-}
-
-html[data-theme="dark"] .pw-search-icon,
-body.theme-dark .pw-search-icon {
-  color: #555;
-  opacity: 1;
-}
-html[data-theme="dark"] .pw-search-input,
-body.theme-dark .pw-search-input {
-  color: #e0e0e0;
-}
-html[data-theme="dark"] .pw-search-input::placeholder,
-body.theme-dark .pw-search-input::placeholder {
-  color: #555;
-}
-
-/* ── Chip Vendi ── */
-html[data-theme="dark"] .pw-chip-vendi,
-body.theme-dark .pw-chip-vendi {
-  background: rgba(248, 109, 237, 0.1);
-  border-color: rgba(248, 109, 237, 0.3);
-}
-html[data-theme="dark"] .pw-chip-vendi:hover,
-body.theme-dark .pw-chip-vendi:hover {
-  background: rgba(248, 109, 237, 0.2);
-}
-
-/* [#10] Sostituito il selettore universale [class$="-container"] con classi specifiche
-   per evitare di catturare .modal-container, .toast-container e altri container Bootstrap */
-body.theme-dark .profilo-container,
-body.theme-dark .ordini-container,
-body.theme-dark .vendi-container,
-body.theme-dark .carrello-container,
-body.theme-dark .preferiti-container,
-body.theme-dark .pagamento-container,
-body.theme-dark .fedelta-container,
-body.theme-dark .contattaci-container,
-body.theme-dark .ricerca-container,
-body.theme-dark .dettagli-container {
-  background-color: #0f172a !important;
-  color: #e5e7eb !important;
-}
-
-/* [#10 + #B fix] Selettori *-page e *-wrapper rimangono sicuri (Bootstrap non li usa).
-   Selettore *-section rimosso e sostituito con classi esplicite per evitare
-   potenziali collisioni con classi Bootstrap come .modal-section o .tab-section */
-body.theme-dark [class$="-page"],
-body.theme-dark [class$="-wrapper"] {
-  background-color: #0f172a !important;
-  color: #e5e7eb !important;
-}
-
-/* [#B fix] Classi *-section esplicite (ricavate dai template Angular del progetto) */
-body.theme-dark .settings-section,
-body.theme-dark .profilo-section,
-body.theme-dark .ordini-section,
-body.theme-dark .prodotti-section,
-body.theme-dark .home-section,
-body.theme-dark .fedelta-section,
-body.theme-dark .vendi-section,
-body.theme-dark .ricerca-section,
-body.theme-dark .dettagli-section,
-body.theme-dark .carrello-section,
-body.theme-dark .pagamento-section,
-body.theme-dark .contattaci-section,
-body.theme-dark .preferiti-section {
-  background-color: #0f172a !important;
-  color: #e5e7eb !important;
 }
