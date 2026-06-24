@@ -29,6 +29,8 @@ import { AdminCoupon } from './admin-coupon/admin-coupon';
 import { Fedelta } from './fedelta/fedelta';
 import { AdminShopFedelta } from './admin-shop-fedelta/admin-shop-fedelta'; // ← NUOVO
 import { ResetPasswordComponent } from './password/reset-password.component';
+import { authGuard } from './guards/auth-guard';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -47,6 +49,7 @@ export const routes: Routes = [
   {
     path: 'profilo',
     component: ProfiloLayoutComponent,
+    canActivate: [authGuard],
     children: [
       { path: '', component: Profilo, pathMatch: 'full' },
       { path: 'ordini', component: Ordini },

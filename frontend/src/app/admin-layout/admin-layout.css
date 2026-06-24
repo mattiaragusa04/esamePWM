@@ -241,12 +241,6 @@
   opacity: 1;
 }
 
-/* ── Footer sidebar ──────────────────────────────────── */
-.admin-sidebar-footer {
-  padding: 1rem 1.25rem 1.5rem;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  margin-top: 0.5rem;
-}
 
 .admin-back-link {
   display: flex;

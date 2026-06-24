@@ -254,23 +254,42 @@
       </div>
 
       <!-- COL 3: Account + Supporto -->
-      <div class="pw-footer-col">
-        <h6 class="pw-footer-heading">Account</h6>
-        <ul class="pw-footer-links">
-          <li><a [routerLink]="['/profilo']"><i class="bi bi-person-circle"></i>Il mio Profilo</a></li>
-          <li><a [routerLink]="['/profilo/ordini']"><i class="bi bi-bag-check"></i>I miei Ordini</a></li>
-          <li><a [routerLink]="['/preferiti']"><i class="bi bi-heart"></i>Preferiti</a></li>
-          <li><a [routerLink]="['/profilo/fedelta']"><i class="bi bi-star-fill"></i>Punti Fedeltà</a></li>
-          <li><a [routerLink]="['/profilo/vendite']"><i class="bi bi-shop"></i>Le mie Vendite</a></li>
-          <li><a [routerLink]="['/carrello']"><i class="bi bi-cart3"></i>Carrello</a></li>
-        </ul>
-        <h6 class="pw-footer-heading mt-4">Supporto</h6>
-        <ul class="pw-footer-links">
-          <li><a [routerLink]="['contattaci']"><i class="bi bi-envelope"></i>Contattaci</a></li>
-          <li><a href="tel:+397777777777"><i class="bi bi-telephone-fill"></i>+39 777 777 7777</a></li>
-          <li><span class="pw-footer-hours"><i class="bi bi-clock"></i>Lun–Ven, 9:00–18:00</span></li>
-        </ul>
-      </div>
+      <ng-container *ngIf="utenteLoggato">
+        <div class="pw-footer-col">
+          <h6 class="pw-footer-heading">Account</h6>
+          <ul class="pw-footer-links">
+            <li><a [routerLink]="['/profilo']"><i class="bi bi-person-circle"></i>Il mio Profilo</a></li>
+            <li><a [routerLink]="['/profilo/ordini']"><i class="bi bi-bag-check"></i>I miei Ordini</a></li>
+            <li><a [routerLink]="['/preferiti']"><i class="bi bi-heart"></i>Preferiti</a></li>
+            <li><a [routerLink]="['/profilo/fedelta']"><i class="bi bi-star-fill"></i>Punti Fedeltà</a></li>
+            <li><a [routerLink]="['/profilo/vendite']"><i class="bi bi-shop"></i>Le mie Vendite</a></li>
+            <li><a [routerLink]="['/carrello']"><i class="bi bi-cart3"></i>Carrello</a></li>
+          </ul>
+          <h6 class="pw-footer-heading mt-4">Supporto</h6>
+          <ul class="pw-footer-links">
+            <li><a [routerLink]="['contattaci']"><i class="bi bi-envelope"></i>Contattaci</a></li>
+            <li><a href="tel:+397777777777"><i class="bi bi-telephone-fill"></i>+39 777 777 7777</a></li>
+            <li><span class="pw-footer-hours"><i class="bi bi-clock"></i>Lun–Ven, 9:00–18:00</span></li>
+          </ul>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!utenteLoggato">
+        <div class="pw-footer-col">
+          <h6 class="pw-footer-heading">Account</h6>
+          <ul class="pw-footer-links">
+            <li><a [routerLink]="['/login']"><i class="bi bi-box-arrow-in-right"></i>Accedi o Registrati</a></li>
+          </ul>
+          <h6 class="pw-footer-heading mt-4">Supporto</h6>
+          <ul class="pw-footer-links">
+            <li><a [routerLink]="['contattaci']"><i class="bi bi-envelope"></i>Contattaci</a></li>
+            <li><a href="tel:+397777777777"><i class="bi bi-telephone-fill"></i>+39 777 777 7777</a></li>
+            <li><span class="pw-footer-hours"><i class="bi bi-clock"></i>Lun–Ven, 9:00–18:00</span></li>
+          </ul>
+        </div>
+      </ng-container>
+
+      
 
       <!-- COL 4: Social -->
       <div class="pw-footer-col">

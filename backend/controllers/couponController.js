@@ -268,11 +268,18 @@ exports.adminGetCouponFedelta = async (req, res) => {
 // ADMIN — POST /api/coupon/admin/coupon-fedelta
 // ═══════════════════════════════════════════════════════════════
 exports.adminCreaCouponFedelta = async (req, res) => {
-  const { codice, percentuale, costoInPunti, descrizione, scadenza, disponibile } = req.body;
+  const { codice, percentuale, costoInPunti, descrizione, scadenza, utilizzi_massimi } = req.body;
   if (!codice || !percentuale || !costoInPunti)
     return res.status(400).json({ error: 'codice, percentuale e costoInPunti sono obbligatori.' });
   try {
-    const result = await Coupon.createFedelta({ codice, percentuale, costoInPunti, descrizione, scadenza, disponibile });
+    const result = await Coupon.createFedelta({
+      codice,
+      percentuale,
+      costoInPunti,
+      descrizione,
+      scadenza,
+      utilizzi_massimi // Corretto: il modello si aspetta 'utilizzi_massimi'
+    });
     res.status(201).json({ message: 'Coupon fedeltà creato.', id: result.id });
   } catch (err) {
     if (err.message && err.message.includes('UNIQUE'))

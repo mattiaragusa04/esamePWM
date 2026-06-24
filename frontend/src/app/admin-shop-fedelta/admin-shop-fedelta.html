@@ -49,8 +49,8 @@
           <input type="date" [(ngModel)]="nuovoCoupon.scadenza" class="shop-input" />
         </div>
         <div class="shop-form-group">
-          <label>Disponibilità (-1 = illimitata)</label>
-          <input type="number" [(ngModel)]="nuovoCoupon.disponibile" min="-1" class="shop-input" />
+          <label>Utilizzi massimi (vuoto = illimitati)</label>
+          <input type="number" [(ngModel)]="nuovoCoupon.utilizzi_massimi" min="1" placeholder="Illimitati" class="shop-input" />
         </div>
         <div class="shop-form-group shop-form-group--full">
           <label>Descrizione</label>
@@ -89,7 +89,6 @@
               <th>Costo (pt)</th>
               <th>Scadenza</th>
               <th>Utilizzi</th>
-              <th>Dispon.</th>
               <th>Stato</th>
               <th>Azioni</th>
             </tr>
@@ -100,8 +99,7 @@
               <td><span class="badge-perc">-{{ c.valore }}%</span></td>
               <td><span class="badge-punti"><i class="bi bi-trophy-fill"></i> {{ c.costo_punti || '—' }}</span></td>
               <td>{{ c.data_scadenza }}</td>
-              <td>{{ c.utilizzi_attuali }} / {{ c.utilizzi_massimi === -1 ? '∞' : c.utilizzi_massimi }}</td>
-              <td>{{ c.disponibile === -1 ? '∞' : c.disponibile }}</td>
+              <td>{{ c.utilizzi_attuali }} / {{ c.utilizzi_massimi === null ? '∞' : c.utilizzi_massimi }}</td>
               <td>
                 <span class="badge" [class.badge-success]="c.attivo" [class.badge-danger]="!c.attivo">
                   {{ c.attivo ? 'Attivo' : 'Inattivo' }}

@@ -13,7 +13,6 @@ interface CouponFedelta {
   utilizzi_attuali: number;
   attivo: number;
   costo_punti: number;
-  disponibile: number;
 }
 
 interface ProdottoUsato {
@@ -51,7 +50,7 @@ export class AdminShopFedelta implements OnInit {
     costoInPunti: 90,
     descrizione: '',
     scadenza: '',
-    disponibile: -1
+    utilizzi_massimi: null
   };
 
   /* ── Prodotti usati ─────────────────────────────────────── */
@@ -108,11 +107,17 @@ export class AdminShopFedelta implements OnInit {
     }
     this.salvandoCoupon = true;
     const token = this.getToken();
+
+    const payload = {
+      ...this.nuovoCoupon,
+      utilizzi_massimi: this.nuovoCoupon.utilizzi_massimi ? Number(this.nuovoCoupon.utilizzi_massimi) : null
+    };
+
     try {
       const res = await fetch(`${this.API}/admin/coupon-fedelta`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.nuovoCoupon)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (res.ok) {
@@ -180,7 +185,14 @@ export class AdminShopFedelta implements OnInit {
   private resetForm(): void {
     const d = new Date();
     d.setFullYear(d.getFullYear() + 1);
-    this.nuovoCoupon = { codice: '', percentuale: 10, costoInPunti: 90, descrizione: '', scadenza: d.toISOString().split('T')[0], disponibile: -1 };
+    this.nuovoCoupon = {
+      codice: '',
+      percentuale: 10,
+      costoInPunti: 90,
+      descrizione: '',
+      scadenza: d.toISOString().split('T')[0],
+      utilizzi_massimi: null
+    };
   }
 
   private showMsgCoupon(testo: string, tipo: 'success' | 'error'): void {

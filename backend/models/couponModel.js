@@ -139,17 +139,16 @@ const Coupon = {
     });
   },
 
-  createFedelta: ({ codice, percentuale, costoInPunti, descrizione, scadenza, disponibile }) => {
-    const disp = disponibile !== undefined ? Number(disponibile) : -1;
+  createFedelta: ({ codice, percentuale, costoInPunti, descrizione, scadenza, utilizzi_massimi }) => {
     return new Promise((resolve, reject) => {
       db.run(
         `INSERT INTO coupon
            (codice, tipo, valore, descrizione, data_scadenza,
-            utilizzi_massimi, utilizzi_attuali, attivo, costo_punti, disponibile)
-         VALUES (?, 'percentuale', ?, ?, ?, -1, 0, 1, ?, ?)`,
+            utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
+         VALUES (?, 'percentuale', ?, ?, ?, ?, 0, 1, ?)`,
         [codice.trim().toUpperCase(), Number(percentuale),
          descrizione || `Sconto del ${percentuale}% — coupon fedeltà`,
-         scadenza || null, Number(costoInPunti), disp],
+         scadenza || null, utilizzi_massimi || null, Number(costoInPunti)],
         function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
       );
     });
