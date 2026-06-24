@@ -5,9 +5,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h4 class="fw-bold mb-0">
-          <i class="bi bi-ticket-perforated-fill text-danger me-2"></i>Gestione Coupon
+          <i class="bi bi-ticket-perforated-fill text-danger me-2"></i>Gestione Coupon periodici
         </h4>
-        <p class="text-muted small mb-0">Crea e gestisci i codici sconto per gli utenti</p>
+        <p class="text-muted small mb-0">Crea, modifica o elimina coupon periodici.</p>
       </div>
       <button class="btn btn-danger rounded-3" (click)="apriModale()">
         <i class="bi bi-plus-lg me-1"></i>Nuovo Coupon
@@ -204,7 +204,7 @@
                   [(ngModel)]="nuovoCoupon.codice"
                   required
                   maxlength="20"
-                  placeholder="es. SUMMER25"
+                  placeholder="es. SUMMER26"
                   style="letter-spacing: 2px;">
                 <button class="btn btn-outline-secondary" type="button" (click)="generaCodice()" title="Genera codice casuale">
                   <i class="bi bi-shuffle"></i>
@@ -265,6 +265,9 @@
               @if (nuovoCoupon.tipo === 'percentuale') {
                 <div class="form-text">Valore tra 1 e 100.</div>
               }
+              @if (nuovoCoupon.tipo === 'fisso') {
+                <div class="form-text">Valore >= 1€.</div>
+              }
             </div>
 
             <!-- Descrizione -->
@@ -276,7 +279,7 @@
                 name="descrizione"
                 [(ngModel)]="nuovoCoupon.descrizione"
                 maxlength="100"
-                placeholder="es. Sconto estivo 2026">
+                placeholder="es. Sconto estate 2026">
             </div>
 
             <!-- Data scadenza e utilizzi massimi -->
@@ -328,7 +331,7 @@
               <i class="bi bi-info-circle-fill mt-1 flex-shrink-0"></i>
               <small>
                 I coupon <strong>non sono cumulabili</strong> tra loro né con promozioni attive.
-                Gli utenti potranno applicarne solo uno per ordine.
+                Puoi applicarne solo uno per ordine.
               </small>
             </div>
 
@@ -385,7 +388,7 @@
                   [(ngModel)]="couponInModifica.codice"
                   required
                   maxlength="20"
-                  placeholder="es. SUMMER25"
+                  placeholder="es. SUMMER26"
                   style="letter-spacing: 2px;">
                 <button class="btn btn-outline-secondary" type="button" (click)="generaCodiceModifica()" title="Genera codice casuale">
                   <i class="bi bi-shuffle"></i>

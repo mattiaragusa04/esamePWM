@@ -58,7 +58,9 @@ export class AdminCoupon implements OnInit {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
-        this.coupon = await res.json();
+        const tuttiCoupon = await res.json();
+        // Filtra via i coupon che appartengono allo shop fedeltà (quelli con un costo in punti)
+        this.coupon = tuttiCoupon.filter((c: any) => !c.costo_punti || c.costo_punti === 0);
         this.applicaFiltri();
       } else {
         this.errorMessage = 'Errore nel caricamento dei coupon.';

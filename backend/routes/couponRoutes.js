@@ -43,6 +43,9 @@ router.get('/admin/prodotti-usati', authMiddleware, adminMiddleware,couponContro
 router.get('/admin/coupon-fedelta', authMiddleware,adminMiddleware,couponController.adminGetCouponFedelta);
 // Crea coupon fedeltà
 router.post('/admin/coupon-fedelta', authMiddleware,adminMiddleware,couponController.adminCreaCouponFedelta);
+// Modifica coupon fedeltà
+router.put('/admin/coupon-fedelta/:id', authMiddleware, adminMiddleware, couponController.adminModificaCouponFedelta);
+
 // Admin: lista tutti i coupon
 router.get('/', authMiddleware, adminMiddleware, couponController.getCoupon);
 

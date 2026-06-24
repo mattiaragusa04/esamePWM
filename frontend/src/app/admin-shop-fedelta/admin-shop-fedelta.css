@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════
    ADMIN SHOP FEDELTÀ
-══════════════════════════════════════════════════════════ */
+   ══════════════════════════════════════════════════════════ */
 
 .shop-fedelta-page { padding: .25rem 0; }
 
@@ -39,21 +39,29 @@
   padding-bottom: .5rem;
 }
 .shop-tab {
-  background: none;
+  background: #e0f2f1; /* Verde chiaro */
   border: none;
   padding: .5rem 1.1rem;
   border-radius: .5rem;
   font-size: .88rem;
   font-weight: 500;
-  color: #888;
+  color: #2e7d32; /* Testo verde scuro */
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: .4rem;
-  transition: background .18s, color .18s;
+  transition: background .2s, color .2s;
 }
-.shop-tab:hover { background: #fff9e6; color: #b8860b; }
-.shop-tab.active { background: linear-gradient(90deg,#fff3cc,#ffe88a); color: #7a5200; font-weight: 600; }
+
+.shop-tab:hover {
+  background: #c8e6c9; /* Verde più scuro al passaggio del mouse */
+  color: #1b5e20;
+}
+.shop-tab.active {
+  background: #4caf50; /* Verde solido per la tab attiva */
+  color: white;
+  font-weight: 600;
+}
 
 /* Card */
 .shop-card {
@@ -102,12 +110,14 @@
   outline: none;
   transition: border-color .18s;
 }
-.shop-input:focus { border-color: #d4a017; }
+.shop-input:focus {
+  border-color: #d4a017;
+}
 
 /* Buttons */
 .shop-btn-create {
-  background: linear-gradient(90deg,#f0d060,#d4a017);
-  color: #fff;
+  background: var(--main-color);
+  color: white;
   border: none;
   border-radius: .5rem;
   padding: .55rem 1.4rem;
@@ -117,9 +127,14 @@
   display: inline-flex;
   align-items: center;
   gap: .45rem;
-  transition: opacity .18s;
+  transition: all .2s ease;
 }
-.shop-btn-create:disabled { opacity: .6; cursor: not-allowed; }
+.shop-btn-create:hover:not(:disabled) {
+  background: var(--main-color-hover);
+  box-shadow: 0 4px 15px rgba(248, 109, 237, 0.3);
+  transform: translateY(-2px);
+}
+.shop-btn-create:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
 .shop-btn-refresh {
   margin-left: auto;
   background: none;
@@ -205,3 +220,76 @@
 }
 .btn-icon:hover { background: #f5f5f5; color: #333; }
 .btn-icon--danger:hover { background: #fdf0f0; color: #c0392b; border-color: #fad7d7; }
+
+/* Modale */
+.shop-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.shop-modal {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,.3);
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.shop-modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.shop-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.shop-modal-body {
+  padding: 1.5rem;
+}
+
+.shop-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: .75rem;
+  padding: 1rem 1.5rem;
+  background: #f9f9f9;
+  border-top: 1px solid #eee;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+.shop-btn-cancel {
+  background: #eee;
+  border: 1px solid #ddd;
+  color: #555;
+  padding: .5rem 1.2rem;
+  border-radius: .5rem;
+  font-weight: 600;
+  cursor: pointer;
+}

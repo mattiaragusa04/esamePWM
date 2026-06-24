@@ -46,9 +46,11 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
   puntiFedelta = 0;
   presetCoupon: PresetCoupon[] = [];
   catalogoCoupon: CatalogoCoupon[] = [];
+  couponPeriodici: any[] = [];
   prodottiUsati: ProdottoUsato[] = [];
 
   caricandoCoupon   = false;
+  caricandoPeriodici = false;
   caricandoProdotti = false;
   acquistandoPresetMap: Record<number, boolean> = {};
 
@@ -74,6 +76,7 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
     this.caricaPuntiFreschi().then(() => {
       this.caricaPresetCoupon();
       this.caricaCatalogoCoupon();
+      this.caricaCouponPeriodici();
       this.caricaProdottiUsati();
     });
   }
@@ -160,6 +163,28 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  async caricaCouponPeriodici() {
+    this.caricandoPeriodici = true;
+    const token = this.getToken();
+    try {
+      const res = await fetch(`${this.API}`, { // Endpoint che restituisce TUTTI i coupon
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const tuttiCoupon = await res.json();
+        // Filtriamo solo quelli periodici: attivi e senza costo in punti
+        this.couponPeriodici = tuttiCoupon.filter((c: any) => c.attivo && (!c.costo_punti || c.costo_punti === 0));
+      } else {
+        console.error('[Fedelta] Errore caricamento coupon periodici:', res.status);
+      }
+    } catch (e) {
+      console.error('[Fedelta] Errore di rete coupon periodici:', e);
+    } finally {
+      this.caricandoPeriodici = false;
+      this.cdr.detectChanges();
+    }
+  }
+
   async caricaProdottiUsati() {
     this.caricandoProdotti = true;
     const token = this.getToken();
@@ -239,6 +264,14 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
       this.toast.error('Errore di connessione al server.');
     } finally {
       this.cdr.detectChanges();
+    }
+  }
+
+  copiaCodice(codice: string) {
+    if (isPlatformBrowser(this.platformId)) {
+      navigator.clipboard.writeText(codice).then(() => {
+        this.toast.info(`Codice "${this.getCopiaAbbreviata(codice)}" copiato!`);
+      });
     }
   }
 

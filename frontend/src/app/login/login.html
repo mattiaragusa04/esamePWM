@@ -13,13 +13,21 @@
           
           <div class="form-group">
             <label for="password" class="font-weight-bold text-dark">Password</label>
-            <input type="password" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && loginForm.get('password')?.invalid" id="password" formControlName="password" placeholder="Inserisci password">
+            <div class="input-group rounded-pill bg-light" [class.is-invalid]="submitted && loginForm.get('password')?.invalid">
+              <input [type]="mostraPassword ? 'text' : 'password'" class="form-control bg-transparent border-0 px-4" [class.is-invalid]="submitted && loginForm.get('password')?.invalid" id="password" formControlName="password" placeholder="Inserisci password" style="border-radius: 50rem 0 0 50rem;">
+              <div class="input-group-append">
+                <button class="btn btn-light bg-transparent border-0 text-muted pr-3" type="button" style="border-radius: 0 50rem 50rem 0;" (click)="togglePasswordVisibility()">
+                <i class="bi" [ngClass]="mostraPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
+            </div>
           </div>
 
           <button type="submit" class="btn btn-info btn-block rounded-pill mt-5 py-2 font-weight-bold text-dark shadow">Accedi</button>
-        <div class="text-center mt-3">
+          
+          <div class="text-center mt-3">
             <small class="text-muted">Non hai un account? <a routerLink="/register" routerLinkActive="active" class="text-info font-weight-bold">Registrati</a></small>
-        </div>
+          </div>
         </form>
       </div>
     </div>

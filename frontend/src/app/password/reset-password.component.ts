@@ -16,6 +16,7 @@ export class ResetPasswordComponent implements OnInit {
   newPassword = '';
   confirmPassword = '';
   isLoading = false;
+  mostraPassword = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,6 +30,10 @@ export class ResetPasswordComponent implements OnInit {
       this.toast.error('Token di reset mancante o non valido.');
       this.router.navigate(['/']);
     }
+  }
+
+  togglePasswordVisibility(): void {
+    this.mostraPassword = !this.mostraPassword;
   }
 
   isPasswordValid(): boolean {

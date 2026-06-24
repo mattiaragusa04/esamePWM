@@ -1,6 +1,10 @@
 <div class="container my-5">
-  <h1 class="text-center mb-4">Vendi il tuo prodotto a PAwerUP</h1>
-  <p class="text-center text-secondary mb-5">Valuta le condizioni del tuo prodotto per ottenere una stima del prezzo di acquisto.</p>
+  <div class="home-section-header">
+    <h1 class="home-section-title">
+      Vendi il tuo prodotto a <span class="home-accent">PAwerUP</span>
+    </h1>
+    <p class="home-section-sub">Valuta le condizioni del tuo articolo per ottenere una stima del prezzo di acquisto.</p>
+  </div>
 
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border text-info" role="status">
@@ -79,8 +83,10 @@
 
         <!-- Anteprima immagini caricate -->
         <div class="image-previews-container mb-4" *ngIf="imagePreviews.length > 0">
-          <div *ngFor="let preview of imagePreviews; let i = index" class="preview-item">
-            <img [src]="preview" alt="Anteprima immagine {{ i + 1 }}" class="preview-image">
+          <div *ngFor="let preview of imagePreviews; let i = index" class="preview-wrapper">
+            <div class="preview-item">
+              <img [src]="preview" alt="Anteprima immagine {{ i + 1 }}" class="preview-image">
+            </div>
             <button class="btn-remove-preview" (click)="removeImage(i)" title="Rimuovi immagine">
               <i class="bi bi-x"></i>
             </button>

@@ -1,3 +1,62 @@
+/* Stili per l'header della sezione, uniformati con home.css */
+.home-section-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.home-section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background-color: rgba(248, 109, 237, 0.1);
+  color: var(--main-color);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+}
+
+.home-section-label i {
+  font-size: 0.9rem;
+}
+
+.home-section-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: var(--color-text);
+  letter-spacing: -0.5px;
+}
+
+.home-section-title .home-accent {
+  color: var(--main-color);
+  /* Effetto gradiente sul testo */
+  background: linear-gradient(45deg, var(--main-color), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.home-section-sub {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@media (max-width: 767.98px) {
+  .home-section-title {
+    font-size: 2rem;
+  }
+  .home-section-sub {
+    font-size: 1rem;
+  }
+}
+
 .condition-option input[type="radio"] {
   display: none;
 }
@@ -56,6 +115,61 @@
   color: var(--main-color);
   margin-bottom: 15px;
   display: block;
+}
+
+/* Effetto zoom sull'immagine del prodotto principale */
+.img-fluid {
+  transition: transform 0.4s ease !important;
+}
+
+.img-fluid:hover {
+  transform: scale(1.1) !important;
+}
+
+
+/* Anteprima immagini caricate */
+.image-previews-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preview-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.btn-remove-preview {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.btn-remove-preview:hover {
+  color: #dc3545; /* Rosso Bootstrap per pericolo */
 }
 
 /* Valuation Box */

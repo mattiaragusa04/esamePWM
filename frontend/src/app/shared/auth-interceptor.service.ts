@@ -42,8 +42,15 @@ export class AuthInterceptorService {
     const self = this;
 
     window.fetch = async function (...args: Parameters<typeof window.fetch>): Promise<Response> {
-      const response = await originalFetch(...args);
+      const url = args[0] instanceof Request ? args[0].url : String(args[0]);
       const init = args[1];
+
+      // Ignora l'interceptor per la richiesta di recupero password
+      if (url.includes('/api/auth/richiesta-recupero-password')) {
+        return originalFetch(...args);
+      }
+
+      const response = await originalFetch(...args);
 
       // Sloggare solo se:
       // 1. la risposta è 401

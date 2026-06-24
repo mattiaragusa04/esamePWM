@@ -44,10 +44,15 @@ export class AdminShopFedelta implements OnInit {
   salvandoCoupon  = false;
   msgCoupon: { testo: string; tipo: 'success' | 'error' } | null = null;
 
+  mostraModaleModifica = false;
+  couponInModifica: CouponFedelta | null = null;
+  salvandoModifica = false;
+
   nuovoCoupon = {
     codice: '',
-    percentuale: 10,
-    costoInPunti: 90,
+    tipo: 'percentuale' as 'percentuale' | 'fisso',
+    valore: 10,
+    costoInPunti: 50,
     descrizione: '',
     scadenza: '',
     utilizzi_massimi: null
@@ -110,7 +115,8 @@ export class AdminShopFedelta implements OnInit {
 
     const payload = {
       ...this.nuovoCoupon,
-      utilizzi_massimi: this.nuovoCoupon.utilizzi_massimi ? Number(this.nuovoCoupon.utilizzi_massimi) : null
+      utilizzi_massimi: this.nuovoCoupon.utilizzi_massimi ? Number(this.nuovoCoupon.utilizzi_massimi) : null,
+      valore: Number(this.nuovoCoupon.valore)
     };
 
     try {
@@ -182,18 +188,69 @@ export class AdminShopFedelta implements OnInit {
     }
   }
 
+  apriModifica(coupon: CouponFedelta) {
+    this.couponInModifica = { ...coupon };
+    if (this.couponInModifica.data_scadenza) {
+      this.couponInModifica.data_scadenza = this.couponInModifica.data_scadenza.split('T')[0];
+    }
+    this.mostraModaleModifica = true;
+  }
+
+  chiudiModifica() {
+    this.mostraModaleModifica = false;
+    this.couponInModifica = null;
+  }
+
+  async salvaModifica() {
+    if (!this.couponInModifica) return;
+
+    this.salvandoModifica = true;
+    const token = this.getToken();
+
+    const payload = {
+      ...this.couponInModifica,
+      valore: Number(this.couponInModifica.valore),
+      costo_punti: Number(this.couponInModifica.costo_punti),
+      utilizzi_massimi: this.couponInModifica.utilizzi_massimi ? Number(this.couponInModifica.utilizzi_massimi) : null
+    };
+
+    try {
+      const res = await fetch(`${this.API}/admin/coupon-fedelta/${this.couponInModifica.id}`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        this.showMsgCoupon('Coupon aggiornato con successo!', 'success');
+        this.chiudiModifica();
+        await this.caricaCoupon();
+      } else {
+        this.showMsgCoupon(data.error || 'Errore durante la modifica.', 'error');
+      }
+    } catch (e) {
+      console.error('[AdminShopFedelta] Errore di rete modifica coupon:', e);
+      this.showMsgCoupon('Errore di connessione al server.', 'error');
+    } finally {
+      this.salvandoModifica = false;
+      this.cdr.detectChanges();
+    }
+  }
+
   private resetForm(): void {
     const d = new Date();
     d.setFullYear(d.getFullYear() + 1);
     this.nuovoCoupon = {
       codice: '',
-      percentuale: 10,
-      costoInPunti: 90,
+      tipo: 'percentuale',
+      valore: 10,
+      costoInPunti: 50,
       descrizione: '',
       scadenza: d.toISOString().split('T')[0],
       utilizzi_massimi: null
     };
   }
+
 
   private showMsgCoupon(testo: string, tipo: 'success' | 'error'): void {
     this.msgCoupon = { testo, tipo };

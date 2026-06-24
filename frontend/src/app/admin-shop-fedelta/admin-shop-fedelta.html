@@ -5,7 +5,7 @@
     <div class="shop-fedelta-header-icon"><i class="bi bi-stars"></i></div>
     <div>
       <h2>Gestisci lo Shop Fedeltà</h2>
-      <p>Crea coupon acquistabili con punti fedeltà e monitora i prodotti usati disponibili nello shop.</p>
+      <p>Gestisci i coupon fedeltà e i prodotti usati acquistabili con punti fedeltà.</p>
     </div>
   </div>
 
@@ -34,11 +34,22 @@
       <div class="shop-form-grid">
         <div class="shop-form-group">
           <label>Codice coupon *</label>
-          <input type="text" [(ngModel)]="nuovoCoupon.codice" placeholder="es. ESTATE25" class="shop-input" />
+          <input type="text" [(ngModel)]="nuovoCoupon.codice" placeholder="es. COUP-35" class="shop-input" />
         </div>
         <div class="shop-form-group">
-          <label>Sconto (%)</label>
-          <input type="number" [(ngModel)]="nuovoCoupon.percentuale" min="1" max="100" class="shop-input" />
+          <label>Tipo di sconto</label>
+          <select [(ngModel)]="nuovoCoupon.tipo" class="shop-input">
+            <option value="percentuale">Percentuale (%)</option>
+            <option value="fisso">Fisso (€)</option>
+          </select>
+        </div>
+        <div class="shop-form-group">
+          <label>Valore sconto</label>
+          <input
+            type="number"
+            [(ngModel)]="nuovoCoupon.valore"
+            [max]="nuovoCoupon.tipo === 'percentuale' ? 100 : 9999"
+            class="shop-input" />
         </div>
         <div class="shop-form-group">
           <label>Costo in punti fedeltà</label>
@@ -106,6 +117,9 @@
                 </span>
               </td>
               <td class="td-actions">
+                <button class="btn-icon" title="Modifica" (click)="apriModifica(c)">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
                 <button class="btn-icon" [title]="c.attivo ? 'Disattiva' : 'Attiva'" (click)="toggleAttivoCoupon(c)">
                   <i class="bi" [class.bi-toggle-on]="c.attivo" [class.bi-toggle-off]="!c.attivo"></i>
                 </button>
@@ -135,7 +149,7 @@
           <i class="bi bi-arrow-clockwise"></i>
         </button>
       </div>
-      <p class="shop-card-sub">Tutti i prodotti con condizione <strong>Usato</strong> vengono mostrati nello shop fedeltà. Il costo in punti è calcolato automaticamente: <code>ROUND(prezzo) / 5</code>.</p>
+      <p class="shop-card-sub">Tutti i prodotti con condizione <strong>Usato</strong> vengono mostrati nello shop fedeltà. Il costo in punti è calcolato automaticamente: <code>prezzo/5</code>.</p>
 
       <div class="shop-loading" *ngIf="caricandoProdotti">
         <div class="spinner-border spinner-border-sm text-warning"></div> Caricamento…
@@ -182,6 +196,62 @@
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ MODALE MODIFICA COUPON ══════════════════════ -->
+  <div class="shop-modal-overlay" *ngIf="mostraModaleModifica" (click)="chiudiModifica()">
+    <div class="shop-modal" (click)="$event.stopPropagation()">
+      <div class="shop-modal-header">
+        <h4 class="shop-modal-title"><i class="bi bi-pencil-square"></i> Modifica Coupon Fedeltà</h4>
+        <button class="shop-modal-close" (click)="chiudiModifica()">&times;</button>
+      </div>
+
+      <form *ngIf="couponInModifica" #modificaForm="ngForm" (ngSubmit)="salvaModifica()">
+        <div class="shop-modal-body">
+          <div class="shop-form-grid">
+            <div class="shop-form-group">
+              <label>Codice coupon *</label>
+              <input type="text" [(ngModel)]="couponInModifica.codice" name="codice" required class="shop-input" />
+            </div>
+            <div class="shop-form-group">
+              <label>Tipo di sconto</label>
+              <select [(ngModel)]="couponInModifica.tipo" name="tipo" class="shop-input">
+                <option value="percentuale">Percentuale (%)</option>
+                <option value="fisso">Fisso (€)</option>
+              </select>
+            </div>
+            <div class="shop-form-group">
+              <label>Valore sconto</label>
+              <input type="number" [(ngModel)]="couponInModifica.valore" name="valore" required [max]="couponInModifica.tipo === 'percentuale' ? 100 : 9999" class="shop-input" />
+            </div>
+            <div class="shop-form-group">
+              <label>Costo in punti fedeltà</label>
+              <input type="number" [(ngModel)]="couponInModifica.costo_punti" name="costo_punti" required min="1" class="shop-input" />
+            </div>
+            <div class="shop-form-group">
+              <label>Data scadenza</label>
+              <input type="date" [(ngModel)]="couponInModifica.data_scadenza" name="data_scadenza" class="shop-input" />
+            </div>
+            <div class="shop-form-group">
+              <label>Utilizzi massimi</label>
+              <input type="number" [(ngModel)]="couponInModifica.utilizzi_massimi" name="utilizzi_massimi" min="1" placeholder="Illimitati" class="shop-input" />
+            </div>
+            <div class="shop-form-group shop-form-group--full">
+              <label>Descrizione</label>
+              <input type="text" [(ngModel)]="couponInModifica.descrizione" name="descrizione" class="shop-input" />
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-modal-footer">
+          <button type="button" class="shop-btn-cancel" (click)="chiudiModifica()">Annulla</button>
+          <button type="submit" class="shop-btn-create" [disabled]="salvandoModifica || modificaForm.invalid">
+            <i class="bi" [class.bi-check-lg]="!salvandoModifica" [class.bi-arrow-repeat]="salvandoModifica"></i>
+            {{ salvandoModifica ? 'Salvataggio…' : 'Salva Modifiche' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 

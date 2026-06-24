@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { ToastService } from '../shared/toast.service';
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, CommonModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -15,6 +16,7 @@ export class Login {
   email: string = '';
   password: string = '';
   loginForm: FormGroup;
+  mostraPassword = false;
 
   constructor(private fb: FormBuilder, private router: Router, private toast: ToastService) {
     this.loginForm = this.fb.group({
@@ -22,6 +24,11 @@ export class Login {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
+
+  togglePasswordVisibility() {
+    this.mostraPassword = !this.mostraPassword;
+  }
+
   async onSubmit() {
     this.submitted = true;
     this.errorMessage = '';

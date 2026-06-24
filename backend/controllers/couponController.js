@@ -18,11 +18,11 @@ const getCostoInPunti = (prodotto) => {
 
 // Punti richiesti per ogni percentuale di sconto preset
 const PUNTI_PER_PRESET = {
-  5:  50,
-  10: 100,
-  15: 150,
-  20: 200,
-  25: 250
+  5:  25,
+  10: 50,
+  15: 75,
+  20: 100,
+  25: 125
 };
 
 // GET /api/coupon — lista tutti i coupon (admin)
@@ -168,7 +168,8 @@ exports.validaCoupon = async (req, res) => {
 // ═══════════════════════════════════════════════════════════════
 exports.getPresetCoupon = (req, res) => {
   const preset = [5, 10, 15, 20, 25].map(perc => ({
-    percentuale: perc,
+    valore: perc,
+    tipo: 'percentuale',
     costoInPunti: PUNTI_PER_PRESET[perc],
     descrizione: `Sconto del ${perc}% su qualsiasi ordine`
   }));
@@ -268,13 +269,15 @@ exports.adminGetCouponFedelta = async (req, res) => {
 // ADMIN — POST /api/coupon/admin/coupon-fedelta
 // ═══════════════════════════════════════════════════════════════
 exports.adminCreaCouponFedelta = async (req, res) => {
-  const { codice, percentuale, costoInPunti, descrizione, scadenza, utilizzi_massimi } = req.body;
-  if (!codice || !percentuale || !costoInPunti)
-    return res.status(400).json({ error: 'codice, percentuale e costoInPunti sono obbligatori.' });
+  const { codice, tipo = 'percentuale', valore, costoInPunti, descrizione, scadenza, utilizzi_massimi } = req.body;
+  if (!codice || !valore || !costoInPunti)
+    return res.status(400).json({ error: 'Codice, valore e costo in punti sono obbligatori.' });
+
   try {
     const result = await Coupon.createFedelta({
       codice,
-      percentuale,
+      tipo,
+      valore,
       costoInPunti,
       descrizione,
       scadenza,
@@ -284,6 +287,34 @@ exports.adminCreaCouponFedelta = async (req, res) => {
   } catch (err) {
     if (err.message && err.message.includes('UNIQUE'))
       return res.status(400).json({ error: 'Codice coupon già esistente.' });
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// ADMIN — PUT /api/coupon/admin/coupon-fedelta/:id
+// ═══════════════════════════════════════════════════════════════
+exports.adminModificaCouponFedelta = async (req, res) => {
+  const { id } = req.params;
+  const { codice, tipo, valore, costo_punti, descrizione, data_scadenza, utilizzi_massimi } = req.body;
+
+  if (!codice || !valore || !costo_punti) {
+    return res.status(400).json({ error: 'Codice, valore e costo in punti sono obbligatori.' });
+  }
+
+  try {
+    const result = await Coupon.update(id, {
+      codice,
+      tipo,
+      valore,
+      costo_punti: costo_punti,
+      descrizione,
+      data_scadenza: data_scadenza,
+      utilizzi_massimi
+    });
+    if (result.changes === 0) return res.status(404).json({ error: 'Coupon non trovato.' });
+    res.json({ message: 'Coupon aggiornato con successo.' });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };

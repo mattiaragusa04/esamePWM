@@ -19,11 +19,11 @@ const getCostoInPunti = (prodotto) => {
 
 // Punti richiesti per ogni percentuale di sconto preset
 const PUNTI_PER_PRESET = {
-  5:  50,
-  10: 100,
-  15: 150,
-  20: 200,
-  25: 250
+  5:  25,
+  10: 50,
+  15: 75,
+  20: 100,
+  25: 125
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
