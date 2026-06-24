@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS prodotto (
     descrizione TEXT NOT NULL,
     giacenza INTEGER NOT NULL,
     immagine TEXT NOT NULL,
-    vendibile REAL NOT NULL,
+    PrezzoUnitarioVendita REAL NOT NULL,
     visibile INTEGER NOT NULL,
     genere TEXT,
     condizione TEXT NOT NULL,

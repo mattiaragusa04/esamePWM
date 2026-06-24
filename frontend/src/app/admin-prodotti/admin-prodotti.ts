@@ -34,7 +34,7 @@ export class AdminProdotti implements OnInit {
     nome: '',
     categoria_id: '',
     descrizione: '',
-    vendibile: 0,
+    PrezzoUnitarioVendita: 0,
     giacenzaNuovo: 0,
     giacenzaUsato: 0,
     tipoPrezzoInserito: 'Nuovo', // 'Nuovo' | 'Usato'
@@ -122,7 +122,7 @@ export class AdminProdotti implements OnInit {
         nome: '',
         categoria_id: '',
         descrizione: '',
-        vendibile: 0,
+        PrezzoUnitarioVendita: 0,
         giacenzaNuovo: 0,
         giacenzaUsato: 0,
         tipoPrezzoInserito: 'Nuovo',
@@ -146,7 +146,7 @@ export class AdminProdotti implements OnInit {
 
   // Calcola i due prezzi in base a tipoPrezzoInserito
   calcolaPrezzi(): { prezzoNuovo: number; prezzoUsato: number } {
-    const prezzo = parseFloat(this.nuovoProdotto.vendibile) || 0;
+    const prezzo = parseFloat(this.nuovoProdotto.PrezzoUnitarioVendita) || 0;
     if (this.nuovoProdotto.tipoPrezzoInserito === 'Nuovo') {
       return {
         prezzoNuovo: prezzo,
@@ -196,7 +196,7 @@ export class AdminProdotti implements OnInit {
     if (this.isModifica) {
       formData.append('giacenza', this.nuovoProdotto.giacenza);
       formData.append('condizione', this.nuovoProdotto.condizione);
-      formData.append('vendibile', this.nuovoProdotto.vendibile);
+      formData.append('PrezzoUnitarioVendita', this.nuovoProdotto.PrezzoUnitarioVendita);
     } else {
       // Invia le giacenze e i prezzi già calcolati
       formData.append('giacenzaNuovo', this.nuovoProdotto.giacenzaNuovo);
@@ -231,7 +231,7 @@ export class AdminProdotti implements OnInit {
       if (response.ok) {
         this.caricaProdotti();
         form.resetForm();
-        this.nuovoProdotto = { nome: '', categoria_id: '', descrizione: '', vendibile: 0, giacenzaNuovo: 0, giacenzaUsato: 0, tipoPrezzoInserito: 'Nuovo', condizione: '', genere: '', immagine: '' };
+        this.nuovoProdotto = { nome: '', categoria_id: '', descrizione: '', PrezzoUnitarioVendita: 0, giacenzaNuovo: 0, giacenzaUsato: 0, tipoPrezzoInserito: 'Nuovo', condizione: '', genere: '', immagine: '' };
         this.rimuoviImmagine();
         this.mostraRiepilogo = false;
         this.toast.success('Prodotto salvato con successo!');

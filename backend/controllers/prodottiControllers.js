@@ -92,7 +92,7 @@ exports.createProdotto = async (req, res) => {
         const prodottoNuovo = await prodotto.create({
             ...prodottoData,
             giacenza: giacenzaNuovo,
-            vendibile: prezzoNuovo,
+            PrezzoUnitarioVendita: prezzoNuovo,
             condizione: 'Nuovo'
         });
 
@@ -100,7 +100,7 @@ exports.createProdotto = async (req, res) => {
         const prodottoUsato = await prodotto.create({
             ...prodottoData,
             giacenza: giacenzaUsato,
-            vendibile: prezzoUsato,
+            PrezzoUnitarioVendita: prezzoUsato,
             condizione: 'Usato'
         });
 
@@ -120,7 +120,7 @@ exports.updateProdotto = async (req, res) => {
             return res.status(400).json({ error: "Nessun dato fornito per l'aggiornamento" });
         }
 
-        if (prodottoData.vendibile) prodottoData.vendibile = parseFloat(prodottoData.vendibile);
+        if (prodottoData.PrezzoUnitarioVendita) prodottoData.PrezzoUnitarioVendita = parseFloat(prodottoData.PrezzoUnitarioVendita);
         if (prodottoData.giacenza) prodottoData.giacenza = parseInt(prodottoData.giacenza, 10);
         if (prodottoData.categoria_id) prodottoData.categoria_id = parseInt(prodottoData.categoria_id, 10);
         if (prodottoData.pubblicatoVetrina) prodottoData.visibile= parseInt(prodottoData.pubblicatoVetrina, 10);

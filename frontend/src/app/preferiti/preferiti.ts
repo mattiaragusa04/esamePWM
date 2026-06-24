@@ -73,7 +73,7 @@ export class PreferitiComponent implements OnInit {
 
   async aggiungiAlCarrello(prodotto: any) {
     const condizione = prodotto.condizione ?? 'Nuovo';
-    const prezzo = Number(prodotto.vendibile ?? 0);
+    const prezzo = Number(prodotto.PrezzoUnitarioVendita ?? 0);
     const successo = await this.carrelloService.aggiungiProdotto(prodotto, 1, condizione, prezzo);
     if (successo) {
       this.toast.success(`"${prodotto.nome}" aggiunto al carrello!`);

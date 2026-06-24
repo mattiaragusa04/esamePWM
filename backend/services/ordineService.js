@@ -42,7 +42,7 @@ exports.createOrdine = async (userId, { carta_id, indirizzo_id, coupon_codice })
     const prodottiPerOrdine = [];
 
     for (const item of prodottiInCarrello) {
-        let prezzoUnitario = item.vendibile;
+        let prezzoUnitario = item.PrezzoUnitarioVendita;
         if (item.condizione === 'Usato') {
             prezzoUnitario = Math.round((prezzoUnitario * 0.75) * 100) / 100;
         }

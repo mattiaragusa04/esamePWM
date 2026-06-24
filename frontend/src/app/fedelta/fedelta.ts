@@ -22,7 +22,7 @@ interface ProdottoUsato {
   id: number;
   nome: string;
   descrizione: string;
-  vendibile: number;
+  PrezzoUnitarioVendita: number;
   costoInPunti: number;
   immagine: string;
   giacenza: number;

@@ -15,7 +15,7 @@ export interface Prodotto {
   giacenza: number;
   immagine: string;
   prezzoUnitarioAcquisto: number;
-  vendibile: number;
+  PrezzoUnitarioVendita: number;
   pubblicatoAcquisto: boolean;
   pubblicatoVetrina: boolean;
   condizione: string;
@@ -295,7 +295,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    let basePrice = this.prodotto.vendibile * 0.60;
+    let basePrice = this.prodotto.PrezzoUnitarioVendita * 0.60;
 
     let totalAdjustment = 0;
     this.currentConditionCategories.forEach(category => {

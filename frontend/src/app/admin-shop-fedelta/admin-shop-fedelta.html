@@ -180,7 +180,7 @@
               </td>
               <td>{{ p.nome }}</td>
               <td>{{ p.categoria_nome }}</td>
-              <td>€{{ p.vendibile | number:'1.2-2' }}</td>
+              <td>€{{ p.PrezzoUnitarioVendita | number:'1.2-2' }}</td>
               <td><span class="badge-punti"><i class="bi bi-trophy-fill"></i> {{ p.costo_punti }}</span></td>
               <td>
                 <span [class.text-danger]="p.giacenza === 0" [class.fw-bold]="p.giacenza === 0">

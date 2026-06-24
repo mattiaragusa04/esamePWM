@@ -72,15 +72,15 @@ const Prodotto = {
 
   create: (prodotto) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, vendibile, pubblicatoVetrina, genere, condizione, puntiFedelta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      const puntiFedelta = Math.round((prodotto.vendibile || 0) / 5);
+      const query = `INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, PrezzoUnitarioVendita, pubblicatoVetrina, genere, condizione, puntiFedelta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const puntiFedelta = Math.round((prodotto.PrezzoUnitarioVendita || 0) / 5);
       db.run(query, [
         prodotto.categoria_id,
         prodotto.nome,
         prodotto.descrizione,
         prodotto.giacenza || 0,
         prodotto.immagine || '',
-        prodotto.vendibile || 0,
+        prodotto.PrezzoUnitarioVendita || 0,
         1,
         prodotto.genere || null,
         prodotto.condizione || 'Nuovo',
@@ -94,14 +94,14 @@ const Prodotto = {
 
   update: (prodotto) => {
     return new Promise((resolve, reject) => {
-      const query = `UPDATE prodotto SET categoria_id = ?, nome = ?, descrizione = ?, giacenza = ?, immagine = ?, vendibile = ?, visibile= ?, genere = ?, condizione = ? WHERE id = ?`;
+      const query = `UPDATE prodotto SET categoria_id = ?, nome = ?, descrizione = ?, giacenza = ?, immagine = ?, PrezzoUnitarioVendita = ?, visibile= ?, genere = ?, condizione = ? WHERE id = ?`;
       db.run(query, [
         prodotto.categoria_id,
         prodotto.nome,
         prodotto.descrizione,
         prodotto.giacenza || 0,
         prodotto.immagine || '',
-        prodotto.vendibile || 0,
+        prodotto.PrezzoUnitarioVendita || 0,
         prodotto.visibile|| 0,
         prodotto.genere || null,
         prodotto.condizione || 'Nuovo',

@@ -14,7 +14,7 @@ const getcosto_punti = (prodotto) => {
     return Number(prodotto.puntiFedelta);
   }
   // Fallback: arrotondamento commerciale del prezzo / 5
-  return arrotonda(prodotto.vendibile) / 5;
+  return arrotonda(prodotto.PrezzoUnitarioVendita) / 5;
 };
 
 // Punti richiesti per ogni percentuale di sconto preset
@@ -188,10 +188,10 @@ exports.acquistaProdottoConPunti = async (userId, prodottoId) => {
   }
 
   // Crea l'ordine (pagato_con_punti = 1 a livello ordine)
-  const newOrdine = await Ordine.createConPunti(userId, prodotto.vendibile);
+  const newOrdine = await Ordine.createConPunti(userId, prodotto.PrezzoUnitarioVendita);
 
   // FIX: aggiunge il prodotto alla tabella composto con pagato_con_punti = 1
-  await Ordine.addProdottoToOrdine(newOrdine.id, prodottoId, 1, prodotto.vendibile, 1);
+  await Ordine.addProdottoToOrdine(newOrdine.id, prodottoId, 1, prodotto.PrezzoUnitarioVendita, 1);
 
   // Decrementa giacenza in modo atomico; se changes=0 la giacenza era già 0 (race condition)
   const decResult = await Coupon.decrementaGiacenza(prodottoId);

@@ -201,7 +201,7 @@
           <div class="prodotto-categoria">{{ p.categoria_nome }}</div>
           <div class="prodotto-nome">{{ p.nome }}</div>
           <div class="prodotto-prezzo-originale">
-            Valore: <strong>€{{ p.vendibile | number:'1.2-2' }}</strong>
+            Valore: <strong>€{{ p.PrezzoUnitarioVendita | number:'1.2-2' }}</strong>
           </div>
           <div class="prodotto-giacenza">Disponibili: {{ p.giacenza }}</div>
 

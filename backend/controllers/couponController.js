@@ -13,7 +13,7 @@ const getcosto_punti = (prodotto) => {
     return Number(prodotto.puntiFedelta);
   }
   // Fallback: arrotondamento commerciale del prezzo / 5
-  return arrotonda(prodotto.vendibile) / 5;
+  return arrotonda(prodotto.PrezzoUnitarioVendita) / 5;
 };
 
 // Punti richiesti per ogni percentuale di sconto preset
