@@ -114,4 +114,13 @@ export class App implements OnInit {
     }
   }
 
+  vaiAPuntiFedelta() {
+    if (this.utenteLoggato) {
+      this.router.navigate(['/profilo/fedelta']);
+    } else {
+      localStorage.setItem('redirectDopoLogin', '/profilo/fedelta');
+      this.router.navigate(['/login']);
+    }
+  }
+
 }

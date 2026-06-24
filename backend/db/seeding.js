@@ -148,7 +148,8 @@ async function popolaDatabaseUtenteAdmin() {
             { nome: 'Admin', cognome: 'PAwerUP', email: 'pawerupecommerce@gmail.com', password: 'PAwerUP1234@!', ruolo: 'admin' },
             { nome: 'Luca', cognome: 'Molinelli', email: 'molinluca1@gmail.com', password: 'Lstarwars2@', ruolo: 'user' },
             { nome: 'Mattia', cognome: 'Ragusa', email: 'ragusamatt@hotmail.com', password: 'Mattia1207!', ruolo: 'user' },
-            { nome: 'Dennis', cognome: 'Secco', email: 'dennis.secco10@gmail.com', password: 'Prova1234**', ruolo: 'user' }
+            { nome: 'Dennis', cognome: 'Secco', email: 'dennis.secco10@gmail.com', password: 'Prova1234**', ruolo: 'user' },
+            { nome: 'Utente', cognome: 'Prova', email: 'utenteaccessoprova@gmail.com', password: 'Prova1234!', ruolo: 'user' }
         ];
 
         for (const utente of utenti) {

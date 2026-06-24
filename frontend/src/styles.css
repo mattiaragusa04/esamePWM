@@ -756,6 +756,7 @@ body.theme-dark .form-control:focus,
 body.theme-dark .form-select:focus,
 body.theme-dark textarea:focus {
   background-color: var(--color-input-bg);
+  background-color: var(--color-input-bg) !important;
   border-color: var(--main-color);
   box-shadow: 0 0 0 1px rgba(248, 109, 237, 0.65);
 }
@@ -1456,6 +1457,20 @@ body.theme-dark .pw-side-link:hover {
   color: #f86ded;
   background: rgba(248, 109, 237, 0.1);
 }
+
+/* Pulsante Punti Fedeltà (verde) */
+.pw-side-vendi-btn--fedelta {
+  background: rgba(80, 211, 138, 0.15);
+  border-color: rgba(80, 211, 138, 0.3);
+}
+.pw-side-vendi-btn--fedelta .pw-side-vendi-icon {
+  color: #50d38a;
+}
+.pw-side-vendi-btn--fedelta:hover {
+  background: rgba(80, 211, 138, 0.25);
+  border-color: rgba(80, 211, 138, 0.5);
+}
+
 
 /* ── Footer pw-* ── */
 html[data-theme="dark"] .pw-footer,
