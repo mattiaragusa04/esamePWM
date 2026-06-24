@@ -59,30 +59,59 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
   isLoadingCarte: boolean = false;
 
   allConditionCategories: { [key: string]: ConditionCategory[] } = {
+    // --- Prodotti NUOVI / SIGILLATI ---
+    'Nuovo': [
+      {
+        name: 'Stato della confezione',
+        options: [
+          { value: 'sigillato',           label: 'Sigillato (pellicola originale intatta)',      adjustment:  0     },
+          { value: 'aperto_mai_usato',    label: 'Aperto ma mai usato',                          adjustment: -0.05  },
+          { value: 'confezione_danneg',   label: 'Confezione danneggiata (ammaccature/strappi)', adjustment: -0.10  }
+        ],
+        selectedValue: 'sigillato'
+      },
+      {
+        name: 'Contenuto della confezione',
+        options: [
+          { value: 'completo',    label: 'Completo (tutti gli accessori originali presenti)', adjustment:  0     },
+          { value: 'incompleto', label: 'Incompleto (manca qualcosa: manuale, cavo, ecc.)',   adjustment: -0.10  }
+        ],
+        selectedValue: 'completo'
+      },
+      {
+        name: 'Stato estetico esterno',
+        options: [
+          { value: 'perfetto',       label: 'Perfetto, nessun segno',                       adjustment:  0     },
+          { value: 'segni_lievi',    label: 'Piccoli segni superficiali sulla confezione',  adjustment: -0.05  }
+        ],
+        selectedValue: 'perfetto'
+      }
+    ],
+    // --- Prodotti USATI per categoria ---
     'Videogiochi': [
       {
         name: 'Condizioni Disco/Cartuccia',
         options: [
-          { value: 'ottime', label: 'Ottime condizioni (Piccoli graffi o assenza totale)', adjustment: 0 },
-          { value: 'buone', label: 'Buone condizioni (Graffi superficiali, funzionante)', adjustment: -0.10 },
-          { value: 'sufficienti', label: 'Condizioni sufficienti (Graffi evidenti, funzionante)', adjustment: -0.20 }
+          { value: 'ottime',     label: 'Ottime condizioni (Piccoli graffi o assenza totale)',     adjustment:  0     },
+          { value: 'buone',      label: 'Buone condizioni (Graffi superficiali, funzionante)',      adjustment: -0.10  },
+          { value: 'sufficienti', label: 'Condizioni sufficienti (Graffi evidenti, funzionante)',  adjustment: -0.20  }
         ],
         selectedValue: 'ottime'
       },
       {
         name: 'Condizioni Custodia',
         options: [
-          { value: 'perfetta', label: 'Perfetta (Nessun segno di usura, copertina originale)', adjustment: 0 },
-          { value: 'buona', label: 'Buona (Piccoli segni di usura, copertina originale)', adjustment: -0.05 },
-          { value: 'danneggiata', label: 'Danneggiata (Rotture, strappi o assenza copertina)', adjustment: -0.10 }
+          { value: 'perfetta',    label: 'Perfetta (Nessun segno di usura, copertina originale)', adjustment:  0     },
+          { value: 'buona',       label: 'Buona (Piccoli segni di usura, copertina originale)',    adjustment: -0.05  },
+          { value: 'danneggiata', label: 'Danneggiata (Rotture, strappi o assenza copertina)',     adjustment: -0.10  }
         ],
         selectedValue: 'perfetta'
       },
       {
         name: 'Condizioni Manuale e Inserti',
         options: [
-          { value: 'completo', label: 'Presente e integro', adjustment: 0 },
-          { value: 'mancante', label: 'Mancante', adjustment: -0.05 }
+          { value: 'completo',  label: 'Presente e integro', adjustment:  0     },
+          { value: 'mancante', label: 'Mancante',             adjustment: -0.05  }
         ],
         selectedValue: 'completo'
       }
@@ -91,26 +120,26 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       {
         name: 'Stato Estetico Console',
         options: [
-          { value: 'pari_nuovo', label: 'Pari al nuovo', adjustment: 0 },
-          { value: 'usato_ottimo', label: 'Ottimo (Segni minimi)', adjustment: -0.10 },
-          { value: 'usato_segni', label: 'Usato (Graffi visibili)', adjustment: -0.20 }
+          { value: 'pari_nuovo',   label: 'Pari al nuovo',           adjustment:  0     },
+          { value: 'usato_ottimo', label: 'Ottimo (Segni minimi)',    adjustment: -0.10  },
+          { value: 'usato_segni',  label: 'Usato (Graffi visibili)',  adjustment: -0.20  }
         ],
         selectedValue: 'pari_nuovo'
       },
       {
         name: 'Funzionamento Tecnico',
         options: [
-          { value: 'perfetto', label: 'Testata e funzionante', adjustment: 0 },
-          { value: 'problemi_minori', label: 'Difetti minori (Esempio: porte USB)', adjustment: -0.30 },
-          { value: 'non_funzionante', label: 'Non funzionante / Per parti', adjustment: -0.70 }
+          { value: 'perfetto',        label: 'Testata e funzionante',                   adjustment:  0     },
+          { value: 'problemi_minori', label: 'Difetti minori (Esempio: porte USB)',      adjustment: -0.30  },
+          { value: 'non_funzionante', label: 'Non funzionante / Per parti',              adjustment: -0.70  }
         ],
         selectedValue: 'perfetto'
       },
       {
         name: 'Cavi e Controller originali',
         options: [
-          { value: 'tutti', label: 'Tutti inclusi', adjustment: 0 },
-          { value: 'parziali', label: 'Alcuni mancanti', adjustment: -0.15 }
+          { value: 'tutti',    label: 'Tutti inclusi',     adjustment:  0     },
+          { value: 'parziali', label: 'Alcuni mancanti',   adjustment: -0.15  }
         ],
         selectedValue: 'tutti'
       }
@@ -119,17 +148,17 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       {
         name: 'Condizioni Estetiche',
         options: [
-          { value: 'ottime', label: 'Ottime', adjustment: 0 },
-          { value: 'buone', label: 'Buone (Segni d\'usura)', adjustment: -0.15 },
-          { value: 'usurato', label: 'Molto usurato (Esempio: gommini analogici)', adjustment: -0.30 }
+          { value: 'ottime',  label: 'Ottime',                                           adjustment:  0     },
+          { value: 'buone',   label: "Buone (Segni d'usura)",                            adjustment: -0.15  },
+          { value: 'usurato', label: 'Molto usurato (Esempio: gommini analogici)',        adjustment: -0.30  }
         ],
         selectedValue: 'ottime'
       },
       {
         name: 'Funzionamento Tasti/Sensori',
         options: [
-          { value: 'perfetto', label: 'Perfetto', adjustment: 0 },
-          { value: 'drift_difetti', label: 'Difetti (Esempio: Drift analogico)', adjustment: -0.50 }
+          { value: 'perfetto',     label: 'Perfetto',                             adjustment:  0     },
+          { value: 'drift_difetti', label: 'Difetti (Esempio: Drift analogico)',  adjustment: -0.50  }
         ],
         selectedValue: 'perfetto'
       }
@@ -138,17 +167,17 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       {
         name: 'Stato Estetico (Hardware)',
         options: [
-          { value: 'perfetto', label: 'Perfetto / Come nuovo', adjustment: 0 },
-          { value: 'buono', label: 'Buono (Graffi superficiali)', adjustment: -0.10 },
-          { value: 'usurato', label: 'Usurato (Segni evidenti)', adjustment: -0.25 }
+          { value: 'perfetto', label: 'Perfetto / Come nuovo',         adjustment:  0     },
+          { value: 'buono',    label: 'Buono (Graffi superficiali)',    adjustment: -0.10  },
+          { value: 'usurato',  label: 'Usurato (Segni evidenti)',       adjustment: -0.25  }
         ],
         selectedValue: 'perfetto'
       },
       {
         name: 'Funzionamento Hardware',
         options: [
-          { value: 'funzionante', label: 'Testato e funzionante', adjustment: 0 },
-          { value: 'problemi', label: 'Difetti funzionali', adjustment: -0.50 }
+          { value: 'funzionante', label: 'Testato e funzionante', adjustment:  0     },
+          { value: 'problemi',    label: 'Difetti funzionali',     adjustment: -0.50  }
         ],
         selectedValue: 'funzionante'
       }
@@ -228,8 +257,14 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
         const data = await response.json();
         this.prodotto = data;
 
-        const categoryName = this.prodotto?.categoria_nome;
-        if (categoryName && this.allConditionCategories[categoryName]) {
+        // Se il prodotto è nuovo/sigillato usa le sezioni dedicate,
+        // altrimenti usa le sezioni per usato in base alla categoria merceologica.
+        const condizione    = this.prodotto?.condizione;
+        const categoryName  = this.prodotto?.categoria_nome;
+
+        if (condizione === 'Nuovo') {
+          this.currentConditionCategories = JSON.parse(JSON.stringify(this.allConditionCategories['Nuovo']));
+        } else if (categoryName && this.allConditionCategories[categoryName]) {
           this.currentConditionCategories = JSON.parse(JSON.stringify(this.allConditionCategories[categoryName]));
         } else {
           this.errorMessage = 'Categoria prodotto non riconosciuta o non supportata per la valutazione.';
@@ -321,13 +356,13 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
     }
 
     if (!this.prodotto || this.estimatedPrice <= 0) {
-      this.toast.error('Impossibile inviare l\'offerta. Prodotto non valido o prezzo stimato non calcolabile.');
+      this.toast.error("Impossibile inviare l'offerta. Prodotto non valido o prezzo stimato non calcolabile.");
       return;
     }
 
     const token = localStorage.getItem('token');
     if (!token) {
-      this.toast.warning('Devi effettuare l\'accesso o registrarti per poter inviare una proposta di vendita.');
+      this.toast.warning("Devi effettuare l'accesso o registrarti per poter inviare una proposta di vendita.");
       localStorage.setItem('redirectDopoLogin', this.router.url);
       this.router.navigate(['/login']);
       return;
@@ -365,8 +400,8 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
         this.toast.error(`Errore nell'invio dell'offerta: ${errorData.error || errorData.message || 'Sconosciuto'}`);
       }
     } catch (error) {
-      console.error('Errore di connessione durante l\'invio dell\'offerta:', error);
-      this.toast.error('Errore di connessione al server durante l\'invio dell\'offerta.');
+      console.error("Errore di connessione durante l'invio dell'offerta:", error);
+      this.toast.error("Errore di connessione al server durante l'invio dell'offerta.");
     }
   }
 
