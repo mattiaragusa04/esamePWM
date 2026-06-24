@@ -7,14 +7,14 @@ const Ordine = require('../models/ordineModel');
 // ═══════════════════════════════════════════════════════════════
 const arrotonda = v => Math.floor(Number(v) + 0.5);
 
-// FIX: costoInPunti ora usa il campo puntiFedelta del prodotto.
+// FIX: costo_punti ora usa il campo puntiFedelta del prodotto.
 // Se puntiFedelta è 0 o assente, fallback al calcolo dal prezzo (retrocompatibilità).
-const getCostoInPunti = (prodotto) => {
+const getcosto_punti = (prodotto) => {
   if (prodotto.puntiFedelta && Number(prodotto.puntiFedelta) > 0) {
     return Number(prodotto.puntiFedelta);
   }
   // Fallback: arrotondamento commerciale del prezzo / 5
-  return arrotonda(prodotto.prezzoUnitarioVendita) / 5;
+  return arrotonda(prodotto.vendibile) / 5;
 };
 
 // Punti richiesti per ogni percentuale di sconto preset
@@ -37,7 +37,7 @@ exports.acquistaPresetCoupon = async (userId, valore) => {
     throw err;
   }
 
-  const costoInPunti = PUNTI_PER_PRESET[percNum];
+  const costo_punti = PUNTI_PER_PRESET[percNum];
 
   const utente = await User.findById(userId);
   if (!utente) {
@@ -105,7 +105,7 @@ exports.acquistaCoupon = async (userId, couponId) => {
   }
 
   const puntiDisponibili = utente.puntiFedelta || 0;
-  const costoInPunti = template.costo_punti;
+  const costo_punti = template.costo_punti;
 
   if (puntiDisponibili < costoInPunti) {
     const err = new Error(`Punti insufficienti. Hai ${puntiDisponibili} pt, ne servono ${costoInPunti} pt.`);
@@ -139,7 +139,7 @@ exports.acquistaCoupon = async (userId, couponId) => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Acquista un prodotto usato con i punti fedeltà
-// FIX: usa getCostoInPunti (puntiFedelta del prodotto)
+// FIX: usa getcosto_punti (puntiFedelta del prodotto)
 //      verifica giacenza atomica dopo decrementaGiacenza
 //      passa pagatoConPunti=1 ad addProdottoToOrdine
 // ─────────────────────────────────────────────────────────────────────────────
@@ -171,7 +171,7 @@ exports.acquistaProdottoConPunti = async (userId, prodottoId) => {
   }
 
   // FIX: usa puntiFedelta del prodotto come costo
-  const costoInPunti = getCostoInPunti(prodotto);
+  const costo_punti = getCostoInPunti(prodotto);
 
   const utente = await User.findById(userId);
   if (!utente) {
@@ -188,10 +188,10 @@ exports.acquistaProdottoConPunti = async (userId, prodottoId) => {
   }
 
   // Crea l'ordine (pagato_con_punti = 1 a livello ordine)
-  const newOrdine = await Ordine.createConPunti(userId, prodotto.prezzoUnitarioVendita);
+  const newOrdine = await Ordine.createConPunti(userId, prodotto.vendibile);
 
   // FIX: aggiunge il prodotto alla tabella composto con pagato_con_punti = 1
-  await Ordine.addProdottoToOrdine(newOrdine.id, prodottoId, 1, prodotto.prezzoUnitarioVendita, 1);
+  await Ordine.addProdottoToOrdine(newOrdine.id, prodottoId, 1, prodotto.vendibile, 1);
 
   // Decrementa giacenza in modo atomico; se changes=0 la giacenza era già 0 (race condition)
   const decResult = await Coupon.decrementaGiacenza(prodottoId);
@@ -213,5 +213,5 @@ exports.acquistaProdottoConPunti = async (userId, prodottoId) => {
 };
 
 // Espone helper per uso nei controller (catalogo/prodotti usati, ecc.)
-exports.getCostoInPunti = getCostoInPunti;
+exports.getcosto_punti = getCostoInPunti;
 exports.PUNTI_PER_PRESET = PUNTI_PER_PRESET;

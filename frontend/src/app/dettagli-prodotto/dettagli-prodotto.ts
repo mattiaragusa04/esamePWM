@@ -15,7 +15,7 @@ export interface Prodotto {
   giacenza: number;
   immagine: string;
   prezzoUnitarioAcquisto: number;
-  prezzoUnitarioVendita: number;
+  vendibile: number;
   pubblicatoAcquisto: boolean;
   pubblicatoVetrina: boolean;
   condizione: string;
@@ -173,7 +173,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     const prezzoUsato = this.getPrezzoVisualizzato();
     if (!prezzoUsato || prezzoUsato <= 0) return null;
     if (this.prodotto.condizione === 'Nuovo') {
-      return Number(this.prodotto.prezzoUnitarioVendita);
+      return Number(this.prodotto.vendibile);
     }
     return Math.round((prezzoUsato / 0.75) * 100) / 100;
   }
@@ -188,27 +188,27 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     if (!this.prodotto) return 0;
     
     if (this.isRetrogaming(this.prodotto)) {
-      return Number(this.prodotto.prezzoUnitarioVendita);
+      return Number(this.prodotto.vendibile);
     }
 
     if (this.prodotto.condizione === 'Usato') {
       if (this.prezzoCondizione === 'Nuovo') {
-        return Math.round((Number(this.prodotto.prezzoUnitarioVendita) / 0.75) * 100) / 100;
+        return Math.round((Number(this.prodotto.vendibile) / 0.75) * 100) / 100;
       }
-      return Number(this.prodotto.prezzoUnitarioVendita);
+      return Number(this.prodotto.vendibile);
     }
 
     if (this.prezzoCondizione === 'Usato') {
-      return Math.round((Number(this.prodotto.prezzoUnitarioVendita) * 0.75) * 100) / 100;
+      return Math.round((Number(this.prodotto.vendibile) * 0.75) * 100) / 100;
     }
     
-    return Number(this.prodotto.prezzoUnitarioVendita);
+    return Number(this.prodotto.vendibile);
   }
 
   getPrezzoPermutaBase(): number {
     if (!this.prodotto) return 0;
     // Valutazione base: 40% in meno rispetto al prezzo di vendita (quindi il 60% del valore)
-    return Math.round((this.prodotto.prezzoUnitarioVendita * 0.60) * 2) / 2;
+    return Math.round((this.prodotto.vendibile * 0.60) * 2) / 2;
   }
 
   async aggiungiAlCarrello(prodotto: Prodotto) {

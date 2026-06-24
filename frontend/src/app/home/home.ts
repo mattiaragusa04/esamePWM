@@ -115,7 +115,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
         tuttiIProdotti.forEach((p: any) => {
           if (p.condizione === 'Nuovo') {
             const key = (p.nome || '').trim().toLowerCase();
-            this.prezzoNuovoPerNome.set(key, Number(p.prezzoUnitarioVendita));
+            this.prezzoNuovoPerNome.set(key, Number(p.vendibile));
           }
         });
 
@@ -155,7 +155,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private usatoVariantConSconto(raw: any): any {
-    const prezzoDB = Number(raw.prezzoUnitarioVendita);
+    const prezzoDB = Number(raw.vendibile);
     const key = (raw.nome || '').trim().toLowerCase();
     const prezzoNuovoDb = this.prezzoNuovoPerNome.get(key);
     const prezzoOriginale =
@@ -183,7 +183,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private preferredVariant(raw: any): any {
-    const prezzoDB = Number(raw.prezzoUnitarioVendita);
+    const prezzoDB = Number(raw.vendibile);
     if (this.isRetrogaming(raw) || raw.condizione === 'Usato' || raw.condizione === 'Usata') {
       return { ...raw, condizioneVariante: 'Usato', prezzoVariante: prezzoDB, prezzoOriginale: null };
     }
@@ -192,7 +192,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
 
   getPrezzoVisualizzato(p: any): number {
     if (p?.prezzoVariante !== undefined) return Number(p.prezzoVariante);
-    return Number(p.prezzoUnitarioVendita);
+    return Number(p.vendibile);
   }
 
   getPrezzoOriginale(p: any): number | null {

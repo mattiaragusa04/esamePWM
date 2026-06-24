@@ -15,7 +15,7 @@ export interface Prodotto {
   giacenza: number;
   immagine: string;
   prezzoUnitarioAcquisto: number;
-  prezzoUnitarioVendita: number;
+  vendibile: number;
   pubblicatoAcquisto: boolean;
   pubblicatoVetrina: boolean;
   condizione: string;
@@ -139,7 +139,7 @@ export class Prodotti implements OnInit, OnDestroy {
           if (!condizioniPerNome.has(key)) condizioniPerNome.set(key, new Set());
           condizioniPerNome.get(key)!.add(raw.condizione);
           if (raw.condizione === 'Nuovo') {
-            this.prezzoNuovoPerNome.set(key, Number(raw.prezzoUnitarioVendita));
+            this.prezzoNuovoPerNome.set(key, Number(raw.vendibile));
           }
         });
         // Costruiamo le varianti mostrando SOLO le condizioni realmente presenti nel DB.
@@ -227,7 +227,7 @@ export class Prodotti implements OnInit, OnDestroy {
    */
   private espandiInVarianti(raw: Prodotto, condizioniPerNome: Map<string, Set<string>>): Prodotto[] {
     const result: Prodotto[] = [];
-    const prezzoDB = Number(raw.prezzoUnitarioVendita);
+    const prezzoDB = Number(raw.vendibile);
 
     if (this.isRetrogaming(raw)) {
       result.push({
@@ -398,7 +398,7 @@ export class Prodotti implements OnInit, OnDestroy {
    */
   getPrezzoVisualizzato(p: Prodotto): number {
     if (p.prezzoVariante !== undefined) return Number(p.prezzoVariante);
-    return Number(p.prezzoUnitarioVendita);
+    return Number(p.vendibile);
   }
 
   /**

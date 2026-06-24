@@ -4,7 +4,7 @@ const authControllers = require('../controllers/authControllers');
 
 async function popolaDatabaseCategoriaConsole() {
     try {
-        const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, condizione, puntiFedelta) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, vendibile, pubblicatoVetrina, condizione, puntiFedelta) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             ['Console PlayStation 5', 'Vivi un\'esperienza di gioco senza limiti con caricamenti fulminei grazie all\'SSD da 1TB e un coinvolgimento totale grazie al feedback aptico e all\'audio 3D.', 20, 'http://localhost:3000/public/immagini/console/ps5.png', 449.99, 1, 'Nuovo', Math.round(449.99 / 5)],
             ['Console PlayStation 4', 'La console che ha definito una generazione. Goditi un vasto catalogo di capolavori e le migliori esclusive PlayStation con 500GB di archiviazione. ', 20, 'http://localhost:3000/public/immagini/console/SONY-Console-Sony-PS4-Chassis-B-500-GB--GTA-V-bundle.jpg', 249.99, 1, 'Usato', Math.round(249.99 / 5)],
@@ -38,7 +38,7 @@ async function popolaDatabaseCategoriaConsole() {
 
 async function popolaDatabaseCategoriaVideogiochi() {
     try {
-        const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, genere, condizione, puntiFedelta) VALUES (2, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, vendibile, pubblicatoVetrina, genere, condizione, puntiFedelta) VALUES (2, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             ['Marvel\'s Spider-Man: Miles Morales', 'Vivi l\'ascesa di Miles Morales mentre padroneggia nuovi poteri incredibili ed esplosivi per diventare il suo Spider-Man.', 25, 'http://localhost:3000/public/immagini/videogiochi/shopping (4).webp', 49.99, 1, 'Azione', 'Nuovo', Math.round(49.99 / 5)],
             ['Marvel\'s Spider-Man 2', 'I due Spider-Man, Peter Parker e Miles Morales, tornano per una nuova emozionante avventura su PS5.', 150, 'http://localhost:3000/public/immagini/videogiochi/shopping (3).webp', 79.99, 1, 'Azione', 'Nuovo', Math.round(79.99 / 5)],
@@ -74,7 +74,7 @@ async function popolaDatabaseCategoriaVideogiochi() {
 
 async function popolaDatabaseCategoriaAccessori() {
     try {
-        const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, condizione, puntiFedelta) VALUES (3, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, vendibile, pubblicatoVetrina, condizione, puntiFedelta) VALUES (3, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             ['Adattatore USB-C a HDMI 4K', 'Collega la tua console o dispositivo portatile al monitor o alla TV con questo cavo adattatore ad alta velocità per una risoluzione fino a 4K 60Hz.', 30, 'http://localhost:3000/public/immagini/accessori/shopping (21).webp', 19.99, 1, 'Nuovo', Math.round(19.99 / 5)],
             ['Cover PlayStation 5 Custom Red', 'Personalizza la tua console con questa cover dal design accattivante, caratterizzata da una sfumatura dal rosso intenso al nero.', 15, 'http://localhost:3000/public/immagini/accessori/trasferimento (6).jpg', 49.99, 1, 'Nuovo', Math.round(49.99 / 5)],
@@ -110,7 +110,7 @@ async function popolaDatabaseCategoriaAccessori() {
 
 async function popolaDatabaseCategoriaElettronica() {
     try {
-        const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, prezzoUnitarioVendita, pubblicatoVetrina, condizione, puntiFedelta) VALUES (4, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const response = 'INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, vendibile, pubblicatoVetrina, condizione, puntiFedelta) VALUES (4, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             ['Smartwatch Fitness Black Edition', 'Tieni traccia dei tuoi allenamenti, del battito cardiaco e delle notifiche con questo elegante smartwatch nero dal design squadrato.', 25, 'http://localhost:3000/public/immagini/elettronica/shopping (19).webp', 39.99, 1, 'Nuovo', Math.round(39.99 / 5)],
             ['PlayStation Camera V2 (PS4)', 'La telecamera ufficiale Sony con design cilindrico, indispensabile per il PlayStation VR e perfetta per lo streaming delle tue sessioni di gioco.', 12, 'http://localhost:3000/public/immagini/elettronica/images (1).jpg', 44.99, 1, 'Nuovo', Math.round(44.99 / 5)],

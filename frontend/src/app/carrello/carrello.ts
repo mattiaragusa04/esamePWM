@@ -36,7 +36,7 @@ export class Carrello implements OnInit, OnDestroy {
       
       // Calcolo locale e dinamico del totale per includere correttamente gli sconti per l'Usato
       this.totale = this.carrello.reduce((acc: number, item: any) => {
-        const base = Number(item.prezzoUnitarioVendita ?? 0);
+        const base = Number(item.vendibile ?? 0);
         const prezzoEff = item.condizione === 'Usato' ? Math.round(base * 0.75 * 100) / 100 : base;
         return acc + prezzoEff * item.quantita;
       }, 0);

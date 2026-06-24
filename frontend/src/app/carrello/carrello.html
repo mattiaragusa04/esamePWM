@@ -45,9 +45,9 @@
               </div>
               <p class="text-muted mb-0 small">
                 Prezzo: 
-                <span *ngIf="item.condizione === 'Usato'" class="price-old">{{ item.prezzoUnitarioVendita | currency:'EUR' }}</span>
+                <span *ngIf="item.condizione === 'Usato'" class="price-old">{{ item.vendibile | currency:'EUR' }}</span>
                 <span class="fw-bold" [ngClass]="item.condizione === 'Usato' ? 'price-current is-discount' : 'price-current'">
-                  {{ (item.condizione === 'Usato' ? (item.prezzoUnitarioVendita * 0.75) : item.prezzoUnitarioVendita) | currency:'EUR' }}
+                  {{ (item.condizione === 'Usato' ? (item.vendibile * 0.75) : item.vendibile) | currency:'EUR' }}
                 </span>
               </p>
               <!-- Badge stato giacenza dinamico -->
@@ -78,7 +78,7 @@
               <div class="d-flex flex-column align-items-end">
                 <small *ngIf="item.condizione === 'Usato'" class="text-danger small fw-bold" style="font-size: 0.7rem;">RISPARMI IL 25%</small>
                 <div class="fw-bold text-info fs-4">
-                  {{ ((item.condizione === 'Usato' ? (item.prezzoUnitarioVendita * 0.75) : item.prezzoUnitarioVendita) * item.quantita) | currency:'EUR' }}
+                  {{ ((item.condizione === 'Usato' ? (item.vendibile * 0.75) : item.vendibile) * item.quantita) | currency:'EUR' }}
                 </div>
               </div>
             </div>
@@ -115,11 +115,11 @@
             </div>
             <div class="text-end flex-shrink-0">
               <div class="fw-bold" [ngClass]="item.condizione === 'Usato' ? 'text-danger' : 'text-info'" style="font-size: 0.95rem;">
-                {{ ((item.condizione === 'Usato' ? (item.prezzoUnitarioVendita * 0.75) : item.prezzoUnitarioVendita) * item.quantita) | currency:'EUR' }}
+                {{ ((item.condizione === 'Usato' ? (item.vendibile * 0.75) : item.vendibile) * item.quantita) | currency:'EUR' }}
               </div>
               <div class="text-muted" style="font-size: 0.65rem;">
-                <span *ngIf="item.condizione === 'Usato'" class="text-decoration-line-through me-1">{{ item.prezzoUnitarioVendita | currency:'EUR' }}</span>
-                {{ (item.condizione === 'Usato' ? (item.prezzoUnitarioVendita * 0.75) : item.prezzoUnitarioVendita) | currency:'EUR' }} cad.
+                <span *ngIf="item.condizione === 'Usato'" class="text-decoration-line-through me-1">{{ item.vendibile | currency:'EUR' }}</span>
+                {{ (item.condizione === 'Usato' ? (item.vendibile * 0.75) : item.vendibile) | currency:'EUR' }} cad.
               </div>
             </div>
           </div>

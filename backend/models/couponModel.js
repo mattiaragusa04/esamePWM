@@ -178,15 +178,15 @@ const Coupon = {
   findProdottiUsati: () => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT p.id, p.nome, p.descrizione, p.prezzoUnitarioVendita,
+        `SELECT p.id, p.nome, p.descrizione, p.vendibile,
                 p.immagine, p.giacenza, p.condizione, p.puntiFedelta,
                 c.denominazione AS categoria_nome
          FROM prodotto p
          LEFT JOIN categoria c ON p.categoria_id = c.id
          WHERE p.condizione = 'Usato'
            AND p.giacenza > 0
-           AND p.pubblicatoVetrina = 1
-         ORDER BY p.prezzoUnitarioVendita ASC`,
+           AND p.visibile= 1
+         ORDER BY p.vendibile ASC`,
         [],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );
@@ -220,13 +220,13 @@ const Coupon = {
   findAllProdottiUsatiAdmin: () => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT p.id, p.nome, p.descrizione, p.prezzoUnitarioVendita,
+        `SELECT p.id, p.nome, p.descrizione, p.vendibile,
                 p.immagine, p.giacenza, p.condizione, p.pubblicatoVetrina, p.puntiFedelta,
                 c.denominazione AS categoria_nome
          FROM prodotto p
          LEFT JOIN categoria c ON p.categoria_id = c.id
          WHERE p.condizione = 'Usato'
-         ORDER BY p.giacenza DESC, p.prezzoUnitarioVendita ASC`,
+         ORDER BY p.giacenza DESC, p.vendibile ASC`,
         [],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );

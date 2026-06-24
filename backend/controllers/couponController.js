@@ -6,14 +6,14 @@ const CouponService = require('../services/couponService');
 // ═══════════════════════════════════════════════════════════════
 const arrotonda = v => Math.floor(Number(v) + 0.5);
 
-// FIX: costoInPunti ora usa il campo puntiFedelta del prodotto.
+// FIX: costo_punti ora usa il campo puntiFedelta del prodotto.
 // Se puntiFedelta è 0 o assente, fallback al calcolo dal prezzo (retrocompatibilità).
-const getCostoInPunti = (prodotto) => {
+const getcosto_punti = (prodotto) => {
   if (prodotto.puntiFedelta && Number(prodotto.puntiFedelta) > 0) {
     return Number(prodotto.puntiFedelta);
   }
   // Fallback: arrotondamento commerciale del prezzo / 5
-  return arrotonda(prodotto.prezzoUnitarioVendita) / 5;
+  return arrotonda(prodotto.vendibile) / 5;
 };
 
 // Punti richiesti per ogni percentuale di sconto preset
@@ -223,7 +223,7 @@ exports.acquistaCoupon = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — GET /api/coupon/prodotti-usati
-// FIX: costoInPunti ora proviene da p.puntiFedelta (non più dal prezzo)
+// FIX: costo_punti ora proviene da p.puntiFedelta (non più dal prezzo)
 // ═══════════════════════════════════════════════════════════════
 exports.getProdottiUsati = async (req, res) => {
   try {
@@ -236,7 +236,7 @@ exports.getProdottiUsati = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — POST /api/coupon/acquista-prodotto  { prodottoId }
-// FIX: usa getCostoInPunti (puntiFedelta del prodotto)
+// FIX: usa getcosto_punti (puntiFedelta del prodotto)
 //      verifica giacenza atomica dopo decrementaGiacenza
 //      passa pagatoConPunti=1 ad addProdottoToOrdine
 // ═══════════════════════════════════════════════════════════════
@@ -349,7 +349,7 @@ exports.adminEliminaCouponFedelta = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // ADMIN — GET /api/coupon/admin/prodotti-usati
-// FIX: costoInPunti ora proviene da p.puntiFedelta
+// FIX: costo_punti ora proviene da p.puntiFedelta
 // ═══════════════════════════════════════════════════════════════
 exports.adminGetProdottiUsati = async (req, res) => {
   try {
