@@ -30,23 +30,59 @@ exports.getProdottoForSellingById = async (req, res) => {
 exports.submitSellOffer = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { prodottoId, estimatedPrice, conditions, tipoCompenso } = req.body;
-        const numericPrice = Number(estimatedPrice);
-        const compenso = tipoCompenso === 'punti' ? 'punti' : 'euro';
 
-        const imagePaths = req.files ? req.files.map(file => `/public/uploads/vendi/${file.filename}`) : [];
+        // Il frontend invia i dati come JSON serializzato nel campo 'offer' del FormData.
+        // Prova prima a leggere da req.body.offer, poi come fallback dai campi piatti.
+        let prodottoId, estimatedPrice, conditions, tipoCompenso;
+
+        if (req.body.offer) {
+            try {
+                const parsed = JSON.parse(req.body.offer);
+                prodottoId    = parsed.prodottoId;
+                estimatedPrice = parsed.estimatedPrice;
+                conditions    = parsed.conditions;
+                tipoCompenso  = parsed.tipoCompenso;
+            } catch (parseErr) {
+                console.error("Errore nel parsing di req.body.offer:", parseErr);
+                return res.status(400).json({ message: "Formato dell'offerta non valido." });
+            }
+        } else {
+            ({ prodottoId, estimatedPrice, conditions, tipoCompenso } = req.body);
+        }
+
+        // Validazione campi essenziali
+        if (!prodottoId) {
+            return res.status(400).json({ message: "prodottoId mancante." });
+        }
+
+        const numericProductId = Number(prodottoId);
+        const numericPrice     = Number(estimatedPrice);
+
+        if (!Number.isInteger(numericProductId) || numericProductId <= 0) {
+            return res.status(400).json({ message: "prodottoId non valido." });
+        }
+        if (!Number.isFinite(numericPrice) || numericPrice < 0) {
+            return res.status(400).json({ message: "Prezzo stimato non valido." });
+        }
+
+        const compenso    = tipoCompenso === 'punti' ? 'punti' : 'euro';
+        const imagePaths  = req.files ? req.files.map(file => `/public/uploads/vendi/${file.filename}`) : [];
+
         const newOffer = await vendiModel.create(
             userId,
-            prodottoId,
+            numericProductId,
             numericPrice,
-            JSON.stringify(conditions),
+            JSON.stringify(conditions || []),
             JSON.stringify(imagePaths),
             compenso
         );
 
-        console.log(`Offerta #${newOffer.id} da utente ${userId} per prodotto ${prodottoId}. Prezzo: €${numericPrice.toFixed(2)}. Compenso: ${compenso}`);
+        console.log(`Offerta #${newOffer.id} da utente ${userId} per prodotto ${numericProductId}. Prezzo: €${numericPrice.toFixed(2)}. Compenso: ${compenso}`);
 
-        res.status(200).json({ message: "Offerta di vendita ricevuta con successo!", offer: { prodottoId, estimatedPrice, conditions, tipoCompenso: compenso } });
+        return res.status(200).json({
+            message: "Offerta di vendita ricevuta con successo!",
+            offer: { prodottoId: numericProductId, estimatedPrice: numericPrice, conditions, tipoCompenso: compenso }
+        });
 
     } catch (err) {
         console.error("Errore nell'invio dell'offerta di vendita:", err);
@@ -84,7 +120,6 @@ exports.update = async (req, res) => {
 exports.accettaOfferta = async (req, res) => {
     const id = req.params.id;
 
-    // Recupera l'offerta
     let offerta;
     try {
         offerta = await vendiModel.findById(id);
