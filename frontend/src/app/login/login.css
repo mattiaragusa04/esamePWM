@@ -1,0 +1,70 @@
+/* ════════════════════════════════════════════
+   MODALE RECUPERO PASSWORD
+   Classi copiate da fedelta.css per l'encapsulation Angular
+════════════════════════════════════════════ */
+
+.fedelta-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+.fedelta-modal {
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 2rem 1.75rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn { from { transform:scale(.8); opacity:0; } to { transform:none; opacity:1; } }
+
+.modal-icon { font-size: 2.5rem; color: #f9a825; margin-bottom: .75rem; }
+.fedelta-modal h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; }
+
+.modal-actions {
+  display: flex;
+  gap: .75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.modal-btn-cancel {
+  padding: .55rem 1.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: .6rem;
+  background: #fff;
+  color: #6c757d;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s;
+}
+.modal-btn-cancel:hover:not(:disabled) { background: #f8f9fa; }
+.modal-btn-cancel:disabled { opacity: .5; cursor: not-allowed; }
+
+.modal-btn-confirm {
+  padding: .55rem 1.5rem;
+  border: none;
+  border-radius: .6rem;
+  background: #0d6efd;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.modal-btn-confirm:hover:not(:disabled) { opacity: .88; }
+.modal-btn-confirm:disabled { opacity: .5; cursor: not-allowed; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin .7s linear infinite; }
