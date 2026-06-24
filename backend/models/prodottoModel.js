@@ -4,7 +4,10 @@ const Prodotto = {
   findAll: () => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT p.*, c.denominazione AS categoria_nome
+        SELECT p.id, p.categoria_id, p.nome, p.descrizione, p.giacenza, p.immagine,
+               p.prezzoUnitarioVendita, p.pubblicatoVetrina AS visibile,
+               p.genere, p.condizione, p.puntiFedelta,
+               c.denominazione AS categoria_nome
         FROM prodotto p
         LEFT JOIN categoria c ON p.categoria_id = c.id
       `;
@@ -18,7 +21,10 @@ const Prodotto = {
   findById: (id) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT p.*, c.denominazione AS categoria_nome
+        SELECT p.id, p.categoria_id, p.nome, p.descrizione, p.giacenza, p.immagine,
+               p.prezzoUnitarioVendita, p.pubblicatoVetrina AS visibile,
+               p.genere, p.condizione, p.puntiFedelta,
+               c.denominazione AS categoria_nome
         FROM prodotto p
         LEFT JOIN categoria c ON p.categoria_id = c.id
         WHERE p.id = ?
@@ -33,7 +39,10 @@ const Prodotto = {
   findByCategoria: (categoriaId) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT p.*, c.denominazione AS categoria_nome
+        SELECT p.id, p.categoria_id, p.nome, p.descrizione, p.giacenza, p.immagine,
+               p.prezzoUnitarioVendita, p.pubblicatoVetrina AS visibile,
+               p.genere, p.condizione, p.puntiFedelta,
+               c.denominazione AS categoria_nome
         FROM prodotto p
         LEFT JOIN categoria c ON p.categoria_id = c.id
         WHERE p.categoria_id = ?
@@ -48,7 +57,10 @@ const Prodotto = {
   search: (q) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT p.*, c.denominazione AS categoria_nome
+        SELECT p.id, p.categoria_id, p.nome, p.descrizione, p.giacenza, p.immagine,
+               p.prezzoUnitarioVendita, p.pubblicatoVetrina AS visibile,
+               p.genere, p.condizione, p.puntiFedelta,
+               c.denominazione AS categoria_nome
         FROM prodotto p
         LEFT JOIN categoria c ON p.categoria_id = c.id
         WHERE p.nome LIKE ? OR p.descrizione LIKE ?
@@ -102,7 +114,7 @@ const Prodotto = {
         prodotto.giacenza || 0,
         prodotto.immagine || '',
         prodotto.prezzoUnitarioVendita || 0,
-        prodotto.pubblicatoVetrina || 0,
+        prodotto.visibile || 0,
         prodotto.genere || null,
         prodotto.condizione || 'Nuovo',
         prodotto.id
