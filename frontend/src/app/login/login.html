@@ -3,33 +3,143 @@
     <div class="card shadow-lg border-0 mt-4 mb-5" style="border-radius: 1.5rem;">
       <div class="card-body p-5">
         <h3 class="text-center mb-4 font-weight-bold">Accedi al tuo Account</h3>
-        
+
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          
+
           <div class="form-group">
             <label for="email" class="font-weight-bold text-dark">Email</label>
-            <input type="email" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && loginForm.get('email')?.invalid" id="email" formControlName="email" placeholder="Inserisci email">
+            <input type="email" class="form-control rounded-pill bg-light border-0 px-4"
+                   [class.is-invalid]="submitted && loginForm.get('email')?.invalid"
+                   id="email" formControlName="email" placeholder="Inserisci email">
           </div>
-          
+
           <div class="form-group">
             <label for="password" class="font-weight-bold text-dark">Password</label>
             <div class="input-group rounded-pill bg-light" [class.is-invalid]="submitted && loginForm.get('password')?.invalid">
-              <input [type]="mostraPassword ? 'text' : 'password'" class="form-control bg-transparent border-0 px-4" [class.is-invalid]="submitted && loginForm.get('password')?.invalid" id="password" formControlName="password" placeholder="Inserisci password" style="border-radius: 50rem 0 0 50rem;">
+              <input [type]="mostraPassword ? 'text' : 'password'"
+                     class="form-control bg-transparent border-0 px-4"
+                     [class.is-invalid]="submitted && loginForm.get('password')?.invalid"
+                     id="password" formControlName="password" placeholder="Inserisci password"
+                     style="border-radius: 50rem 0 0 50rem;">
               <div class="input-group-append">
-                <button class="btn btn-light bg-transparent border-0 text-muted pr-3" type="button" style="border-radius: 0 50rem 50rem 0;" (click)="togglePasswordVisibility()">
-                <i class="bi" [ngClass]="mostraPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                <button class="btn btn-light bg-transparent border-0 text-muted pr-3" type="button"
+                        style="border-radius: 0 50rem 50rem 0;"
+                        (click)="togglePasswordVisibility()">
+                  <i class="bi" [ngClass]="mostraPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                 </button>
               </div>
             </div>
           </div>
 
           <button type="submit" class="btn btn-info btn-block rounded-pill mt-5 py-2 font-weight-bold text-dark shadow">Accedi</button>
-          
+
           <div class="text-center mt-3">
-            <small class="text-muted">Non hai un account? <a routerLink="/register" routerLinkActive="active" class="text-info font-weight-bold">Registrati</a></small>
+            <small class="text-muted">Non hai un account?
+              <a routerLink="/register" routerLinkActive="active" class="text-info font-weight-bold">Registrati</a>
+            </small>
           </div>
+
+          <div class="text-center mt-3">
+            <small class="text-muted">Hai dimenticato la password?
+              <a href="#" class="text-info font-weight-bold" (click)="$event.preventDefault(); apriModaleReset()">Ripristina</a>
+            </small>
+          </div>
+
         </form>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ══════════ MODALE RECUPERO PASSWORD ══════════ -->
+<div class="fedelta-overlay" *ngIf="mostraModaleReset" (click)="chiudiModaleReset()">
+  <div class="fedelta-modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-icon"><i class="bi bi-lock-fill"></i></div>
+    <h3>Recupera password</h3>
+
+    <!-- STEP 1: inserimento email -->
+    <ng-container *ngIf="stepReset === 'email'">
+      <p style="font-size:.9rem;color:#aaa;margin-bottom:1rem;">Inserisci la tua email: ti invieremo un codice per reimpostare la password.</p>
+
+      <div style="margin-bottom:1rem;">
+        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Email</label>
+        <input type="email"
+               [(ngModel)]="emailReset"
+               placeholder="es. mario.rossi@email.com"
+               style="width:100%;padding:.55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.95rem;outline:none;" />
+      </div>
+
+      <div *ngIf="erroreReset" style="color:#f87171;font-size:.85rem;margin-bottom:.75rem;">
+        <i class="bi bi-exclamation-circle"></i> {{ erroreReset }}
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" (click)="chiudiModaleReset()" [disabled]="loadingReset">Annulla</button>
+        <button class="modal-btn-confirm" (click)="inviaEmailReset()" [disabled]="loadingReset">
+          <span *ngIf="!loadingReset"><i class="bi bi-send-fill"></i> Invia codice</span>
+          <span *ngIf="loadingReset"><i class="bi bi-arrow-repeat spin"></i> Invio…</span>
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- STEP 2: token + nuova password -->
+    <ng-container *ngIf="stepReset === 'nuova-password'">
+      <p style="font-size:.9rem;color:#aaa;margin-bottom:1rem;">
+        Ti abbiamo inviato un codice a <strong style="color:#eee;">{{ emailReset }}</strong>.<br>
+        Inseriscilo qui sotto insieme alla tua nuova password.
+      </p>
+
+      <div style="margin-bottom:.85rem;">
+        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Codice ricevuto via email</label>
+        <input type="text"
+               [(ngModel)]="tokenReset"
+               placeholder="Incolla il codice dall'email"
+               style="width:100%;padding:.55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.9rem;outline:none;" />
+      </div>
+
+      <div style="margin-bottom:.85rem;">
+        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Nuova password</label>
+        <div style="position:relative;">
+          <input [type]="mostraNuovaPassword ? 'text' : 'password'"
+                 [(ngModel)]="nuovaPassword"
+                 placeholder="Minimo 6 caratteri"
+                 style="width:100%;padding:.55rem 2.5rem .55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.95rem;outline:none;" />
+          <button type="button" (click)="mostraNuovaPassword = !mostraNuovaPassword"
+                  style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;">
+            <i class="bi" [ngClass]="mostraNuovaPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:.85rem;">
+        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Conferma nuova password</label>
+        <div style="position:relative;">
+          <input [type]="mostraConfermaPassword ? 'text' : 'password'"
+                 [(ngModel)]="confermaPassword"
+                 placeholder="Ripeti la nuova password"
+                 style="width:100%;padding:.55rem 2.5rem .55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.95rem;outline:none;" />
+          <button type="button" (click)="mostraConfermaPassword = !mostraConfermaPassword"
+                  style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;">
+            <i class="bi" [ngClass]="mostraConfermaPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="erroreReset" style="color:#f87171;font-size:.85rem;margin-bottom:.75rem;">
+        <i class="bi bi-exclamation-circle"></i> {{ erroreReset }}
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" (click)="stepReset = 'email'; erroreReset = ''" [disabled]="loadingReset">
+          <i class="bi bi-arrow-left"></i> Indietro
+        </button>
+        <button class="modal-btn-confirm" (click)="aggiornaPassword()" [disabled]="loadingReset">
+          <span *ngIf="!loadingReset"><i class="bi bi-check-lg"></i> Salva password</span>
+          <span *ngIf="loadingReset"><i class="bi bi-arrow-repeat spin"></i> Salvataggio…</span>
+        </button>
+      </div>
+    </ng-container>
+
   </div>
 </div>
