@@ -30,11 +30,4 @@ export class AdminLayout implements OnInit {
     }
   }
 
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.toast.info('Logout effettuato con successo.');
-    this.router.navigate(['/login']);
-  }
-
 }
