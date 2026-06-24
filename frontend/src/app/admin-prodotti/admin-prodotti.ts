@@ -191,7 +191,7 @@ export class AdminProdotti implements OnInit {
     formData.append('nome', this.nuovoProdotto.nome);
     formData.append('categoria_id', this.nuovoProdotto.categoria_id);
     formData.append('descrizione', this.nuovoProdotto.descrizione);
-    formData.append('pubblicatoVetrina', this.nuovoProdotto.visibile!== undefined ? (this.nuovoProdotto.visibile? '1' : '0') : '1');
+    formData.append('visibile', this.nuovoProdotto.visibile!== undefined ? (this.nuovoProdotto.visibile? '1' : '0') : '1');
 
     if (this.isModifica) {
       formData.append('giacenza', this.nuovoProdotto.giacenza);

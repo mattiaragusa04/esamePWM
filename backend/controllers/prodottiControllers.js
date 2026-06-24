@@ -123,7 +123,7 @@ exports.updateProdotto = async (req, res) => {
         if (prodottoData.PrezzoUnitarioVendita) prodottoData.PrezzoUnitarioVendita = parseFloat(prodottoData.PrezzoUnitarioVendita);
         if (prodottoData.giacenza) prodottoData.giacenza = parseInt(prodottoData.giacenza, 10);
         if (prodottoData.categoria_id) prodottoData.categoria_id = parseInt(prodottoData.categoria_id, 10);
-        if (prodottoData.pubblicatoVetrina) prodottoData.visibile= parseInt(prodottoData.pubblicatoVetrina, 10);
+        if (prodottoData.visibile) prodottoData.visibile= parseInt(prodottoData.visibile, 10);
 
         if (req.file) {
             prodottoData.immagine = 'http://localhost:3000/public/immagini/upload-admin/' + req.file.filename;

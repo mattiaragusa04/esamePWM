@@ -7,9 +7,9 @@ const Ordine = require('../models/ordineModel');
 // ═══════════════════════════════════════════════════════════════
 const arrotonda = v => Math.floor(Number(v) + 0.5);
 
-// FIX: costo_punti ora usa il campo puntiFedelta del prodotto.
+// FIX: costoInPunti ora usa il campo puntiFedelta del prodotto.
 // Se puntiFedelta è 0 o assente, fallback al calcolo dal prezzo (retrocompatibilità).
-const getcosto_punti = (prodotto) => {
+const getcostoInPunti = (prodotto) => {
   if (prodotto.puntiFedelta && Number(prodotto.puntiFedelta) > 0) {
     return Number(prodotto.puntiFedelta);
   }
@@ -37,7 +37,7 @@ exports.acquistaPresetCoupon = async (userId, valore) => {
     throw err;
   }
 
-  const costo_punti = PUNTI_PER_PRESET[percNum];
+  const costoInPunti = PUNTI_PER_PRESET[percNum];
 
   const utente = await User.findById(userId);
   if (!utente) {
@@ -105,7 +105,7 @@ exports.acquistaCoupon = async (userId, couponId) => {
   }
 
   const puntiDisponibili = utente.puntiFedelta || 0;
-  const costo_punti = template.costo_punti;
+  const costoInPunti = template.costoInPunti;
 
   if (puntiDisponibili < costoInPunti) {
     const err = new Error(`Punti insufficienti. Hai ${puntiDisponibili} pt, ne servono ${costoInPunti} pt.`);
@@ -139,7 +139,7 @@ exports.acquistaCoupon = async (userId, couponId) => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Acquista un prodotto usato con i punti fedeltà
-// FIX: usa getcosto_punti (puntiFedelta del prodotto)
+// FIX: usa getcostoInPunti (puntiFedelta del prodotto)
 //      verifica giacenza atomica dopo decrementaGiacenza
 //      passa pagatoConPunti=1 ad addProdottoToOrdine
 // ─────────────────────────────────────────────────────────────────────────────
@@ -171,7 +171,7 @@ exports.acquistaProdottoConPunti = async (userId, prodottoId) => {
   }
 
   // FIX: usa puntiFedelta del prodotto come costo
-  const costo_punti = getCostoInPunti(prodotto);
+  const costoInPunti = getCostoInPunti(prodotto);
 
   const utente = await User.findById(userId);
   if (!utente) {
@@ -213,5 +213,5 @@ exports.acquistaProdottoConPunti = async (userId, prodottoId) => {
 };
 
 // Espone helper per uso nei controller (catalogo/prodotti usati, ecc.)
-exports.getcosto_punti = getCostoInPunti;
+exports.getcostoInPunti = getCostoInPunti;
 exports.PUNTI_PER_PRESET = PUNTI_PER_PRESET;

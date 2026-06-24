@@ -64,18 +64,18 @@
           <div class="preset-desc">{{ p.descrizione }}</div>
 
           <div class="preset-costo">
-            <i class="bi bi-trophy-fill"></i> {{ p.costo_punti }} punti
+            <i class="bi bi-trophy-fill"></i> {{ p.costoInPunti }} punti
           </div>
 
           <div class="preset-status" *ngIf="puntiFedelta >= p.costoInPunti">
             <i class="bi bi-check-circle-fill"></i> Disponibile
           </div>
           <div class="preset-status preset-status--locked" *ngIf="puntiFedelta < p.costoInPunti">
-            <i class="bi bi-lock-fill"></i> Mancano {{ p.costo_punti - puntiFedelta }} pt
+            <i class="bi bi-lock-fill"></i> Mancano {{ p.costoInPunti - puntiFedelta }} pt
           </div>
 
           <button class="preset-btn"
-                  [disabled]="puntiFedelta < p.costo_punti || isAcquistandoPreset(p.percentuale)"
+                  [disabled]="puntiFedelta < p.costoInPunti || isAcquistandoPreset(p.percentuale)"
                   (click)="acquistaPreset(p)">
             <span *ngIf="!isAcquistandoPreset(p.percentuale)">
               <i class="bi bi-lightning-charge-fill"></i> Ottieni codice
@@ -145,14 +145,14 @@
               <div class="coupon-desc">{{ coupon.descrizione }}</div>
 
               <div class="coupon-costo">
-                <i class="bi bi-trophy"></i> {{ coupon.costo_punti }} punti
+                <i class="bi bi-trophy"></i> {{ coupon.costoInPunti }} punti
               </div>
 
               <div class="coupon-disponibilita" *ngIf="puntiFedelta >= coupon.costoInPunti">
                 <i class="bi bi-check-circle"></i> Disponibile
               </div>
               <div class="coupon-mancano" *ngIf="puntiFedelta < coupon.costoInPunti">
-                <i class="bi bi-lock"></i> Mancano {{ coupon.costo_punti - puntiFedelta }} pt
+                <i class="bi bi-lock"></i> Mancano {{ coupon.costoInPunti - puntiFedelta }} pt
               </div>
             </div>
 
@@ -192,7 +192,7 @@
           <img [src]="getImmagineProdotto(p.immagine)" [alt]="p.nome"
                loading="lazy" width="300" height="200">
           <div class="prodotto-punti-badge">
-            <i class="bi bi-trophy-fill"></i> {{ p.costo_punti | number }} pt
+            <i class="bi bi-trophy-fill"></i> {{ p.costoInPunti | number }} pt
           </div>
           <div class="prodotto-usato-badge">Usato</div>
         </div>
@@ -209,14 +209,14 @@
             <i class="bi bi-check-circle"></i> Puoi acquistarlo!
           </div>
           <div class="prodotto-stato-mancano" *ngIf="puntiFedelta < p.costoInPunti">
-            <i class="bi bi-lock"></i> Mancano {{ p.costo_punti - puntiFedelta }} pt
+            <i class="bi bi-lock"></i> Mancano {{ p.costoInPunti - puntiFedelta }} pt
           </div>
         </div>
 
         <button class="prodotto-btn"
                 [disabled]="puntiFedelta < p.costoInPunti"
                 (click)="apriConferma(p)">
-          <i class="bi bi-trophy-fill"></i> Acquista con {{ p.costo_punti }} pt
+          <i class="bi bi-trophy-fill"></i> Acquista con {{ p.costoInPunti }} pt
         </button>
       </div>
     </div>
@@ -231,10 +231,10 @@
       <div class="modal-prodotto" *ngIf="prodottoScelto">
         <strong>{{ prodottoScelto.nome }}</strong>
         <div class="modal-costo">
-          Costo: <span class="modal-punti">{{ prodottoScelto.costo_punti }} punti</span>
+          Costo: <span class="modal-punti">{{ prodottoScelto.costoInPunti }} punti</span>
         </div>
         <div class="modal-saldo">
-          Saldo dopo: <strong>{{ puntiFedelta - prodottoScelto.costo_punti }} pt</strong>
+          Saldo dopo: <strong>{{ puntiFedelta - prodottoScelto.costoInPunti }} pt</strong>
         </div>
         <div class="modal-avviso">
           <i class="bi bi-info-circle"></i>

@@ -13,7 +13,7 @@ function arrotondaCommerciale(valore) {
 
 /**
  * Calcola il costo in punti di un prodotto dal suo prezzo congelato in composto.
- * Replica la stessa logica di getcosto_punti in couponController:
+ * Replica la stessa logica di getcostoInPunti in couponController:
  *   - se puntiFedelta è valorizzato, lo usa direttamente
  *   - altrimenti fallback: arrotondamento commerciale del prezzoUnitario / 5
  * Usando prezzoUnitario da composto (congelato al momento dell'acquisto)
@@ -154,7 +154,7 @@ exports.updateStatoOrdine = async (ordineId, nuovoStato) => {
 
         if (righePagate.length > 0) {
             // Calcola i punti usando prezzoUnitario congelato in composto
-            // (stessa logica di getcosto_punti in couponController)
+            // (stessa logica di getcostoInPunti in couponController)
             const puntiDaRestituire = righePagate.reduce((acc, item) => {
                 const puntiRiga = calcolaPuntiDaPrezzo(
                     item.prezzoUnitario,

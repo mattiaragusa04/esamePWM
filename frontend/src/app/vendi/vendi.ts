@@ -26,7 +26,7 @@ export interface Prodotto {
   prezzoUnitarioAcquisto: number;
   PrezzoUnitarioVendita: number;
   pubblicatoAcquisto: boolean;
-  pubblicatoVetrina: boolean;
+  visibile: boolean;
   condizione: string;
 }
 

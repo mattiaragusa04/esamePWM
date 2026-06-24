@@ -60,7 +60,7 @@ export class AdminCoupon implements OnInit {
       if (res.ok) {
         const tuttiCoupon = await res.json();
         // Filtra via i coupon che appartengono allo shop fedeltà (quelli con un costo in punti)
-        this.coupon = tuttiCoupon.filter((c: any) => !c.costo_punti || c.costo_punti === 0);
+        this.coupon = tuttiCoupon.filter((c: any) => !c.costoInPunti || c.costoInPunti === 0);
         this.applicaFiltri();
       } else {
         this.errorMessage = 'Errore nel caricamento dei coupon.';

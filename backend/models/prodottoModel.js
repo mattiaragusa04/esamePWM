@@ -72,7 +72,7 @@ const Prodotto = {
 
   create: (prodotto) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, PrezzoUnitarioVendita, pubblicatoVetrina, genere, condizione, puntiFedelta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const query = `INSERT INTO prodotto (categoria_id, nome, descrizione, giacenza, immagine, PrezzoUnitarioVendita, visibile, genere, condizione, puntiFedelta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       const puntiFedelta = Math.round((prodotto.PrezzoUnitarioVendita || 0) / 5);
       db.run(query, [
         prodotto.categoria_id,
