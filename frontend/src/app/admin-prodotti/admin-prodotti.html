@@ -75,7 +75,7 @@
                                 alt="Img" onerror="this.src='assets/placeholder.png'">
                         </td>
                         <td class="font-weight-bold">{{ prodotto.nome }}</td>
-                        <td class="text-danger font-weight-bold">{{ prodotto.PrezzoUnitarioVendita | currency:'EUR':'symbol' }}</td>
+                        <td class="text-danger font-weight-bold">{{ prodotto.prezzoUnitarioVendita | currency:'EUR':'symbol' }}</td>
                         <td><span class="badge rounded-pill" [ngClass]="prodotto.giacenza > 0 ? 'bg-success' : 'bg-danger'">{{ prodotto.giacenza }}</span></td>
                         <td><span class="badge rounded-pill" [ngClass]="prodotto.condizione === 'Nuovo' ? 'bg-primary' : 'bg-warning'">{{ prodotto.condizione }}</span></td>
                         <td class="text-end pe-4">
@@ -185,12 +185,12 @@
                                         Prezzo (€)
                                         <span class="badge ms-1" [ngClass]="nuovoProdotto.tipoPrezzoInserito === 'Nuovo' ? 'bg-primary' : 'bg-warning text-dark'">{{ nuovoProdotto.tipoPrezzoInserito }}</span>
                                     </label>
-                                    <input type="number" step="0.01" min="0" class="form-control" id="prezzo" name="PrezzoUnitarioVendita" [(ngModel)]="nuovoProdotto.PrezzoUnitarioVendita" required>
-                                    <small class="text-muted" *ngIf="nuovoProdotto.tipoPrezzoInserito === 'Nuovo' && nuovoProdotto.PrezzoUnitarioVendita > 0">
-                                        Prezzo Usato calcolato: <strong>{{ (nuovoProdotto.PrezzoUnitarioVendita * 0.75) | currency:'EUR':'symbol' }}</strong>
+                                    <input type="number" step="0.01" min="0" class="form-control" id="prezzo" name="prezzoUnitarioVendita" [(ngModel)]="nuovoProdotto.prezzoUnitarioVendita" required>
+                                    <small class="text-muted" *ngIf="nuovoProdotto.tipoPrezzoInserito === 'Nuovo' && nuovoProdotto.prezzoUnitarioVendita > 0">
+                                        Prezzo Usato calcolato: <strong>{{ (nuovoProdotto.prezzoUnitarioVendita * 0.75) | currency:'EUR':'symbol' }}</strong>
                                     </small>
-                                    <small class="text-muted" *ngIf="nuovoProdotto.tipoPrezzoInserito === 'Usato' && nuovoProdotto.PrezzoUnitarioVendita > 0">
-                                        Prezzo Nuovo calcolato: <strong>{{ (nuovoProdotto.PrezzoUnitarioVendita / 0.75) | currency:'EUR':'symbol' }}</strong>
+                                    <small class="text-muted" *ngIf="nuovoProdotto.tipoPrezzoInserito === 'Usato' && nuovoProdotto.prezzoUnitarioVendita > 0">
+                                        Prezzo Nuovo calcolato: <strong>{{ (nuovoProdotto.prezzoUnitarioVendita / 0.75) | currency:'EUR':'symbol' }}</strong>
                                     </small>
                                 </div>
                                 <div class="col-md-4">
@@ -211,7 +211,7 @@
                             <ng-container *ngIf="isModifica">
                                 <div class="col-md-4">
                                     <label for="prezzo" class="form-label font-weight-bold">Prezzo (€)</label>
-                                    <input type="number" step="0.01" class="form-control" id="prezzo" name="PrezzoUnitarioVendita" [(ngModel)]="nuovoProdotto.PrezzoUnitarioVendita" required>
+                                    <input type="number" step="0.01" class="form-control" id="prezzo" name="prezzoUnitarioVendita" [(ngModel)]="nuovoProdotto.prezzoUnitarioVendita" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label for="giacenza" class="form-label font-weight-bold">Giacenza</label>

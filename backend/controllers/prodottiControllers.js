@@ -92,7 +92,7 @@ exports.createProdotto = async (req, res) => {
         const prodottoNuovo = await prodotto.create({
             ...prodottoData,
             giacenza: giacenzaNuovo,
-            PrezzoUnitarioVendita: prezzoNuovo,
+            prezzoUnitarioVendita: prezzoNuovo,
             condizione: 'Nuovo'
         });
 
@@ -100,7 +100,7 @@ exports.createProdotto = async (req, res) => {
         const prodottoUsato = await prodotto.create({
             ...prodottoData,
             giacenza: giacenzaUsato,
-            PrezzoUnitarioVendita: prezzoUsato,
+            prezzoUnitarioVendita: prezzoUsato,
             condizione: 'Usato'
         });
 
@@ -120,10 +120,10 @@ exports.updateProdotto = async (req, res) => {
             return res.status(400).json({ error: "Nessun dato fornito per l'aggiornamento" });
         }
 
-        if (prodottoData.PrezzoUnitarioVendita) prodottoData.PrezzoUnitarioVendita = parseFloat(prodottoData.PrezzoUnitarioVendita);
+        if (prodottoData.prezzoUnitarioVendita) prodottoData.prezzoUnitarioVendita = parseFloat(prodottoData.prezzoUnitarioVendita);
         if (prodottoData.giacenza) prodottoData.giacenza = parseInt(prodottoData.giacenza, 10);
         if (prodottoData.categoria_id) prodottoData.categoria_id = parseInt(prodottoData.categoria_id, 10);
-        if (prodottoData.visibile) prodottoData.visibile= parseInt(prodottoData.visibile, 10);
+        if (prodottoData.pubblicatoVetrina) prodottoData.pubblicatoVetrina = parseInt(prodottoData.pubblicatoVetrina, 10);
 
         if (req.file) {
             prodottoData.immagine = 'http://localhost:3000/public/immagini/upload-admin/' + req.file.filename;

@@ -8,12 +8,12 @@ const arrotonda = v => Math.floor(Number(v) + 0.5);
 
 // FIX: costoInPunti ora usa il campo puntiFedelta del prodotto.
 // Se puntiFedelta è 0 o assente, fallback al calcolo dal prezzo (retrocompatibilità).
-const getcostoInPunti = (prodotto) => {
+const getCostoInPunti = (prodotto) => {
   if (prodotto.puntiFedelta && Number(prodotto.puntiFedelta) > 0) {
     return Number(prodotto.puntiFedelta);
   }
   // Fallback: arrotondamento commerciale del prezzo / 5
-  return arrotonda(prodotto.PrezzoUnitarioVendita) / 5;
+  return arrotonda(prodotto.prezzoUnitarioVendita) / 5;
 };
 
 // Punti richiesti per ogni percentuale di sconto preset
@@ -236,7 +236,7 @@ exports.getProdottiUsati = async (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // UTENTE — POST /api/coupon/acquista-prodotto  { prodottoId }
-// FIX: usa getcostoInPunti (puntiFedelta del prodotto)
+// FIX: usa getCostoInPunti (puntiFedelta del prodotto)
 //      verifica giacenza atomica dopo decrementaGiacenza
 //      passa pagatoConPunti=1 ad addProdottoToOrdine
 // ═══════════════════════════════════════════════════════════════
@@ -296,9 +296,9 @@ exports.adminCreaCouponFedelta = async (req, res) => {
 // ═══════════════════════════════════════════════════════════════
 exports.adminModificaCouponFedelta = async (req, res) => {
   const { id } = req.params;
-  const { codice, tipo, valore, costoInPunti, descrizione, data_scadenza, utilizzi_massimi } = req.body;
+  const { codice, tipo, valore, costo_punti, descrizione, data_scadenza, utilizzi_massimi } = req.body;
 
-  if (!codice || !valore || !costoInPunti) {
+  if (!codice || !valore || !costo_punti) {
     return res.status(400).json({ error: 'Codice, valore e costo in punti sono obbligatori.' });
   }
 
@@ -307,7 +307,7 @@ exports.adminModificaCouponFedelta = async (req, res) => {
       codice,
       tipo,
       valore,
-      costoInPunti: costoInPunti,
+      costo_punti: costo_punti,
       descrizione,
       data_scadenza: data_scadenza,
       utilizzi_massimi

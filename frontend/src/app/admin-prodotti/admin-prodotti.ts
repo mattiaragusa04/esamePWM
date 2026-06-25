@@ -34,12 +34,11 @@ export class AdminProdotti implements OnInit {
     nome: '',
     categoria_id: '',
     descrizione: '',
-    PrezzoUnitarioVendita: 0,
+    prezzoUnitarioVendita: 0,
     giacenzaNuovo: 0,
     giacenzaUsato: 0,
     tipoPrezzoInserito: 'Nuovo', // 'Nuovo' | 'Usato'
     condizione: '',
-    puntiFedelta: 0,
     genere: '',
     immagine: ''
   };
@@ -122,7 +121,7 @@ export class AdminProdotti implements OnInit {
         nome: '',
         categoria_id: '',
         descrizione: '',
-        PrezzoUnitarioVendita: 0,
+        prezzoUnitarioVendita: 0,
         giacenzaNuovo: 0,
         giacenzaUsato: 0,
         tipoPrezzoInserito: 'Nuovo',
@@ -146,7 +145,7 @@ export class AdminProdotti implements OnInit {
 
   // Calcola i due prezzi in base a tipoPrezzoInserito
   calcolaPrezzi(): { prezzoNuovo: number; prezzoUsato: number } {
-    const prezzo = parseFloat(this.nuovoProdotto.PrezzoUnitarioVendita) || 0;
+    const prezzo = parseFloat(this.nuovoProdotto.prezzoUnitarioVendita) || 0;
     if (this.nuovoProdotto.tipoPrezzoInserito === 'Nuovo') {
       return {
         prezzoNuovo: prezzo,
@@ -191,12 +190,12 @@ export class AdminProdotti implements OnInit {
     formData.append('nome', this.nuovoProdotto.nome);
     formData.append('categoria_id', this.nuovoProdotto.categoria_id);
     formData.append('descrizione', this.nuovoProdotto.descrizione);
-    formData.append('visibile', this.nuovoProdotto.visibile!== undefined ? (this.nuovoProdotto.visibile? '1' : '0') : '1');
+    formData.append('pubblicatoVetrina', this.nuovoProdotto.pubblicatoVetrina !== undefined ? (this.nuovoProdotto.pubblicatoVetrina ? '1' : '0') : '1');
 
     if (this.isModifica) {
       formData.append('giacenza', this.nuovoProdotto.giacenza);
       formData.append('condizione', this.nuovoProdotto.condizione);
-      formData.append('PrezzoUnitarioVendita', this.nuovoProdotto.PrezzoUnitarioVendita);
+      formData.append('prezzoUnitarioVendita', this.nuovoProdotto.prezzoUnitarioVendita);
     } else {
       // Invia le giacenze e i prezzi già calcolati
       formData.append('giacenzaNuovo', this.nuovoProdotto.giacenzaNuovo);
@@ -231,7 +230,7 @@ export class AdminProdotti implements OnInit {
       if (response.ok) {
         this.caricaProdotti();
         form.resetForm();
-        this.nuovoProdotto = { nome: '', categoria_id: '', descrizione: '', PrezzoUnitarioVendita: 0, giacenzaNuovo: 0, giacenzaUsato: 0, tipoPrezzoInserito: 'Nuovo', condizione: '', genere: '', immagine: '' };
+        this.nuovoProdotto = { nome: '', categoria_id: '', descrizione: '', prezzoUnitarioVendita: 0, giacenzaNuovo: 0, giacenzaUsato: 0, tipoPrezzoInserito: 'Nuovo', condizione: '', genere: '', immagine: '' };
         this.rimuoviImmagine();
         this.mostraRiepilogo = false;
         this.toast.success('Prodotto salvato con successo!');

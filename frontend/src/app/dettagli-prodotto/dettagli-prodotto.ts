@@ -15,9 +15,9 @@ export interface Prodotto {
   giacenza: number;
   immagine: string;
   prezzoUnitarioAcquisto: number;
-  PrezzoUnitarioVendita: number;
+  prezzoUnitarioVendita: number;
   pubblicatoAcquisto: boolean;
-  visibile: boolean;
+  pubblicatoVetrina: boolean;
   condizione: string;
   puntiFedelta: number;
 }
@@ -173,7 +173,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     const prezzoUsato = this.getPrezzoVisualizzato();
     if (!prezzoUsato || prezzoUsato <= 0) return null;
     if (this.prodotto.condizione === 'Nuovo') {
-      return Number(this.prodotto.PrezzoUnitarioVendita);
+      return Number(this.prodotto.prezzoUnitarioVendita);
     }
     return Math.round((prezzoUsato / 0.75) * 100) / 100;
   }
@@ -188,27 +188,27 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     if (!this.prodotto) return 0;
     
     if (this.isRetrogaming(this.prodotto)) {
-      return Number(this.prodotto.PrezzoUnitarioVendita);
+      return Number(this.prodotto.prezzoUnitarioVendita);
     }
 
     if (this.prodotto.condizione === 'Usato') {
       if (this.prezzoCondizione === 'Nuovo') {
-        return Math.round((Number(this.prodotto.PrezzoUnitarioVendita) / 0.75) * 100) / 100;
+        return Math.round((Number(this.prodotto.prezzoUnitarioVendita) / 0.75) * 100) / 100;
       }
-      return Number(this.prodotto.PrezzoUnitarioVendita);
+      return Number(this.prodotto.prezzoUnitarioVendita);
     }
 
     if (this.prezzoCondizione === 'Usato') {
-      return Math.round((Number(this.prodotto.PrezzoUnitarioVendita) * 0.75) * 100) / 100;
+      return Math.round((Number(this.prodotto.prezzoUnitarioVendita) * 0.75) * 100) / 100;
     }
     
-    return Number(this.prodotto.PrezzoUnitarioVendita);
+    return Number(this.prodotto.prezzoUnitarioVendita);
   }
 
   getPrezzoPermutaBase(): number {
     if (!this.prodotto) return 0;
     // Valutazione base: 40% in meno rispetto al prezzo di vendita (quindi il 60% del valore)
-    return Math.round((this.prodotto.PrezzoUnitarioVendita * 0.60) * 2) / 2;
+    return Math.round((this.prodotto.prezzoUnitarioVendita * 0.60) * 2) / 2;
   }
 
   async aggiungiAlCarrello(prodotto: Prodotto) {
