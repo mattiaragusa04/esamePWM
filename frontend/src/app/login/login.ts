@@ -133,40 +133,4 @@ export class Login {
       this.loadingReset = false;
     }
   }
-
-  async aggiornaPassword(): Promise<void> {
-    this.erroreReset = '';
-    if (!this.tokenReset.trim()) {
-      this.erroreReset = 'Inserisci il codice ricevuto via email.';
-      return;
-    }
-    if (this.nuovaPassword.length < 6) {
-      this.erroreReset = 'La password deve essere di almeno 6 caratteri.';
-      return;
-    }
-    if (this.nuovaPassword !== this.confermaPassword) {
-      this.erroreReset = 'Le due password non coincidono.';
-      return;
-    }
-    this.loadingReset = true;
-    try {
-      const res = await fetch(`${this.API_AUTH}/update-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: this.tokenReset.trim(), newPassword: this.nuovaPassword })
-      });
-      if (res.ok) {
-        this.toast.success('Password aggiornata! Ora puoi accedere con le nuove credenziali.');
-        this.chiudiModaleReset();
-      } else {
-        const data = await res.json();
-        this.erroreReset = data.message || 'Il codice non è valido o è scaduto.';
-      }
-    } catch (e) {
-      console.error('[Reset] Errore di rete aggiorna password:', e);
-      this.erroreReset = 'Errore di connessione al server.';
-    } finally {
-      this.loadingReset = false;
-    }
-  }
 }

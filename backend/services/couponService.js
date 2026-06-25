@@ -9,7 +9,7 @@ const arrotonda = v => Math.floor(Number(v) + 0.5);
 
 // FIX: costoInPunti ora usa il campo puntiFedelta del prodotto.
 // Se puntiFedelta è 0 o assente, fallback al calcolo dal prezzo (retrocompatibilità).
-const getcostoInPunti = (prodotto) => {
+const getCostoInPunti = (prodotto) => {
   if (prodotto.puntiFedelta && Number(prodotto.puntiFedelta) > 0) {
     return Number(prodotto.puntiFedelta);
   }
@@ -213,5 +213,5 @@ exports.acquistaProdottoConPunti = async (userId, prodottoId) => {
 };
 
 // Espone helper per uso nei controller (catalogo/prodotti usati, ecc.)
-exports.getcostoInPunti = getCostoInPunti;
+exports.getCostoInPunti = getCostoInPunti;
 exports.PUNTI_PER_PRESET = PUNTI_PER_PRESET;

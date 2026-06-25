@@ -60,14 +60,15 @@
 
     <!-- STEP 1: inserimento email -->
     <ng-container *ngIf="stepReset === 'email'">
-      <p style="font-size:.9rem;color:#aaa;margin-bottom:1rem;">Inserisci la tua email: ti invieremo un codice per reimpostare la password.</p>
+      <p class="text-muted mb-4">Inserisci l'email associata al tuo account per ricevere le istruzioni di recupero.</p>
 
-      <div style="margin-bottom:1rem;">
-        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Email</label>
+      <div class="form-group text-left">
+        <label for="emailReset" class="font-weight-bold mb-2">Indirizzo Email</label>
         <input type="email"
+               id="emailReset"
                [(ngModel)]="emailReset"
                placeholder="es. mario.rossi@email.com"
-               style="width:100%;padding:.55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.95rem;outline:none;" />
+               class="form-control" />
       </div>
 
       <div *ngIf="erroreReset" style="color:#f87171;font-size:.85rem;margin-bottom:.75rem;">
@@ -75,71 +76,17 @@
       </div>
 
       <div class="modal-actions">
-        <button class="modal-btn-cancel" (click)="chiudiModaleReset()" [disabled]="loadingReset">Annulla</button>
+        <button class="modal-btn-cancel" (click)="chiudiModaleReset()">Annulla</button>
         <button class="modal-btn-confirm" (click)="inviaEmailReset()" [disabled]="loadingReset">
-          <span *ngIf="!loadingReset"><i class="bi bi-send-fill"></i> Invia codice</span>
-          <span *ngIf="loadingReset"><i class="bi bi-arrow-repeat spin"></i> Invio…</span>
+          <span *ngIf="!loadingReset">Invia</span>
+          <span *ngIf="loadingReset">
+            <i class="bi bi-arrow-repeat spin"></i> Invio...
+          </span>
         </button>
       </div>
     </ng-container>
 
-    <!-- STEP 2: token + nuova password -->
-    <ng-container *ngIf="stepReset === 'nuova-password'">
-      <p style="font-size:.9rem;color:#aaa;margin-bottom:1rem;">
-        Ti abbiamo inviato un codice a <strong style="color:#eee;">{{ emailReset }}</strong>.<br>
-        Inseriscilo qui sotto insieme alla tua nuova password.
-      </p>
-
-      <div style="margin-bottom:.85rem;">
-        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Codice ricevuto via email</label>
-        <input type="text"
-               [(ngModel)]="tokenReset"
-               placeholder="Incolla il codice dall'email"
-               style="width:100%;padding:.55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.9rem;outline:none;" />
-      </div>
-
-      <div style="margin-bottom:.85rem;">
-        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Nuova password</label>
-        <div style="position:relative;">
-          <input [type]="mostraNuovaPassword ? 'text' : 'password'"
-                 [(ngModel)]="nuovaPassword"
-                 placeholder="Minimo 6 caratteri"
-                 style="width:100%;padding:.55rem 2.5rem .55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.95rem;outline:none;" />
-          <button type="button" (click)="mostraNuovaPassword = !mostraNuovaPassword"
-                  style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;">
-            <i class="bi" [ngClass]="mostraNuovaPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
-          </button>
-        </div>
-      </div>
-
-      <div style="margin-bottom:.85rem;">
-        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Conferma nuova password</label>
-        <div style="position:relative;">
-          <input [type]="mostraConfermaPassword ? 'text' : 'password'"
-                 [(ngModel)]="confermaPassword"
-                 placeholder="Ripeti la nuova password"
-                 style="width:100%;padding:.55rem 2.5rem .55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.95rem;outline:none;" />
-          <button type="button" (click)="mostraConfermaPassword = !mostraConfermaPassword"
-                  style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;">
-            <i class="bi" [ngClass]="mostraConfermaPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
-          </button>
-        </div>
-      </div>
-
-      <div *ngIf="erroreReset" style="color:#f87171;font-size:.85rem;margin-bottom:.75rem;">
-        <i class="bi bi-exclamation-circle"></i> {{ erroreReset }}
-      </div>
-
-      <div class="modal-actions">
-        <button class="modal-btn-cancel" (click)="stepReset = 'email'; erroreReset = ''" [disabled]="loadingReset">
-          <i class="bi bi-arrow-left"></i> Indietro
-        </button>
-        <button class="modal-btn-confirm" (click)="aggiornaPassword()" [disabled]="loadingReset">
-          <span *ngIf="!loadingReset"><i class="bi bi-check-lg"></i> Salva password</span>
-          <span *ngIf="loadingReset"><i class="bi bi-arrow-repeat spin"></i> Salvataggio…</span>
-        </button>
-      </div>
-    </ng-container>
+    <!-- Qui andranno gli altri step del reset (es. inserimento nuova password) -->
 
   </div>
 </div>
