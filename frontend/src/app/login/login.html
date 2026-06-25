@@ -3,33 +3,88 @@
     <div class="card shadow-lg border-0 mt-4 mb-5" style="border-radius: 1.5rem;">
       <div class="card-body p-5">
         <h3 class="text-center mb-4 font-weight-bold">Accedi al tuo Account</h3>
-        
+
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          
+
           <div class="form-group">
             <label for="email" class="font-weight-bold text-dark">Email</label>
-            <input type="email" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && loginForm.get('email')?.invalid" id="email" formControlName="email" placeholder="Inserisci email">
+            <input type="email" class="form-control rounded-pill bg-light border-0 px-4"
+                   [class.is-invalid]="submitted && loginForm.get('email')?.invalid"
+                   id="email" formControlName="email" placeholder="Inserisci email">
           </div>
-          
+
           <div class="form-group">
             <label for="password" class="font-weight-bold text-dark">Password</label>
             <div class="input-group rounded-pill bg-light" [class.is-invalid]="submitted && loginForm.get('password')?.invalid">
-              <input [type]="mostraPassword ? 'text' : 'password'" class="form-control bg-transparent border-0 px-4" [class.is-invalid]="submitted && loginForm.get('password')?.invalid" id="password" formControlName="password" placeholder="Inserisci password" style="border-radius: 50rem 0 0 50rem;">
+              <input [type]="mostraPassword ? 'text' : 'password'"
+                     class="form-control bg-transparent border-0 px-4"
+                     [class.is-invalid]="submitted && loginForm.get('password')?.invalid"
+                     id="password" formControlName="password" placeholder="Inserisci password"
+                     style="border-radius: 50rem 0 0 50rem;">
               <div class="input-group-append">
-                <button class="btn btn-light bg-transparent border-0 text-muted pr-3" type="button" style="border-radius: 0 50rem 50rem 0;" (click)="togglePasswordVisibility()">
-                <i class="bi" [ngClass]="mostraPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                <button class="btn btn-light bg-transparent border-0 text-muted pr-3" type="button"
+                        style="border-radius: 0 50rem 50rem 0;"
+                        (click)="togglePasswordVisibility()">
+                  <i class="bi" [ngClass]="mostraPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                 </button>
               </div>
             </div>
           </div>
 
           <button type="submit" class="btn btn-info btn-block rounded-pill mt-5 py-2 font-weight-bold text-dark shadow">Accedi</button>
-          
+
           <div class="text-center mt-3">
-            <small class="text-muted">Non hai un account? <a routerLink="/register" routerLinkActive="active" class="text-info font-weight-bold">Registrati</a></small>
+            <small class="text-muted">Non hai un account?
+              <a routerLink="/register" routerLinkActive="active" class="text-info font-weight-bold">Registrati</a>
+            </small>
           </div>
+
+          <div class="text-center mt-3">
+            <small class="text-muted">Hai dimenticato la password?
+              <a href="#" class="text-info font-weight-bold" (click)="$event.preventDefault(); apriModaleReset()">Ripristina</a>
+            </small>
+          </div>
+
         </form>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ══════════ MODALE RECUPERO PASSWORD ══════════ -->
+<div class="fedelta-overlay" *ngIf="mostraModaleReset" (click)="chiudiModaleReset()">
+  <div class="fedelta-modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-icon"><i class="bi bi-lock-fill"></i></div>
+    <h3>Recupera password</h3>
+
+    <!-- STEP 1: inserimento email -->
+    <ng-container *ngIf="stepReset === 'email'">
+      <p class="text-muted mb-4">Inserisci l'email associata al tuo account per ricevere le istruzioni di recupero.</p>
+
+      <div class="form-group text-left">
+        <label for="emailReset" class="font-weight-bold mb-2">Indirizzo Email</label>
+        <input type="email"
+               id="emailReset"
+               [(ngModel)]="emailReset"
+               placeholder="es. mario.rossi@email.com"
+               class="form-control" />
+      </div>
+
+      <div *ngIf="erroreReset" style="color:#f87171;font-size:.85rem;margin-bottom:.75rem;">
+        <i class="bi bi-exclamation-circle"></i> {{ erroreReset }}
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" (click)="chiudiModaleReset()">Annulla</button>
+        <button class="modal-btn-confirm" (click)="inviaEmailReset()" [disabled]="loadingReset">
+          <span *ngIf="!loadingReset">Invia</span>
+          <span *ngIf="loadingReset">
+            <i class="bi bi-arrow-repeat spin"></i> Invio...
+          </span>
+        </button>
+      </div>
+    </ng-container>
+
   </div>
 </div>
