@@ -8,10 +8,8 @@ const AuthService = require('../services/authService');
 
 const SECRET = process.env.JWT_SECRET || "supersecretkey";
 
-// ─── Helper: normalizza i campi dell'utente (alias punti_fedelta) ─────────────
 const normalizzaUtente = AuthService.normalizzaUtente;
 
-// Email helpers (logica nel service) — esposte per le altre rotte del controller
 exports.inviaEmailConferma = AuthService.inviaEmailConferma;
 exports.inviaEmailBenvenuto = AuthService.inviaEmailBenvenuto;
 exports.inviaEmailResetPassword = AuthService.inviaEmailResetPassword;
@@ -40,7 +38,7 @@ exports.confermaRegistrazione = async (req, res) => {
     res.redirect('http://localhost:4200/login');
   } catch (err) {
     console.error("Errore durante la conferma della registrazione:", err);
-    res.status(400).send('<h2 style="font-family: Arial; text-align: center; margin-top: 50px;">Il link di conferma non è valido o è scaduto.</h2>');
+    res.status(400).send('<h2 style="font-family: Arial; text-align: center; margin-top: 50px;">Il link di conferma non \u00e8 valido o \u00e8 scaduto.</h2>');
   }
 };
 
@@ -51,7 +49,7 @@ exports.login = async (req, res) => {
     const user = await User.findByEmail(email);
     if (!user) return res.status(400).json({ message: "Credenziali non valide" });
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Credenziali non valide" }); // Rimosso securityStamp dal token
+    if (!isMatch) return res.status(400).json({ message: "Credenziali non valide" });
     const token = jwt.sign({ id: user.id, email: user.email, ruolo: user.ruolo, bootId }, SECRET, { expiresIn: "1h" });
     const { password: userPassword, ...safeUser } = user;
     res.json({ token, utente: normalizzaUtente(safeUser) });
@@ -82,21 +80,14 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADMIN: dettaglio completo utente (profilo + indirizzi + carte oscurate + punti)
-// GET /api/auth/:id/dettaglio
-// ─────────────────────────────────────────────────────────────────────────────
 exports.getUtenteDettaglio = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'Utente non trovato' });
     const { password, ...safeUser } = user;
-
     const indirizzi = await Indirizzo.findByUserId(userId);
     const carte = await CartaDiCredito.findByUserId(userId);
-
-    // Oscura numero carta (mostra solo ultimi 4 cifre) e CVV
     const carteOscurate = carte.map(c => ({
       id: c.id,
       nome_titolare: c.nome_titolare,
@@ -104,44 +95,34 @@ exports.getUtenteDettaglio = async (req, res) => {
       numero_carta: '**** **** **** ' + String(c.numero_carta).slice(-4),
       cvv: '***'
     }));
-
-    // normalizzaUtente aggiunge l'alias punti_fedelta = puntiFedelta
     res.json({ utente: normalizzaUtente(safeUser), indirizzi, carte: carteOscurate });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADMIN: modifica punti fedeltà (delta positivo = aggiungi, negativo = sottrai)
-// PUT /api/auth/:id/punti   body: { delta: number, nota?: string }
-// ─────────────────────────────────────────────────────────────────────────────
 exports.modificaPuntiFedelta = async (req, res) => {
   try {
     const userId = req.params.id;
     const { delta, nota } = req.body;
     if (delta === undefined || isNaN(Number(delta))) {
-      return res.status(400).json({ message: 'Il campo delta (numero intero) è obbligatorio' });
+      return res.status(400).json({ message: 'Il campo delta (numero intero) \u00e8 obbligatorio' });
     }
     const result = await User.updatePuntiFedelta(userId, Number(delta));
-    console.log(`[Admin] Punti fedeltà utente ${userId}: ${Number(delta) >= 0 ? '+' : ''}${delta} — ${nota || 'nessuna nota'}`);
+    console.log(`[Admin] Punti fedelt\u00e0 utente ${userId}: ${Number(delta) >= 0 ? '+' : ''}${delta} \u2014 ${nota || 'nessuna nota'}`);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADMIN: invia email reset password per conto dell'utente
-// POST /api/auth/:id/reset-password-admin
-// ─────────────────────────────────────────────────────────────────────────────
 exports.inviaResetPasswordAdmin = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'Utente non trovato' });
-    const token = jwt.sign({ email: user.email }, SECRET, { expiresIn: '15m' });
-    await exports.inviaEmailResetPassword(user.email, token);
+    // Usa il nuovo flusso con codice numerico
+    const result = await AuthService.resetPassword(user.email);
     console.log(`[Admin] Email reset password inviata a ${user.email} (id: ${userId})`);
     res.json({ message: 'Email di reset inviata a ' + user.email });
   } catch (err) {
@@ -149,10 +130,6 @@ exports.inviaResetPasswordAdmin = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADMIN/OPERATORE: modifica un indirizzo salvato dell'utente
-// PUT /api/auth/indirizzi/:id   body: { tipo, via, numero_civico, provincia, paese, cap }
-// ─────────────────────────────────────────────────────────────────────────────
 exports.aggiornaIndirizzoAdmin = async (req, res) => {
   try {
     const indirizzoId = req.params.id;
@@ -163,6 +140,7 @@ exports.aggiornaIndirizzoAdmin = async (req, res) => {
   }
 };
 
+// POST /api/auth/password-reset   body: { email }
 exports.passwordReset = async (req, res) => {
   try {
     const { email } = req.body;
@@ -175,16 +153,17 @@ exports.passwordReset = async (req, res) => {
   }
 };
 
+// POST /api/auth/update-password   body: { email, code, newPassword }
 exports.updatePassword = async (req, res) => {
   try {
-    const { token, newPassword } = req.body;
-    const result = await AuthService.updatePassword(token, newPassword);
+    const { email, code, newPassword } = req.body;
+    const result = await AuthService.updatePassword(email, code, newPassword);
     return res.status(200).json(result);
   } catch (err) {
     if (err.status === 400) return res.status(400).json({ message: err.message });
     if (err.status === 404) return res.status(404).json({ message: err.message });
     console.error("Errore updatePassword:", err);
-    return res.status(400).json({ message: "Il link di reset non è valido o è scaduto." });
+    return res.status(400).json({ message: "Il codice non \u00e8 valido o \u00e8 scaduto." });
   }
 };
 
