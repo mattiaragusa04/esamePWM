@@ -85,8 +85,10 @@ const User = {
         `DELETE FROM indirizzo WHERE utente_id = ?`,
         `DELETE FROM carta_di_credito WHERE utente_id = ?`,
         `DELETE FROM recensione WHERE utente_id = ?`,
-        `DELETE FROM vendi WHERE utente_id = ?`,
-        `DELETE FROM utente WHERE id = ?`
+        `DELETE FROM vende WHERE utente_id = ?`,
+        `DELETE FROM utente WHERE id = ?`,
+        `DELETE FROM riscatta WHERE utente_id = ?`,
+
       ];
       const runNext = (index) => {
         if (index >= queries.length) return resolve({ id });

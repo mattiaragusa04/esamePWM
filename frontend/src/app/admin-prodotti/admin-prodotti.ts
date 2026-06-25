@@ -90,16 +90,21 @@ export class AdminProdotti implements OnInit {
 
   async eliminaProdotto(id: number) {
     if (!confirm('Sei sicuro di voler eliminare il prodotto #' + id + '?')) return;
+    const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('token') : '';
     try {
-      const response = await fetch(`http://localhost:3000/api/prodotti/${id}`, { method: 'DELETE' });
+      const response = await fetch(`http://localhost:3000/api/prodotti/${id}`, {
+        method: 'DELETE',
+        headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+      });
       if (response.ok) {
+        this.toast.success(`Prodotto #${id} eliminato con successo.`);
         this.caricaProdotti();
       } else {
-        this.errorMessage = 'Errore durante l\'eliminazione.';
+        this.toast.error('Errore durante l\'eliminazione del prodotto.');
       }
     } catch (error) {
       console.error('Errore di rete:', error);
-      this.errorMessage = 'Impossibile connettersi al server.';
+      this.toast.error('Impossibile connettersi al server.');
     }
   }
 

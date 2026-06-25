@@ -132,7 +132,7 @@
                     </div>
 
                     <!-- FORM (nascosto durante il riepilogo) -->
-                    <form (ngSubmit)="richiediConferma(prodottoForm)" #prodottoForm="ngForm" [style.display]="mostraRiepilogo ? 'none' : 'block'">
+                    <form (ngSubmit)="isModifica ? salvaNuovoProdotto(prodottoForm) : richiediConferma(prodottoForm)" #prodottoForm="ngForm" [style.display]="mostraRiepilogo ? 'none' : 'block'">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="nome" class="form-label font-weight-bold">Nome Prodotto</label>
