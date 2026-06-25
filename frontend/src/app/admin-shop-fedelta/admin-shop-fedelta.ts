@@ -52,7 +52,7 @@ export class AdminShopFedelta implements OnInit {
     codice: '',
     tipo: 'percentuale' as 'percentuale' | 'fisso',
     valore: 10,
-    costo_punti: 50,
+    costoInPunti: 50,
     descrizione: '',
     scadenza: '',
     utilizzi_massimi: null
@@ -210,7 +210,7 @@ export class AdminShopFedelta implements OnInit {
     const payload = {
       ...this.couponInModifica,
       valore: Number(this.couponInModifica.valore),
-      costo_punti: Number(this.couponInModifica.costo_punti), 
+      costo_punti: Number(this.couponInModifica.costo_punti),
       utilizzi_massimi: this.couponInModifica.utilizzi_massimi ? Number(this.couponInModifica.utilizzi_massimi) : null
     };
 
@@ -244,7 +244,7 @@ export class AdminShopFedelta implements OnInit {
       codice: '',
       tipo: 'percentuale',
       valore: 10,
-      costo_punti: 50,
+      costoInPunti: 50,
       descrizione: '',
       scadenza: d.toISOString().split('T')[0],
       utilizzi_massimi: null
