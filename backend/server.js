@@ -61,6 +61,9 @@ app.listen(PORT, () => {
       data        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (utente_id) REFERENCES utente(id)
     )`,
+    // FEAT: Colonne per reset password con codice numerico
+    `ALTER TABLE utente ADD COLUMN reset_code TEXT`,
+    `ALTER TABLE utente ADD COLUMN reset_code_expiry INTEGER`,
   ];
 
   migrations.forEach(sql => {
