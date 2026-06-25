@@ -22,11 +22,12 @@ interface ProdottoUsato {
   id: number;
   nome: string;
   descrizione: string;
-  prezzoUnitarioVendita: number;
+  PrezzoUnitarioVendita: number;
   costoInPunti: number;
   immagine: string;
   giacenza: number;
   categoria_nome: string;
+  visibile: number;
 }
 
 @Component({
@@ -173,7 +174,7 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
       if (res.ok) {
         const tuttiCoupon = await res.json();
         // Filtriamo solo quelli periodici: attivi e senza costo in punti
-        this.couponPeriodici = tuttiCoupon.filter((c: any) => c.attivo && (!c.costo_punti || c.costo_punti === 0));
+        this.couponPeriodici = tuttiCoupon.filter((c: any) => c.attivo && (!c.costoInPunti || c.costoInPunti === 0));
       } else {
         console.error('[Fedelta] Errore caricamento coupon periodici:', res.status);
       }

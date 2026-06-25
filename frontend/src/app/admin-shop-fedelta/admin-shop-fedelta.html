@@ -108,7 +108,7 @@
             <tr *ngFor="let c of couponList" [class.row-inattivo]="!c.attivo">
               <td><code>{{ c.codice }}</code></td>
               <td><span class="badge-perc">-{{ c.valore }}%</span></td>
-              <td><span class="badge-punti"><i class="bi bi-trophy-fill"></i> {{ c.costo_punti || '—' }}</span></td>
+              <td><span class="badge-punti"><i class="bi bi-trophy-fill"></i> {{ c.costoInPunti || '—' }}</span></td>
               <td>{{ c.data_scadenza }}</td>
               <td>{{ c.utilizzi_attuali }} / {{ c.utilizzi_massimi === null ? '∞' : c.utilizzi_massimi }}</td>
               <td>
@@ -180,7 +180,7 @@
               </td>
               <td>{{ p.nome }}</td>
               <td>{{ p.categoria_nome }}</td>
-              <td>€{{ p.prezzoUnitarioVendita | number:'1.2-2' }}</td>
+              <td>€{{ p.PrezzoUnitarioVendita | number:'1.2-2' }}</td>
               <td><span class="badge-punti"><i class="bi bi-trophy-fill"></i> {{ p.costoInPunti }}</span></td>
               <td>
                 <span [class.text-danger]="p.giacenza === 0" [class.fw-bold]="p.giacenza === 0">
@@ -188,8 +188,8 @@
                 </span>
               </td>
               <td>
-                <span class="badge" [class.badge-success]="p.pubblicatoVetrina" [class.badge-danger]="!p.pubblicatoVetrina">
-                  {{ p.pubblicatoVetrina ? 'Sì' : 'No' }}
+                <span class="badge" [class.badge-success]="p.visibile" [class.badge-danger]="!p.visibile">
+                  {{ p.visibile? 'Sì' : 'No' }}
                 </span>
               </td>
             </tr>
@@ -227,7 +227,7 @@
             </div>
             <div class="shop-form-group">
               <label>Costo in punti fedeltà</label>
-              <input type="number" [(ngModel)]="couponInModifica.costo_punti" name="costo_punti" required min="1" class="shop-input" />
+              <input type="number" [(ngModel)]="couponInModifica.costoInPunti" name="costoInPunti" required min="1" class="shop-input" />
             </div>
             <div class="shop-form-group">
               <label>Data scadenza</label>

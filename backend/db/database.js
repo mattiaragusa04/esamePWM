@@ -42,8 +42,8 @@ CREATE TABLE IF NOT EXISTS prodotto (
     descrizione TEXT NOT NULL,
     giacenza INTEGER NOT NULL,
     immagine TEXT NOT NULL,
-    prezzoUnitarioVendita REAL NOT NULL,
-    pubblicatoVetrina INTEGER NOT NULL,
+    PrezzoUnitarioVendita REAL NOT NULL,
+    visibile INTEGER NOT NULL,
     genere TEXT,
     condizione TEXT NOT NULL,
     puntiFedelta INTEGER DEFAULT 0,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS composto (
 );
 CREATE TABLE IF NOT EXISTS recensione (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    utente_id INTEGER NOY NULL UNIQUE,
+    utente_id INTEGER NOT NULL UNIQUE,
     testo TEXT NOT NULL,
     voto INTEGER NOT NULL CHECK(voto BETWEEN 1 AND 5),
     data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS coupon (
     utilizzi_massimi INTEGER,
     utilizzi_attuali INTEGER DEFAULT 0,
     attivo INTEGER DEFAULT 1,
-    costo_punti INTEGER DEFAULT 0,
+    costoInPunti INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS riscatta (

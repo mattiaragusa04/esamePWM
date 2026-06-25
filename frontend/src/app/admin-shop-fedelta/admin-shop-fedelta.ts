@@ -12,20 +12,20 @@ interface CouponFedelta {
   utilizzi_massimi: number;
   utilizzi_attuali: number;
   attivo: number;
-  costo_punti: number;
+  costoInPunti: number;
 }
 
 interface ProdottoUsato {
   id: number;
   nome: string;
   descrizione: string;
-  prezzoUnitarioVendita: number;
+  PrezzoUnitarioVendita: number;
   costoInPunti: number;
   immagine: string;
   giacenza: number;
   condizione: string;
   categoria_nome: string;
-  pubblicatoVetrina: number;
+  visibile: number;
 }
 
 @Component({
@@ -210,7 +210,7 @@ export class AdminShopFedelta implements OnInit {
     const payload = {
       ...this.couponInModifica,
       valore: Number(this.couponInModifica.valore),
-      costo_punti: Number(this.couponInModifica.costo_punti),
+      costoInPunti: Number(this.couponInModifica.costoInPunti),
       utilizzi_massimi: this.couponInModifica.utilizzi_massimi ? Number(this.couponInModifica.utilizzi_massimi) : null
     };
 

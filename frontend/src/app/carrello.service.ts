@@ -53,14 +53,14 @@ export class CarrelloService {
   /**
    * Prezzo effettivo di una riga del carrello:
    * - ospiti: `prezzoSelezionato` è già il prezzo finale (calcolato al momento dell'aggiunta)
-   * - loggati: il backend restituisce `prezzoUnitarioVendita` (prezzo Nuovo del prodotto);
+   * - loggati: il backend restituisce `PrezzoUnitarioVendita` (prezzo Nuovo del prodotto);
    *   per gli item con condizione 'Usato' applichiamo lo sconto del 25%.
    */
   private prezzoEffettivo(item: any, isGuest: boolean): number {
     if (isGuest) {
       return Number(item.prezzoSelezionato ?? 0);
     }
-    const base = Number(item.prezzoUnitarioVendita ?? 0);
+    const base = Number(item.PrezzoUnitarioVendita ?? 0);
     return item.condizione === 'Usato'
       ? Math.round(base * 0.75 * 100) / 100
       : base;

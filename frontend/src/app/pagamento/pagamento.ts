@@ -112,7 +112,7 @@ codiceCoupon: string = '';
       if (response.ok) {
         const carrello = await response.json();
         this.totale = Math.round(carrello.reduce((acc: number, item: any) => {
-          const base = Number(item.prezzoUnitarioVendita ?? 0);
+          const base = Number(item.PrezzoUnitarioVendita ?? 0);
           const prezzoEff = item.condizione === 'Usato'
             ? Math.round(base * 0.75 * 100) / 100
             : base;

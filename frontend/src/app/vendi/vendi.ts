@@ -24,9 +24,9 @@ export interface Prodotto {
   giacenza: number;
   immagine: string;
   prezzoUnitarioAcquisto: number;
-  prezzoUnitarioVendita: number;
+  PrezzoUnitarioVendita: number;
   pubblicatoAcquisto: boolean;
-  pubblicatoVetrina: boolean;
+  visibile: boolean;
   condizione: string;
 }
 

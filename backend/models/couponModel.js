@@ -83,7 +83,7 @@ const Coupon = {
       db.run(
         `INSERT INTO coupon
            (codice, tipo, valore, descrizione, data_scadenza,
-            utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
+            utilizzi_massimi, utilizzi_attuali, attivo, costoInPunti)
          VALUES (?, 'percentuale', ?, ?, ?, 1, 0, 1, 0)`,
         [codice, valore, descrizione, scadenzaStr],
         function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
@@ -94,7 +94,7 @@ const Coupon = {
   findFedeltaById: (id) => {
     return new Promise((resolve, reject) => {
       db.get(
-        `SELECT * FROM coupon WHERE id = ? AND attivo = 1 AND costo_punti > 0`,
+        `SELECT * FROM coupon WHERE id = ? AND attivo = 1 AND costoInPunti > 0`,
         [id],
         (err, row) => { if (err) reject(err); else resolve(row); }
       );
@@ -106,10 +106,10 @@ const Coupon = {
       db.all(
         `SELECT id, codice, tipo, valore AS percentuale, descrizione,
                 data_scadenza, utilizzi_massimi, utilizzi_attuali,
-                costo_punti AS costoInPunti, disponibile
+                costoInPunti AS costoInPunti, disponibile
          FROM coupon
          WHERE attivo = 1
-           AND costo_punti > 0
+           AND costoInPunti > 0
            AND (disponibile = -1 OR disponibile > 0)
            AND (data_scadenza IS NULL OR date(data_scadenza) >= date('now'))
          ORDER BY valore ASC`,
@@ -132,7 +132,7 @@ const Coupon = {
   findAllFedelta: () => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT * FROM coupon WHERE costo_punti > 0 ORDER BY id DESC`,
+        `SELECT * FROM coupon WHERE costoInPunti > 0 ORDER BY id DESC`,
         [],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );
@@ -144,7 +144,7 @@ const Coupon = {
       db.run(
         `INSERT INTO coupon
            (codice, tipo, valore, descrizione, data_scadenza,
-            utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
+            utilizzi_massimi, utilizzi_attuali, attivo, costoInPunti)
          VALUES (?, 'percentuale', ?, ?, ?, ?, 0, 1, ?)`,
         [codice.trim().toUpperCase(), Number(percentuale),
          descrizione || `Sconto del ${percentuale}% — coupon fedeltà`,
@@ -157,7 +157,7 @@ const Coupon = {
   toggleFedelta: (id, attivo) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `UPDATE coupon SET attivo = ? WHERE id = ? AND costo_punti > 0`,
+        `UPDATE coupon SET attivo = ? WHERE id = ? AND costoInPunti > 0`,
         [attivo ? 1 : 0, id],
         function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
       );
@@ -167,7 +167,7 @@ const Coupon = {
   deleteFedelta: (id) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `DELETE FROM coupon WHERE id = ? AND costo_punti > 0`,
+        `DELETE FROM coupon WHERE id = ? AND costoInPunti > 0`,
         [id],
         function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
       );
@@ -178,15 +178,15 @@ const Coupon = {
   findProdottiUsati: () => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT p.id, p.nome, p.descrizione, p.prezzoUnitarioVendita,
+        `SELECT p.id, p.nome, p.descrizione, p.PrezzoUnitarioVendita,
                 p.immagine, p.giacenza, p.condizione, p.puntiFedelta,
                 c.denominazione AS categoria_nome
          FROM prodotto p
          LEFT JOIN categoria c ON p.categoria_id = c.id
          WHERE p.condizione = 'Usato'
            AND p.giacenza > 0
-           AND p.pubblicatoVetrina = 1
-         ORDER BY p.prezzoUnitarioVendita ASC`,
+           AND p.visibile= 1
+         ORDER BY p.PrezzoUnitarioVendita ASC`,
         [],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );
@@ -220,13 +220,13 @@ const Coupon = {
   findAllProdottiUsatiAdmin: () => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT p.id, p.nome, p.descrizione, p.prezzoUnitarioVendita,
-                p.immagine, p.giacenza, p.condizione, p.pubblicatoVetrina, p.puntiFedelta,
+        `SELECT p.id, p.nome, p.descrizione, p.PrezzoUnitarioVendita,
+                p.immagine, p.giacenza, p.condizione, p.visibile, p.puntiFedelta,
                 c.denominazione AS categoria_nome
          FROM prodotto p
          LEFT JOIN categoria c ON p.categoria_id = c.id
          WHERE p.condizione = 'Usato'
-         ORDER BY p.giacenza DESC, p.prezzoUnitarioVendita ASC`,
+         ORDER BY p.giacenza DESC, p.PrezzoUnitarioVendita ASC`,
         [],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );
