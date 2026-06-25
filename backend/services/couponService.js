@@ -63,7 +63,7 @@ exports.acquistaPresetCoupon = async (userId, valore) => {
 
   const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
 
-  const nuovoCoupon = await Coupon.createGenerato({ codice, valore: percNum, descrizione, scadenzaStr });
+  const nuovoCoupon = await Coupon.createGenerato({ codice, tipo: 'percentuale', valore: percNum, descrizione, scadenzaStr });
   await Coupon.insertCouponGenerato(userId, nuovoCoupon.id);
 
   await User.deductPuntiFedelta(userId, costoInPunti);
@@ -72,6 +72,7 @@ exports.acquistaPresetCoupon = async (userId, valore) => {
   return {
     message: `Coupon acquistato! Usa il codice entro il ${scadenzaStr}.`,
     codice,
+    tipo: 'percentuale',
     scadenza: scadenzaStr,
     percentuale: percNum,
     puntiScalati: costoInPunti,
@@ -120,7 +121,7 @@ exports.acquistaCoupon = async (userId, couponId) => {
 
   const descrizione = `Generato da: ${utente.email} | Punti spesi: ${costoInPunti}`;
 
-  const nuovoCoupon = await Coupon.createGenerato({ codice, valore: template.valore, descrizione, scadenzaStr });
+  const nuovoCoupon = await Coupon.createGenerato({ codice, tipo: template.tipo, valore: template.valore, descrizione, scadenzaStr });
   await Coupon.insertCouponGenerato(userId, nuovoCoupon.id);
   await Coupon.decrementaDisponibile(couponId);
 
@@ -130,8 +131,9 @@ exports.acquistaCoupon = async (userId, couponId) => {
   return {
     message: `Coupon acquistato! Usa il codice entro il ${scadenzaStr}.`,
     codice,
+    tipo: template.tipo,
     scadenza: scadenzaStr,
-    percentuale: template.valore,
+    valore: template.valore,
     puntiScalati: costoInPunti,
     puntiFedeltaRimanenti: utenteAggiornato.puntiFedelta
   };

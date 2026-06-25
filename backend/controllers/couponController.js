@@ -1,29 +1,7 @@
 const Coupon = require('../models/couponModel');
 const CouponService = require('../services/couponService');
 
-// ═══════════════════════════════════════════════════════════════
-// HELPER
-// ═══════════════════════════════════════════════════════════════
-const arrotonda = v => Math.floor(Number(v) + 0.5);
 
-// FIX: costoInPunti ora usa il campo puntiFedelta del prodotto.
-// Se puntiFedelta è 0 o assente, fallback al calcolo dal prezzo (retrocompatibilità).
-const getCostoInPunti = (prodotto) => {
-  if (prodotto.puntiFedelta && Number(prodotto.puntiFedelta) > 0) {
-    return Number(prodotto.puntiFedelta);
-  }
-  // Fallback: arrotondamento commerciale del prezzo / 5
-  return arrotonda(prodotto.prezzoUnitarioVendita) / 5;
-};
-
-// Punti richiesti per ogni percentuale di sconto preset
-const PUNTI_PER_PRESET = {
-  5:  25,
-  10: 50,
-  15: 75,
-  20: 100,
-  25: 125
-};
 
 // GET /api/coupon — lista tutti i coupon (admin)
 exports.getCoupon = async (req, res) => {
@@ -38,7 +16,7 @@ exports.getCoupon = async (req, res) => {
 
 // POST /api/coupon — crea un nuovo coupon (admin)
 exports.creaCoupon = async (req, res) => {
-  const { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi } = req.body;
+  const { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, costoInPunti } = req.body;
 
   if (!codice || !tipo || !valore) {
     return res.status(400).json({ error: 'Codice, tipo e valore sono obbligatori.' });
@@ -57,7 +35,7 @@ exports.creaCoupon = async (req, res) => {
       return res.status(409).json({ error: 'Esiste già un coupon con questo codice.' });
     }
 
-    await Coupon.create({ codice, tipo, valore: Number(valore), descrizione, data_scadenza, utilizzi_massimi });
+    await Coupon.create({ codice, tipo, valore: Number(valore), descrizione, data_scadenza, utilizzi_massimi, costo_punti: costoInPunti });
     res.status(201).json({ message: 'Coupon creato con successo.' });
   } catch (err) {
     console.error('creaCoupon error:', err);
@@ -68,7 +46,7 @@ exports.creaCoupon = async (req, res) => {
 // PUT /api/coupon/:id — modifica un coupon esistente (admin)
 exports.modificaCoupon = async (req, res) => {
   const { id } = req.params;
-  const { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi } = req.body;
+  const { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, costoInPunti } = req.body;
 
   if (!codice || !tipo || !valore) {
     return res.status(400).json({ error: 'Codice, tipo e valore sono obbligatori.' });
@@ -99,7 +77,8 @@ exports.modificaCoupon = async (req, res) => {
       valore: Number(valore),
       descrizione: descrizione || null,
       data_scadenza: data_scadenza || null,
-      utilizzi_massimi: utilizzi_massimi ? Number(utilizzi_massimi) : null
+      utilizzi_massimi: utilizzi_massimi ? Number(utilizzi_massimi) : null,
+      costo_punti: costoInPunti ? Number(costoInPunti) : null
     });
 
     res.json({ message: 'Coupon aggiornato con successo.' });
@@ -170,7 +149,7 @@ exports.getPresetCoupon = (req, res) => {
   const preset = [5, 10, 15, 20, 25].map(perc => ({
     valore: perc,
     tipo: 'percentuale',
-    costoInPunti: PUNTI_PER_PRESET[perc],
+    costoInPunti: CouponService.PUNTI_PER_PRESET[perc],
     descrizione: `Sconto del ${perc}% su qualsiasi ordine`
   }));
   res.json(preset);
@@ -181,10 +160,10 @@ exports.getPresetCoupon = (req, res) => {
 // ═══════════════════════════════════════════════════════════════
 exports.acquistaPresetCoupon = async (req, res) => {
   const userId = req.user.id;
-  const { percentuale } = req.body;
+  const { valore } = req.body; // FIX: Changed from 'percentuale' to 'valore'
 
   try {
-    const result = await CouponService.acquistaPresetCoupon(userId, percentuale);
+    const result = await CouponService.acquistaPresetCoupon(userId, valore);
     res.json(result);
   } catch (err) {
     if (err.status) return res.status(err.status).json({ error: err.message });
@@ -228,7 +207,7 @@ exports.acquistaCoupon = async (req, res) => {
 exports.getProdottiUsati = async (req, res) => {
   try {
     const rows = await Coupon.findProdottiUsati();
-    res.json(rows.map(p => ({ ...p, costoInPunti: getCostoInPunti(p) })));
+    res.json(rows.map(p => ({ ...p, costoInPunti: CouponService.getCostoInPunti(p) })));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -269,9 +248,9 @@ exports.adminGetCouponFedelta = async (req, res) => {
 // ADMIN — POST /api/coupon/admin/coupon-fedelta
 // ═══════════════════════════════════════════════════════════════
 exports.adminCreaCouponFedelta = async (req, res) => {
-  const { codice, tipo = 'percentuale', valore, costoInPunti, descrizione, scadenza, utilizzi_massimi } = req.body;
-  if (!codice || !valore || !costoInPunti)
-    return res.status(400).json({ error: 'Codice, valore e costo in punti sono obbligatori.' });
+  const { codice, tipo, valore, costoInPunti, descrizione, scadenza, utilizzi_massimi } = req.body;
+  if (!codice || !tipo || !valore || !costoInPunti)
+    return res.status(400).json({ error: 'Codice, tipo, valore e costo in punti sono obbligatori.' });
 
   try {
     const result = await Coupon.createFedelta({
@@ -281,7 +260,7 @@ exports.adminCreaCouponFedelta = async (req, res) => {
       costoInPunti,
       descrizione,
       scadenza,
-      utilizzi_massimi // Corretto: il modello si aspetta 'utilizzi_massimi'
+      utilizzi_massimi
     });
     res.status(201).json({ message: 'Coupon fedeltà creato.', id: result.id });
   } catch (err) {
@@ -296,21 +275,21 @@ exports.adminCreaCouponFedelta = async (req, res) => {
 // ═══════════════════════════════════════════════════════════════
 exports.adminModificaCouponFedelta = async (req, res) => {
   const { id } = req.params;
-  const { codice, tipo, valore, costo_punti, descrizione, data_scadenza, utilizzi_massimi } = req.body;
+  const { codice, tipo, valore, costoInPunti, descrizione, data_scadenza, utilizzi_massimi } = req.body;
 
-  if (!codice || !valore || !costo_punti) {
+  if (!codice || !valore || !costoInPunti) {
     return res.status(400).json({ error: 'Codice, valore e costo in punti sono obbligatori.' });
   }
 
   try {
     const result = await Coupon.update(id, {
-      codice,
-      tipo,
-      valore,
-      costo_punti: costo_punti,
-      descrizione,
-      data_scadenza: data_scadenza,
-      utilizzi_massimi
+      codice: codice.toUpperCase().trim(),
+      tipo: tipo,
+      valore: Number(valore),
+      costo_punti: Number(costoInPunti),
+      descrizione: descrizione || null,
+      data_scadenza: data_scadenza || null,
+      utilizzi_massimi: utilizzi_massimi ? Number(utilizzi_massimi) : null
     });
     if (result.changes === 0) return res.status(404).json({ error: 'Coupon non trovato.' });
     res.json({ message: 'Coupon aggiornato con successo.' });
@@ -354,7 +333,7 @@ exports.adminEliminaCouponFedelta = async (req, res) => {
 exports.adminGetProdottiUsati = async (req, res) => {
   try {
     const rows = await Coupon.findAllProdottiUsatiAdmin();
-    res.json(rows.map(p => ({ ...p, costoInPunti: getCostoInPunti(p) })));
+    res.json(rows.map(p => ({ ...p, costoInPunti: CouponService.getCostoInPunti(p) })));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

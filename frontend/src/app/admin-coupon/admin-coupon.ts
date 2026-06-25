@@ -29,7 +29,8 @@ export class AdminCoupon implements OnInit {
     valore: null,
     descrizione: '',
     data_scadenza: '',
-    utilizzi_massimi: null
+    utilizzi_massimi: null,
+    costoInPunti: null
   };
 
   // Modale modifica
@@ -59,8 +60,7 @@ export class AdminCoupon implements OnInit {
       });
       if (res.ok) {
         const tuttiCoupon = await res.json();
-        // Filtra via i coupon che appartengono allo shop fedeltà (quelli con un costo in punti)
-        this.coupon = tuttiCoupon.filter((c: any) => !c.costo_punti || c.costo_punti === 0);
+        this.coupon = tuttiCoupon;
         this.applicaFiltri();
       } else {
         this.errorMessage = 'Errore nel caricamento dei coupon.';
@@ -122,7 +122,8 @@ export class AdminCoupon implements OnInit {
       valore: null,
       descrizione: '',
       data_scadenza: '',
-      utilizzi_massimi: null
+      utilizzi_massimi: null,
+      costoInPunti: null
     };
     this.mostraModale = true;
   }
@@ -162,6 +163,9 @@ export class AdminCoupon implements OnInit {
       data_scadenza: this.nuovoCoupon.data_scadenza || null,
       utilizzi_massimi: this.nuovoCoupon.utilizzi_massimi
         ? Number(this.nuovoCoupon.utilizzi_massimi)
+        : null,
+      costoInPunti: this.nuovoCoupon.costoInPunti
+        ? Number(this.nuovoCoupon.costoInPunti)
         : null
     };
 
@@ -194,7 +198,10 @@ export class AdminCoupon implements OnInit {
   // ─── Modale modifica ────────────────────────────────────────────────────────
 
   apriModifica(coupon: any) {
-    this.couponInModifica = { ...coupon };
+    this.couponInModifica = {
+      ...coupon,
+      costoInPunti: coupon.costo_punti // Mappa da snake_case a camelCase per il form
+    };
     if (this.couponInModifica.data_scadenza) {
       this.couponInModifica.data_scadenza = this.couponInModifica.data_scadenza.split('T')[0];
     }
@@ -230,6 +237,9 @@ export class AdminCoupon implements OnInit {
       data_scadenza: this.couponInModifica.data_scadenza || null,
       utilizzi_massimi: this.couponInModifica.utilizzi_massimi
         ? Number(this.couponInModifica.utilizzi_massimi)
+        : null,
+      costoInPunti: this.couponInModifica.costoInPunti
+        ? Number(this.couponInModifica.costoInPunti)
         : null
     };
 

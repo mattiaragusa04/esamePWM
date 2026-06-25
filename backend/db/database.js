@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS contiene (
 CREATE TABLE IF NOT EXISTS coupon (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     codice TEXT NOT NULL UNIQUE,
+    disponibile INTEGER DEFAULT -1,
     tipo TEXT NOT NULL CHECK(tipo IN ('percentuale', 'fisso')),
     valore REAL NOT NULL,
     descrizione TEXT,

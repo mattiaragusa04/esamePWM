@@ -7,13 +7,15 @@ import { NeuralCanvasService } from '../shared/neural-canvas.service';
 
 interface CatalogoCoupon {
   id: string;
-  percentuale: number;
+  valore: number;
+  tipo: string;
   costoInPunti: number;
   descrizione: string;
 }
 
 interface PresetCoupon {
-  percentuale: number;
+  valore: number;
+  tipo: string;
   costoInPunti: number;
   descrizione: string;
 }
@@ -46,15 +48,13 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
   puntiFedelta = 0;
   presetCoupon: PresetCoupon[] = [];
   catalogoCoupon: CatalogoCoupon[] = [];
-  couponPeriodici: any[] = [];
   prodottiUsati: ProdottoUsato[] = [];
 
   caricandoCoupon   = false;
-  caricandoPeriodici = false;
   caricandoProdotti = false;
   acquistandoPresetMap: Record<number, boolean> = {};
 
-  couponAcquistato: { codice: string; percentuale: number; scadenza: string } | null = null;
+  couponAcquistato: { codice: string; valore: number; tipo: string; scadenza: string } | null = null;
 
   prodottoScelto: ProdottoUsato | null = null;
   mostraConferma = false;
@@ -76,7 +76,6 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
     this.caricaPuntiFreschi().then(() => {
       this.caricaPresetCoupon();
       this.caricaCatalogoCoupon();
-      this.caricaCouponPeriodici();
       this.caricaProdottiUsati();
     });
   }
@@ -163,28 +162,6 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  async caricaCouponPeriodici() {
-    this.caricandoPeriodici = true;
-    const token = this.getToken();
-    try {
-      const res = await fetch(`${this.API}`, { // Endpoint che restituisce TUTTI i coupon
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const tuttiCoupon = await res.json();
-        // Filtriamo solo quelli periodici: attivi e senza costo in punti
-        this.couponPeriodici = tuttiCoupon.filter((c: any) => c.attivo && (!c.costo_punti || c.costo_punti === 0));
-      } else {
-        console.error('[Fedelta] Errore caricamento coupon periodici:', res.status);
-      }
-    } catch (e) {
-      console.error('[Fedelta] Errore di rete coupon periodici:', e);
-    } finally {
-      this.caricandoPeriodici = false;
-      this.cdr.detectChanges();
-    }
-  }
-
   async caricaProdottiUsati() {
     this.caricandoProdotti = true;
     const token = this.getToken();
@@ -210,7 +187,7 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
       this.toast.error(`Punti insufficienti (hai ${this.puntiFedelta} pt, ne servono ${preset.costoInPunti} pt).`);
       return;
     }
-    this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.percentuale]: true };
+    this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.valore]: true };
     this.cdr.detectChanges();
 
     const token = this.getToken();
@@ -218,14 +195,14 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
       const res = await fetch(`${this.API}/acquista-preset-coupon`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ percentuale: preset.percentuale })
+        body: JSON.stringify({ valore: preset.valore })
       });
       const data = await res.json();
       if (res.ok) {
         this.puntiFedelta = data.puntiFedeltaRimanenti;
         this.puntiService.aggiorna(data.puntiFedeltaRimanenti);
-        this.couponAcquistato = { codice: data.codice, percentuale: preset.percentuale, scadenza: data.scadenza };
-        this.toast.success(`Coupon -${preset.percentuale}% ottenuto! Codice: ${data.codice}`, 5000);
+        this.couponAcquistato = { codice: data.codice, valore: preset.valore, tipo: preset.tipo, scadenza: data.scadenza };
+        this.toast.success(`Coupon -${preset.valore}% ottenuto! Codice: ${data.codice}`, 5000);
       } else {
         this.toast.error(data.error || 'Errore durante l\'acquisto.');
       }
@@ -233,7 +210,7 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
       console.error('[Fedelta] Errore di rete acquisto preset:', e);
       this.toast.error('Errore di connessione al server.');
     } finally {
-      this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.percentuale]: false };
+      this.acquistandoPresetMap = { ...this.acquistandoPresetMap, [preset.valore]: false };
       this.cdr.detectChanges();
     }
   }
@@ -254,8 +231,12 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
       if (res.ok) {
         this.puntiFedelta = data.puntiFedeltaRimanenti;
         this.puntiService.aggiorna(data.puntiFedeltaRimanenti);
-        this.couponAcquistato = { codice: data.codice, percentuale: coupon.percentuale, scadenza: data.scadenza };
-        this.toast.success(`Coupon -${coupon.percentuale}% riscattato! Codice: ${data.codice}`, 5000);
+        this.couponAcquistato = { codice: data.codice, valore: coupon.valore, tipo: coupon.tipo, scadenza: data.scadenza };
+        if (coupon.tipo === 'percentuale') {
+          this.toast.success(`Coupon -${coupon.valore}% riscattato! Codice: ${data.codice}`, 5000);
+        } else {
+          this.toast.success(`Coupon da ${coupon.valore}€ riscattato! Codice: ${data.codice}`, 5000);
+        }
       } else {
         this.toast.error(data.error || 'Errore durante l\'acquisto.');
       }
@@ -264,14 +245,6 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
       this.toast.error('Errore di connessione al server.');
     } finally {
       this.cdr.detectChanges();
-    }
-  }
-
-  copiaCodice(codice: string) {
-    if (isPlatformBrowser(this.platformId)) {
-      navigator.clipboard.writeText(codice).then(() => {
-        this.toast.info(`Codice "${this.getCopiaAbbreviata(codice)}" copiato!`);
-      });
     }
   }
 
@@ -318,8 +291,8 @@ export class Fedelta implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  isAcquistandoPreset(percentuale: number): boolean {
-    return !!this.acquistandoPresetMap[percentuale];
+  isAcquistandoPreset(valore: number): boolean {
+    return !!this.acquistandoPresetMap[valore];
   }
 
   getCopiaAbbreviata(codice: string): string {

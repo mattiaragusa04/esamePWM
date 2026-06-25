@@ -18,7 +18,10 @@
   <div class="fedelta-coupon-result" *ngIf="couponAcquistato">
     <div class="coupon-result-card">
       <div class="coupon-result-badge">COUPON ATTIVO</div>
-      <div class="coupon-result-perc">-{{ couponAcquistato.percentuale }}%</div>
+      <div class="coupon-result-perc">
+        <span *ngIf="couponAcquistato.tipo === 'percentuale'">-{{ couponAcquistato.valore }}%</span>
+        <span *ngIf="couponAcquistato.tipo === 'fisso'">-{{ couponAcquistato.valore | currency:'EUR' }}</span>
+      </div>
       <div class="coupon-result-codice">
         <span class="coupon-result-label">Codice:</span>
         <strong>{{ couponAcquistato.codice }}</strong>
@@ -58,9 +61,9 @@
         <div class="preset-card"
              *ngFor="let p of presetCoupon"
              [class.preset-locked]="puntiFedelta < p.costoInPunti"
-             [style.--preset-color]="getPresetColor(p.percentuale)">
+             [style.--preset-color]="getPresetColor(p.valore)">
 
-          <div class="preset-perc">-{{ p.percentuale }}%</div>
+          <div class="preset-perc">-{{ p.valore }}%</div>
           <div class="preset-desc">{{ p.descrizione }}</div>
 
           <div class="preset-costo">
@@ -75,12 +78,12 @@
           </div>
 
           <button class="preset-btn"
-                  [disabled]="puntiFedelta < p.costoInPunti || isAcquistandoPreset(p.percentuale)"
+                  [disabled]="puntiFedelta < p.costoInPunti || isAcquistandoPreset(p.valore)"
                   (click)="acquistaPreset(p)">
-            <span *ngIf="!isAcquistandoPreset(p.percentuale)">
+            <span *ngIf="!isAcquistandoPreset(p.valore)">
               <i class="bi bi-lightning-charge-fill"></i> Ottieni codice
             </span>
-            <span *ngIf="isAcquistandoPreset(p.percentuale)">
+            <span *ngIf="isAcquistandoPreset(p.valore)">
               <i class="bi bi-arrow-repeat spin"></i> Generazione…
             </span>
           </button>
@@ -89,82 +92,51 @@
     </div>
 
     <!-- ══ COUPON DAL CATALOGO DB ══ -->
-    <div class="preset-section mt-4">
-    <div *ngIf="catalogoCoupon.length > 0 || couponPeriodici.length > 0">
-      <div class="fedelta-section-header">
-        <h2><i class="bi bi-gem"></i> Coupon Speciali</h2>
-        <p>Offerte a tempo limitato e sconti unici, creati apposta per te.</p>
+    <div *ngIf="catalogoCoupon.length > 0" class="mt-4">
+      <div class="preset-section-title">
+        <i class="bi bi-collection-fill"></i> Altri coupon dal catalogo
       </div>
 
-      <!-- Sottosezione: Coupon Periodici (gratuiti) -->
-      <div *ngIf="couponPeriodici.length > 0" class="mb-5">
-        <div class="preset-section-title">
-          <i class="bi bi-calendar-event-fill"></i> Coupon Periodici
-        </div>
-        <p class="preset-section-sub">Questi coupon sono gratuiti e pronti per essere usati. Copia il codice e applicalo al checkout!</p>
-        <div class="coupon-grid">
-          <div class="coupon-card coupon-card--periodico" *ngFor="let coupon of couponPeriodici">
-            <div class="coupon-ribbon">
-              -{{ coupon.valore }}{{ coupon.tipo === 'percentuale' ? '%' : '€' }}
-            </div>
-            <div class="coupon-card-body">
-              <div class="coupon-icon"><i class="bi bi-tag-fill"></i></div>
-              <div class="coupon-titolo">{{ coupon.codice }}</div>
-              <div class="coupon-desc">{{ coupon.descrizione }}</div>
-              <div class="coupon-costo coupon-costo--gratis">
-                <i class="bi bi-gift-fill"></i> Gratis
-              </div>
-            </div>
-            <button class="coupon-btn coupon-btn--copy" (click)="copiaCodice(coupon.codice)">
-              <i class="bi bi-clipboard-check-fill"></i> Copia codice
-            </button>
+      <div class="fedelta-loading" *ngIf="caricandoCoupon">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="coupon-grid" *ngIf="!caricandoCoupon">
+        <div class="coupon-card" *ngFor="let coupon of catalogoCoupon"
+             [class.non-disponibile]="puntiFedelta < coupon.costoInPunti">
+
+          <div class="coupon-ribbon">
+            <span *ngIf="coupon.tipo === 'percentuale'">-{{ coupon.valore }}%</span>
+            <span *ngIf="coupon.tipo === 'fisso'">-{{ coupon.valore | currency:'EUR' }}</span>
           </div>
-        </div>
-      </div>
 
-      <!-- Sottosezione: Coupon Fedeltà (a pagamento con punti) -->
-      <div *ngIf="catalogoCoupon.length > 0">
-        <div class="preset-section-title">
-          <i class="bi bi-trophy-fill"></i> Coupon Fedeltà
-        </div>
-        <p class="preset-section-sub">Usa i tuoi punti per riscattare questi sconti esclusivi.</p>
+          <div class="coupon-card-body">
+            <div class="coupon-icon"><i class="bi bi-tag-fill"></i></div>
+            <div class="coupon-titolo">
+              <span *ngIf="coupon.tipo === 'percentuale'">Sconto {{ coupon.valore }}%</span>
+              <span *ngIf="coupon.tipo === 'fisso'">Sconto di {{ coupon.valore | currency:'EUR' }}</span>
+            </div>
+            <div class="coupon-desc">{{ coupon.descrizione }}</div>
 
-        <div class="fedelta-loading" *ngIf="caricandoCoupon">
-          <div class="spinner"></div>
-        </div>
-
-        <div class="coupon-grid" *ngIf="!caricandoCoupon">
-          <div class="coupon-card" *ngFor="let coupon of catalogoCoupon"
-               [class.non-disponibile]="puntiFedelta < coupon.costoInPunti">
-
-            <div class="coupon-ribbon">-{{ coupon.percentuale }}%</div>
-
-            <div class="coupon-card-body">
-              <div class="coupon-icon"><i class="bi bi-tag-fill"></i></div>
-              <div class="coupon-titolo">Sconto {{ coupon.percentuale }}%</div>
-              <div class="coupon-desc">{{ coupon.descrizione }}</div>
-
-              <div class="coupon-costo">
-                <i class="bi bi-trophy"></i> {{ coupon.costoInPunti }} punti
-              </div>
-
-              <div class="coupon-disponibilita" *ngIf="puntiFedelta >= coupon.costoInPunti">
-                <i class="bi bi-check-circle"></i> Disponibile
-              </div>
-              <div class="coupon-mancano" *ngIf="puntiFedelta < coupon.costoInPunti">
-                <i class="bi bi-lock"></i> Mancano {{ coupon.costoInPunti - puntiFedelta }} pt
-              </div>
+            <div class="coupon-costo">
+              <i class="bi bi-trophy"></i> {{ coupon.costoInPunti }} punti
             </div>
 
-            <button class="coupon-btn"
-                    [disabled]="puntiFedelta < coupon.costoInPunti"
-                    (click)="acquistaCoupon(coupon)">
-              <i class="bi bi-lightning-charge-fill"></i> Riscatta
-            </button>
+            <div class="coupon-disponibilita" *ngIf="puntiFedelta >= coupon.costoInPunti">
+              <i class="bi bi-check-circle"></i> Disponibile
+            </div>
+            <div class="coupon-mancano" *ngIf="puntiFedelta < coupon.costoInPunti">
+              <i class="bi bi-lock"></i> Mancano {{ coupon.costoInPunti - puntiFedelta }} pt
+            </div>
           </div>
+
+          <button class="coupon-btn"
+                  [disabled]="puntiFedelta < coupon.costoInPunti"
+                  (click)="acquistaCoupon(coupon)">
+            <i class="bi bi-lightning-charge-fill"></i> Riscatta
+          </button>
         </div>
       </div>
-    </div>
     </div>
   </div>
 

@@ -78,7 +78,8 @@
                 <th scope="col" style="width:130px">Utilizzi</th>
                 <th scope="col" style="width:110px">Scadenza</th>
                 <th scope="col" style="width:90px">Stato</th>
-                <th scope="col" class="text-end" style="width:170px">Azioni</th>
+                <th scope="col" style="width:110px">Costo Punti</th>
+                <th scope="col" class="text-end" style="width:120px">Azioni</th>
               </tr>
             </thead>
             <tbody>
@@ -143,6 +144,13 @@
                     <span class="badge rounded-pill {{ getBadgeStato(c).classe }}">
                       {{ getBadgeStato(c).testo }}
                     </span>
+                </td>
+                <td>
+                  @if (c.costo_punti > 0) {
+                    <span class="badge bg-warning text-dark"><i class="bi bi-trophy-fill me-1"></i>{{ c.costo_punti }}</span>
+                  } @else {
+                    <span class="text-muted small">—</span>
+                  }
                   </td>
 
                   <td class="text-end">
@@ -307,6 +315,19 @@
                   min="1"
                   placeholder="Illimitati">
               </div>
+            </div>
+
+            <!-- Costo in Punti -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Costo in Punti Fedeltà <span class="text-muted small">(opzionale)</span></label>
+              <input
+                type="number"
+                class="form-control"
+                name="costoInPunti"
+                [(ngModel)]="nuovoCoupon.costoInPunti"
+                min="0"
+                placeholder="es. 50">
+              <div class="form-text">Se > 0, il coupon apparirà nello Shop Fedeltà.</div>
             </div>
 
             <!-- Anteprima coupon -->
@@ -481,6 +502,19 @@
                   min="1"
                   placeholder="Illimitati">
               </div>
+            </div>
+
+            <!-- Costo in Punti (Modifica) -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Costo in Punti Fedeltà <span class="text-muted small">(opzionale)</span></label>
+              <input
+                type="number"
+                class="form-control"
+                name="edit_costoInPunti"
+                [(ngModel)]="couponInModifica.costoInPunti"
+                min="0"
+                placeholder="Nessuno">
+              <div class="form-text">Se > 0, il coupon apparirà nello Shop Fedeltà.</div>
             </div>
 
             <!-- Utilizzi attuali (sola lettura) -->

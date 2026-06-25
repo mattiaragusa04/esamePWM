@@ -498,3 +498,26 @@ body.theme-dark .home-cat-desc { color: #94a3b8; /* TODO */ }
   line-height: 1.6;
   margin: 0;
 }
+
+  /* Stile per la card che contiene il badge, per ritagliare il nastro */
+  .product-card {
+    overflow: hidden;
+  }
+
+  /* Stile per il badge a nastro nell'angolo */
+  .discount-corner-badge {
+    position: absolute;
+    top: 22px;
+    left: -40px;
+    transform: rotate(-45deg);
+    width: 160px;
+    background-color: #e53935; /* Un rosso più vibrante e moderno */
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    padding: 5px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10; /* Assicura che sia sopra l'immagine */
+    letter-spacing: 0.5px;
+  }

@@ -33,26 +33,26 @@ const Coupon = {
     });
   },
 
-  create: ({ codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi }) => {
+  create: ({ codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, costo_punti }) => {
     return new Promise((resolve, reject) => {
       db.run(
-        `INSERT INTO coupon (codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, utilizzi_attuali, attivo)
-         VALUES (?, ?, ?, ?, ?, ?, 0, 1)`,
-        [codice.toUpperCase().trim(), tipo, valore, descrizione || null, data_scadenza || null, utilizzi_massimi || null],
+        `INSERT INTO coupon (codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
+         VALUES (?, ?, ?, ?, ?, ?, 0, 1, ?)`,
+        [codice.toUpperCase().trim(), tipo, valore, descrizione || null, data_scadenza || null, utilizzi_massimi || null, costo_punti || null],
         function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
       );
     });
   },
 
-  update: (id, { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi }) => {
+  update: (id, { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, costo_punti }) => {
     return new Promise((resolve, reject) => {
       db.run(
         `UPDATE coupon
          SET codice = ?, tipo = ?, valore = ?, descrizione = ?,
-             data_scadenza = ?, utilizzi_massimi = ?
+             data_scadenza = ?, utilizzi_massimi = ?, costo_punti = ?
          WHERE id = ?`,
-        [codice, tipo, valore, descrizione || null, data_scadenza || null,
-         utilizzi_massimi || null, id],
+        [codice, tipo, valore, descrizione || null, data_scadenza || null, utilizzi_massimi || null,
+         costo_punti === undefined ? null : costo_punti, id],
         function (err) { if (err) reject(err); else resolve({ changes: this.changes }); }
       );
     });
@@ -78,14 +78,14 @@ const Coupon = {
     });
   },
 
-  createGenerato: ({ codice, valore, descrizione, scadenzaStr }) => {
+  createGenerato: ({ codice, tipo, valore, descrizione, scadenzaStr }) => {
     return new Promise((resolve, reject) => {
       db.run(
         `INSERT INTO coupon
            (codice, tipo, valore, descrizione, data_scadenza,
             utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
-         VALUES (?, 'percentuale', ?, ?, ?, 1, 0, 1, 0)`,
-        [codice, valore, descrizione, scadenzaStr],
+         VALUES (?, ?, ?, ?, ?, 1, 0, 1, 0)`,
+        [codice, tipo, valore, descrizione, scadenzaStr],
         function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
       );
     });
@@ -104,7 +104,7 @@ const Coupon = {
   findCatalogoFedelta: () => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT id, codice, tipo, valore AS percentuale, descrizione,
+        `SELECT id, codice, tipo, valore, descrizione,
                 data_scadenza, utilizzi_massimi, utilizzi_attuali,
                 costo_punti AS costoInPunti, disponibile
          FROM coupon
@@ -139,15 +139,19 @@ const Coupon = {
     });
   },
 
-  createFedelta: ({ codice, percentuale, costoInPunti, descrizione, scadenza, utilizzi_massimi }) => {
+  createFedelta: ({ codice, tipo, valore, costoInPunti, descrizione, scadenza, utilizzi_massimi }) => {
     return new Promise((resolve, reject) => {
+      const defaultDesc = tipo === 'percentuale'
+        ? `Sconto del ${valore}% — coupon fedeltà`
+        : `Sconto di ${valore}€ — coupon fedeltà`;
+
       db.run(
         `INSERT INTO coupon
            (codice, tipo, valore, descrizione, data_scadenza,
             utilizzi_massimi, utilizzi_attuali, attivo, costo_punti)
-         VALUES (?, 'percentuale', ?, ?, ?, ?, 0, 1, ?)`,
-        [codice.trim().toUpperCase(), Number(percentuale),
-         descrizione || `Sconto del ${percentuale}% — coupon fedeltà`,
+         VALUES (?, ?, ?, ?, ?, ?, 0, 1, ?)`,
+        [codice.trim().toUpperCase(), tipo, Number(valore),
+         descrizione || defaultDesc,
          scadenza || null, utilizzi_massimi || null, Number(costoInPunti)],
         function (err) { if (err) reject(err); else resolve({ id: this.lastID }); }
       );

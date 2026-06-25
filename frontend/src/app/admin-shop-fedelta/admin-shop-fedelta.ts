@@ -12,7 +12,7 @@ interface CouponFedelta {
   utilizzi_massimi: number;
   utilizzi_attuali: number;
   attivo: number;
-  costo_punti: number;
+  costoInPunti: number;
 }
 
 interface ProdottoUsato {
@@ -50,7 +50,7 @@ export class AdminShopFedelta implements OnInit {
 
   nuovoCoupon = {
     codice: '',
-    tipo: 'percentuale' as 'percentuale' | 'fisso',
+    tipo: 'percentuale',
     valore: 10,
     costoInPunti: 50,
     descrizione: '',
@@ -210,7 +210,7 @@ export class AdminShopFedelta implements OnInit {
     const payload = {
       ...this.couponInModifica,
       valore: Number(this.couponInModifica.valore),
-      costo_punti: Number(this.couponInModifica.costo_punti),
+      costoInPunti: Number(this.couponInModifica.costoInPunti),
       utilizzi_massimi: this.couponInModifica.utilizzi_massimi ? Number(this.couponInModifica.utilizzi_massimi) : null
     };
 
