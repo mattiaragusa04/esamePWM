@@ -15,14 +15,16 @@ export class Login {
   submitted: boolean = false;
   isLoading: boolean = false;
   errorMessage: string = '';
+  email: string = '';
+  password: string = '';
   loginForm: FormGroup;
   mostraPassword = false;
 
-  // ── Modale recupero password
+  // ── Modale recupero password ──────────────────────────────────────────────
   mostraModaleReset = false;
   stepReset: 'email' | 'nuova-password' = 'email';
   emailReset = '';
-  codiceReset = '';       // codice numerico a 6 cifre
+  tokenReset = '';
   nuovaPassword = '';
   confermaPassword = '';
   loadingReset = false;
@@ -46,7 +48,11 @@ export class Login {
   async onSubmit() {
     this.submitted = true;
     this.errorMessage = '';
-    if (!this.loginForm.valid) return;
+
+    if (!this.loginForm.valid) {
+      return;
+    }
+
     this.isLoading = true;
     try {
       const response = await fetch(`${this.API_AUTH}/login`, {
@@ -56,10 +62,14 @@ export class Login {
       });
       if (response.ok) {
         const data = await response.json();
+        console.log('Login riuscito:', data);
+
         if (data.token) localStorage.setItem('token', data.token);
         const userToSave = data.utente || data;
         localStorage.setItem('user', JSON.stringify(userToSave));
+
         this.toast.success('Login effettuato con successo!');
+
         if (userToSave.ruolo === 'admin') {
           this.router.navigate(['/admin']);
         } else {
@@ -78,12 +88,13 @@ export class Login {
     }
   }
 
-  // ── Modale
+  // ── Modale recupero password ──────────────────────────────────────────────
+
   apriModaleReset(): void {
     this.mostraModaleReset = true;
     this.stepReset = 'email';
     this.emailReset = '';
-    this.codiceReset = '';
+    this.tokenReset = '';
     this.nuovaPassword = '';
     this.confermaPassword = '';
     this.erroreReset = '';
@@ -125,9 +136,8 @@ export class Login {
 
   async aggiornaPassword(): Promise<void> {
     this.erroreReset = '';
-    const codice = this.codiceReset.trim();
-    if (!codice || codice.length !== 6 || !/^\d{6}$/.test(codice)) {
-      this.erroreReset = 'Inserisci il codice a 6 cifre ricevuto via email.';
+    if (!this.tokenReset.trim()) {
+      this.erroreReset = 'Inserisci il codice ricevuto via email.';
       return;
     }
     if (this.nuovaPassword.length < 6) {
@@ -143,21 +153,17 @@ export class Login {
       const res = await fetch(`${this.API_AUTH}/update-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: this.emailReset,
-          code: codice,
-          newPassword: this.nuovaPassword
-        })
+        body: JSON.stringify({ token: this.tokenReset.trim(), newPassword: this.nuovaPassword })
       });
       if (res.ok) {
         this.toast.success('Password aggiornata! Ora puoi accedere con le nuove credenziali.');
         this.chiudiModaleReset();
       } else {
         const data = await res.json();
-        this.erroreReset = data.message || 'Il codice non \u00e8 valido o \u00e8 scaduto.';
+        this.erroreReset = data.message || 'Il codice non è valido o è scaduto.';
       }
     } catch (e) {
-      console.error('[Reset] Errore di rete:', e);
+      console.error('[Reset] Errore di rete aggiorna password:', e);
       this.erroreReset = 'Errore di connessione al server.';
     } finally {
       this.loadingReset = false;

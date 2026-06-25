@@ -51,28 +51,26 @@
   </div>
 </div>
 
-<!-- MODALE RECUPERO PASSWORD -->
+<!-- ══════════ MODALE RECUPERO PASSWORD ══════════ -->
 <div class="fedelta-overlay" *ngIf="mostraModaleReset" (click)="chiudiModaleReset()">
   <div class="fedelta-modal" (click)="$event.stopPropagation()">
 
     <div class="modal-icon"><i class="bi bi-lock-fill"></i></div>
     <h3>Recupera password</h3>
 
-    <!-- STEP 1: email -->
+    <!-- STEP 1: inserimento email -->
     <ng-container *ngIf="stepReset === 'email'">
-      <p style="font-size:.9rem;color:#6c757d;margin-bottom:1rem;">
-        Inserisci la tua email: ti invieremo un <strong>codice a 6 cifre</strong> per reimpostare la password.
-      </p>
+      <p style="font-size:.9rem;color:#aaa;margin-bottom:1rem;">Inserisci la tua email: ti invieremo un codice per reimpostare la password.</p>
 
-      <div style="margin-bottom:1rem;text-align:left;">
-        <label style="font-size:.85rem;color:#495057;display:block;margin-bottom:.35rem;font-weight:600;">Email</label>
+      <div style="margin-bottom:1rem;">
+        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Email</label>
         <input type="email"
                [(ngModel)]="emailReset"
                placeholder="es. mario.rossi@email.com"
-               class="form-control rounded-pill bg-light border-0 px-4" />
+               style="width:100%;padding:.55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.95rem;outline:none;" />
       </div>
 
-      <div *ngIf="erroreReset" style="color:#dc3545;font-size:.85rem;margin-bottom:.75rem;text-align:left;">
+      <div *ngIf="erroreReset" style="color:#f87171;font-size:.85rem;margin-bottom:.75rem;">
         <i class="bi bi-exclamation-circle"></i> {{ erroreReset }}
       </div>
 
@@ -85,63 +83,50 @@
       </div>
     </ng-container>
 
-    <!-- STEP 2: codice + nuova password -->
+    <!-- STEP 2: token + nuova password -->
     <ng-container *ngIf="stepReset === 'nuova-password'">
-      <p style="font-size:.9rem;color:#6c757d;margin-bottom:1rem;">
-        Ti abbiamo inviato un codice a <strong>{{ emailReset }}</strong>.<br>
+      <p style="font-size:.9rem;color:#aaa;margin-bottom:1rem;">
+        Ti abbiamo inviato un codice a <strong style="color:#eee;">{{ emailReset }}</strong>.<br>
         Inseriscilo qui sotto insieme alla tua nuova password.
       </p>
 
-      <!-- Codice numerico -->
-      <div style="margin-bottom:.85rem;text-align:left;">
-        <label style="font-size:.85rem;color:#495057;display:block;margin-bottom:.35rem;font-weight:600;">Codice a 6 cifre</label>
+      <div style="margin-bottom:.85rem;">
+        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Codice ricevuto via email</label>
         <input type="text"
-               [(ngModel)]="codiceReset"
-               maxlength="6"
-               placeholder="es. 482915"
-               class="form-control rounded-pill bg-light border-0 px-4"
-               style="letter-spacing:4px;font-size:1.1rem;font-weight:700;text-align:center;" />
+               [(ngModel)]="tokenReset"
+               placeholder="Incolla il codice dall'email"
+               style="width:100%;padding:.55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.9rem;outline:none;" />
       </div>
 
-      <!-- Nuova password -->
-      <div style="margin-bottom:.85rem;text-align:left;">
-        <label style="font-size:.85rem;color:#495057;display:block;margin-bottom:.35rem;font-weight:600;">Nuova password</label>
-        <div class="input-group rounded-pill bg-light">
+      <div style="margin-bottom:.85rem;">
+        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Nuova password</label>
+        <div style="position:relative;">
           <input [type]="mostraNuovaPassword ? 'text' : 'password'"
                  [(ngModel)]="nuovaPassword"
                  placeholder="Minimo 6 caratteri"
-                 class="form-control bg-transparent border-0 px-4"
-                 style="border-radius: 50rem 0 0 50rem;" />
-          <div class="input-group-append">
-            <button type="button" (click)="mostraNuovaPassword = !mostraNuovaPassword"
-                    class="btn btn-light bg-transparent border-0 text-muted pr-3"
-                    style="border-radius: 0 50rem 50rem 0;">
-              <i class="bi" [ngClass]="mostraNuovaPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
-            </button>
-          </div>
+                 style="width:100%;padding:.55rem 2.5rem .55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.95rem;outline:none;" />
+          <button type="button" (click)="mostraNuovaPassword = !mostraNuovaPassword"
+                  style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;">
+            <i class="bi" [ngClass]="mostraNuovaPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
         </div>
       </div>
 
-      <!-- Conferma password -->
-      <div style="margin-bottom:.85rem;text-align:left;">
-        <label style="font-size:.85rem;color:#495057;display:block;margin-bottom:.35rem;font-weight:600;">Conferma nuova password</label>
-        <div class="input-group rounded-pill bg-light">
+      <div style="margin-bottom:.85rem;">
+        <label style="font-size:.85rem;color:#ccc;display:block;margin-bottom:.35rem;">Conferma nuova password</label>
+        <div style="position:relative;">
           <input [type]="mostraConfermaPassword ? 'text' : 'password'"
                  [(ngModel)]="confermaPassword"
                  placeholder="Ripeti la nuova password"
-                 class="form-control bg-transparent border-0 px-4"
-                 style="border-radius: 50rem 0 0 50rem;" />
-          <div class="input-group-append">
-            <button type="button" (click)="mostraConfermaPassword = !mostraConfermaPassword"
-                    class="btn btn-light bg-transparent border-0 text-muted pr-3"
-                    style="border-radius: 0 50rem 50rem 0;">
-              <i class="bi" [ngClass]="mostraConfermaPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
-            </button>
-          </div>
+                 style="width:100%;padding:.55rem 2.5rem .55rem .9rem;border-radius:.5rem;border:1px solid #444;background:#1e1e1e;color:#eee;font-size:.95rem;outline:none;" />
+          <button type="button" (click)="mostraConfermaPassword = !mostraConfermaPassword"
+                  style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;">
+            <i class="bi" [ngClass]="mostraConfermaPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
         </div>
       </div>
 
-      <div *ngIf="erroreReset" style="color:#dc3545;font-size:.85rem;margin-bottom:.75rem;text-align:left;">
+      <div *ngIf="erroreReset" style="color:#f87171;font-size:.85rem;margin-bottom:.75rem;">
         <i class="bi bi-exclamation-circle"></i> {{ erroreReset }}
       </div>
 
