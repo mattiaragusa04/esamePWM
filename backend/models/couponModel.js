@@ -178,7 +178,6 @@ const Coupon = {
     });
   },
 
-  // FIX: rimosso p.usato (colonna inesistente) — il filtro ora usa solo p.condizione = 'Usato'
   findProdottiUsati: () => {
     return new Promise((resolve, reject) => {
       db.all(
@@ -220,7 +219,7 @@ const Coupon = {
     });
   },
 
-  // FIX: rimosso p.usato (colonna inesistente) — il filtro ora usa solo p.condizione = 'Usato'
+
   findAllProdottiUsatiAdmin: () => {
     return new Promise((resolve, reject) => {
       db.all(
