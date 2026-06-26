@@ -47,22 +47,7 @@ const CartaDiCredito = {
             });
         });
     },
-    update : (cartaDiCredito) => {
-        return new Promise((res, rej) => {
-            const query = `UPDATE carta_di_credito SET utente_id = ?, numero_carta = ?, nome_titolare = ?, data_scadenza = ?, cvv = ? WHERE id = ?`;
-            db.run(query, [
-                cartaDiCredito.utente_id,
-                cartaDiCredito.numero_carta,
-                cartaDiCredito.nome_titolare,
-                cartaDiCredito.data_scadenza,
-                cartaDiCredito.cvv,
-                cartaDiCredito.id
-            ], function(err) {
-                if (err) rej(err);
-                else res({ id: this.lastID, ...cartaDiCredito });
-            });
-        });
-    },
+
 
     delete : (id) => {
         return new Promise((res, rej) => {

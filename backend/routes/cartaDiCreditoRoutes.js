@@ -13,8 +13,6 @@ router.get('/utente', cartaDiCreditoController.getCarteByUserId);
 
 router.get('/:id', cartaDiCreditoController.getCartaById);
 
-router.put('/:id', cartaDiCreditoController.updateCarta);
-
 router.delete('/:id', cartaDiCreditoController.deleteCarta);
 
 router.post('/create', cartaDiCreditoController.createCarta);

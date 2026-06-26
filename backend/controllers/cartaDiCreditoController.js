@@ -53,17 +53,7 @@ exports.createCarta = async (req, res) => {
     }
 };
 
-exports.updateCarta = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const cartId = req.params.id;
-        const cartaData = { ...req.body, id: cartId, utente_id: userId };
-        const updatedCart = await cartaDiCredito.update(cartaData);
-        res.json(updatedCart);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
+
 
 exports.deleteCarta = async (req, res) => {
     try {
