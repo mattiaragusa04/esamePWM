@@ -132,7 +132,7 @@ const Coupon = {
   findAllFedelta: () => {
     return new Promise((resolve, reject) => {
       db.all(
-        `SELECT * FROM coupon WHERE costo_punti > 0 ORDER BY id DESC`,
+        `SELECT *, costo_punti AS costoInPunti FROM coupon WHERE costo_punti > 0 ORDER BY id DESC`,
         [],
         (err, rows) => { if (err) reject(err); else resolve(rows); }
       );

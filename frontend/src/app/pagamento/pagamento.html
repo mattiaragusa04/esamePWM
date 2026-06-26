@@ -1,6 +1,6 @@
 <div class="pag-page">
 
-  <!-- ─── HERO ──────────────────────────────────────────────────── -->
+
   <div class="pag-hero">
     <div class="pag-hero-orb orb-a"></div>
     <div class="pag-hero-orb orb-b"></div>
@@ -17,14 +17,14 @@
     </div>
   </div>
 
-  <!-- ─── LAYOUT PRINCIPALE ────────────────────────────────── -->
+
   <form [formGroup]="checkoutForm" (ngSubmit)="confermaEPaga()" novalidate>
     <div class="pag-layout">
 
-      <!-- ═══ COLONNA SINISTRA ══════════════════════════════════════════ -->
+
       <div class="pag-col-main">
 
-        <!-- ── Indirizzo di spedizione ─────────────────────────────────── -->
+
         <div class="pag-card">
           <div class="pag-card-header">
             <div class="pag-card-icon"><i class="bi bi-geo-alt-fill"></i></div>
@@ -114,7 +114,7 @@
           </div>
         </div>
 
-        <!-- ── Metodo di pagamento ──────────────────────────────────────── -->
+
         <div class="pag-card">
           <div class="pag-card-header">
             <div class="pag-card-icon"><i class="bi bi-credit-card-fill"></i></div>
@@ -133,7 +133,7 @@
 
           <div formGroupName="pagamento" *ngIf="selectedCartaId == 0">
 
-            <!-- Preview carta fisica -->
+  
             <div class="pag-card-preview">
               <div class="pag-card-preview-top">
                 <span class="pag-card-type-badge">
@@ -160,7 +160,7 @@
               </div>
             </div>
 
-            <!-- Campi carta -->
+  
             <div class="pag-fields-grid">
               <div class="pag-field pag-field--full">
                 <label class="pag-label">Nome sulla carta</label>
@@ -232,9 +232,7 @@
           </div>
         </div>
 
-      </div><!-- fine colonna sinistra -->
-
-      <!-- ═══ COLONNA DESTRA: RIEPILOGO ════════════════════════════════ -->
+      </div>
       <div class="pag-col-side">
         <div class="pag-riepilogo-sticky">
           <div class="pag-card pag-card--riepilogo">
@@ -245,7 +243,7 @@
 
             <p class="pag-riepilogo-sub">Completa i dati per procedere al pagamento.</p>
 
-            <!-- Coupon -->
+
             <div class="pag-coupon-wrap">
               <label class="pag-label"><i class="bi bi-ticket-perforated-fill me-1" style="color:#f86ded"></i>Codice sconto</label>
               @if (!couponApplicato) {
@@ -286,7 +284,7 @@
 
             <div class="pag-divider"></div>
 
-            <!-- Totali -->
+
             <div class="pag-totali">
               <div class="pag-totale-row">
                 <span class="pag-totale-label">Subtotale</span>
@@ -305,7 +303,7 @@
               </div>
             </div>
 
-            <!-- CTA Paga -->
+
             <button class="pag-btn-paga" type="submit" [disabled]="isProcessing || isLoading">
               <span *ngIf="!isProcessing">
                 <i class="bi bi-lock-fill me-2"></i>Conferma e Paga
