@@ -51,8 +51,8 @@ export class AdminShopFedelta implements OnInit {
   nuovoCoupon = {
     codice: '',
     tipo: 'percentuale',
-    valore: 10,
-    costoInPunti: 50,
+    valore: 60,
+    costoInPunti: 120,
     descrizione: '',
     scadenza: '',
     utilizzi_massimi: null
@@ -243,8 +243,8 @@ export class AdminShopFedelta implements OnInit {
     this.nuovoCoupon = {
       codice: '',
       tipo: 'percentuale',
-      valore: 10,
-      costoInPunti: 50,
+      valore: 60,
+      costoInPunti: 120,
       descrizione: '',
       scadenza: d.toISOString().split('T')[0],
       utilizzi_massimi: null
