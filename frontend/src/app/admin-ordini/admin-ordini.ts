@@ -45,7 +45,7 @@ export class AdminOrdini implements OnInit {
 
       if (response.ok) {
         this.ordini = await response.json();
-        this.ordini.sort((a, b) => b.id - a.id); // Mostra i più recenti in alto
+        this.ordini.sort((a, b) => b.id - a.id); 
       } else {
         const errorData = await response.json();
         this.errorMessage = errorData.message || 'Errore nel caricamento degli ordini';
@@ -74,7 +74,6 @@ export class AdminOrdini implements OnInit {
       });
 
       if (response.ok) {
-        // Aggiorna lo stato localmente
         const ordine = this.ordini.find(o => o.id === ordineId);
         if (ordine) {
           ordine.statoOrdine = nuovoStato;

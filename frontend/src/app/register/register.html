@@ -1,5 +1,5 @@
 <style>
-  /* Animazione fluida per il menu a tendina */
+
   .dropdown .dropdown-menu {
     display: block;
     visibility: hidden;
@@ -12,7 +12,7 @@
     opacity: 1;
     transform: translateY(0);
   }
-  /* Stile per far sembrare il bottone un input */
+
   .btn-custom-select {
     text-align: left;
     display: flex;
@@ -71,48 +71,6 @@
               </div>
             </div>
           </div>
-          <!--
-          <h5 class="mb-3 mt-4 text-info border-bottom pb-2">Dati Indirizzo</h5>
-
-          <div class="form-group">
-            <label class="font-weight-bold text-muted">Tipo Indirizzo</label>
-            <div class="dropdown">
-              <button class="btn btn-custom-select form-control rounded-pill bg-light border-0 px-4 w-100 text-muted shadow-sm" [class.is-invalid]="submitted && registerForm.get('tipoIndirizzo')?.invalid" type="button" id="dropdownTipoIndirizzo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {{ tipoSelezionato || 'Seleziona il tipo...' }}
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                </svg>
-              </button>
-              <div class="dropdown-menu w-100 border-0 shadow mt-2 p-2" aria-labelledby="dropdownTipoIndirizzo" style="border-radius: 1rem;">
-                <a class="dropdown-item rounded py-2" href="javascript:void(0)" (click)="impostaTipoIndirizzo('Residenza')">Residenza</a>
-                <a class="dropdown-item rounded py-2" href="javascript:void(0)" (click)="impostaTipoIndirizzo('Fatturazione')">Fatturazione</a>
-                <a class="dropdown-item rounded py-2" href="javascript:void(0)" (click)="impostaTipoIndirizzo('Spedizione')">Spedizione</a>
-              </div>
-            </div>
-          </div>
-          
-          <div class="form-row">
-            <div class="form-group col-md-9">
-              <label for="via" class="font-weight-bold text-muted">Via / Piazza</label>
-              <input type="text" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('via')?.invalid" id="via" formControlName="via" placeholder="Es. Via Roma">
-            </div>
-            <div class="form-group col-md-3">
-              <label for="numeroCivico" class="font-weight-bold text-muted">N° Civico</label>
-              <input type="text" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('numeroCivico')?.invalid" id="numeroCivico" formControlName="numeroCivico" placeholder="Es. 10">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group col-md-8">
-              <label for="paese" class="font-weight-bold text-muted">Paese / Città</label>
-              <input type="text" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('paese')?.invalid" id="paese" formControlName="paese" placeholder="Es. Milano">
-            </div>
-            <div class="form-group col-md-4">
-              <label for="provincia" class="font-weight-bold text-muted">Provincia</label>
-              <input type="text" class="form-control rounded-pill bg-light border-0 px-4" [class.is-invalid]="submitted && registerForm.get('provincia')?.invalid" id="provincia" formControlName="provincia" placeholder="Es. MI">
-            </div>
-          </div>
-          -->
           <button type="submit" class="btn btn-info btn-block rounded-pill mt-5 py-2 font-weight-bold text-dark shadow">Registrati</button>
         <div class="text-center mt-3">
             <small class="text-muted">Hai già un account? <a routerLink="/login" routerLinkActive="active" class="text-info font-weight-bold">Accedi</a></small>

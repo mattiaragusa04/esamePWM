@@ -50,16 +50,16 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
   selectedFiles: File[] = [];
   imagePreviews: string[] = [];
 
-  // Scelta compenso
+
   tipoCompenso: 'euro' | 'punti' = 'euro';
-  // Punti calcolati: Math.round(prezzo_stimato / 5) + 5
+
   puntiFedeltatOfferti: number = 0;
-  // Indica se l'utente ha almeno una carta salvata
+
   haCartaDiCredito: boolean = false;
   isLoadingCarte: boolean = false;
 
   allConditionCategories: { [key: string]: ConditionCategory[] } = {
-    // --- Prodotti NUOVI / SIGILLATI ---
+
     'Nuovo': [
       {
         name: 'Stato della confezione',
@@ -87,7 +87,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
         selectedValue: 'perfetto'
       }
     ],
-    // --- Prodotti USATI per categoria ---
+
     'Videogiochi': [
       {
         name: 'Condizioni Disco/Cartuccia',
@@ -213,7 +213,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeSub?.unsubscribe();
-    // Revoca gli URL degli oggetti per liberare memoria
+
     this.imagePreviews.forEach(url => URL.revokeObjectURL(url));
   }
 
@@ -238,7 +238,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       this.haCartaDiCredito = false;
     } finally {
       this.isLoadingCarte = false;
-      // Se non ha carta, forza la scelta a 'punti'
+
       if (!this.haCartaDiCredito) {
         this.tipoCompenso = 'punti';
       }
@@ -257,8 +257,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
         const data = await response.json();
         this.prodotto = data;
 
-        // Se il prodotto è nuovo/sigillato usa le sezioni dedicate,
-        // altrimenti usa le sezioni per usato in base alla categoria merceologica.
+
         const condizione    = this.prodotto?.condizione;
         const categoryName  = this.prodotto?.categoria_nome;
 
@@ -309,7 +308,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
     this.estimatedPrice = basePrice * (1 + totalAdjustment);
     this.estimatedPrice = Math.max(0, Math.round(this.estimatedPrice * 2) / 2);
 
-    // Calcola punti: Math.round(prezzo / 5) + 5
+
     this.puntiFedeltatOfferti = Math.round(this.estimatedPrice / 5) + 5;
 
     this.cdr.detectChanges();
@@ -325,7 +324,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
 
     if (currentFilesCount + newFilesCount > maxFiles) {
       this.toast.warning(`Puoi caricare al massimo ${maxFiles} immagini.`);
-      // Resetta l'input per permettere una nuova selezione
+
       (event.target as HTMLInputElement).value = '';
       return;
     }
@@ -339,7 +338,7 @@ export class VendiProdottoDetailComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Resetta l'input per permettere di aggiungere altri file in seguito
+
     (event.target as HTMLInputElement).value = '';
   }
 

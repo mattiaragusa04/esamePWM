@@ -8,10 +8,10 @@ const AuthService = require('../services/authService');
 
 const SECRET = process.env.JWT_SECRET || "supersecretkey";
 
-// ─── Helper: normalizza i campi dell'utente (alias punti_fedelta) ─────────────
+
 const normalizzaUtente = AuthService.normalizzaUtente;
 
-// Email helpers (logica nel service) — esposte per le altre rotte del controller
+
 exports.inviaEmailConferma = AuthService.inviaEmailConferma;
 exports.inviaEmailBenvenuto = AuthService.inviaEmailBenvenuto;
 exports.inviaEmailResetPassword = AuthService.inviaEmailResetPassword;
@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
     const user = await User.findByEmail(email);
     if (!user) return res.status(400).json({ message: "Credenziali non valide" });
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Credenziali non valide" }); // Rimosso securityStamp dal token
+    if (!isMatch) return res.status(400).json({ message: "Credenziali non valide" });
     const token = jwt.sign({ id: user.id, email: user.email, ruolo: user.ruolo, bootId }, SECRET, { expiresIn: "1h" });
     const { password: userPassword, ...safeUser } = user;
     res.json({ token, utente: normalizzaUtente(safeUser) });
@@ -82,10 +82,7 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADMIN: dettaglio completo utente (profilo + indirizzi + carte oscurate + punti)
-// GET /api/auth/:id/dettaglio
-// ─────────────────────────────────────────────────────────────────────────────
+
 exports.getUtenteDettaglio = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -96,7 +93,7 @@ exports.getUtenteDettaglio = async (req, res) => {
     const indirizzi = await Indirizzo.findByUserId(userId);
     const carte = await CartaDiCredito.findByUserId(userId);
 
-    // Oscura numero carta (mostra solo ultimi 4 cifre) e CVV
+
     const carteOscurate = carte.map(c => ({
       id: c.id,
       nome_titolare: c.nome_titolare,
@@ -105,17 +102,12 @@ exports.getUtenteDettaglio = async (req, res) => {
       cvv: '***'
     }));
 
-    // normalizzaUtente aggiunge l'alias punti_fedelta = puntiFedelta
     res.json({ utente: normalizzaUtente(safeUser), indirizzi, carte: carteOscurate });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADMIN: modifica punti fedeltà (delta positivo = aggiungi, negativo = sottrai)
-// PUT /api/auth/:id/punti   body: { delta: number, nota?: string }
-// ─────────────────────────────────────────────────────────────────────────────
 exports.modificaPuntiFedelta = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -131,10 +123,7 @@ exports.modificaPuntiFedelta = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADMIN: invia email reset password per conto dell'utente
-// POST /api/auth/:id/reset-password-admin
-// ─────────────────────────────────────────────────────────────────────────────
+
 exports.inviaResetPasswordAdmin = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -149,10 +138,6 @@ exports.inviaResetPasswordAdmin = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADMIN/OPERATORE: modifica un indirizzo salvato dell'utente
-// PUT /api/auth/indirizzi/:id   body: { tipo, via, numero_civico, provincia, paese, cap }
-// ─────────────────────────────────────────────────────────────────────────────
 exports.aggiornaIndirizzoAdmin = async (req, res) => {
   try {
     const indirizzoId = req.params.id;

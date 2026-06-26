@@ -1,8 +1,4 @@
-/* ============================================================
-   carrello.css — dark mode completo
-   ============================================================ */
 
-/* ---------- Badge stato giacenza ---------- */
 .giacenza-badge {
   display: inline-flex;
   align-items: center;
@@ -50,7 +46,7 @@
   50%       { box-shadow: 0 0 0 6px rgba(220, 53, 69, 0.12); }
 }
 
-/* ---------- Header pagina ---------- */
+
 .carrello-header {
   text-align: center;
   padding: 2rem 0 1.5rem;
@@ -70,7 +66,7 @@
   color: #f86ded;
 }
 
-/* ---------- Card articolo ---------- */
+
 .cart-items-list .card {
   background: #ffffff;
   border: 1px solid rgba(0,0,0,0.08);
@@ -89,7 +85,7 @@
   color: #64748b !important;
 }
 
-/* Badge condizione */
+
 .badge-condizione {
   display: inline-flex;
   align-items: center;
@@ -107,14 +103,14 @@
   border-color: rgba(248,109,237,0.3);
 }
 
-/* FIX: badge USATO — colore ambra coerente con styles.css globale */
+
 .badge-usato {
   background: rgba(234, 179, 8, 0.12);
   color: #a16207;
   border-color: rgba(234, 179, 8, 0.35);
 }
 
-/* Prezzo */
+
 .price-current {
   color: #f86ded;
   font-weight: 700;
@@ -130,7 +126,6 @@
   color: #16a34a;
 }
 
-/* Badge sconto */
 .sconto-badge {
   background: rgba(22,163,74,0.1);
   color: #16a34a;
@@ -141,7 +136,7 @@
   font-weight: 700;
 }
 
-/* Controlli quantità */
+
 .input-group .btn-outline-secondary {
   border-color: rgba(0,0,0,0.15);
   color: #475569;
@@ -162,14 +157,13 @@
   font-weight: 600;
 }
 
-/* Prezzo totale articolo */
 .cart-item-total {
   color: #f86ded;
   font-weight: 700;
   font-size: 1.15rem;
 }
 
-/* Bottone elimina */
+
 .btn-outline-danger {
   color: #ef4444;
   border-color: #ef4444;
@@ -180,12 +174,10 @@
   color: #fff;
 }
 
-/* Bottone svuota tutto */
 .btn-link.text-danger {
   color: #ef4444 !important;
 }
 
-/* ---------- Riepilogo ordine ---------- */
 .riepilogo-card {
   background: #ffffff;
   border: 1px solid rgba(0,0,0,0.08);
@@ -233,7 +225,7 @@
   font-weight: 800;
 }
 
-/* Bottone cassa */
+
 .btn-cassa {
   background: linear-gradient(135deg, #f86ded, #fb7185);
   color: #fff;
@@ -253,7 +245,7 @@
   color: #fff;
 }
 
-/* Pagamenti sicuri */
+
 .pagamenti-sicuri {
   color: #94a3b8;
   font-size: 0.82rem;
@@ -263,7 +255,7 @@
   color: #16a34a;
 }
 
-/* Carrello vuoto */
+
 .carrello-vuoto p {
   color: #64748b;
 }
@@ -277,16 +269,11 @@
   font-weight: 600;
 }
 
-/* ============================================================
-   DARK MODE
-   ============================================================ */
-
-/* Header */
 :host-context(body.theme-dark) .carrello-header h2 {
   color: #f1f5f9;
 }
 
-/* Card articoli */
+
 :host-context(body.theme-dark) .cart-items-list .card {
   background: rgba(30, 41, 59, 0.85);
   border-color: rgba(248,109,237,0.12);
@@ -301,7 +288,7 @@
   color: #94a3b8 !important;
 }
 
-/* Input quantità dark */
+
 :host-context(body.theme-dark) .input-group input[readonly] {
   background: rgba(15, 23, 42, 0.6);
   color: #f1f5f9;
@@ -320,28 +307,27 @@
   color: #f86ded;
 }
 
-/* Badge condizione dark */
+
 :host-context(body.theme-dark) .badge-nuovo {
   background: rgba(248,109,237,0.15);
   color: #f9a8d4;
   border-color: rgba(248,109,237,0.3);
 }
 
-/* FIX dark: badge USATO → ambra luminosa */
+
 :host-context(body.theme-dark) .badge-usato {
   background: rgba(234, 179, 8, 0.18);
   color: #fde047;
   border-color: rgba(234, 179, 8, 0.4);
 }
 
-/* Badge sconto dark */
 :host-context(body.theme-dark) .sconto-badge {
   background: rgba(22,163,74,0.15);
   color: #4ade80;
   border-color: rgba(22,163,74,0.3);
 }
 
-/* Riepilogo dark */
+
 :host-context(body.theme-dark) .riepilogo-card {
   background: rgba(15, 23, 42, 0.85);
   border-color: rgba(248,109,237,0.15);
@@ -372,12 +358,11 @@
   color: #64748b;
 }
 
-/* Carrello vuoto dark */
 :host-context(body.theme-dark) .carrello-vuoto p {
   color: #94a3b8;
 }
 
-/* Giacenza badges dark */
+
 :host-context(body.theme-dark) .giacenza-ok {
   background: rgba(46, 204, 113, 0.18);
   color: #5ee08a;
@@ -403,11 +388,6 @@
 }
 
 
-/* ============================================================
-   DARK MODE — fix Bootstrap classi carrello
-   ============================================================ */
-
-/* Titolo pagina */
 :host-context(body.theme-dark) h2 {
   color: #f1f5f9;
 }
@@ -416,7 +396,6 @@
   color: #f9a8d4 !important;
 }
 
-/* Card Bootstrap */
 :host-context(body.theme-dark) .card {
   background: linear-gradient(160deg, #1e293b, #0f172a) !important;
   border-color: rgba(248,109,237,0.12) !important;
@@ -440,40 +419,40 @@
   color: #cbd5e1;
 }
 
-/* Spinner */
+
 :host-context(body.theme-dark) .spinner-border.text-info {
   color: #f86ded !important;
 }
 
-/* Testo carrello vuoto */
+
 :host-context(body.theme-dark) .text-muted {
   color: #64748b !important;
 }
 
-/* Bottone torna store */
+
 :host-context(body.theme-dark) .btn.btn-info {
   background: linear-gradient(135deg, #f86ded, #fb7185) !important;
   border-color: transparent !important;
   color: #fff !important;
 }
 
-/* Divider riepilogo */
+
 :host-context(body.theme-dark) hr {
   border-color: rgba(248,109,237,0.12);
 }
 
-/* Testo totale riepilogo */
+
 :host-context(body.theme-dark) .card h4 {
   color: #f1f5f9;
   border-bottom-color: rgba(248,109,237,0.12);
 }
 
-/* Fw-bold text prezzo */
+
 :host-context(body.theme-dark) .fw-bold {
   color: #f1f5f9;
 }
 
-/* Prezzo rosa */
+
 :host-context(body.theme-dark) .text-danger {
   color: #f86ded !important;
 }
@@ -483,12 +462,11 @@
   color: #f86ded !important;
 }
 
-/* Bottone svuota tutto */
+
 :host-context(body.theme-dark) .btn-link.text-danger {
   color: #fca5a5 !important;
 }
 
-/* Input quantità Bootstrap */
 :host-context(body.theme-dark) .form-control[readonly] {
   background: rgba(15,23,42,0.6) !important;
   color: #f1f5f9 !important;
@@ -507,7 +485,7 @@
   color: #f86ded !important;
 }
 
-/* Bottone danger (cestino) */
+
 :host-context(body.theme-dark) .btn-outline-danger {
   color: #fca5a5 !important;
   border-color: rgba(239,68,68,0.4) !important;
@@ -518,7 +496,7 @@
   color: #fca5a5 !important;
 }
 
-/* Badge NUOVO/USATO in riepilogo */
+
 :host-context(body.theme-dark) .badge.bg-success {
   background: rgba(22,163,74,0.2) !important;
   color: #4ade80 !important;

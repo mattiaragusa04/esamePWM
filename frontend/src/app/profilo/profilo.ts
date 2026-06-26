@@ -31,16 +31,16 @@ export class Profilo implements OnInit, AfterViewInit, OnDestroy {
 
   couponRiscattati: CouponRiscattato[] = [];
 
-  // ── Recensione (Opzione C: banner fisso nel profilo) ──────────────────────
+  
   haOrdineConsegnato: boolean = false;
-  miaRecensione: any = null;          // null = non ha ancora recensito
+  miaRecensione: any = null;          
   mostraPopupRecensione: boolean = false;
   recensioneForm = { voto: 0, testo: '' };
   stelleHover: number = 0;
   recensioneInvio: boolean = false;
   recensioneErrore: string = '';
   recensioneSuccesso: boolean = false;
-  // ─────────────────────────────────────────────────────────────────────────
+
 
   private readonly API         = 'http://localhost:3000/api/auth/profile';
   private readonly API_FEDELTA = 'http://localhost:3000/api/coupon';
@@ -87,7 +87,6 @@ export class Profilo implements OnInit, AfterViewInit, OnDestroy {
       if (resOrdini.ok) {
         const ordini = await resOrdini.json();
         this.totalOrdini = Array.isArray(ordini) ? ordini.length : 0;
-        // controlla se c'è almeno un ordine consegnato
         this.haOrdineConsegnato = Array.isArray(ordini) && ordini.some((o: any) => o.statoOrdine === 'Consegnato');
       }
 

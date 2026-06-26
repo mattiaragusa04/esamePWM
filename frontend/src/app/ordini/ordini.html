@@ -1,6 +1,6 @@
 <div class="ordini-page">
 
-  <!-- ╔═══ HERO ════════════════════════════════════════════════════════════╗ -->
+
   <div class="ordini-hero" #ordiniHero>
     <canvas #ordiniCanvas style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
     <div class="ordini-hero-orb orb-1"></div>
@@ -21,7 +21,6 @@
     </div>
   </div>
 
-  <!-- Banner recensione: visibile se ha ordini consegnati -->
   <div *ngIf="!isLoading && haOrdineConsegnato" class="recensione-banner">
     <div class="recensione-banner-inner">
       <div class="recensione-banner-left">
@@ -39,12 +38,12 @@
     </div>
   </div>
 
-  <!-- Loader -->
+
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border spinner-pink" role="status"></div>
   </div>
 
-  <!-- Empty state -->
+
   <div *ngIf="!isLoading && ordini.length === 0" class="vendite-empty">
     <div class="vendite-empty-icon"><i class="bi bi-bag-x"></i></div>
     <h4>Non hai ancora effettuato nessun ordine.</h4>
@@ -54,7 +53,7 @@
     </a>
   </div>
 
-  <!-- Lista Ordini -->
+
   <div *ngIf="!isLoading && ordini.length > 0" class="d-flex flex-column gap-3">
     <div class="ordine-card" *ngFor="let ordine of ordini">
       <div class="ordine-card-body">
@@ -71,13 +70,13 @@
 
         <div class="text-center">
           <span class="ordine-col-label">Totale</span>
-          <!-- Ordine pagato interamente con punti fedeltà -->
+
           <ng-container *ngIf="ordine.pagato_con_punti == 1; else totaleNormale">
             <span class="ordine-col-value fw-bold" style="color:#f59e0b;">
               <i class="bi bi-star-fill"></i> Punti fedeltà
             </span>
           </ng-container>
-          <!-- Ordine pagato con euro (con o senza coupon) -->
+
           <ng-template #totaleNormale>
             <ng-container *ngIf="ordine.totale_scontato != null && ordine.totale_scontato < ordine.totale; else soloTotale">
               <span class="text-muted text-decoration-line-through small me-1">{{ ordine.totale | currency:'EUR':'symbol':'1.2-2' }}</span>
@@ -118,7 +117,7 @@
     </div>
   </div>
 
-  <!-- ╔═══ POPUP RECENSIONE ══════════════════════════════════════════╗ -->
+
   <div class="modal-overlay" *ngIf="mostraPopupRecensione" (click)="chiudiPopupRecensione()">
     <div class="modal-box recensione-modal" (click)="$event.stopPropagation()">
 
@@ -135,16 +134,15 @@
         </button>
       </div>
 
-      <!-- Successo -->
       <div *ngIf="recensioneSuccesso" class="recensione-successo text-center py-4">
         <i class="bi bi-check-circle-fill" style="font-size:2.5rem; color:#22c55e;"></i>
         <p class="mt-2 fw-semibold">Recensione salvata con successo!</p>
       </div>
 
-      <!-- Form -->
+
       <div *ngIf="!recensioneSuccesso">
 
-        <!-- Stelle -->
+
         <div class="mb-4">
           <label class="ordine-col-label d-block mb-2">Il tuo voto</label>
           <div class="stelle-container">
@@ -166,7 +164,7 @@
           </small>
         </div>
 
-        <!-- Testo -->
+  
         <div class="mb-4">
           <label class="ordine-col-label d-block mb-2">La tua recensione</label>
           <textarea
@@ -179,12 +177,12 @@
           <small class="text-muted">{{ recensioneForm.testo.length }} / 1000 caratteri</small>
         </div>
 
-        <!-- Errore -->
+
         <div *ngIf="recensioneErrore" class="alert alert-danger py-2 small mb-3">
           <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ recensioneErrore }}
         </div>
 
-        <!-- Azioni -->
+
         <div class="d-flex justify-content-end gap-2">
           <button class="btn btn-outline-secondary btn-sm" (click)="chiudiPopupRecensione()" [disabled]="recensioneInvio">
             Annulla
@@ -200,7 +198,7 @@
     </div>
   </div>
 
-  <!-- ╔═══ MODALE DETTAGLIO ORDINE ══════════════════════════════╗ -->
+
   <div class="modal-overlay" *ngIf="ordineSelezionato" (click)="chiudiDettaglio()">
     <div class="modal-box" (click)="$event.stopPropagation()">
 
@@ -220,7 +218,7 @@
 
       <div *ngIf="!isLoadingDettagli">
 
-        <!-- Prodotti -->
+
         <div class="mb-4">
           <h6 class="text-muted text-uppercase small mb-3"><i class="bi bi-bag me-1"></i>Prodotti acquistati</h6>
           <div *ngIf="dettagliOrdine.length === 0" class="text-muted text-center py-3">Nessun prodotto trovato.</div>
@@ -253,9 +251,6 @@
           </div>
         </div>
 
-        <!-- ═══ RIEPILOGO ECONOMICO ════════════════════════════════════════════════ -->
-
-        <!-- CASO A: ordine interamente pagato con punti fedeltà -->
         <ng-container *ngIf="ordinePagatoConPunti; else riepilogoEuro">
           <div class="riepilogo-box p-3 mb-3">
             <div class="d-flex justify-content-between mb-2">
@@ -274,7 +269,6 @@
           </div>
         </ng-container>
 
-        <!-- CASO B: ordine pagato in euro (normale o con coupon) -->
         <ng-template #riepilogoEuro>
           <div class="riepilogo-box p-3 mb-3">
             <div class="d-flex justify-content-between mb-2">
@@ -298,7 +292,7 @@
           </div>
         </ng-template>
 
-        <!-- Punti fedeltà guadagnati (solo per ordini in euro) -->
+
         <div class="punti-box d-flex align-items-center gap-2 p-3 mb-3"
              *ngIf="!ordinePagatoConPunti && puntiFedeltaOrdine > 0">
           <i class="bi bi-star-fill text-warning fs-4"></i>

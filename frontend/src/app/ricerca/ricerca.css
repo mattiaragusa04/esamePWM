@@ -1,9 +1,4 @@
-/* ═══════════════════════════════════════════════════════
-   RICERCA.CSS
-   Palette & token: identici a profilo.css + app.css
-   Rosa primario:   #f86ded  |  hover: #ff9ef8
-   Gradient hero:   135deg #f86ded → #fb7185 → #fda4af
-   ═══════════════════════════════════════════════════════ */
+
 
 .ricerca-page {
   padding: 0.5rem 0 3rem;
@@ -15,7 +10,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── HERO ────────────────────────────────────────────── */
+
 .ricerca-hero {
   position: relative;
   overflow: hidden;
@@ -28,7 +23,7 @@
     0 20px 40px rgba(248,109,237,0.3);
 }
 
-/* Orb come in profilo-hero */
+
 .ricerca-hero-orb {
   position: absolute;
   border-radius: 50%;
@@ -99,7 +94,7 @@
   white-space: nowrap;
 }
 
-/* Badge contatore */
+
 .ricerca-hero-count {
   display: flex;
   flex-direction: column;
@@ -125,7 +120,7 @@
   letter-spacing: 0.06em;
 }
 
-/* ─── LOADING ────────────────────────────────────────── */
+
 .ricerca-loading {
   display: flex;
   flex-direction: column;
@@ -149,7 +144,7 @@
   margin-bottom: 1rem;
 }
 
-/* Skeleton cards */
+
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
@@ -167,7 +162,7 @@
   animation: shimmer 1.4s ease-in-out infinite;
 }
 
-/* ─── EMPTY STATE ─────────────────────────────────────── */
+
 .ricerca-empty {
   display: flex;
   flex-direction: column;
@@ -226,14 +221,13 @@
 
 body.theme-dark .ricerca-empty-title { color: #f1f5f9; }
 
-/* ─── GRIGLIA PRODOTTI ───────────────────────────────── */
+
 .ricerca-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
   gap: 1.1rem;
 }
 
-/* ─── CARD PRODOTTO ──────────────────────────────────── */
 .ricerca-card {
   background: var(--card-bg, #fff);
   border-radius: 1.15rem;
@@ -269,7 +263,7 @@ body.theme-dark .ricerca-card:hover {
   box-shadow: 0 12px 32px rgba(248,109,237,0.18);
 }
 
-/* Immagine prodotto */
+
 .ricerca-card-img-wrap {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -291,7 +285,7 @@ body.theme-dark .ricerca-card:hover {
 }
 body.theme-dark .ricerca-card-img-wrap { background: rgba(15,23,42,0.6); }
 
-/* Body card */
+
 .ricerca-card-body {
   padding: 0.85rem 1rem;
   display: flex;
@@ -338,7 +332,7 @@ body.theme-dark .ricerca-card-name { color: #f1f5f9; }
 .ricerca-card-cta i { font-size: 1rem; transition: transform 0.18s; }
 .ricerca-card:hover .ricerca-card-cta i { transform: translateX(3px); }
 
-/* ─── RESPONSIVE ─────────────────────────────────────── */
+
 @media (max-width: 576px) {
   .ricerca-hero { padding: 1.5rem 1.1rem; }
   .ricerca-hero-query { font-size: 1.2rem; }

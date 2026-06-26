@@ -19,7 +19,6 @@ export class Register {
   mostraPassword: boolean = false;
 
   constructor(private fb: FormBuilder, private router: Router, private toast: ToastService) {
-    // Definiamo la struttura del nostro form e le validazioni
     this.registerForm = this.fb.group({
       nome: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ\s']+$/)]],
       cognome: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ\s']+$/)]],
@@ -40,14 +39,14 @@ export class Register {
     if (this.registerForm.get('password')?.value !== this.registerForm.get('confermaPassword')?.value) {
       this.toast.warning("Le password non coincidono. Riprova.");
       this.errorMessage = 'Le password non coincidono.';
-      return; // Interrompe l'invio se le password non coincidono
+      return; 
     }
 
     if (this.registerForm.valid) {
       this.isLoading = true;
       
       try {
-        // Chiamata al backend con fetch
+        
         const response = await fetch('http://localhost:3000/api/auth/register', {
           method: 'POST',
           headers: {
@@ -57,14 +56,11 @@ export class Register {
         });
 
         if (response.ok) {
-          // Dal momento che abbiamo introdotto la verifica tramite email,
-          // l'utente non viene inserito nel database finché non clicca sul link di conferma.
-          // Quindi mostriamo solo il messaggio e reindirizziamo al login.
+
           this.toast.success('Registrazione inviata ✅​');
           this.router.navigate(['/login']);
         } else if (response.status === 400) {
           const errorData = await response.json();
-          // Legge 'message' inviato per gli errori 400, o 'error' inviato per gli errori 500
           this.toast.error(errorData.message || errorData.error);
           this.errorMessage = errorData.message || errorData.error;
         } else {

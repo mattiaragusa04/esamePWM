@@ -16,12 +16,12 @@
   </div>
 
   <div class="row" *ngIf="!isLoading && !errorMessage && prodotti.length > 0">
-    <!-- Sidebar Filtri -->
+  
     <div class="col-lg-3 mb-4">
       <div class="card shadow-sm p-4 sticky-top" style="top: 20px; z-index: 1; border-radius: 1rem;">
         <h5 class="font-weight-bold mb-4 border-bottom pb-2"><i class="bi bi-funnel-fill text-info me-2"></i>Filtri</h5>
 
-        <!-- Filtro Condizione (bottoni Tutti / Nuovo / Usato) -->
+        
         <h6 class="font-weight-bold mb-2">Condizione</h6>
         <div class="btn-group w-100 mb-4 condizione-filter-group" role="group" aria-label="Filtro condizione">
           <button type="button"
@@ -38,7 +38,7 @@
                   (click)="impostaCondizione('Usato')">Usato</button>
         </div>
 
-        <!-- Ordinamento -->
+  
         <h6 class="font-weight-bold mb-2">Ordina per</h6>
         <div class="form-check mb-2">
           <input class="form-check-input" type="radio" name="ordinamento" id="ordNessuno" value="" [(ngModel)]="ordinamento" (change)="applicaFiltriAvanzati()">
@@ -61,7 +61,7 @@
           <label class="form-check-label text-muted" for="ordNomeDecrescente">Nome (Z-A) <i class="bi bi-sort-alpha-down-alt text-info ms-1"></i></label>
         </div>
 
-        <!-- Range di Prezzo -->
+
         <h6 class="font-weight-bold mb-2">Range di prezzo</h6>
         <div class="row g-2 mb-4">
           <div class="col-6">
@@ -72,7 +72,7 @@
           </div>
         </div>
 
-        <!-- Disponibilità -->
+
         <h6 class="font-weight-bold mb-2">Disponibilità</h6>
         <div class="form-check mb-2">
           <input class="form-check-input" type="radio" name="disponibilita" id="dispTutte" value="" [(ngModel)]="disponibilita" (change)="applicaFiltriAvanzati()">
@@ -94,9 +94,9 @@
       </div>
     </div>
 
-    <!-- Main Content -->
+    
     <div class="col-lg-9">
-      <!-- Container per i filtri per Categoria -->
+
       <div class="d-flex justify-content-center flex-wrap mb-5">
         <div class="text-center m-2" style="cursor: pointer;" (click)="impostaFiltro('Tutti')">
           <div class="card shadow-sm category-filter-card" [class.active-filter]="filtroAttivo === 'Tutti'">
@@ -124,27 +124,27 @@
           <div class="card h-100 shadow-lg product-card position-relative"
                [class.usato-variant]="isVariantUsato(prodotto) && prodotto.giacenza > 0"
                [class.is-sold-out]="prodotto.giacenza <= 0">
-            <!-- Pulsante Preferiti -->
+     
             <button class="btn btn-link position-absolute p-2 shadow-none" style="top: 5px; right: 5px; z-index: 10;" (click)="togglePreferito(prodotto)">
               <i style="font-size: 1.5rem;" [class]="isPreferito(prodotto.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"></i>
             </button>
 
-            <!-- Badge sconto in alto a sinistra (solo varianti Usato non-retro con sconto) -->
+        
             <div *ngIf="getPrezzoOriginale(prodotto) !== null && prodotto.giacenza > 0" class="discount-corner-badge">-25%</div>
 
-            <!-- Badge ESAURITO in alto a sinistra quando giacenza = 0 (sostituisce -25%) -->
+            
             <div *ngIf="prodotto.giacenza <= 0" class="out-of-stock-corner-badge">ESAURITO</div>
 
             <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="card-img-top p-3" [alt]="prodotto.nome" style="height: 200px; object-fit: contain;">
             <div class="card-body text-center d-flex flex-column justify-content-between">
               <h5 class="card-title font-weight-bold">{{ prodotto.nome }}</h5>
 
-              <!-- Etichetta Sottocategoria Dinamica -->
+            
               <div class="mb-2" *ngIf="getSottoCategoria(prodotto) as subCat">
                 <span class="badge badge-light border text-muted px-2 py-1">{{ subCat }}</span>
               </div>
 
-              <!-- Label condizione (Nuovo / Usato) + Esaurito se giacenza = 0 -->
+              
               <div class="mb-2 d-flex flex-wrap justify-content-center gap-2">
                 <span class="badge-condizione"
                       [ngClass]="prodotto.condizioneVariante === 'Nuovo' ? 'badge-nuovo' : 'badge-usato'">
@@ -157,7 +157,7 @@
                 </span>
               </div>
 
-              <!-- Prezzo: barrato + scontato per Usato, prezzo singolo per Nuovo -->
+              
               <div class="mb-3">
                 <span *ngIf="getPrezzoOriginale(prodotto) as originale" class="price-old me-2">
                   {{ originale | currency:'EUR':'symbol' }}
@@ -171,7 +171,7 @@
                 </div>
               </div>
               
-              <!-- Indicatore Disponibilità -->
+             
               <div class="mb-3" *ngIf="prodotto.giacenza > 0">
                 <span class="badge rounded-pill bg-success">
                   Disponibilità Immediata
@@ -187,7 +187,7 @@
         </div>
       </div>
 
-      <!-- Paginazione -->
+      
       <nav *ngIf="!isLoading && prodottiFiltrati.length > elementiPerPagina" class="mt-5 mb-4 d-flex justify-content-center">
         <ul class="pagination border-0 mb-0 align-items-center">
           <li class="page-item border-0" [class.disabled]="paginaCorrente === 1">

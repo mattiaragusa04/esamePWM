@@ -1,6 +1,4 @@
-/* ═══════════════════════════════════════════════════════
-   ADMIN LAYOUT — Sidebar professionale
-   ═══════════════════════════════════════════════════════ */
+
 
 .admin-wrapper {
   padding: 2rem 1rem;
@@ -8,7 +6,7 @@
   margin: 0 auto;
 }
 
-/* ── Sidebar container ───────────────────────────────── */
+
 .admin-sidebar {
   background: linear-gradient(160deg, #1a0a0e 0%, #2d0f17 40%, #3d1520 100%);
   border-radius: 1.25rem;
@@ -21,7 +19,6 @@
   top: 1.5rem;
 }
 
-/* ── Header ──────────────────────────────────────────── */
 .admin-sidebar-header {
   position: relative;
   padding: 2rem 1.5rem 1.5rem;
@@ -29,7 +26,7 @@
   overflow: hidden;
 }
 
-/* Cerchi decorativi di sfondo */
+
 .admin-sidebar-bg-deco::before,
 .admin-sidebar-bg-deco::after {
   content: '';
@@ -53,7 +50,6 @@
   right: -30px;
 }
 
-/* Scudo con badge ADMIN */
 .admin-shield-wrap {
   position: relative;
   display: inline-block;
@@ -97,7 +93,6 @@
   border: 2px solid #2d0f17;
 }
 
-/* Nome admin */
 .admin-sidebar-name {
   color: #fff;
   font-weight: 700;
@@ -106,7 +101,7 @@
   letter-spacing: 0.01em;
 }
 
-/* Ruolo */
+
 .admin-sidebar-role {
   color: rgba(255,255,255,0.55);
   font-size: 0.78rem;
@@ -128,21 +123,10 @@
   50%       { opacity: 0.3; }
 }
 
-/* Ora live */
-.admin-ora {
-  display: inline-block;
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.7);
-  font-size: 0.82rem;
-  font-family: 'Courier New', monospace;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  padding: 0.3rem 0.9rem;
-  border-radius: 99px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
 
-/* ── Divider sezione ─────────────────────────────────── */
+
+
+
 .admin-sidebar-divider {
   display: flex;
   align-items: center;
@@ -167,7 +151,7 @@
   white-space: nowrap;
 }
 
-/* ── Navigazione ─────────────────────────────────────── */
+
 .admin-nav {
   padding: 0.5rem 0.75rem;
   display: flex;
@@ -257,9 +241,7 @@
   color: rgba(255,255,255,0.85);
 }
 
-/* ═══════════════════════════════════════════════════════
-   BANNER AREA PROTETTA
-   ═══════════════════════════════════════════════════════ */
+
 .admin-area-banner {
   display: flex;
   align-items: center;
@@ -286,7 +268,7 @@
   white-space: nowrap;
 }
 
-/* ── Responsive ──────────────────────────────────────── */
+
 @media (max-width: 991px) {
   .admin-sidebar {
     position: static;

@@ -21,7 +21,7 @@ export class Indirizzi implements OnInit, AfterViewInit, OnDestroy {
   mostraForm: boolean = false;
   isSaving: boolean = false;
 
-  // ID dell'indirizzo in attesa di conferma eliminazione (null = nessuno)
+
   indirizzoInAttesaEliminazione: number | null = null;
 
   indirizzoForm: FormGroup;
@@ -119,19 +119,19 @@ export class Indirizzi implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /** Primo click: mostra la conferma inline sulla card */
+
   chiediConfermaEliminaIndirizzo(id: number) {
     this.indirizzoInAttesaEliminazione = id;
     this.cdr.detectChanges();
   }
 
-  /** L'utente annulla la conferma */
+
   annullaEliminaIndirizzo() {
     this.indirizzoInAttesaEliminazione = null;
     this.cdr.detectChanges();
   }
 
-  /** Secondo click: elimina davvero */
+
   async eliminaIndirizzo(id: number) {
     this.indirizzoInAttesaEliminazione = null;
     const token = localStorage.getItem('token');

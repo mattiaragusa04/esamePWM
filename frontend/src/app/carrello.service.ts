@@ -24,10 +24,7 @@ export class CarrelloService {
     }
   }
 
-  /**
-   * Aggiorna lo stato locale del carrello (count, totale, items)
-   * a partire dal backend (se loggato) o da localStorage (se ospite).
-   */
+
   async refreshCart() {
     if (!isPlatformBrowser(this.platformId)) return;
 
@@ -39,23 +36,18 @@ export class CarrelloService {
         });
         if (response.ok) {
           const items = await response.json();
-          this.updateState(items, /*isGuest=*/false);
+          this.updateState(items, false);
         }
       } catch (error) {
         console.error('Errore aggiornamento carrello:', error);
       }
     } else {
       const carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
-      this.updateState(carrello, /*isGuest=*/true);
+      this.updateState(carrello, true);
     }
   }
 
-  /**
-   * Prezzo effettivo di una riga del carrello:
-   * - ospiti: `prezzoSelezionato` è già il prezzo finale (calcolato al momento dell'aggiunta)
-   * - loggati: il backend restituisce `prezzoUnitarioVendita` (prezzo Nuovo del prodotto);
-   *   per gli item con condizione 'Usato' applichiamo lo sconto del 25%.
-   */
+
   private prezzoEffettivo(item: any, isGuest: boolean): number {
     if (isGuest) {
       return Number(item.prezzoSelezionato ?? 0);
@@ -80,7 +72,7 @@ export class CarrelloService {
   async aggiungiProdotto(prodotto: any, quantita: number, condizione: string, prezzo: number) {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // 1. Controllo Giacenza Locale (per feedback immediato)
+ 
     const currentItems = this.cartItemsSource.getValue();
     const itemEsistente = currentItems.find(i => (i.id || i.prodotto_id) === prodotto.id && i.condizione === condizione);
     const quantitaTotaleRichiesta = (itemEsistente ? itemEsistente.quantita : 0) + quantita;
@@ -92,7 +84,7 @@ export class CarrelloService {
 
     const token = localStorage.getItem('token');
     if (token) {
-      // UTENTE LOGGATO: Persistenza su DB
+
       try {
         const response = await fetch(`${API_BASE}/aggiungi`, {
           method: 'POST',
@@ -103,7 +95,7 @@ export class CarrelloService {
           await this.refreshCart();
           return true;
         }
-        // Errore lato server (giacenza insufficiente o altro)
+
         const errData = await response.json().catch(() => ({}));
         this.toast.error(errData.error || 'Impossibile aggiungere il prodotto.');
         await this.refreshCart();
@@ -114,7 +106,7 @@ export class CarrelloService {
         return false;
       }
     } else {
-      // OSPITE: Persistenza su localStorage
+
       let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
       const index = carrello.findIndex((i: any) => (i.id || i.prodotto_id) === prodotto.id && i.condizione === condizione);
 
@@ -131,16 +123,11 @@ export class CarrelloService {
     return false;
   }
 
-  /**
-   * Aggiorna la quantità di un item del carrello (assoluta, non delta).
-   * Aggiorna localmente prima (optimistic) e poi persiste su backend/localStorage.
-   * In caso di errore, ricarica lo stato dal backend per ripristinare la coerenza.
-   */
   async aggiornaQuantita(item: any, nuovaQuantita: number): Promise<boolean> {
     if (!isPlatformBrowser(this.platformId)) return false;
     if (nuovaQuantita < 1) return false;
 
-    // Controllo di giacenza lato client (feedback immediato)
+
     const giacenza = item.giacenza;
     if (typeof giacenza === 'number' && nuovaQuantita > giacenza) {
       this.toast.error(`Giacenza massima raggiunta (${giacenza} pezzi disponibili).`);
@@ -150,7 +137,7 @@ export class CarrelloService {
     const token = localStorage.getItem('token');
     const prodottoId = item.id || item.prodotto_id;
 
-    // Optimistic update sullo stato locale
+  
     const items = this.cartItemsSource.getValue().map((i: any) => {
       if ((i.id || i.prodotto_id) === prodottoId && i.condizione === item.condizione) {
         return { ...i, quantita: nuovaQuantita };
@@ -171,7 +158,7 @@ export class CarrelloService {
         });
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          await this.refreshCart(); // rollback
+          await this.refreshCart();
           this.toast.error(errData.error || 'Errore aggiornamento carrello.');
           return false;
         }
@@ -188,9 +175,6 @@ export class CarrelloService {
     }
   }
 
-  /**
-   * Rimuove un prodotto dal carrello.
-   */
   async rimuoviProdotto(item: any): Promise<boolean> {
     if (!isPlatformBrowser(this.platformId)) return false;
 
@@ -226,9 +210,7 @@ export class CarrelloService {
     return true;
   }
 
-  /**
-   * Svuota completamente il carrello.
-   */
+
   async svuotaCarrello(): Promise<boolean> {
     if (!isPlatformBrowser(this.platformId)) return false;
 

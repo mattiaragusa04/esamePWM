@@ -2,8 +2,6 @@ const Coupon = require('../models/couponModel');
 const CouponService = require('../services/couponService');
 
 
-
-// GET /api/coupon — lista tutti i coupon (admin)
 exports.getCoupon = async (req, res) => {
   try {
     const coupon = await Coupon.findAll();
@@ -14,7 +12,7 @@ exports.getCoupon = async (req, res) => {
   }
 };
 
-// POST /api/coupon — crea un nuovo coupon (admin)
+
 exports.creaCoupon = async (req, res) => {
   const { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, costoInPunti } = req.body;
 
@@ -43,7 +41,7 @@ exports.creaCoupon = async (req, res) => {
   }
 };
 
-// PUT /api/coupon/:id — modifica un coupon esistente (admin)
+
 exports.modificaCoupon = async (req, res) => {
   const { id } = req.params;
   const { codice, tipo, valore, descrizione, data_scadenza, utilizzi_massimi, costoInPunti } = req.body;
@@ -88,7 +86,7 @@ exports.modificaCoupon = async (req, res) => {
   }
 };
 
-// PATCH /api/coupon/:id/toggle — attiva/disattiva (admin)
+
 exports.toggleCoupon = async (req, res) => {
   const { id } = req.params;
   try {
@@ -104,7 +102,7 @@ exports.toggleCoupon = async (req, res) => {
   }
 };
 
-// POST /api/coupon/valida — valida codice coupon (utente nel pagamento)
+
 exports.validaCoupon = async (req, res) => {
   const { codice, totale } = req.body;
   if (!codice) return res.status(400).json({ error: 'Codice mancante.' });
@@ -142,9 +140,6 @@ exports.validaCoupon = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// UTENTE — GET /api/coupon/preset-coupon
-// ═══════════════════════════════════════════════════════════════
 exports.getPresetCoupon = (req, res) => {
   const preset = [5, 10, 15, 20, 25].map(perc => ({
     valore: perc,
@@ -155,12 +150,9 @@ exports.getPresetCoupon = (req, res) => {
   res.json(preset);
 };
 
-// ═══════════════════════════════════════════════════════════════
-// UTENTE — POST /api/coupon/acquista-preset-coupon
-// ═══════════════════════════════════════════════════════════════
 exports.acquistaPresetCoupon = async (req, res) => {
   const userId = req.user.id;
-  const { valore } = req.body; // FIX: Changed from 'percentuale' to 'valore'
+  const { valore } = req.body; 
 
   try {
     const result = await CouponService.acquistaPresetCoupon(userId, valore);
@@ -172,9 +164,7 @@ exports.acquistaPresetCoupon = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// UTENTE — GET /api/coupon/catalogo-coupon
-// ═══════════════════════════════════════════════════════════════
+
 exports.getCatalogoCoupon = async (req, res) => {
   try {
     res.json(await Coupon.findCatalogoFedelta());
@@ -183,9 +173,6 @@ exports.getCatalogoCoupon = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// UTENTE — POST /api/coupon/acquista-coupon
-// ═══════════════════════════════════════════════════════════════
 exports.acquistaCoupon = async (req, res) => {
   const userId = req.user.id;
   const { catalogoId } = req.body;
@@ -200,10 +187,6 @@ exports.acquistaCoupon = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// UTENTE — GET /api/coupon/prodotti-usati
-// FIX: costoInPunti ora proviene da p.puntiFedelta (non più dal prezzo)
-// ═══════════════════════════════════════════════════════════════
 exports.getProdottiUsati = async (req, res) => {
   try {
     const rows = await Coupon.findProdottiUsati();
@@ -213,12 +196,7 @@ exports.getProdottiUsati = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// UTENTE — POST /api/coupon/acquista-prodotto  { prodottoId }
-// FIX: usa getCostoInPunti (puntiFedelta del prodotto)
-//      verifica giacenza atomica dopo decrementaGiacenza
-//      passa pagatoConPunti=1 ad addProdottoToOrdine
-// ═══════════════════════════════════════════════════════════════
+
 exports.acquistaProdottoConPunti = async (req, res) => {
   const userId = req.user.id;
   const { prodottoId } = req.body;
@@ -233,9 +211,6 @@ exports.acquistaProdottoConPunti = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// ADMIN — GET /api/coupon/admin/coupon-fedelta
-// ═══════════════════════════════════════════════════════════════
 exports.adminGetCouponFedelta = async (req, res) => {
   try {
     res.json(await Coupon.findAllFedelta());
@@ -244,9 +219,7 @@ exports.adminGetCouponFedelta = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// ADMIN — POST /api/coupon/admin/coupon-fedelta
-// ═══════════════════════════════════════════════════════════════
+
 exports.adminCreaCouponFedelta = async (req, res) => {
   const { codice, tipo, valore, costoInPunti, descrizione, scadenza, utilizzi_massimi } = req.body;
   if (!codice || !tipo || !valore || !costoInPunti)
@@ -270,9 +243,7 @@ exports.adminCreaCouponFedelta = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// ADMIN — PUT /api/coupon/admin/coupon-fedelta/:id
-// ═══════════════════════════════════════════════════════════════
+
 exports.adminModificaCouponFedelta = async (req, res) => {
   const { id } = req.params;
   const { codice, tipo, valore, costoInPunti, descrizione, data_scadenza, utilizzi_massimi } = req.body;
@@ -298,9 +269,7 @@ exports.adminModificaCouponFedelta = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// ADMIN — PATCH /api/coupon/admin/coupon-fedelta/:id/toggle
-// ═══════════════════════════════════════════════════════════════
+
 exports.adminToggleCouponFedelta = async (req, res) => {
   const { id } = req.params;
   try {
@@ -312,9 +281,6 @@ exports.adminToggleCouponFedelta = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// ADMIN — DELETE /api/coupon/admin/coupon-fedelta/:id
-// ═══════════════════════════════════════════════════════════════
 exports.adminEliminaCouponFedelta = async (req, res) => {
   const { id } = req.params;
   try {
@@ -326,10 +292,7 @@ exports.adminEliminaCouponFedelta = async (req, res) => {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════
-// ADMIN — GET /api/coupon/admin/prodotti-usati
-// FIX: costoInPunti ora proviene da p.puntiFedelta
-// ═══════════════════════════════════════════════════════════════
+
 exports.adminGetProdottiUsati = async (req, res) => {
   try {
     const rows = await Coupon.findAllProdottiUsatiAdmin();

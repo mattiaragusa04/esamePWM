@@ -24,7 +24,7 @@ export class AdminProdotti implements OnInit {
   isModifica: boolean = false;
   prodottoInModificaId: number | null = null;
 
-  // Stato riepilogo pre-salvataggio (solo creazione)
+
   mostraRiepilogo: boolean = false;
   prezzoNuovoCalcolato: number = 0;
   
@@ -37,7 +37,7 @@ export class AdminProdotti implements OnInit {
     prezzoUnitarioVendita: 0,
     giacenzaNuovo: 0,
     giacenzaUsato: 0,
-    tipoPrezzoInserito: 'Nuovo', // 'Nuovo' | 'Usato'
+    tipoPrezzoInserito: 'Nuovo',
     condizione: '',
     genere: '',
     immagine: ''
@@ -148,7 +148,7 @@ export class AdminProdotti implements OnInit {
     this.prodottoInModificaId = null;
   }
 
-  // Calcola i due prezzi in base a tipoPrezzoInserito
+
   calcolaPrezzi(): { prezzoNuovo: number; prezzoUsato: number } {
     const prezzo = parseFloat(this.nuovoProdotto.prezzoUnitarioVendita) || 0;
     if (this.nuovoProdotto.tipoPrezzoInserito === 'Nuovo') {
@@ -164,7 +164,7 @@ export class AdminProdotti implements OnInit {
     }
   }
 
-  // Chiamato dal submit del form: mostra il riepilogo invece di salvare subito
+
   richiediConferma(form: any) {
     if (form.invalid || (!this.fileImmagine && !this.nuovoProdotto.immagine)) return;
 
@@ -189,7 +189,7 @@ export class AdminProdotti implements OnInit {
     this.mostraRiepilogo = false;
   }
 
-  // Chiamato solo dopo che l'admin ha confermato il riepilogo
+
   async salvaNuovoProdotto(form: any) {
     const formData = new FormData();
     formData.append('nome', this.nuovoProdotto.nome);
@@ -202,7 +202,7 @@ export class AdminProdotti implements OnInit {
       formData.append('condizione', this.nuovoProdotto.condizione);
       formData.append('prezzoUnitarioVendita', this.nuovoProdotto.prezzoUnitarioVendita);
     } else {
-      // Invia le giacenze e i prezzi già calcolati
+
       formData.append('giacenzaNuovo', this.nuovoProdotto.giacenzaNuovo);
       formData.append('giacenzaUsato', this.nuovoProdotto.giacenzaUsato);
       formData.append('prezzoNuovo', this.prezzoNuovoCalcolato.toString());

@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ToastService } from '../shared/toast.service';
 
-// Assicurati che questa interfaccia sia definita nel tuo progetto
 export interface Prodotto {
   id: number;
   categoria_id: number;
@@ -23,20 +22,20 @@ export interface Prodotto {
 }
 
 @Component({
-  selector: 'app-dettagli-prodotto', // Assicurati che il selettore sia corretto
+  selector: 'app-dettagli-prodotto', 
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink], // Aggiungi RouterLink se non c'è
+  imports: [CommonModule, FormsModule, RouterLink], 
   templateUrl: './dettagli-prodotto.html',
-  styleUrl: './dettagli-prodotto.css', // Assicurati di avere un file CSS per questo componente
+  styleUrl: './dettagli-prodotto.css', 
 })
 export class DettagliProdotto implements OnInit, OnDestroy {
   prodotto: Prodotto | null = null;
   isLoading: boolean = false;
   errorMessage: string = '';
   prodottoId: number | null = null;
-  preferiti: number[] = []; // Array per memorizzare gli ID dei prodotti preferiti
-  prezzoCondizione: 'Nuovo' | 'Usato' = 'Nuovo'; // Condizione effettiva mostrata
-  /** Variante esplicitamente richiesta dall'utente (via query param ?cond=Nuovo|Usato). */
+  preferiti: number[] = []; 
+  prezzoCondizione: 'Nuovo' | 'Usato' = 'Nuovo';
+
   varianteScelta: 'Nuovo' | 'Usato' | null = null;
 
   private routeSub: Subscription | undefined;
@@ -56,8 +55,6 @@ export class DettagliProdotto implements OnInit, OnDestroy {
         const id = params.get('id');
         if (id) {
           this.prodottoId = +id;
-          // Legge la variante (Nuovo/Usato) eventualmente passata via query param,
-          // per arrivare al dettaglio dalla card corretta.
           const cond = this.route.snapshot.queryParamMap.get('cond');
           this.varianteScelta = (cond === 'Usato' || cond === 'Nuovo') ? cond : null;
           this.caricaProdotto(this.prodottoId);
@@ -82,16 +79,12 @@ export class DettagliProdotto implements OnInit, OnDestroy {
       if (response.ok) {
         const data = await response.json();
         this.prodotto = data;
-        // Determina la variante effettiva da mostrare:
-        // 1) Retro -> sempre Usato
-        // 2) Variante esplicita via query param se compatibile con la condizione DB
-        // 3) Condizione DB altrimenti
+
         if (this.prodotto && this.isRetrogaming(this.prodotto)) {
           this.prezzoCondizione = 'Usato';
         } else if (this.prodotto && this.prodotto.condizione === 'Usato') {
           this.prezzoCondizione = 'Usato';
         } else if (this.prodotto && this.prodotto.condizione === 'Nuovo') {
-          // DB Nuovo: l'utente può atterrare sulla variante Nuovo o Usato (-25%)
           this.prezzoCondizione = this.varianteScelta || 'Nuovo';
         } else {
           this.prezzoCondizione = 'Nuovo';
@@ -130,17 +123,17 @@ export class DettagliProdotto implements OnInit, OnDestroy {
   }
 
   togglePreferito(event: Event) {
-    event.stopPropagation(); // Evita che l'evento si propaghi ad altri elementi (es. click sulla card)
+    event.stopPropagation(); 
     if (!this.prodotto) return;
     
     const index = this.preferiti.indexOf(this.prodotto.id);
     if (index > -1) {
-      this.preferiti.splice(index, 1); // Rimuove se c'è già
+      this.preferiti.splice(index, 1); 
     } else {
-      this.preferiti.push(this.prodotto.id); // Aggiunge se non c'è
+      this.preferiti.push(this.prodotto.id);
     }
     localStorage.setItem('preferiti', JSON.stringify(this.preferiti));
-    this.cdr.detectChanges(); // Aggiorna la vista per mostrare il cambio dell'icona
+    this.cdr.detectChanges(); 
   }
 
   setCondizione(cond: 'Nuovo' | 'Usato') {
@@ -148,10 +141,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  /**
-   * Condizione effettivamente mostrata in questa pagina (Nuovo o Usato).
-   * Coincide con prezzoCondizione, calcolata in caricaProdotto.
-   */
+
   getCondizioneEffettiva(): 'Nuovo' | 'Usato' {
     return this.prezzoCondizione;
   }
@@ -160,13 +150,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     return this.prezzoCondizione === 'Usato';
   }
 
-  /**
-   * Prezzo "originale" da mostrare barrato accanto al prezzo Usato.
-   * Grafica uniforme: ogni variante Usato (anche retrogaming e Usato "standalone"
-   * dal DB) mostra sempre il barrato + -25%.
-   *  - DB Nuovo visualizzato come Usato -> barrato = prezzo DB
-   *  - DB Usato (o retrogaming)         -> barrato = prezzo_usato / 0.75
-   */
+
   getPrezzoOriginale(): number | null {
     if (!this.prodotto) return null;
     if (this.prezzoCondizione !== 'Usato') return null;
@@ -207,7 +191,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
 
   getPrezzoPermutaBase(): number {
     if (!this.prodotto) return 0;
-    // Valutazione base: 40% in meno rispetto al prezzo di vendita (quindi il 60% del valore)
+
     return Math.round((this.prodotto.prezzoUnitarioVendita * 0.60) * 2) / 2;
   }
 
@@ -217,7 +201,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
     const prezzoFinale = this.getPrezzoVisualizzato();
 
     if (token) {
-      // Utente loggato: invia al database
+
       try {
         const response = await fetch('http://localhost:3000/api/carrello/aggiungi', {
           method: 'POST',
@@ -239,10 +223,10 @@ export class DettagliProdotto implements OnInit, OnDestroy {
         this.toast.error('Errore di connessione al server.');
       }
     } else {
-      // Utente ospite: salva in localStorage
+
       let carrello = JSON.parse(localStorage.getItem('carrello') || '[]');
         
-        // Cerchiamo un elemento che abbia lo stesso ID E la stessa condizione
+
           const index = carrello.findIndex((item: any) => 
           (item.id || item.prodotto_id) === prodotto.id && item.condizione === condizioneScelta
         );
@@ -250,7 +234,7 @@ export class DettagliProdotto implements OnInit, OnDestroy {
       if (index > -1) {
         carrello[index].quantita += 1;
       } else {
-          // Creiamo una voce distinta per questa condizione
+
           carrello.push({ 
             ...prodotto, 
             quantita: 1, 
@@ -264,6 +248,6 @@ export class DettagliProdotto implements OnInit, OnDestroy {
   }
 
   handleImageError(event: any) {
-    event.target.src = 'https://via.placeholder.com/400?text=No+Image'; // Immagine di fallback
+    event.target.src = 'https://via.placeholder.com/400?text=No+Image';
   }
 }

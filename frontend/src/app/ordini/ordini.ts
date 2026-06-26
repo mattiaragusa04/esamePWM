@@ -20,20 +20,20 @@ export class Ordini implements OnInit, AfterViewInit, OnDestroy {
   isLoading: boolean = true;
   utente: any = null;
 
-  // Dettaglio ordine
+
   ordineSelezionato: any = null;
   dettagliOrdine: any[] = [];
   isLoadingDettagli: boolean = false;
 
-  // ── Recensione ─────────────────────────────────────────────────────────────
+
   mostraPopupRecensione: boolean = false;
-  miaRecensione: any = null;          // null = non ha ancora recensito
+  miaRecensione: any = null;          
   recensioneForm = { voto: 0, testo: '' };
-  stelleHover: number = 0;            // per l'effetto hover sulle stelle
+  stelleHover: number = 0;            
   recensioneInvio: boolean = false;
   recensioneErrore: string = '';
   recensioneSuccesso: boolean = false;
-  // ---------------------------------------------------------------------------
+
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -77,7 +77,6 @@ export class Ordini implements OnInit, AfterViewInit, OnDestroy {
         this.ordini = await response.json();
         this.ordini.sort((a, b) => b.id - a.id);
 
-        // Dopo aver caricato gli ordini, controlla se mostrare il popup
         await this.controllaPopupRecensione();
       }
     } catch (error) {
@@ -88,11 +87,7 @@ export class Ordini implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Mostra il popup automaticamente se:
-   * 1) l'utente ha almeno un ordine con statoOrdine === 'Consegnato'
-   * 2) l'utente non ha ancora lasciato una recensione
-   */
+
   async controllaPopupRecensione() {
     const haOrdineConsegnato = this.ordini.some(o => o.statoOrdine === 'Consegnato');
     if (!haOrdineConsegnato) return;
@@ -107,7 +102,7 @@ export class Ordini implements OnInit, AfterViewInit, OnDestroy {
       if (res.ok) {
         const data = await res.json();
         this.miaRecensione = data.recensione;
-        // Apri automaticamente il popup solo se non ha ancora recensito
+
         if (!this.miaRecensione) {
           this.mostraPopupRecensione = true;
         }
@@ -117,9 +112,8 @@ export class Ordini implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /** Apre manualmente il popup (dal bottone nella lista ordini) */
   apriPopupRecensione() {
-    // Precompila il form se sta modificando la recensione esistente
+
     if (this.miaRecensione) {
       this.recensioneForm.voto = this.miaRecensione.voto;
       this.recensioneForm.testo = this.miaRecensione.testo;
@@ -171,7 +165,7 @@ export class Ordini implements OnInit, AfterViewInit, OnDestroy {
 
       if (res.ok) {
         this.recensioneSuccesso = true;
-        // Aggiorna la recensione locale
+
         this.miaRecensione = {
           voto: this.recensioneForm.voto,
           testo: this.recensioneForm.testo.trim()
@@ -192,7 +186,7 @@ export class Ordini implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ── Dettaglio ordine ────────────────────────────────────────────────────────
+
 
   async apriDettaglio(ordine: any) {
     this.ordineSelezionato = ordine;
@@ -223,9 +217,7 @@ export class Ordini implements OnInit, AfterViewInit, OnDestroy {
     this.dettagliOrdine = [];
   }
 
-  /**
-   * True se TUTTI i prodotti dell'ordine sono stati pagati con punti fedeltà.
-   */
+ 
   get ordinePagatoConPunti(): boolean {
     if (!this.dettagliOrdine.length) return false;
     return this.dettagliOrdine.every(item => item.pagato_con_punti == 1);
@@ -249,7 +241,6 @@ export class Ordini implements OnInit, AfterViewInit, OnDestroy {
     return this.dettagliOrdine.reduce((acc, item) => acc + (item.prezzoUnitario * item.quantita), 0);
   }
 
-  /** True se almeno uno degli ordini è stato consegnato (per mostrare il banner) */
   get haOrdineConsegnato(): boolean {
     return this.ordini.some(o => o.statoOrdine === 'Consegnato');
   }

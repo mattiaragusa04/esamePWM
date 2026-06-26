@@ -20,7 +20,7 @@ export class Login {
   loginForm: FormGroup;
   mostraPassword = false;
 
-  // ── Modale recupero password ──────────────────────────────────────────────
+
   mostraModaleReset = false;
   stepReset: 'email' | 'nuova-password' = 'email';
   emailReset = '';
@@ -88,7 +88,7 @@ export class Login {
     }
   }
 
-  // ── Modale recupero password ──────────────────────────────────────────────
+
 
   apriModaleReset(): void {
     this.mostraModaleReset = true;

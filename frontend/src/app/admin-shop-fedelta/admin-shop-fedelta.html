@@ -1,6 +1,6 @@
 <div class="shop-fedelta-page">
 
-  <!-- ══ HEADER ══════════════════════════════════════════════════ -->
+
   <div class="shop-fedelta-header">
     <div class="shop-fedelta-header-icon"><i class="bi bi-stars"></i></div>
     <div>
@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <!-- ══ TAB ══════════════════════════════════════════════════════ -->
+
   <div class="shop-fedelta-tabs">
     <button class="shop-tab" [class.active]="tabAttiva === 'coupon'" (click)="tabAttiva = 'coupon'">
       <i class="bi bi-ticket-perforated-fill"></i> Coupon Fedeltà
@@ -19,15 +19,13 @@
     </button>
   </div>
 
-  <!-- ══════════════════ TAB: COUPON ══════════════════════════════ -->
   <div *ngIf="tabAttiva === 'coupon'">
 
-    <!-- Toast -->
+
     <div class="shop-toast" *ngIf="msgCoupon" [class.toast-success]="msgCoupon.tipo==='success'" [class.toast-error]="msgCoupon.tipo==='error'">
       {{ msgCoupon.testo }}
     </div>
 
-    <!-- Form creazione coupon -->
     <div class="shop-card">
       <div class="shop-card-title"><i class="bi bi-plus-circle-fill"></i> Crea nuovo coupon fedeltà</div>
 
@@ -70,8 +68,6 @@
         {{ salvandoCoupon ? 'Creazione in corso…' : 'Crea Coupon' }}
       </button>
     </div>
-
-    <!-- Tabella coupon esistenti -->
     <div class="shop-card mt-3">
       <div class="shop-card-title"><i class="bi bi-list-ul"></i> Coupon fedeltà esistenti
         <button class="shop-btn-refresh" (click)="caricaCoupon()" title="Aggiorna">
@@ -105,7 +101,6 @@
               <td><code>{{ c.codice }}</code></td>
               <td>
                 <span class="badge-perc" *ngIf="c.tipo === 'percentuale'">-{{ c.valore }}%</span>
-                <!-- Aggiungo un badge generico per l'importo fisso -->
                 <span class="badge bg-success" *ngIf="c.tipo === 'fisso'">-{{ c.valore | currency:'EUR' }}</span>
               </td>
               <td><span class="badge-punti"><i class="bi bi-trophy-fill"></i> {{ c.costoInPunti|| '—' }}</span></td>
@@ -131,10 +126,10 @@
     </div>
   </div>
 
-  <!-- ══════════════════ TAB: PRODOTTI USATI ══════════════════════ -->
+ 
   <div *ngIf="tabAttiva === 'prodotti'">
 
-    <!-- Toast -->
+
     <div class="shop-toast" *ngIf="msgProdotti" [class.toast-success]="msgProdotti.tipo==='success'" [class.toast-error]="msgProdotti.tipo==='error'">
       {{ msgProdotti.testo }}
     </div>

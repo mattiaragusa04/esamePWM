@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { CarrelloService } from '../carrello.service';
 
 import { ToastService } from '../shared/toast.service';
-// Interfaccia allineata al database SQLite
+
 export interface Prodotto {
   id: number;
   categoria_id: number;
@@ -21,10 +21,10 @@ export interface Prodotto {
   condizione: string;
   puntiFedelta: number;
   genere?: string;
-  // Campi virtuali aggiunti lato client per generare le varianti Nuovo/Usato
-  variantKey?: string;            // chiave univoca = id + '-' + condizioneVariante
-  condizioneVariante?: 'Nuovo' | 'Usato'; // condizione effettiva mostrata nella card
-  prezzoVariante?: number;        // prezzo calcolato per questa variante
+
+  variantKey?: string;            
+  condizioneVariante?: 'Nuovo' | 'Usato'; 
+  prezzoVariante?: number;        
 }
 
 @Component({
@@ -36,7 +36,7 @@ export interface Prodotto {
 })
 export class Prodotti implements OnInit, OnDestroy {
   categoriaDenominazione: string | null = null;
-  // 'prodotti' contiene le VARIANTI (es. un prodotto Nuovo genera 2 elementi: Nuovo + Usato)
+
   prodotti: Prodotto[] = [];
   prodottiFiltrati: Prodotto[] = [];
   filtroAttivo: string = 'Tutti';
@@ -45,26 +45,24 @@ export class Prodotti implements OnInit, OnDestroy {
   errorMessage: string = '';
   preferiti: number[] = [];
 
-  // Paginazione
+
   paginaCorrente: number = 1;
   elementiPerPagina: number = 9;
 
-  // Nuovi stati per i filtri della barra laterale
+  
   ordinamento: string = '';
   prezzoMin: number | null = null;
   prezzoMax: number | null = null;
   disponibilita: string = '';
   condizione: string = '';
 
-  // Per ogni "prodotto logico" (chiave = nome normalizzato) memorizziamo il
-  // prezzo della riga DB Nuovo, se esiste. Serve per mostrare il prezzo barrato
-  // sulla card Usato quando esistono entrambe le condizioni nel DB.
+
   private prezzoNuovoPerNome: Map<string, number> = new Map();
 
 
   sottoCategorie: any[] = [];
 
-  // Mappatura tra il nome nella URL e l'ID della categoria nel DB
+ 
   private categoriaMap: { [key: string]: number } = {
     'console': 1,
     'videogiochi': 2,
@@ -72,7 +70,7 @@ export class Prodotti implements OnInit, OnDestroy {
     'elettronica': 4
   };
 
-  // Mappatura inversa per gestire eventuali dati legacy nel DB
+
   private genreMap: { [key: string]: string } = {
     '1': 'Azione',
     '2': 'Avventura',
@@ -126,12 +124,11 @@ export class Prodotti implements OnInit, OnDestroy {
       const response = await fetch(`http://localhost:3000/api/prodotti/categoria/${categoriaId}`);
       if (response.ok) {
         const data = await response.json();
-        // Normalizza eventuali refusi nel campo condizione
+
         data.forEach((raw: Prodotto) => {
           if ((raw.condizione as any) === 'Usata') raw.condizione = 'Usato';
         });
-        // Mappa: per ogni "prodotto logico" (raggruppato per nome normalizzato)
-        // tracciamo quali condizioni esistono realmente nel DB e il prezzo Nuovo (se presente).
+
         const condizioniPerNome = new Map<string, Set<string>>();
         this.prezzoNuovoPerNome = new Map();
         data.forEach((raw: Prodotto) => {
@@ -142,10 +139,7 @@ export class Prodotti implements OnInit, OnDestroy {
             this.prezzoNuovoPerNome.set(key, Number(raw.prezzoUnitarioVendita));
           }
         });
-        // Costruiamo le varianti mostrando SOLO le condizioni realmente presenti nel DB.
-        // Se per uno stesso nome esiste sia Nuovo che Usato, l'Usato avrà comunque il -25%
-        // calcolato dal prezzo del Nuovo (per coerenza visiva); altrimenti viene usato
-        // il prezzo della riga DB corrispondente.
+
         const varianti: Prodotto[] = [];
         data.forEach((raw: Prodotto) => {
           varianti.push(...this.espandiInVarianti(raw, condizioniPerNome));
@@ -212,19 +206,7 @@ export class Prodotti implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Costruisce le varianti visualizzabili a partire da una riga del DB.
-   * Regola: si mostrano SOLO le condizioni effettivamente presenti nel DB
-   * (raggruppando i record per nome). Nessuna variante “fantasma” viene generata.
-   *
-   * - Retrogaming      -> SOLO variante Usato (prezzo DB)
-   * - Riga DB Usato    -> variante Usato col prezzo della riga DB Usato
-   * - Riga DB Nuovo    -> variante Nuovo col prezzo della riga DB Nuovo
-   *
-   * Per evitare di duplicare l’elenco quando per lo stesso nome esistono sia
-   * il record Nuovo sia il record Usato, ogni riga DB genera SOLO la variante
-   * della propria condizione.
-   */
+
   private espandiInVarianti(raw: Prodotto, condizioniPerNome: Map<string, Set<string>>): Prodotto[] {
     const result: Prodotto[] = [];
     const prezzoDB = Number(raw.prezzoUnitarioVendita);
@@ -259,14 +241,13 @@ export class Prodotti implements OnInit, OnDestroy {
   }
 
   getSottoCategoria(prodotto: Prodotto): string | null {
-    // Se il prodotto possiede già il campo 'genere' assegnato dal database (es. Videogiochi), lo restituiamo direttamente
+
     if (prodotto.genere) {
       const genere = prodotto.genere.trim();
-      // Se il genere è un numero (dato legacy), lo convertiamo nel nome corretto.
+
       if (this.genreMap[genere]) {
         return this.genreMap[genere];
       }
-      // Altrimenti, se è già una stringa corretta, la restituiamo.
       return genere;
     }
     if (!this.sottoCategorie || this.sottoCategorie.length === 0) return null;
@@ -274,19 +255,18 @@ export class Prodotti implements OnInit, OnDestroy {
     const nomeLower = prodotto.nome.toLowerCase();
     const descLower = prodotto.descrizione ? prodotto.descrizione.toLowerCase() : '';
 
-    // REGOLA 1: Identificazione prioritaria ed esclusiva delle console Retrogaming
+    
     if (this.isRetrogaming(prodotto)) {
       return 'Retrogaming';
     }
 
-    // REGOLA 2: Se non è Retrogaming, cerca le altre sottocategorie
+    
     for (const sub of this.sottoCategorie) {
-      // Salta la categoria 'Retrogaming' perché già gestita (e per evitare false-positive)
+
       if (sub.nome === 'Retrogaming') continue;
 
       if (sub.keywords) {
         if (sub.keywords.some((kw: string) => nomeLower.includes(kw) || descLower.includes(kw))) {
-          // Specializzazione visiva del badge per Tastiere e Mouse
           if (sub.nome === 'Tastiere e Mouse') {
             const isTastiera = ['Tastiere', 'keyboard'].some(kw => nomeLower.includes(kw) || descLower.includes(kw));
             const isMouse = ['Mouse', 'mice'].some(kw => nomeLower.includes(kw) || descLower.includes(kw));
@@ -314,10 +294,6 @@ export class Prodotti implements OnInit, OnDestroy {
     this.impostaFiltro('Tutti');
   }
 
-  /**
-   * Imposta il filtro condizione (chiamato dai 3 bottoni Tutti/Nuovo/Usato nella sidebar).
-   * 'val' = '' (Tutti), 'Nuovo', 'Usato'.
-   */
   impostaCondizione(val: string) {
     this.condizione = val;
     this.applicaFiltriAvanzati();
@@ -331,7 +307,7 @@ export class Prodotti implements OnInit, OnDestroy {
   applicaFiltriAvanzati(resetPaginazione: boolean = true, animate: boolean = true) {
     let result = [...this.prodotti];
 
-    // 1. Filtro per Sottocategoria (Azione, PS5, Sport, etc.)
+
     if (this.filtroAttivo !== 'Tutti') {
       result = result.filter(p => {
         const appartenenza = this.getSottoCategoria(p);
@@ -339,7 +315,6 @@ export class Prodotti implements OnInit, OnDestroy {
       });
     }
 
-    // 2. Filtro per Range di Prezzo (usa prezzoVariante)
     if (this.prezzoMin !== null && this.prezzoMin !== undefined) {
       result = result.filter(p => this.getPrezzoVisualizzato(p) >= this.prezzoMin!);
     }
@@ -347,14 +322,13 @@ export class Prodotti implements OnInit, OnDestroy {
       result = result.filter(p => this.getPrezzoVisualizzato(p) <= this.prezzoMax!);
     }
 
-    // 3. Filtro Disponibilità
     if (this.disponibilita === 'immediata') {
       result = result.filter(p => p.giacenza > 0);
     } else if (this.disponibilita === 'esaurito') {
       result = result.filter(p => p.giacenza <= 0);
     }
 
-    // 4. Ordinamento
+
     if (this.ordinamento === 'prezzoCrescente') {
       result.sort((a, b) => this.getPrezzoVisualizzato(a) - this.getPrezzoVisualizzato(b));
     } else if (this.ordinamento === 'prezzoDecrescente') {
@@ -365,7 +339,7 @@ export class Prodotti implements OnInit, OnDestroy {
       result.sort((a, b) => b.nome.localeCompare(a.nome));
     }
 
-    // 5. Filtro per Condizione (usa la condizione della variante)
+
     if (this.condizione === 'Nuovo') {
       result = result.filter(p => p.condizioneVariante === 'Nuovo');
     } else if (this.condizione === 'Usato') {
@@ -374,16 +348,16 @@ export class Prodotti implements OnInit, OnDestroy {
     
     this.prodottiFiltrati = result;
     if (resetPaginazione) {
-      this.paginaCorrente = 1; // Ritorna alla prima pagina solo quando cambia un vero filtro
+      this.paginaCorrente = 1; 
     }
 
-    // Se richiesto, forza un riavvio pulito dell'animazione CSS
+   
     if (animate) {
       this.isAnimating = false;
-      this.cdr.detectChanges(); // Rimuove la classe dal DOM
+      this.cdr.detectChanges(); 
       setTimeout(() => {
         this.isAnimating = true;
-        this.cdr.detectChanges(); // Reinserisce la classe dopo 10ms per forzare l'animazione
+        this.cdr.detectChanges();
         setTimeout(() => {
           this.isAnimating = false;
           this.cdr.detectChanges();
@@ -393,23 +367,12 @@ export class Prodotti implements OnInit, OnDestroy {
   }
 
 
-  /**
-   * Prezzo visualizzato per la variante (Nuovo: prezzo DB, Usato non-retro: -25%, retro: prezzo DB).
-   */
   getPrezzoVisualizzato(p: Prodotto): number {
     if (p.prezzoVariante !== undefined) return Number(p.prezzoVariante);
     return Number(p.prezzoUnitarioVendita);
   }
 
-  /**
-   * Prezzo "originale" usato per il barrato sulla card Usato.
-   * Mostriamo SEMPRE il barrato + badge -25% su ogni card Usato (compreso retrogaming
-   * e Usato “standalone”) per una grafica uniforme:
-   *  - se per lo stesso nome esiste il record Nuovo nel DB con prezzo maggiore,
-   *    usiamo quel prezzo come barrato;
-   *  - altrimenti calcoliamo il prezzo "pieno" come prezzo_usato / 0.75
-   *    (cioè il prezzo dal quale il -25% restituirebbe esattamente il prezzo Usato).
-   */
+
   getPrezzoOriginale(p: Prodotto): number | null {
     if (p.condizioneVariante !== 'Usato') return null;
     const prezzoUsato = this.getPrezzoVisualizzato(p);
@@ -419,7 +382,7 @@ export class Prodotti implements OnInit, OnDestroy {
     if (prezzoNuovoDb !== undefined && prezzoNuovoDb > prezzoUsato) {
       return prezzoNuovoDb;
     }
-    // Fallback: ricostruiamo il prezzo "originale" dal prezzo Usato.
+
     return Math.round((prezzoUsato / 0.75) * 100) / 100;
   }
 
@@ -427,7 +390,6 @@ export class Prodotti implements OnInit, OnDestroy {
     return p.condizioneVariante === 'Usato';
   }
 
-  /** Identificatore stabile per *ngFor sulle varianti */
   trackByVariant = (_: number, p: Prodotto) => p.variantKey || p.id;
 
   caricaPreferiti() {
@@ -444,9 +406,9 @@ export class Prodotti implements OnInit, OnDestroy {
   togglePreferito(prodotto: any) {
     const index = this.preferiti.indexOf(prodotto.id);
     if (index > -1) {
-      this.preferiti.splice(index, 1); // Rimuove se c'è già
+      this.preferiti.splice(index, 1);
     } else {
-      this.preferiti.push(prodotto.id); // Aggiunge se non c'è
+      this.preferiti.push(prodotto.id); 
     }
     localStorage.setItem('preferiti', JSON.stringify(this.preferiti));
   }
@@ -464,7 +426,7 @@ export class Prodotti implements OnInit, OnDestroy {
     }
   }
 
-  // --- Paginazione ---
+
   getProdottiPaginati(): Prodotto[] {
     const inizio = (this.paginaCorrente - 1) * this.elementiPerPagina;
     const fine = inizio + this.elementiPerPagina;
@@ -480,10 +442,10 @@ export class Prodotti implements OnInit, OnDestroy {
     return Array.from({ length: numPagine }, (_, i) => i + 1);
   }
 
-  // Mostra un massimo di 5 pagine alla volta, scorrendo man mano
+
   getPagineVisibili(): number[] {
     const numPagine = this.getNumeroPagine();
-    const maxVisibili = 5; // Puoi cambiare questo numero per mostrare più o meno pallini
+    const maxVisibili = 5; 
     let inizio = Math.max(1, this.paginaCorrente - Math.floor(maxVisibili / 2));
     let fine = Math.min(numPagine, inizio + maxVisibili - 1);
 
@@ -498,7 +460,7 @@ export class Prodotti implements OnInit, OnDestroy {
     if (pagina >= 1 && pagina <= this.getNumeroPagine()) {
       this.paginaCorrente = pagina;
       if (isPlatformBrowser(this.platformId)) {
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Torna all'inizio in modo fluido
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
   }

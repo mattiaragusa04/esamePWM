@@ -1,10 +1,4 @@
-/* =============================================
-   APP.CSS — Navbar, Side Menu, Footer
-   Design: rosa #f86ded, glass, coerente con profilo.css
-   Dark mode: body.theme-dark hooks predisposti
-============================================= */
 
-/* ─── LOGO ─────────────────────────────────── */
 .pw-logo {
   font-size: 1.9rem;
   font-weight: 800;
@@ -26,7 +20,6 @@ html[data-theme="dark"] .pw-logo-main { color: #f0f0f0; }
   .pw-logo { font-size: 1.45rem; }
 }
 
-/* ─── NAVBAR WRAPPER ────────────────────────── */
 .pw-navbar-wrapper {
   background: rgba(255,255,255,0.88);
   backdrop-filter: blur(16px);
@@ -43,7 +36,7 @@ html[data-theme="dark"] .pw-navbar-wrapper {
   border-bottom-color: rgba(248,109,237,0.18) !important;
 }
 
-/* ─── NAVBAR ROW ────────────────────────────── */
+
 .pw-navbar {
   display: flex;
   align-items: center;
@@ -54,7 +47,6 @@ html[data-theme="dark"] .pw-navbar-wrapper {
 .pw-navbar-left  { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
 .pw-navbar-right { display: flex; align-items: center; gap: 0.2rem; flex-shrink: 0; }
 
-/* ─── ICON BUTTON ───────────────────────────── */
 .pw-nav-icon-btn {
   display: inline-flex;
   align-items: center;
@@ -78,7 +70,6 @@ html[data-theme="dark"] .pw-nav-icon-btn { color: #c8c8d0; }
 body.theme-dark .pw-nav-icon-btn:hover,
 html[data-theme="dark"] .pw-nav-icon-btn:hover { color: #f86ded; background: rgba(248,109,237,0.1); }
 
-/* ─── SEARCH BAR ────────────────────────────── */
 .pw-search-bar {
   display: flex;
   align-items: center;
@@ -136,7 +127,6 @@ html[data-theme="dark"] .pw-search-input { color: #e0e0e0; }
 body.theme-dark .pw-search-input::placeholder,
 html[data-theme="dark"] .pw-search-input::placeholder { color: #555; }
 
-/* Tastiera hint ↵ click = cerca */
 .pw-search-kbd {
   flex-shrink: 0;
   display: inline-flex;
@@ -170,7 +160,7 @@ html[data-theme="dark"] .pw-search-input::placeholder { color: #555; }
 }
 .pw-search-btn-inline:hover { background: rgba(248,109,237,0.22); }
 
-/* ─── CHIP VENDI ────────────────────────────── */
+
 .pw-chip-vendi {
   display: inline-flex;
   align-items: center;
@@ -202,7 +192,7 @@ html[data-theme="dark"] .pw-chip-vendi {
 body.theme-dark .pw-chip-vendi:hover,
 html[data-theme="dark"] .pw-chip-vendi:hover { background: rgba(248,109,237,0.2); }
 
-/* ─── DIVIDER verticale ─────────────────────── */
+
 .pw-nav-divider {
   width: 1px;
   height: 20px;
@@ -213,7 +203,6 @@ html[data-theme="dark"] .pw-chip-vendi:hover { background: rgba(248,109,237,0.2)
 body.theme-dark .pw-nav-divider,
 html[data-theme="dark"] .pw-nav-divider { background: rgba(255,255,255,0.1); }
 
-/* ─── AVATAR PILL (utente loggato) ──────────── */
 .pw-avatar-pill {
   display: inline-flex;
   align-items: center;
@@ -251,7 +240,7 @@ html[data-theme="dark"] .pw-avatar-pill {
   border-color: rgba(248,109,237,0.3);
 }
 
-/* ─── CART BADGE + PREVIEW ──────────────────── */
+
 .pw-cart-wrapper { position: relative; }
 .pw-cart-badge {
   position: absolute;
@@ -295,7 +284,7 @@ html[data-theme="dark"] .pw-cart-preview {
   border-color: rgba(248,109,237,0.22);
 }
 
-/* ─── CATEGORIE DESKTOP ─────────────────────── */
+
 .pw-categories {
   display: flex;
   gap: 1.8rem;
@@ -333,7 +322,7 @@ html[data-theme="dark"] .pw-category-link { color: #94a3b8; }
 body.theme-dark .pw-category-link:hover,
 html[data-theme="dark"] .pw-category-link:hover { color: #f86ded; }
 
-/* ─── RICERCA MOBILE ────────────────────────── */
+
 .pw-search-mobile {
   max-height: 0;
   overflow: hidden;
@@ -342,7 +331,7 @@ html[data-theme="dark"] .pw-category-link:hover { color: #f86ded; }
 }
 .pw-search-mobile.show { max-height: 90px; opacity: 1; }
 
-/* ─── OVERLAY ───────────────────────────────── */
+
 .side-menu-overlay {
   position: fixed;
   inset: 0;
@@ -354,7 +343,7 @@ html[data-theme="dark"] .pw-category-link:hover { color: #f86ded; }
 }
 .side-menu-overlay.open { opacity: 1; visibility: visible; }
 
-/* ─── SIDE MENU ─────────────────────────────── */
+
 .pw-side-menu {
   position: fixed;
   top: 0; left: 0;
@@ -515,9 +504,7 @@ html[data-theme="dark"] .pw-side-link:hover { color: #f86ded; background: rgba(2
   box-shadow: 0 0 10px rgba(220,38,38,0.14);
 }
 
-/* ═══════════════════════════════════════════
-   FOOTER — REDESIGN
-═══════════════════════════════════════════ */
+
 .pw-footer {
   position: relative;
   margin-top: 4rem;
@@ -532,7 +519,6 @@ html[data-theme="dark"] .pw-footer {
   border-top-color: rgba(248,109,237,0.18) !important;
 }
 
-/* Glow decorativo in cima al footer */
 .pw-footer-glow {
   position: absolute;
   top: -60px;
@@ -551,7 +537,7 @@ html[data-theme="dark"] .pw-footer-glow {
 
 .pw-footer .container { position: relative; z-index: 1; }
 
-/* Grid 4 colonne */
+
 .pw-footer-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
@@ -571,7 +557,7 @@ html[data-theme="dark"] .pw-footer-glow {
   }
 }
 
-/* Colonna brand */
+
 .pw-footer-col--brand .pw-footer-logo {
   font-size: 2rem;
   margin-bottom: 0.5rem;
@@ -586,7 +572,6 @@ html[data-theme="dark"] .pw-footer-glow {
 body.theme-dark .pw-footer-tagline,
 html[data-theme="dark"] .pw-footer-tagline { color: #64748b; }
 
-/* Mappa */
 .pw-footer-map {
   width: 100%;
   max-width: 280px;
@@ -602,7 +587,7 @@ html[data-theme="dark"] .pw-footer-map {
   box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
-/* Heading colonne */
+
 .pw-footer-heading {
   font-size: 0.72rem;
   font-weight: 800;
@@ -613,7 +598,7 @@ html[data-theme="dark"] .pw-footer-map {
   margin-top: 0;
 }
 
-/* Link list */
+
 .pw-footer-links {
   list-style: none;
   padding: 0;
@@ -651,7 +636,7 @@ body.theme-dark .pw-footer-links a:hover,
 html[data-theme="dark"] .pw-footer-links a:hover { color: #f86ded; }
 .pw-footer-hours { cursor: default; }
 
-/* Social buttons */
+
 .pw-footer-socials {
   display: flex;
   flex-direction: column;
@@ -701,7 +686,7 @@ html[data-theme="dark"] .pw-social-btn {
   box-shadow: 0 4px 14px rgba(24,119,242,0.2);
 }
 
-/* Badge trust */
+
 .pw-footer-badges {
   display: flex;
   flex-direction: column;
@@ -722,14 +707,14 @@ html[data-theme="dark"] .pw-social-btn {
 body.theme-dark .pw-footer-badge,
 html[data-theme="dark"] .pw-footer-badge { color: #64748b; }
 
-/* Divider */
+
 .pw-footer-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent 0%, rgba(248,109,237,0.25) 50%, transparent 100%);
   margin-bottom: 1.25rem;
 }
 
-/* Bottom bar */
+
 .pw-footer-bottom {
   display: flex;
   align-items: center;

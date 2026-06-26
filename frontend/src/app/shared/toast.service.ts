@@ -12,7 +12,7 @@ export interface Toast {
 @Injectable({ providedIn: 'root' })
 export class ToastService {
   private nextId = 1;
-  // Signal contenente la lista dei toast attualmente visibili
+
   readonly toasts = signal<Toast[]>([]);
 
   show(message: string, type: ToastType = 'info', duration: number = 3500): void {
@@ -20,7 +20,7 @@ export class ToastService {
     const toast: Toast = { id, type, message, duration };
     this.toasts.update((list) => [...list, toast]);
 
-    // Auto-dismiss dopo `duration` ms
+   
     if (duration > 0) {
       setTimeout(() => this.dismiss(id), duration);
     }

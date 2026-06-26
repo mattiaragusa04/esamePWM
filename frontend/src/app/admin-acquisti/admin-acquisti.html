@@ -6,7 +6,6 @@
         </div>
     </div>
 
-    <!-- Barra di ricerca + filtri -->
     <div class="d-flex flex-wrap gap-3 align-items-center mb-4" *ngIf="!isLoading && !errorMessage">
         <div class="input-group" style="max-width: 380px;">
             <span class="input-group-text bg-white border-end-0 rounded-pill-start">
@@ -30,7 +29,6 @@
             </button>
         </div>
 
-        <!-- Filtro per stato -->
         <div class="btn-group" role="group">
             <button class="btn btn-sm rounded-pill me-1 font-weight-bold"
                 [ngClass]="filtroStato === '' ? 'btn-danger' : 'btn-outline-secondary'"
@@ -46,7 +44,7 @@
                 (click)="filtroStato = 'Rifiutata'; filtraOfferte()">Rifiutata</button>
         </div>
 
-        <!-- Filtro per tipo compenso -->
+
         <div class="btn-group" role="group">
             <button class="btn btn-sm rounded-pill me-1 font-weight-bold"
                 [ngClass]="filtroCompenso === '' ? 'btn-info text-white' : 'btn-outline-secondary'"
@@ -66,17 +64,15 @@
         </small>
     </div>
 
-    <!-- Loader -->
+
     <div *ngIf="isLoading" class="text-center my-5">
         <div class="spinner-border text-danger" role="status"></div>
     </div>
 
-    <!-- Messaggio di errore -->
     <div *ngIf="errorMessage" class="alert alert-danger text-center shadow-sm rounded-4 border-0">
         <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
     </div>
 
-    <!-- Tabella Offerte -->
     <div class="card shadow-sm border-0" style="border-radius: 1rem; overflow: hidden;" *ngIf="!isLoading && !errorMessage">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 bg-white">
@@ -151,7 +147,7 @@
         </div>
     </div>
 
-    <!-- Modal Dettaglio Offerta -->
+
     <div class="modal fade" [class.show]="mostraModale" [style.display]="mostraModale ? 'block' : 'none'" [style.background]="'rgba(0,0,0,0.5)'" tabindex="-1" aria-modal="true" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content border-0 shadow" style="border-radius: 1rem;" *ngIf="offertaSelezionata">
@@ -164,7 +160,7 @@
                 </div>
                 <div class="modal-body p-4">
 
-                    <!-- Riepilogo schede -->
+
                     <div class="row g-3 mb-4">
                         <div class="col-md-3">
                             <div class="card border-0 bg-light rounded-3 p-3 text-center">
@@ -205,7 +201,7 @@
                         </div>
                     </div>
 
-                    <!-- Condizioni -->
+
                     <div class="mb-4">
                         <h6 class="font-weight-bold border-bottom pb-2">Condizioni dichiarate</h6>
                         <div class="bg-light rounded-3 p-3">
@@ -221,7 +217,7 @@
                         </div>
                     </div>
 
-                    <!-- Foto allegate -->
+
                     <div class="mb-4" *ngIf="fotoParsed && fotoParsed.length > 0">
                         <h6 class="font-weight-bold border-bottom pb-2">Foto allegate</h6>
                         <div class="d-flex flex-wrap gap-2">
@@ -233,7 +229,6 @@
                         </div>
                     </div>
 
-                    <!-- Cambio stato -->
                     <div>
                         <h6 class="font-weight-bold border-bottom pb-2">Aggiorna Stato</h6>
                         <div class="d-flex gap-2 flex-wrap">
@@ -257,7 +252,6 @@
                                 <i class="bi bi-x-circle-fill me-1"></i> Rifiuta
                             </button>
                         </div>
-                        <!-- Avviso logica accettazione -->
                         <div class="mt-3 alert alert-info border-0 rounded-3 py-2 px-3 small" *ngIf="offertaSelezionata.stato_offerta !== 'Accettata'">
                             <i class="bi bi-info-circle-fill me-1"></i>
                             <strong>Accettando</strong> questa offerta:

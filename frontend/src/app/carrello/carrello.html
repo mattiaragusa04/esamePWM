@@ -4,14 +4,13 @@
     <h2 class="text-center font-weight-bold m-0">Il mio <span class="text-info">carrello</span></h2>
   </div>
 
-  <!-- Loader visuale in fase di pre-caricamento -->
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border text-info" role="status">
       <span class="visually-hidden">Caricamento...</span>
     </div>
   </div>
 
-  <!-- Schermata carrello vuoto -->
+
   <div *ngIf="!isLoading && carrello.length === 0">
     <p class="text-center text-muted fs-5">Il tuo carrello è attualmente vuoto. Inizia a esplorare i nostri prodotti e aggiungi i tuoi preferiti!</p>
     <div class="text-center mt-5">
@@ -19,14 +18,14 @@
     </div>
   </div>
 
-  <!-- Griglia prodotti e riepilogo se ci sono elementi -->
+
   <div *ngIf="!isLoading && carrello.length > 0" class="row">
     <div class="col-lg-8">
-      <!-- Lista Articoli -->
+
       <div class="cart-items-list">
         <div class="card mb-3 border-0 shadow-sm overflow-hidden" *ngFor="let item of carrello" style="border-radius: 1.25rem;">
           <div class="row g-0 align-items-center p-3 p-md-4">
-            <!-- Immagine Prodotto -->
+
             <div class="col-4 col-md-2 text-center">
               <img [src]="item.immagine.includes('http') ? item.immagine : 'http://localhost:3000/' + item.immagine" 
                    class="img-fluid rounded-3" 
@@ -34,7 +33,6 @@
                    style="max-height: 100px; object-fit: contain;">
             </div>
             
-            <!-- Dettagli Testuali -->
             <div class="col-8 col-md-4 ps-3">
               <h5 class="fw-bold text-truncate mb-1" title="{{item.nome}}">{{ item.nome }}</h5>
               <div class="mb-2">
@@ -50,14 +48,14 @@
                   {{ (item.condizione === 'Usato' ? (item.prezzoUnitarioVendita * 0.75) : item.prezzoUnitarioVendita) | currency:'EUR' }}
                 </span>
               </p>
-              <!-- Badge stato giacenza dinamico -->
+
               <div class="giacenza-badge mt-2" [ngClass]="'giacenza-' + statoGiacenza(item).livello">
                 <i class="bi" [ngClass]="statoGiacenza(item).icona"></i>
                 <span>{{ statoGiacenza(item).testo }}</span>
               </div>
             </div>
 
-            <!-- Selettore Quantità -->
+
             <div class="col-6 col-md-3 d-flex justify-content-center align-items-center mt-3 mt-md-0">
               <div class="input-group input-group-sm w-auto border rounded-pill overflow-hidden shadow-sm bg-white">
                 <button class="btn btn-link px-3 text-info" (click)="aggiornaQuantita(item, -1)" [disabled]="item.quantita <= 1">
@@ -70,7 +68,7 @@
               </div>
             </div>
 
-            <!-- Totale Parziale e Rimozione -->
+
             <div class="col-6 col-md-3 text-end mt-3 mt-md-0 d-flex flex-column justify-content-between h-100">
               <button class="btn btn-sm text-danger border-0 align-self-end mb-2 mb-md-3" (click)="rimuoviOggetto(item)" title="Rimuovi">
                 <i class="bi bi-trash3-fill fs-5"></i>
@@ -94,12 +92,12 @@
       </div>
     </div>
 
-    <!-- Modulo Riepilogo (Fisso a destra) -->
+
     <div class="col-lg-4 mt-4 mt-lg-0">
       <div class="card border-0 shadow-lg p-4 sticky-top" style="top: 20px; border-radius: 1.5rem;">
         <h4 class="mb-4 fw-bold text-center">Riepilogo Ordine</h4>
         
-        <!-- Riepilogo dettagliato articoli -->
+
         <div class="summary-items-list mb-3" style="max-height: 320px; overflow-y: auto; padding-right: 8px;">
           <div *ngFor="let item of carrello" class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-light">
             <div class="pe-2 flex-grow-1 overflow-hidden">

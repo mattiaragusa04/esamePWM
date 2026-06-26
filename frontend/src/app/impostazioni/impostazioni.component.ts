@@ -21,15 +21,15 @@ export class ImpostazioniComponent implements OnInit, AfterViewInit, OnDestroy {
 
   utente: any = null;
 
-  // Tema
+
   tema: 'light' | 'dark' = 'light';
 
-  // Notifiche
+
   notifichePromozioni = true;
   notificheOrdini = true;
   notificheVendite = true;
 
-  // Reset password
+
   emailResetPassword: string = '';
   isRichiestaResetInCorso = false;
 
@@ -73,13 +73,12 @@ export class ImpostazioniComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.canvasRef?.nativeElement) this.neuralCanvas.destroy(this.canvasRef.nativeElement);
   }
 
-  // === TEMA ===
   cambiaTema(theme: Theme): void {
     this.tema = theme;
     this.themeService.setTheme(theme);
   }
 
-  // === NOTIFICHE ===
+
   salvaImpostazioniNotifiche(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
@@ -90,7 +89,7 @@ export class ImpostazioniComponent implements OnInit, AfterViewInit, OnDestroy {
     this.toast.success('Preferenze di notifica salvate.');
   }
 
-  // === RESET PASSWORD ===
+
   async richiediResetPassword() {
     if (!this.emailResetPassword) {
       this.toast.warning('Inserisci un indirizzo email.');
@@ -116,7 +115,7 @@ export class ImpostazioniComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // === RIPRISTINO PAGINA ===
+
   ripristinaPagina(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this.themeService.setTheme('light');
@@ -128,7 +127,7 @@ export class ImpostazioniComponent implements OnInit, AfterViewInit, OnDestroy {
     window.location.reload();
   }
 
-  // === CANCELLA DATI LOCALI ===
+ 
   cancellaDatiLocali(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 

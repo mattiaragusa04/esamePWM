@@ -30,11 +30,9 @@ export class Carrello implements OnInit, OnDestroy {
   ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Sottoscrizione reattiva al carrello: ogni cambio aggiorna la UI
     this.itemsSub = this.carrelloService.cartItems$.subscribe(items => {
       this.carrello = items;
-      
-      // Calcolo locale e dinamico del totale per includere correttamente gli sconti per l'Usato
+
       this.totale = this.carrello.reduce((acc: number, item: any) => {
         const base = Number(item.prezzoUnitarioVendita ?? 0);
         const prezzoEff = item.condizione === 'Usato' ? Math.round(base * 0.75 * 100) / 100 : base;
@@ -45,7 +43,7 @@ export class Carrello implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
 
-    // Forza il refresh dal backend/localStorage all'apertura della pagina
+
     this.carrelloService.refreshCart();
   }
 
@@ -70,14 +68,7 @@ export class Carrello implements OnInit, OnDestroy {
     this.toast.info('Carrello svuotato');
   }
 
-  /**
-   * Restituisce lo stato della disponibilità in base ai pezzi rimasti
-   * (giacenza totale - quantità già nel carrello).
-   *   > 20  → verde "Disponibilità immediata"
-   *   11-20 → giallo "Solo X pezzi rimasti"
-   *   1-10  → rosso "Ultimi X pezzi!"
-   *   = 0   → esaurito "Esaurito"
-   */
+
   statoGiacenza(item: any): { livello: 'ok' | 'warning' | 'danger' | 'out'; testo: string; icona: string } {
     const giacenza = item.giacenza ?? 0;
     const rimasti = Math.max(0, giacenza - (item.quantita ?? 0));

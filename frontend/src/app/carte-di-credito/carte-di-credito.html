@@ -1,6 +1,6 @@
 <div class="carte-page">
 
-  <!-- ╔═══ HERO ═════════════════════════════════════════╗ -->
+
   <div class="carte-hero" #carteHero>
     <canvas #carteCanvas style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
     <div class="carte-hero-orb orb-1"></div>
@@ -21,7 +21,7 @@
     </div>
   </div>
 
-  <!-- ╔═══ FORM AGGIUNTA CARTA ═══════════════════════╗ -->
+ 
   <div class="carte-form-card" *ngIf="mostraForm">
     <div class="carte-form-header">
       <div class="carte-form-header-icon">
@@ -101,12 +101,11 @@
     </form>
   </div>
 
-  <!-- Loader -->
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border spinner-pink" role="status"></div>
   </div>
 
-  <!-- Empty state -->
+
   <div *ngIf="!isLoading && carte.length === 0 && !mostraForm" class="carte-empty">
     <div class="carte-empty-icon"><i class="bi bi-credit-card"></i></div>
     <h4>Nessuna carta salvata</h4>
@@ -116,17 +115,15 @@
     </button>
   </div>
 
-  <!-- Griglia Carte -->
   <div *ngIf="!isLoading && carte.length > 0" class="carte-grid">
     <div class="carta-visual" *ngFor="let carta of carte">
 
-      <!-- Sfondo decorativo carta -->
       <div class="carta-visual-bg"></div>
       <div class="carta-chip">
         <i class="bi bi-sim-fill"></i>
       </div>
 
-      <!-- Logo circuito -->
+     
       <div class="carta-network">
         <span class="carta-network-circles">
           <span class="circle-left"></span>
@@ -134,12 +131,12 @@
         </span>
       </div>
 
-      <!-- Numero mascherato -->
+      
       <div class="carta-number">
         **** &nbsp; **** &nbsp; **** &nbsp; {{ carta.numero_carta | slice:-4 }}
       </div>
 
-      <!-- Footer carta -->
+   
       <div class="carta-footer">
         <div>
           <div class="carta-footer-label">Titolare</div>
@@ -150,7 +147,6 @@
           <div class="carta-footer-value">{{ carta.data_scadenza }}</div>
         </div>
 
-        <!-- Bottone elimina: stato normale -->
         <button
           *ngIf="cartaInAttesaEliminazione !== carta.id"
           class="carta-delete-btn"
@@ -159,7 +155,7 @@
           <i class="bi bi-trash3"></i>
         </button>
 
-        <!-- Conferma inline: appare al primo click -->
+
         <div *ngIf="cartaInAttesaEliminazione === carta.id" class="carta-confirm-delete">
           <span class="carta-confirm-label">Rimuovere?</span>
           <button class="carta-confirm-yes" (click)="eliminaCarta(carta.id)" title="Conferma">

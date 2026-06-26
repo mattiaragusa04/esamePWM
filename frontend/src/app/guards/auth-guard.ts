@@ -5,17 +5,15 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
 
-  // Eseguiamo il controllo SOLO se siamo sul browser (client-side)
   if (isPlatformBrowser(platformId)) {
     const userStr = localStorage.getItem('user');
     if (userStr) {
       const user = JSON.parse(userStr);
       if (user.ruolo === 'user' || user.ruolo === 'admin') {
-        return true; // L'utente è un user, accesso consentito
+        return true; 
       }
     }
-    
-    // Se siamo qui, l'utente non è admin o non è loggato
+
     console.log("AdminGuard - ACCESSO NEGATO. Reindirizzamento alla home.");
     router.navigate(['/home']);
     return false;

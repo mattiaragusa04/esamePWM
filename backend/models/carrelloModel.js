@@ -1,6 +1,6 @@
 const db = require("../db/database");
 
-// Helper: legge la giacenza disponibile del prodotto e la quantità già presente nel carrello dell'utente
+
 const getGiacenzaEQuantitaInCarrello = (userId, prodottoId, condizione) => {
     return new Promise((res, rej) => {
         const query = `
@@ -40,7 +40,7 @@ const Carrello = {
         });
     },
     addItem : async (userId, prodottoId, quantita, condizione) => {
-        // Controllo giacenza prima di scrivere su DB
+
         const { giacenza, quantitaInCarrello } = await getGiacenzaEQuantitaInCarrello(userId, prodottoId, condizione);
         if (quantita <= 0) {
             const e = new Error('Quantità non valida.');
@@ -106,7 +106,6 @@ const Carrello = {
         });
     },
     updateItem : async (userId, prodottoId, quantita, condizione) => {
-        // Controllo limiti prima di scrivere su DB
         if (quantita < 1) {
             const e = new Error('La quantità deve essere almeno 1.');
             e.status = 400;

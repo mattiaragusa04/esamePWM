@@ -1,4 +1,4 @@
-/* Form styling */
+
 .form-control:focus {
   border-color: #17a2b8;
   box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
@@ -19,7 +19,7 @@
   box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
 }
 
-/* Label styling - neri */
+
 label {
   color: black !important;
   font-weight: bold !important;
@@ -39,7 +39,7 @@ div.form-group > label {
   text-align: center;
 }
 
-/* File input styling */
+
 .form-control[type="file"] {
   max-width: 300px;
   margin: 1rem auto 0;
@@ -63,7 +63,7 @@ div.form-group > label {
   background-color: #138496;
 }
 
-/* Alert animations */
+
 .alert {
   animation: slideIn 0.3s ease-in-out;
 }
@@ -79,7 +79,7 @@ div.form-group > label {
   }
 }
 
-/* Button styling */
+
 .btn-info:hover {
   background-color: #138496;
   border-color: #127a8f;
@@ -92,7 +92,6 @@ div.form-group > label {
   cursor: not-allowed;
 }
 
-/* Responsive adjustments */
 @media (max-width: 576px) {
   .card {
     border-radius: 0.5rem !important;

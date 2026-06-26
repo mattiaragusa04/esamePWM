@@ -1,6 +1,4 @@
-/* ═══════════════════════════════════════════════════════
-   PAGINA INDIRIZZI — coerente con ordini/vendite/carte/impostazioni
-   ════════════════════════════════════════════════════════ */
+
 
 .indirizzi-page {
   padding: 0.5rem 0 2rem;
@@ -12,7 +10,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── HERO ───────────────────────────────────────────────── */
+
 .indirizzi-hero {
   position: relative;
   overflow: hidden;
@@ -23,7 +21,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
-/* Gli orb sono azzerati: il canvas neurale gestisce già l'effetto di sfondo */
+
 .indirizzi-hero-orb {
   position: absolute;
   border-radius: 50%;
@@ -93,7 +91,7 @@
   color: #fff;
 }
 
-/* ─── FORM ──────────────────────────────────────────────── */
+
 .indirizzi-form-card {
   background: #fff;
   border-radius: 1.25rem;
@@ -238,7 +236,7 @@ body.theme-dark .indirizzi-form-select {
   cursor: not-allowed;
 }
 
-/* ─── GRIGLIA INDIRIZZI ─────────────────────────────────────────── */
+
 .indirizzi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -306,7 +304,7 @@ body.theme-dark .indirizzo-tipo-badge {
   border-color: rgba(239,68,68,0.3);
 }
 
-/* ─── CONFERMA ELIMINAZIONE INLINE (indirizzo) ───────────────── */
+
 .indirizzo-confirm-delete {
   display: flex;
   align-items: center;
@@ -401,7 +399,7 @@ body.theme-dark .indirizzo-provincia { color: #94a3b8; }
 }
 .indirizzo-paese .bi { font-size: 0.75rem; }
 
-/* ─── EMPTY STATE ───────────────────────────────────────────── */
+
 .indirizzi-empty {
   display: flex;
   flex-direction: column;

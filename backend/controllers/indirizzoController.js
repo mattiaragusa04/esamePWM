@@ -35,8 +35,6 @@ exports.getIndirizziByUserId = async (req, res) => {
 exports.createIndirizzo = async (req, res) => {
     try {
         const userId = req.user.id;
-        // Il frontend passa salvaIndirizzo (true/false), lo convertiamo in 0/1 per SQLite
-        // Default 1 (salvato) se il campo non viene inviato (es. da altre parti dell'app)
         const salvato = req.body.salvaIndirizzo === false || req.body.salvato === 0 ? 0 : 1;
         const indirizzoData = {
             utente_id: userId,

@@ -51,14 +51,13 @@
   </div>
 </div>
 
-<!-- ══════════ MODALE RECUPERO PASSWORD ══════════ -->
+
 <div class="fedelta-overlay" *ngIf="mostraModaleReset" (click)="chiudiModaleReset()">
   <div class="fedelta-modal" (click)="$event.stopPropagation()">
 
     <div class="modal-icon"><i class="bi bi-lock-fill"></i></div>
     <h3>Recupera password</h3>
 
-    <!-- STEP 1: inserimento email -->
     <ng-container *ngIf="stepReset === 'email'">
       <p class="text-muted mb-4">Inserisci l'email associata al tuo account per ricevere le istruzioni di recupero.</p>
 

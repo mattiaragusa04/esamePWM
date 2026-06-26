@@ -3,7 +3,6 @@ const db = require("../db/database");
 const User = {
   create: (nome, cognome, email, password) => {
     return new Promise((resolve, reject) => {
-      // Crea l'utente senza security_stamp
       const query = `INSERT INTO utente (nome, cognome, email, password) VALUES (?, ?, ?, ?)`;
       db.run(query, [nome, cognome, email, password], function (err) {
         if (err) reject(err);
@@ -58,7 +57,6 @@ const User = {
     });
   },
 
-  // Scala (sottrae) i punti fedeltà — usato per acquisti con punti
   deductPuntiFedelta: (userId, puntiDaSottrarre) => {
     return new Promise((resolve, reject) => {
       db.run(
@@ -121,8 +119,6 @@ const User = {
     });
   },
 
-
-  // Aggiorna solo la password
   updatePassword: (id, hashedPassword) => {
     return new Promise((resolve, reject) => {
       db.run(

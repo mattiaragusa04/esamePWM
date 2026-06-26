@@ -31,8 +31,7 @@ exports.submitSellOffer = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // Il frontend invia i dati come JSON serializzato nel campo 'offer' del FormData.
-        // Prova prima a leggere da req.body.offer, poi come fallback dai campi piatti.
+
         let prodottoId, estimatedPrice, conditions, tipoCompenso;
 
         if (req.body.offer) {
@@ -50,7 +49,6 @@ exports.submitSellOffer = async (req, res) => {
             ({ prodottoId, estimatedPrice, conditions, tipoCompenso } = req.body);
         }
 
-        // Validazione campi essenziali
         if (!prodottoId) {
             return res.status(400).json({ message: "prodottoId mancante." });
         }
@@ -100,7 +98,7 @@ exports.getProdottoForSellingByUserId = async (req, res) => {
     }
 };
 
-// PUT /api/vendi/:id  — aggiorna solo lo stato (usato anche per Rifiuta / In attesa)
+
 exports.update = async (req, res) => {
     try {
         const id = req.params.id;
@@ -113,10 +111,6 @@ exports.update = async (req, res) => {
     }
 };
 
-// PUT /api/vendi/:id/accetta — accetta l'offerta con logica completa:
-//   1. Aggiorna stato_offerta → 'Accettata'
-//   2. Incrementa giacenza del prodotto di 1
-//   3. Se tipo_compenso = 'punti': accredita punti all'utente (Math.round(prezzo/5) + 5)
 exports.accettaOfferta = async (req, res) => {
     const id = req.params.id;
 
@@ -133,13 +127,13 @@ exports.accettaOfferta = async (req, res) => {
     }
 
     try {
-        // 1. Aggiorna stato
+
         await vendiModel.updateStatus(id, 'Accettata');
 
-        // 2. Incrementa giacenza prodotto di 1
+
         await prodottoModel.ripristinaGiacenza(offerta.prodotto_id, 1);
 
-        // 3. Se tipo_compenso = 'punti', accredita punti fedeltà
+
         let puntiAccreditati = 0;
         if (offerta.tipo_compenso === 'punti') {
             puntiAccreditati = Math.round(offerta.prezzo_stimato / 5) + 5;

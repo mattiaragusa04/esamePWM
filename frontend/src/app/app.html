@@ -1,9 +1,9 @@
-<!-- HEADER PRINCIPALE -->
+
 <header class="pw-navbar-wrapper">
   <div class="container">
     <nav class="pw-navbar">
 
-      <!-- SINISTRA: Toggler + Logo -->
+
       <div class="pw-navbar-left">
         <button class="pw-nav-icon-btn" type="button" (click)="toggleMenu()" aria-label="Apri menu">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
@@ -15,7 +15,7 @@
         </a>
       </div>
 
-      <!-- CENTRO: Search bar (solo desktop) -->
+
       <div class="pw-search-bar d-none d-lg-flex">
         <i class="bi bi-search pw-search-icon"></i>
         <input
@@ -27,16 +27,15 @@
         />
       </div>
 
-      <!-- DESTRA: Chip Vendi + icone -->
       <div class="pw-navbar-right">
 
-        <!-- Chip "Vendi" — solo md+ -->
+
         <button class="pw-chip-vendi d-none d-md-inline-flex" (click)="vaiAVendi()" title="Vendi a PAwerUP">
           <i class="bi bi-tags-fill"></i>
           <span>Vendi</span>
         </button>
 
-        <!-- Chip "Admin" — solo md+, visibile solo agli admin -->
+        
         <a
           *ngIf="utenteLoggato?.ruolo === 'admin'"
           class="pw-chip-vendi d-none d-md-inline-flex"
@@ -48,17 +47,17 @@
           <span>Admin</span>
         </a>
 
-        <!-- Icona Ricerca (solo mobile) -->
+        
         <button class="pw-nav-icon-btn d-lg-none" type="button" (click)="toggleRicerca($event)" aria-label="Cerca">
           <i class="bi bi-search" style="font-size:1.15rem"></i>
         </button>
 
-        <!-- Preferiti -->
+        
         <a class="pw-nav-icon-btn" [routerLink]="['/preferiti']" title="Preferiti">
           <i class="bi bi-heart" style="font-size:1.25rem"></i>
         </a>
 
-        <!-- Carrello -->
+        
         <div class="pw-cart-wrapper" routerLink="/carrello" style="cursor:pointer">
           <button class="pw-nav-icon-btn" aria-label="Carrello">
             <i class="bi bi-bag" style="font-size:1.25rem"></i>
@@ -72,17 +71,17 @@
           </div>
         </div>
 
-        <!-- Divider -->
+       
         <div class="pw-nav-divider d-none d-md-block"></div>
 
-        <!-- Utente non loggato -->
+       
         <ng-container *ngIf="!utenteLoggato">
           <a class="pw-nav-icon-btn" [routerLink]="['/login']" title="Accedi">
             <i class="bi bi-person" style="font-size:1.3rem"></i>
           </a>
         </ng-container>
 
-        <!-- Utente loggato: avatar pill -->
+        
         <ng-container *ngIf="utenteLoggato">
           <a class="pw-avatar-pill" [routerLink]="['/profilo']" title="Il mio Profilo">
             <span class="pw-avatar-dot"></span>
@@ -93,7 +92,7 @@
       </div>
     </nav>
 
-    <!-- Categorie Desktop -->
+
     <div class="pw-categories d-none d-lg-flex">
       <a class="pw-category-link" [routerLink]="['/categoria', 'console']">Console</a>
       <a class="pw-category-link" [routerLink]="['/categoria', 'videogiochi']">Videogiochi</a>
@@ -101,7 +100,7 @@
       <a class="pw-category-link" [routerLink]="['/categoria', 'accessori']">Accessori</a>
     </div>
 
-    <!-- Ricerca Mobile -->
+
     <div class="pw-search-mobile d-lg-none" [class.show]="mostraRicerca">
       <div class="pw-search-bar pw-search-bar--mobile">
         <i class="bi bi-search pw-search-icon"></i>
@@ -118,11 +117,10 @@
   </div>
 </header>
 
-<!-- Overlay + Side Menu -->
 <div class="side-menu-overlay" [class.open]="!isMenuCollapsed" (click)="toggleMenu()"></div>
 <div class="pw-side-menu" [class.open]="!isMenuCollapsed">
 
-  <!-- Header side menu -->
+
   <div class="pw-side-menu-header">
     <a class="pw-logo pw-logo--lg" routerLink="/" (click)="toggleMenu()">
       <span class="pw-logo-accent">PA</span><span class="pw-logo-main">werUP</span>
@@ -134,7 +132,7 @@
     </button>
   </div>
 
-  <!-- Chip vendi nel menu laterale -->
+ 
   <div class="pw-side-vendi-wrap">
     <button class="pw-side-vendi-btn" (click)="vaiAVendi(); toggleMenu()">
       <span class="pw-side-vendi-icon"><i class="bi bi-tags-fill"></i></span>
@@ -210,25 +208,22 @@
   </div>
 </div>
 
-<!-- Router outlet -->
 <div class="container mt-4">
   <router-outlet></router-outlet>
 </div>
 
-<!-- ═════════════════════════════════════════════
-     FOOTER REDESIGN
-═════════════════════════════════════════════ -->
+
 <footer class="pw-footer">
 
-  <!-- Banda superiore con glow -->
+
   <div class="pw-footer-glow"></div>
 
   <div class="container">
 
-    <!-- GRID PRINCIPALE: 4 colonne -->
+    
     <div class="pw-footer-grid">
 
-      <!-- COL 1: Brand + mappa -->
+  
       <div class="pw-footer-col pw-footer-col--brand">
         <a class="pw-logo pw-footer-logo" routerLink="/">
           <span class="pw-logo-accent">PA</span><span class="pw-logo-main">werUP</span>
@@ -242,7 +237,7 @@
         </div>
       </div>
 
-      <!-- COL 2: Navigazione -->
+    
       <div class="pw-footer-col">
         <h6 class="pw-footer-heading">Esplora</h6>
         <ul class="pw-footer-links">
@@ -254,7 +249,7 @@
         </ul>
       </div>
 
-      <!-- COL 3: Account + Supporto -->
+   
       <ng-container *ngIf="utenteLoggato">
         <div class="pw-footer-col">
           <h6 class="pw-footer-heading">Account</h6>
@@ -292,7 +287,7 @@
 
       
 
-      <!-- COL 4: Social -->
+  
       <div class="pw-footer-col">
         <h6 class="pw-footer-heading">Seguici</h6>
         <div class="pw-footer-socials">
@@ -310,7 +305,7 @@
           </a>
         </div>
 
-        <!-- Badge trust -->
+
         <div class="pw-footer-badges">
           <div class="pw-footer-badge">
             <i class="bi bi-shield-check"></i>
@@ -329,10 +324,10 @@
 
     </div>
 
-    <!-- DIVIDER -->
+
     <div class="pw-footer-divider"></div>
 
-    <!-- BOTTOM BAR -->
+
     <div class="pw-footer-bottom">
       <p class="pw-footer-copy">© 2026 <strong>PAwerUP</strong>. Tutti i diritti riservati.</p>
       <div class="pw-footer-bottom-links">

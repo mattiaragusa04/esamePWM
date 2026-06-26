@@ -38,7 +38,7 @@ interface ProdottoUsato {
 export class AdminShopFedelta implements OnInit {
   tabAttiva: 'coupon' | 'prodotti' = 'coupon';
 
-  /* ── Coupon ─────────────────────────────────────────────── */
+
   couponList: CouponFedelta[] = [];
   caricandoCoupon = false;
   salvandoCoupon  = false;
@@ -58,7 +58,7 @@ export class AdminShopFedelta implements OnInit {
     utilizzi_massimi: null
   };
 
-  /* ── Prodotti usati ─────────────────────────────────────── */
+  
   prodottiUsati: ProdottoUsato[] = [];
   caricandoProdotti = false;
   msgProdotti: { testo: string; tipo: 'success' | 'error' } | null = null;
@@ -83,7 +83,7 @@ export class AdminShopFedelta implements OnInit {
     return localStorage.getItem('token') || '';
   }
 
-  /* ── COUPON ─────────────────────────────────────────────────── */
+
 
   async caricaCoupon() {
     this.caricandoCoupon = true;
@@ -257,7 +257,7 @@ export class AdminShopFedelta implements OnInit {
     setTimeout(() => this.msgCoupon = null, 5000);
   }
 
-  /* ── PRODOTTI USATI ─────────────────────────────────────────── */
+
 
   async caricaProdottiUsati() {
     this.caricandoProdotti = true;

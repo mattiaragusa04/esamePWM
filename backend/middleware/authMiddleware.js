@@ -15,8 +15,6 @@ module.exports = (req, res, next) => {
     try {
         const verified = jwt.verify(token, SECRET);
 
-        // Controllo bootId: se il server e' stato riavviato dopo l'emissione
-        // di questo token, il bootId non combacia piu' -> sloggare l'utente.
         if (verified.bootId && verified.bootId !== bootId) {
             return res.status(401).json({ message: "Sessione scaduta. Effettua nuovamente il login.", code: "SERVER_RESTARTED" });
         }

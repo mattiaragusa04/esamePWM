@@ -75,7 +75,7 @@ export class AdminAcquisti implements OnInit {
     });
   }
 
-  // Calcola i punti stimati per l'admin panel (formula coerente col frontend)
+
   calcolaPuntiStimati(prezzoStimato: number): number {
     return Math.round(prezzoStimato / 5) + 5;
   }
@@ -84,7 +84,7 @@ export class AdminAcquisti implements OnInit {
     this.offertaSelezionata = offerta;
     try {
       const parsed = JSON.parse(offerta.condizioni_json);
-      // Il frontend invia un array [{category, selectedOption}]
+
       this.condizioniParsed = Array.isArray(parsed) ? parsed : [];
     } catch {
       this.condizioniParsed = [];
@@ -105,7 +105,6 @@ export class AdminAcquisti implements OnInit {
     this.fotoParsed = [];
   }
 
-  // Accetta: chiama la route dedicata che gestisce giacenza + punti fedeltà
   async accettaOfferta() {
     if (!this.offertaSelezionata) return;
     try {
@@ -124,7 +123,7 @@ export class AdminAcquisti implements OnInit {
         if (idx !== -1) this.offerte[idx].stato_offerta = 'Accettata';
         this.filtraOfferte();
         this.cdr.detectChanges();
-        // Mostra info punti accreditati se compenso è punti
+
         if (data.puntiAccreditati > 0) {
           this.toast.success(`✅ Offerta accettata! Accreditati ${data.puntiAccreditati} punti fedeltà all'utente.`);
         } else {
@@ -140,12 +139,12 @@ export class AdminAcquisti implements OnInit {
     }
   }
 
-  // Rifiuta / In attesa: usa la route generica
+
   async aggiornaStato(nuovoStato: string) {
     if (!this.offertaSelezionata) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/vendi/${this.offertaSelezionata.id}/stato`, {
+      const response = await fetch(`http://localhost:3000/api/vendi/${this.offertaSelezionata.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

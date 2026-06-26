@@ -2,11 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
-/**
- * Servizio singleton per la propagazione reattiva dei punti fedeltà.
- * Ogni componente che modifica i punti chiama `aggiorna(n)` e
- * tutti i subscriber (es. Sidebar) ricevono il valore aggiornato.
- */
+
 @Injectable({ providedIn: 'root' })
 export class PuntiService {
   private readonly _punti$ = new BehaviorSubject<number>(0);
@@ -18,7 +14,7 @@ export class PuntiService {
     }
   }
 
-  /** Aggiorna il valore nel BehaviorSubject E nel localStorage */
+
   aggiorna(nuoviPunti: number): void {
     if (isPlatformBrowser(this.platformId)) {
       const raw = localStorage.getItem('user');
@@ -32,7 +28,7 @@ export class PuntiService {
     this._punti$.next(nuoviPunti);
   }
 
-  /** Riletto dal localStorage (utile all'avvio o dopo SSR) */
+
   sincronizzaDaStorage(): void {
     if (isPlatformBrowser(this.platformId)) {
       this._punti$.next(this.leggiDaStorage());

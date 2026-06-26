@@ -71,11 +71,8 @@ exports.createProdotto = async (req, res) => {
 
         if (prodottoData.categoria_id) prodottoData.categoria_id = parseInt(prodottoData.categoria_id, 10);
 
-        // Giacenze separate
         const giacenzaNuovo = parseInt(prodottoData.giacenzaNuovo, 10) || 0;
         const giacenzaUsato = parseInt(prodottoData.giacenzaUsato, 10) || 0;
-
-        // Prezzi distinti già calcolati dal frontend
         const prezzoNuovo = parseFloat(prodottoData.prezzoNuovo) || 0;
         const prezzoUsato = parseFloat(prodottoData.prezzoUsato) || 0;
 
@@ -83,12 +80,10 @@ exports.createProdotto = async (req, res) => {
             return res.status(400).json({ error: "I prezzi devono essere maggiori di zero" });
         }
 
-        // Impostazione URL immagine se caricata
         if (req.file) {
             prodottoData.immagine = 'http://localhost:3000/public/immagini/upload-admin/' + req.file.filename;
         }
 
-        // Crea la riga con condizione 'Nuovo'
         const prodottoNuovo = await prodotto.create({
             ...prodottoData,
             giacenza: giacenzaNuovo,
@@ -96,7 +91,6 @@ exports.createProdotto = async (req, res) => {
             condizione: 'Nuovo'
         });
 
-        // Crea la riga con condizione 'Usato'
         const prodottoUsato = await prodotto.create({
             ...prodottoData,
             giacenza: giacenzaUsato,

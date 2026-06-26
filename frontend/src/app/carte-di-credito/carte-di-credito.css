@@ -1,6 +1,3 @@
-/* ═══════════════════════════════════════════════════════
-   PAGINA CARTE DI CREDITO — coerente con ordini/vendite/indirizzi/impostazioni
-   ═══════════════════════════════════════════════════════ */
 
 .carte-page {
   padding: 0.5rem 0 2rem;
@@ -12,7 +9,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── HERO ──────────────────────────────────────────────── */
+
 .carte-hero {
   position: relative;
   overflow: hidden;
@@ -23,7 +20,6 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
-/* Gli orb sono azzerati: il canvas neurale gestisce già l'effetto di sfondo */
 .carte-hero-orb {
   position: absolute;
   border-radius: 50%;
@@ -94,7 +90,7 @@
   color: #fff;
 }
 
-/* ─── FORM ──────────────────────────────────────────────── */
+
 .carte-form-card {
   background: #fff;
   border-radius: 1.25rem;
@@ -300,14 +296,12 @@ body.theme-dark .carte-btn-secondary:hover {
   cursor: not-allowed;
 }
 
-/* ─── GRIGLIA CARTE VISUALE ──────────────────────────────────────────── */
 .carte-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.25rem;
 }
 
-/* La carta vera e propria */
 .carta-visual {
   position: relative;
   border-radius: 1.25rem;
@@ -328,7 +322,7 @@ body.theme-dark .carte-btn-secondary:hover {
   box-shadow: 0 16px 40px rgba(248,109,237,0.45), 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Cerchi decorativi trasparenti sfondo */
+
 .carta-visual-bg {
   position: absolute;
   inset: 0;
@@ -350,7 +344,7 @@ body.theme-dark .carte-btn-secondary:hover {
   bottom: -50px; left: -30px;
 }
 
-/* Chip */
+
 .carta-chip {
   width: 38px; height: 28px;
   border-radius: 0.35rem;
@@ -363,7 +357,7 @@ body.theme-dark .carte-btn-secondary:hover {
   margin-bottom: 0.8rem;
 }
 
-/* Logo circuito (due cerchi sovrapposti) */
+
 .carta-network {
   position: absolute;
   top: 1.2rem; right: 1.2rem;
@@ -379,7 +373,7 @@ body.theme-dark .carte-btn-secondary:hover {
 .circle-left  { background: rgba(255,220,50,0.8); }
 .circle-right { background: rgba(255,100,50,0.7); margin-left: -10px; }
 
-/* Numero carta */
+
 .carta-number {
   font-family: 'Courier New', monospace;
   font-size: 1.1rem;
@@ -390,7 +384,6 @@ body.theme-dark .carte-btn-secondary:hover {
   text-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
-/* Footer carta */
 .carta-footer {
   display: flex;
   align-items: flex-end;
@@ -412,7 +405,7 @@ body.theme-dark .carte-btn-secondary:hover {
   letter-spacing: 0.04em;
 }
 
-/* Pulsante elimina */
+
 .carta-delete-btn {
   width: 32px; height: 32px;
   border-radius: 50%;
@@ -432,7 +425,7 @@ body.theme-dark .carte-btn-secondary:hover {
   color: #fff;
 }
 
-/* ─── CONFERMA ELIMINAZIONE INLINE (carta) ──────────────────── */
+
 .carta-confirm-delete {
   display: flex;
   align-items: center;
@@ -473,7 +466,7 @@ body.theme-dark .carte-btn-secondary:hover {
   background: rgba(255,255,255,0.28);
 }
 
-/* ─── EMPTY STATE ─────────────────────────────────────────────── */
+
 .carte-empty {
   display: flex;
   flex-direction: column;
@@ -506,5 +499,5 @@ body.theme-dark .carte-empty-icon {
   color: rgba(248,109,237,0.6);
 }
 
-/* Loader */
+
 .spinner-border.spinner-pink { color: #f86ded; }

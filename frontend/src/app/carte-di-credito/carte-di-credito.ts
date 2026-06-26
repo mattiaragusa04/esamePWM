@@ -52,7 +52,6 @@ export class CarteDiCredito implements OnInit, AfterViewInit, OnDestroy {
   mostraForm: boolean = false;
   isSaving: boolean = false;
 
-  // ID della carta in attesa di conferma eliminazione (null = nessuna)
   cartaInAttesaEliminazione: number | null = null;
 
   cartaForm: FormGroup;
@@ -182,19 +181,17 @@ export class CarteDiCredito implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /** Primo click: mostra la conferma inline sulla carta */
   chiediConfermaEliminaCarta(id: number) {
     this.cartaInAttesaEliminazione = id;
     this.cdr.detectChanges();
   }
 
-  /** L'utente annulla la conferma */
+
   annullaEliminaCarta() {
     this.cartaInAttesaEliminazione = null;
     this.cdr.detectChanges();
   }
 
-  /** Secondo click: elimina davvero */
   async eliminaCarta(id: number) {
     this.cartaInAttesaEliminazione = null;
     const token = localStorage.getItem('token');

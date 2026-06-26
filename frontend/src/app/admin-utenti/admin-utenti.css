@@ -1,9 +1,6 @@
-/* ═══════════════════════════════════════════════════════════
-   ADMIN-UTENTI — Modale di conferma inline + Pannello dettaglio
-   Nessuna dipendenza Bootstrap JS
-═══════════════════════════════════════════════════════════ */
 
-/* Overlay semitrasparente (modale) */
+
+
 .au-overlay {
   position: fixed;
   inset: 0;
@@ -14,7 +11,7 @@
   animation: auFadeIn 0.18s ease;
 }
 
-/* Modale centrato */
+
 .au-modal {
   position: fixed;
   top: 50%;
@@ -44,7 +41,7 @@ body.theme-dark .au-modal {
   to   { opacity: 1; transform: translate(-50%, -48%) scale(1); }
 }
 
-/* Header */
+
 .au-modal-header {
   display: flex;
   align-items: center;
@@ -94,7 +91,7 @@ body.theme-dark .au-modal-title { color: #e5e7eb; }
 .au-modal-close:hover { background: rgba(0,0,0,0.06); color: #374151; }
 body.theme-dark .au-modal-close:hover { background: rgba(255,255,255,0.08); color: #e5e7eb; }
 
-/* Body */
+
 .au-modal-body {
   padding: 1.1rem 1.5rem;
 }
@@ -106,7 +103,7 @@ body.theme-dark .au-modal-close:hover { background: rgba(255,255,255,0.08); colo
 }
 body.theme-dark .au-modal-body p { color: #94a3b8; }
 
-/* Chip utente */
+
 .au-modal-user-chip {
   display: inline-flex;
   align-items: center;
@@ -134,7 +131,6 @@ body.theme-dark .au-modal-user-chip {
 }
 body.theme-dark .au-chip-email { border-left-color: rgba(255,255,255,0.1); }
 
-/* Footer */
 .au-modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -144,9 +140,7 @@ body.theme-dark .au-chip-email { border-left-color: rgba(255,255,255,0.1); }
 }
 body.theme-dark .au-modal-footer { border-top-color: rgba(255,255,255,0.06); }
 
-/* ═══════════════════════════════════════════════════════════
-   PANNELLO LATERALE DETTAGLIO (offcanvas-style)
-═══════════════════════════════════════════════════════════ */
+
 
 .au-panel-overlay {
   position: fixed;
@@ -181,7 +175,7 @@ body.theme-dark .au-panel {
   box-shadow: -8px 0 40px rgba(0,0,0,0.5);
 }
 
-/* ── Hero header del pannello ── */
+
 .au-panel-hero {
   position: relative;
   display: flex;
@@ -265,7 +259,6 @@ body.theme-dark .au-panel {
   padding: 0.25em 0.65em !important;
 }
 
-/* Body pannello */
 .au-panel-body {
   flex: 1;
   overflow-y: auto;
@@ -274,7 +267,7 @@ body.theme-dark .au-panel {
 }
 body.theme-dark .au-panel-body { background: #141320; }
 
-/* Sezioni */
+
 .au-panel-section {
   padding: 1.1rem 1.25rem;
   border-bottom: 1px solid rgba(0,0,0,0.06);
@@ -296,7 +289,7 @@ body.theme-dark .au-panel-section {
   margin-bottom: 0.75rem;
 }
 
-/* ── Punti fedeltà ── */
+
 .au-panel-punti-card {
   background: linear-gradient(135deg, rgba(245,158,11,0.1) 0%, rgba(251,191,36,0.06) 100%);
   border: 1px solid rgba(245,158,11,0.25);
@@ -377,7 +370,6 @@ body.theme-dark .au-panel-punti-edit-label { color: #94a3b8; }
   font-weight: 600;
 }
 
-/* Indirizzi */
 .au-panel-indirizzo {
   padding: 0.6rem 0.75rem;
   border-radius: 0.65rem;
@@ -390,7 +382,7 @@ body.theme-dark .au-panel-indirizzo { background: rgba(255,255,255,0.04); }
   margin-top: 0.25rem;
 }
 
-/* Carte */
+
 .au-panel-carta {
   display: flex;
   align-items: center;
@@ -402,7 +394,7 @@ body.theme-dark .au-panel-indirizzo { background: rgba(255,255,255,0.04); }
 }
 body.theme-dark .au-panel-carta { background: rgba(255,255,255,0.04); }
 
-/* Bottone xs (Bootstrap non ha btn-xs) */
+
 .btn-xs {
   padding: 0.15rem 0.4rem;
   font-size: 0.72rem;

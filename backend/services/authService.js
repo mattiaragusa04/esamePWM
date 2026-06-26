@@ -5,20 +5,16 @@ const nodemailer = require('nodemailer');
 
 const SECRET = process.env.JWT_SECRET || "supersecretkey";
 
-// ─── Helper: normalizza i campi dell'utente verso snake_case
-// Il DB usa 'puntiFedelta' (camelCase), ma il frontend si aspetta 'punti_fedelta'.
-// Questa funzione aggiunge l'alias senza modificare lo schema DB.
 function normalizzaUtente(user) {
   if (!user) return user;
   return {
     ...user,
-    // Espone il valore sia col nome DB originale sia con quello che il frontend si aspetta
+
     punti_fedelta: user.puntiFedelta ?? user.punti_fedelta ?? 0
   };
 }
 exports.normalizzaUtente = normalizzaUtente;
 
-// 1. Configurazione del Trasportatore per le Email
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -27,7 +23,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// 2. Funzione per inviare la prima email (Conferma registrazione)
+
 exports.inviaEmailConferma = async function(emailUtente, nomeUtente, cognomeUtente, token) {
     const linkConferma = `http://localhost:3000/api/auth/conferma/${token}`;
     const mailOptions = {
@@ -61,7 +57,6 @@ exports.inviaEmailConferma = async function(emailUtente, nomeUtente, cognomeUten
     }
 }
 
-// 3. Funzione per inviare l'email di benvenuto
 exports.inviaEmailBenvenuto = function(emailUtente, nomeUtente, cognomeUtente) {
     const mailOptions = {
         from: '"PAwerUP Store" <pawerupecommerce@gmail.com>',
@@ -102,7 +97,7 @@ exports.inviaEmailBenvenuto = function(emailUtente, nomeUtente, cognomeUtente) {
     });
 }
 
-// 4. Funzione per inviare l'email di reset password
+
 exports.inviaEmailResetPassword = async function(emailUtente, token) {
     const linkReset = `http://localhost:4200/reset-password/${token}`;
     const mailOptions = {
@@ -136,9 +131,7 @@ exports.inviaEmailResetPassword = async function(emailUtente, token) {
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Logica registrazione: verifica email, hash password, token JWT, invio email
-// ─────────────────────────────────────────────────────────────────────────────
+
 exports.registerUser = async (nome, cognome, email, password) => {
   if (!email || !password) {
     const err = new Error("Email e password sono obbligatori");
@@ -158,9 +151,7 @@ exports.registerUser = async (nome, cognome, email, password) => {
   return { message: "Controlla la tua email per completare la registrazione." };
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Logica reset password: trova utente, genera token, invia email
-// ─────────────────────────────────────────────────────────────────────────────
+
 exports.resetPassword = async (email) => {
   if (!email) {
     const err = new Error("Email obbligatoria");
@@ -178,9 +169,7 @@ exports.resetPassword = async (email) => {
   return { message: "Se l'email è corretta, riceverai a breve le istruzioni per il reset." };
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Logica aggiornamento password: verifica token, hash nuova password, salva
-// ─────────────────────────────────────────────────────────────────────────────
+
 exports.updatePassword = async (token, nuovaPassword) => {
   if (!token || !nuovaPassword) {
     const err = new Error("Dati mancanti per il reset della password.");
@@ -203,6 +192,6 @@ exports.updatePassword = async (token, nuovaPassword) => {
     throw err;
   }
   const hashedPassword = await bcrypt.hash(nuovaPassword, 10);
-  await User.updatePassword(user.id, hashedPassword); // Aggiorna solo la password
+  await User.updatePassword(user.id, hashedPassword); 
   return { message: "Password aggiornata con successo." };
 };

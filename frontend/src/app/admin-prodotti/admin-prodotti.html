@@ -9,7 +9,7 @@
         </button>
     </div>
 
-    <!-- Barra di ricerca -->
+
     <div class="mb-4" *ngIf="!isLoading && !errorMessage">
         <div class="input-group" style="max-width: 420px;">
             <span class="input-group-text bg-white border-end-0 rounded-pill-start">
@@ -30,22 +30,22 @@
         </small>
     </div>
 
-    <!-- Loader -->
+
     <div *ngIf="isLoading" class="text-center my-5">
         <div class="spinner-border text-danger" role="status"></div>
     </div>
 
-    <!-- Messaggio di errore -->
+  
     <div *ngIf="errorMessage" class="alert alert-danger text-center shadow-sm rounded-4 border-0">
         <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
     </div>
 
-    <!-- Totale Prodotti -->
+   
     <div class="row" *ngIf="!isLoading && !errorMessage">
         <h4 class="font-weight-bold text-danger">Totale prodotti: {{ prodotti.length }}</h4>
     </div>
 
-    <!-- Tabella Prodotti -->
+
     <div class="card shadow-sm border-0" style="border-radius: 1rem; overflow: hidden;" *ngIf="!isLoading && !errorMessage">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 bg-white">
@@ -91,7 +91,7 @@
         </div>
     </div>
 
-    <!-- Modal Aggiungi/Modifica Prodotto -->
+
     <div class="modal fade" [class.show]="mostraModale" [style.display]="mostraModale ? 'block' : 'none'"
         [style.background]="'rgba(0,0,0,0.5)'" tabindex="-1" aria-modal="true" role="dialog">
         <div class="modal-dialog modal-lg">
@@ -102,7 +102,6 @@
                 </div>
                 <div class="modal-body p-4">
 
-                    <!-- BOX RIEPILOGO CONFERMA (visibile solo in creazione dopo submit) -->
                     <div *ngIf="mostraRiepilogo" class="alert border-0 rounded-3 mb-4 p-3" style="background: #fff8e1;">
                         <div class="d-flex align-items-center mb-2">
                             <i class="bi bi-exclamation-triangle-fill text-warning me-2" style="font-size: 1.2rem;"></i>
@@ -131,7 +130,7 @@
                         </div>
                     </div>
 
-                    <!-- FORM (nascosto durante il riepilogo) -->
+
                     <form (ngSubmit)="isModifica ? salvaNuovoProdotto(prodottoForm) : richiediConferma(prodottoForm)" #prodottoForm="ngForm" [style.display]="mostraRiepilogo ? 'none' : 'block'">
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -152,7 +151,7 @@
                                 <label for="genere" class="form-label font-weight-bold">Genere</label>
                                 <select class="form-select" id="genere" name="genere" [(ngModel)]="nuovoProdotto.genere" required>
                                     <option value="" disabled>Seleziona un genere</option>
-                                    <!-- Itera sull'array per creare le opzioni dinamicamente -->
+
                                     <option *ngFor="let genre of availableGenres" [value]="genre">
                                         {{ genre }}
                                     </option>
@@ -163,9 +162,9 @@
                                 <textarea class="form-control" id="descrizione" name="descrizione" rows="3" [(ngModel)]="nuovoProdotto.descrizione" required></textarea>
                             </div>
 
-                            <!-- Solo in creazione: scelta tipo prezzo + doppia giacenza -->
+
                             <ng-container *ngIf="!isModifica">
-                                <!-- Tipo prezzo inserito -->
+
                                 <div class="col-12">
                                     <label class="form-label font-weight-bold">Stai inserendo il prezzo di:</label>
                                     <div class="d-flex gap-3">
@@ -210,7 +209,7 @@
                                 </div>
                             </ng-container>
 
-                            <!-- Solo in modifica: giacenza e condizione singola -->
+
                             <ng-container *ngIf="isModifica">
                                 <div class="col-md-4">
                                     <label for="prezzo" class="form-label font-weight-bold">Prezzo (€)</label>

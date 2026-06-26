@@ -65,7 +65,7 @@ const Ordine = {
         });
     },
 
-    // FIX: aggiunto parametro pagatoConPunti (default 0) per tracciare i prodotti acquistati con punti fedeltà
+
     addProdottoToOrdine : (ordineId, prodottoId, quantita, prezzoUnitario, pagatoConPunti = 0) => {
         return new Promise((res, rej) => {
             const query = `INSERT INTO composto (ordine_id, prodotto_id, quantita, prezzoUnitario, pagato_con_punti) VALUES (?, ?, ?, ?, ?)`;
@@ -76,7 +76,6 @@ const Ordine = {
         });
     },
 
-    // FIX: aggiunto c.pagato_con_punti nella SELECT per restituirlo al frontend
     getProdottiByOrdineId: (ordineId) => {
         return new Promise((res, rej) => {
             const query = `

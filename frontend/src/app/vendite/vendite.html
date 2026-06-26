@@ -1,6 +1,5 @@
 <div class="vendite-page">
 
-  <!-- ╔═══ HERO ════════════════════════════════════════════════════════╗ -->
   <div class="vendite-hero" #venditeHero>
     <canvas #venditeCanvas style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
     <div class="vendite-hero-orb orb-1"></div>
@@ -21,12 +20,10 @@
     </div>
   </div>
 
-  <!-- Loader -->
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border spinner-pink" role="status"></div>
   </div>
 
-  <!-- Empty state -->
   <div *ngIf="!isLoading && vendite.length === 0" class="vendite-empty">
     <div class="vendite-empty-icon"><i class="bi bi-tags"></i></div>
     <h4>Non hai ancora venduto nulla.</h4>
@@ -36,7 +33,6 @@
     </a>
   </div>
 
-  <!-- Lista Vendite -->
   <div *ngIf="!isLoading && vendite.length > 0" class="d-flex flex-column gap-3">
     <div class="vendita-card" *ngFor="let vendita of vendite">
       <div class="vendita-card-body">

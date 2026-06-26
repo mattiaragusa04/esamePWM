@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <!-- Barra di ricerca -->
+
   <div class="mb-4" *ngIf="!isLoading && !errorMessage">
     <div class="input-group" style="max-width: 420px;">
       <span class="input-group-text bg-white border-end-0 rounded-pill-start">
@@ -37,22 +37,21 @@
     </small>
   </div>
 
-  <!-- Loader -->
+
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border text-danger" role="status"></div>
   </div>
 
-  <!-- Messaggio di errore -->
   <div *ngIf="errorMessage" class="alert alert-danger text-center shadow-sm rounded-4 border-0">
     <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
   </div>
 
-  <!-- Totale -->
+
   <div class="row" *ngIf="!isLoading && !errorMessage">
     <h4 class="font-weight-bold text-danger">Totale utenti: {{ utenti.length }}</h4>
   </div>
 
-  <!-- Tabella -->
+
   <div class="card shadow-sm border-0" style="border-radius: 1rem; overflow: hidden;" *ngIf="!isLoading && !errorMessage">
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0 bg-white">
@@ -90,21 +89,21 @@
                 {{ utente.ruolo | uppercase }}
               </span>
             </td>
-            <!-- Dettaglio 👁 -->
+
             <td class="text-center">
               <button class="btn btn-sm btn-outline-primary rounded-circle" title="Visualizza dettaglio"
                 (click)="apriPannello(utente)">
                 <i class="bi bi-eye-fill"></i>
               </button>
             </td>
-            <!-- Elimina -->
+
             <td class="text-end pe-4">
               <button class="btn btn-sm btn-outline-danger rounded-circle" title="Elimina"
                 (click)="apriModale(utente, 'elimina')">
                 <i class="bi bi-trash-fill"></i>
               </button>
             </td>
-            <!-- Rendi Admin -->
+
             <td class="text-end pe-4">
               <button class="btn btn-sm btn-outline-danger rounded-circle" title="Rendi Admin"
                 [disabled]="utente.ruolo === 'admin'"
@@ -112,7 +111,7 @@
                 <i class="bi bi-person-gear"></i>
               </button>
             </td>
-            <!-- Rendi Utente -->
+            
             <td class="text-end pe-4">
               <button class="btn btn-sm btn-outline-danger rounded-circle" title="Rendi Utente"
                 [disabled]="utente.ruolo === 'user'"

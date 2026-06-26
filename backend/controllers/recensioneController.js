@@ -1,12 +1,7 @@
 const Recensione = require('../models/recensioneModel');
 const Ordine = require('../models/ordineModel');
 
-/**
- * POST /api/recensioni
- * Crea la recensione dell'utente autenticato.
- * Se ne esiste già una, la aggiorna (upsert).
- * Richiede che l'utente abbia almeno un ordine con statoOrdine = 'Consegnato'.
- */
+
 exports.creaRecensione = async (req, res) => {
     const utente_id = req.user.id;
     const { testo, voto } = req.body;
@@ -19,7 +14,6 @@ exports.creaRecensione = async (req, res) => {
     }
 
     try {
-        // Verifica che l'utente abbia almeno un ordine consegnato
         const ordini = await Ordine.findByUserId(utente_id);
         const haOrdineConsegnato = ordini.some(o => o.statoOrdine === 'Consegnato');
 
@@ -44,11 +38,7 @@ exports.creaRecensione = async (req, res) => {
     }
 };
 
-/**
- * GET /api/recensioni
- * Restituisce tutte le recensioni pubbliche (nome, cognome, voto, testo, data).
- * Rotta pubblica, non richiede autenticazione.
- */
+
 exports.getRecensioni = async (req, res) => {
     try {
         const recensioni = await Recensione.findAll();
@@ -59,11 +49,7 @@ exports.getRecensioni = async (req, res) => {
     }
 };
 
-/**
- * GET /api/recensioni/mia
- * Controlla se l'utente autenticato ha già lasciato una recensione.
- * Usato dal frontend per decidere se mostrare il popup o il bottone "modifica".
- */
+
 exports.getMiaRecensione = async (req, res) => {
     const utente_id = req.user.id;
     try {

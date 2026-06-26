@@ -56,7 +56,7 @@
   color: #333;
 }
 
-/* Varianti per tipo */
+
 .toast-success {
   border-left-color: #2ecc71;
 }
@@ -96,7 +96,7 @@
   }
 }
 
-/* Tema scuro */
+
 :host-context(body.theme-dark) .toast-item {
   background: #2a2a2e;
   color: #f1f1f1;
@@ -112,7 +112,7 @@
   color: #fff;
 }
 
-/* Mobile */
+
 @media (max-width: 576px) {
   .toast-container {
     top: 80px;

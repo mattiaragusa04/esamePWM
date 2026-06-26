@@ -19,13 +19,13 @@
 
   <div *ngIf="!isLoading && !errorMessage && prodotto" class="card shadow-lg border-0 mb-5 overflow-hidden" style="border-radius: 2rem;">
     <div class="row g-4">
-      <!-- Colonna Sinistra: Visualizzazione Prodotto -->
+
       <div class="col-md-4 bg-light d-flex flex-column justify-content-center align-items-center p-5 border-end">
         <img [src]="prodotto.immagine" class="img-fluid rounded-4 shadow-sm mb-4" alt="{{ prodotto.nome }}" (error)="handleImageError($event)" style="max-height: 400px; object-fit: contain;">
         <div class="badge bg-info text-white px-3 py-2 rounded-pill fs-6 shadow-sm">{{ prodotto.categoria_nome }}</div>
       </div>
 
-      <!-- Colonna Destra: Form di Valutazione -->
+
       <div class="col-md-8 p-4 p-lg-5">
         <h2 class="fw-bold mb-2">{{ prodotto.nome }}</h2>
         <p class="text-secondary mb-4">{{ prodotto.descrizione }}</p>
@@ -81,7 +81,7 @@
           </div>
         </div>
 
-        <!-- Anteprima immagini caricate -->
+
         <div class="image-previews-container mb-4" *ngIf="imagePreviews.length > 0">
           <div *ngFor="let preview of imagePreviews; let i = index" class="preview-wrapper">
             <div class="preview-item">
@@ -93,20 +93,19 @@
           </div>
         </div>
 
-        <!-- ══════════ SCELTA COMPENSO ══════════ -->
         <div class="compenso-section mb-4">
           <label class="form-label text-muted small text-uppercase fw-bold ls-1">
             <i class="bi bi-wallet2 me-1"></i> Come vuoi essere compensato?
           </label>
 
-          <!-- Avviso nessuna carta -->
+      
           <div *ngIf="!isLoadingCarte && !haCartaDiCredito" class="compenso-avviso-carta alert-warning-custom mb-3">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
             <span>Non hai un metodo di pagamento salvato. Per ricevere denaro, <a routerLink="/profilo/carte-di-credito" class="compenso-avviso-link">aggiungi una carta</a>. Altrimenti puoi ricevere <strong>punti fedeltà</strong>.</span>
           </div>
 
           <div class="compenso-options d-flex gap-3 flex-wrap">
-            <!-- Opzione Euro -->
+           
             <div class="compenso-card" [class.compenso-card--selected]="tipoCompenso === 'euro'" [class.compenso-card--disabled]="!haCartaDiCredito">
               <input
                 type="radio"
@@ -129,7 +128,7 @@
               </label>
             </div>
 
-            <!-- Opzione Punti -->
+            
             <div class="compenso-card" [class.compenso-card--selected]="tipoCompenso === 'punti'">
               <input
                 type="radio"
@@ -152,7 +151,7 @@
             </div>
           </div>
         </div>
-        <!-- ══════════ / SCELTA COMPENSO ══════════ -->
+       
 
         <div class="valuation-summary p-4 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
           <div class="text-center text-lg-start">

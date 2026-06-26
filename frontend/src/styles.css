@@ -1,48 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
-
-/* =============================================================
-   VARIABILI SEMANTICHE — Light mode (default)
-   Override in html[data-theme="dark"] per il tema scuro.
-   Usare SEMPRE queste variabili nei componenti invece dei
-   valori hardcoded, così il tema cambia automaticamente.
-   ============================================================= */
 :root {
-  /* ---- Brand colors ---- */
-  --main-color: #f86ded;       /* Rosa principale */
-  --main-color-hover: #ff9ef8; /* Rosa più luminoso e acceso */
-  --accent-secondary: #bc4ec6; /* Viola secondario — usato nel gradiente profile-header-card */
+  --main-color: #f86ded;
+  --main-color-hover: #ff9ef8;
+  --accent-secondary: #bc4ec6;
 
-  /* ---- Superfici (light) ---- */
   --color-bg:      #f8fafc;
   --color-surface: #ffffff;
   --color-card:    #ffffff;
   --color-input-bg:#ffffff;
 
-  /* ---- Testi (light) ---- */
   --color-text:      #0f172a;
   --color-text-muted:#64748b;
 
-  /* ---- Bordi (light) ---- */
   --color-border: rgba(0, 0, 0, 0.08);
 
-  /* ---- Alias storici (non rinominare: usati in molti componenti) ---- */
   --bg-light:       var(--color-bg);
   --card-bg:        var(--color-card);
   --text-main:      var(--color-text);
   --text-secondary: var(--color-text-muted);
 
-  /* Font stack uniforme — identico a Bootstrap 5 */
   --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "Helvetica Neue", Arial, "Noto Sans", sans-serif,
                "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-/* =============================================================
-   VARIABILI SEMANTICHE — Dark mode
-   Attivata da:
-     1. html[data-theme="dark"]  ← script anti-FOUC + ThemeService
-     2. body.theme-dark          ← retrocompatibilità
-   ============================================================= */
 html[data-theme="dark"],
 body.theme-dark {
   --color-bg:       #020617;
@@ -55,19 +35,12 @@ body.theme-dark {
 
   --color-border: rgba(148, 163, 184, 0.35);
 
-  /* Alias storici in dark */
   --bg-light:       var(--color-bg);
   --card-bg:        var(--color-card);
   --text-main:      var(--color-text);
   --text-secondary: var(--color-text-muted);
 }
 
-/* =============================================================
-   TRANSIZIONE GLOBALE FLUIDA AL CAMBIO TEMA
-   Evita il "lampeggio" quando si toglia il tema.
-   Applicata su tutti gli elementi tranne SVG e canvas
-   (dove la transizione sarebbe inutile o dannosa).
-   ============================================================= */
 *:not(svg):not(canvas),
 *:not(svg):not(canvas)::before,
 *:not(svg):not(canvas)::after {
@@ -78,7 +51,6 @@ body.theme-dark {
     box-shadow       0.25s ease;
 }
 
-/* Applichiamo lo sfondo chiaro globale al body */
 body {
   font-family: var(--font-main);
   background-color: var(--color-bg);
@@ -93,12 +65,10 @@ body {
   margin: 0;
 }
 
-/* Sovrascrizione classi Bootstrap per riflettere il nuovo brand */
 .text-info {
   color: var(--main-color) !important;
 }
 
-/* Stile base per tutti i bottoni per renderli fluidi */
 .btn {
   transition: all 0.3s ease-in-out !important;
 }
@@ -115,7 +85,6 @@ body {
   color: white !important;
 }
 
-/* Stile per far sembrare il bottone un input (es. nel form di registrazione) */
 .btn-custom-select {
   text-align: left;
   display: flex;
@@ -123,7 +92,6 @@ body {
   align-items: center;
 }
 
-/* Stili per le card di autenticazione (Login/Register) */
 .auth-card {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
@@ -132,7 +100,6 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-/* Stili generici per tutte le card dell'applicazione */
 .card {
   background-color: var(--color-card) !important;
   border: none !important;
@@ -141,7 +108,6 @@ body {
   backdrop-filter: blur(10px);
 }
 
-/* Stile specifico per le card dei prodotti, con effetto hover */
 .product-card {
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
   border-radius: 1rem !important;
@@ -156,7 +122,6 @@ body {
   z-index: 10 !important;
 }
 
-/* Effetto zoom sull'immagine nel dettaglio prodotto */
 app-dettagli-prodotto img {
   transition: transform 0.4s ease !important;
 }
@@ -165,7 +130,6 @@ app-dettagli-prodotto img:hover {
   transform: scale(1.15) !important;
 }
 
-/* Tronca i titoli dei prodotti troppo lunghi */
 .product-card .card-title {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -175,7 +139,6 @@ app-dettagli-prodotto img:hover {
   min-height: 3rem;
 }
 
-/* Stili per i filtri a card nella pagina prodotti */
 .category-filter-card {
   cursor: pointer;
   border-radius: 1rem !important;
@@ -199,18 +162,15 @@ app-dettagli-prodotto img:hover {
   background-color: rgba(248, 109, 237, 0.05) !important;
 }
 
-/* Sistemiamo i testi muti di Bootstrap */
 .text-muted {
   color: var(--color-text-muted) !important;
 }
 
-/* Rendi gli input dei form meno "sparati" */
 .bg-light {
   background-color: rgba(0, 0, 0, 0.03) !important;
   color: var(--color-text) !important;
 }
 
-/* FIX tema chiaro: testi bianchi fuori contesto */
 .text-white:not(.btn):not(.hero-content):not(.hero-content *) {
   color: var(--color-text) !important;
 }
@@ -224,7 +184,6 @@ h6 {
   color: var(--color-text);
 }
 
-/* Stili per l'Hero Box e l'effetto particelle */
 .hero-box {
   position: relative;
   overflow: hidden;
@@ -245,7 +204,6 @@ h6 {
   pointer-events: none;
 }
 
-/* Scrollbar personalizzata per le liste di riepilogo */
 .summary-items-list::-webkit-scrollbar {
   width: 5px;
 }
@@ -258,7 +216,6 @@ h6 {
   border-radius: 10px;
 }
 
-/* Badge Condizione Prodotto */
 .badge-condizione {
   display: inline-flex !important;
   align-items: center;
@@ -286,7 +243,6 @@ h6 {
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
-/* Sistema Prezzi Scontati */
 .price-old {
   text-decoration: line-through;
   color: var(--color-text-muted);
@@ -300,7 +256,6 @@ h6 {
   font-weight: 800;
 }
 
-/* Hero content */
 .hero-content {
   position: relative;
   z-index: 1;
@@ -309,7 +264,6 @@ h6 {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Proteggiamo i testi dentro l'hero box */
 .hero-content h1,
 .hero-content h2,
 .hero-content h3,
@@ -318,7 +272,6 @@ h6 {
   color: white !important;
 }
 
-/* Global styles per condition toggle */
 .condition-toggle .btn {
   border-radius: 999px;
   padding: 0.25rem 0.9rem;
@@ -341,12 +294,10 @@ h6 {
   border-color: var(--color-text-muted) !important;
 }
 
-/* Spazio tra bottoni Nuovo/Usato */
 .condition-toggle .btn:not(:last-child) {
   margin-right: 0.5rem;
 }
 
-/* Barra rossa obliqua e oscuramento per pulsante carrello disabilitato su Retrogaming */
 .retro-slash {
   position: relative;
   overflow: hidden;
@@ -362,7 +313,6 @@ h6 {
   pointer-events: none;
 }
 
-/* Stili e animazioni per la Sidebar del Profilo */
 .sidebar-container {
   background: var(--color-card);
   border-radius: 1.25rem;
@@ -405,8 +355,6 @@ h6 {
   border-radius: 50%;
 }
 
-/* [#C fix] .profile-header-card mantiene il gradiente rosa in entrambi i temi;
-   rimossa dal blocco dark generico che la sovrascriveva con uno sfondo scuro */
 .profile-header-card {
   background: linear-gradient(135deg, var(--main-color), var(--accent-secondary));
   color: white;
@@ -429,7 +377,6 @@ h6 {
   transform: translateY(-5px);
 }
 
-/* Badge di Stato Professionali */
 .badge-status {
   padding: 0.4rem 0.8rem;
   border-radius: 50rem;
@@ -449,7 +396,6 @@ h6 {
   border: 1px solid #dcfce7;
 }
 
-/* Stili globali per la paginazione */
 .pagination .page-item .page-link.pagination-dot {
   width: 40px;
   height: 40px;
@@ -467,7 +413,6 @@ h6 {
   font-weight: bold;
 }
 
-/* Sezione Dati Personali */
 .personal-info-card {
   background: var(--color-card);
   border-radius: 1.25rem;
@@ -525,7 +470,6 @@ h6 {
   color: var(--color-text);
 }
 
-/* --- Sistema Carrello Navbar --- */
 .cart-nav-item {
   position: relative;
   display: flex;
@@ -583,7 +527,7 @@ h6 {
   z-index: 1050;
 }
 
-.cart-nav-item:hover .cart-total-preview {
+.cart-nav-item:hover .cart-total-preview, .cart-nav-item:focus-within .cart-total-preview {
   opacity: 1;
   transform: translateY(5px);
   pointer-events: auto;
@@ -600,12 +544,6 @@ h6 {
 }
 
 
-/* =========================
-   Tema scuro globale
-   Ora i selettori usano html[data-theme="dark"] (standard moderno)
-   con fallback body.theme-dark per retrocompatibilità.
-   ========================= */
-
 html[data-theme="dark"] body,
 body.theme-dark {
   background-color: var(--color-bg);
@@ -617,8 +555,6 @@ body.theme-dark {
   color: var(--color-text);
 }
 
-/* Card e contenitori principali
-   [#C fix] Rimosso .profile-header-card: mantiene il gradiente rosa anche in dark */
 html[data-theme="dark"] .card,
 body.theme-dark .card,
 html[data-theme="dark"] .settings-shell,
@@ -634,7 +570,6 @@ body.theme-dark .personal-info-card {
     0 0 0 1px rgba(15, 23, 42, 0.7);
 }
 
-/* Sezioni impostazioni */
 html[data-theme="dark"] .settings-section,
 body.theme-dark .settings-section {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.97));
@@ -647,7 +582,6 @@ body.theme-dark .settings-muted-box {
   border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-/* Font impostazioni */
 .settings-subtitle,
 .settings-section-desc,
 .settings-note {
@@ -658,7 +592,6 @@ body.theme-dark .settings-muted-box {
   font-size: 1.15rem;
 }
 
-/* Testi in dark mode */
 html[data-theme="dark"] h1,
 html[data-theme="dark"] h2,
 html[data-theme="dark"] h3,
@@ -691,7 +624,6 @@ body.theme-dark .info-label {
   color: var(--color-text) !important;
 }
 
-/* Forza testo chiaro */
 html[data-theme="dark"] .text-dark,
 html[data-theme="dark"] .text-black,
 html[data-theme="dark"] .nav-link,
@@ -714,7 +646,6 @@ body.theme-dark .text-secondary {
   color: var(--color-text-muted) !important;
 }
 
-/* Background chiari riadattati */
 html[data-theme="dark"] .bg-light,
 html[data-theme="dark"] .bg-white,
 html[data-theme="dark"] .stat-card,
@@ -728,14 +659,12 @@ body.theme-dark .auth-card {
   border-color: var(--color-border) !important;
 }
 
-/* Campi info profilo */
 html[data-theme="dark"] .info-field,
 body.theme-dark .info-field {
   background-color: rgba(15, 23, 42, 0.6) !important;
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-/* Input e form */
 html[data-theme="dark"] .form-control,
 html[data-theme="dark"] .form-select,
 html[data-theme="dark"] .input-group-text,
@@ -761,7 +690,6 @@ body.theme-dark textarea:focus {
   box-shadow: 0 0 0 1px rgba(248, 109, 237, 0.65);
 }
 
-/* Checkboxes */
 html[data-theme="dark"] .form-check-input,
 body.theme-dark .form-check-input {
   background-color: var(--color-input-bg);
@@ -779,7 +707,6 @@ body.theme-dark .form-check-label {
   color: var(--color-text);
 }
 
-/* Bottoni generici */
 html[data-theme="dark"] .btn-outline-primary,
 html[data-theme="dark"] .btn-outline-secondary,
 body.theme-dark .btn-outline-primary,
@@ -798,7 +725,6 @@ body.theme-dark .btn-outline-secondary:hover {
   color: #fff;
 }
 
-/* Bottoni settings */
 html[data-theme="dark"] .settings-btn-primary,
 body.theme-dark .settings-btn-primary {
   background: linear-gradient(135deg, var(--main-color), #fb7185);
@@ -824,7 +750,6 @@ body.theme-dark .settings-btn-danger {
   background: transparent !important;
 }
 
-/* Toggle tema */
 html[data-theme="dark"] .settings-toggle-group .btn.active,
 body.theme-dark .settings-toggle-group .btn.active {
   background: rgba(248, 109, 237, 0.22) !important;
@@ -832,7 +757,6 @@ body.theme-dark .settings-toggle-group .btn.active {
   color: #f9fafb !important;
 }
 
-/* Divider e label impostazioni */
 html[data-theme="dark"] .settings-divider,
 body.theme-dark .settings-divider {
   background: var(--color-border);
@@ -843,17 +767,11 @@ body.theme-dark .settings-label {
   color: var(--color-text-muted);
 }
 
-/* Hero in dark */
 html[data-theme="dark"] .hero-box,
 body.theme-dark .hero-box {
   background: linear-gradient(135deg, #020617, #111827, #0f172a);
 }
 
-/* =============================================================
-   FIX DARK MODE — leggibilità generale
-   ============================================================= */
-
-/* Logo PAWERUP */
 html[data-theme="dark"] .navbar-brand .text-black,
 html[data-theme="dark"] .navbar-brand span:not(.text-info),
 html[data-theme="dark"] .footer .text-white,
@@ -863,7 +781,6 @@ body.theme-dark .footer .text-white {
   color: #ffffff !important;
 }
 
-/* Footer */
 html[data-theme="dark"] .footer,
 body.theme-dark .footer {
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.85), #020617) !important;
@@ -949,7 +866,6 @@ body.theme-dark .footer .social-icon:hover {
   transform: translateY(-3px);
 }
 
-/* Bottoni outline-info */
 html[data-theme="dark"] .btn-outline-info,
 body.theme-dark .btn-outline-info {
   border-color: var(--main-color) !important;
@@ -962,7 +878,6 @@ body.theme-dark .btn-outline-info:hover {
   color: #fff !important;
 }
 
-/* Titoli di pagina */
 html[data-theme="dark"] .section-title,
 html[data-theme="dark"] .page-title,
 html[data-theme="dark"] .titolo-pagina,
@@ -995,7 +910,6 @@ body.theme-dark h2.text-secondary {
   color: var(--color-text-muted) !important;
 }
 
-/* Card prodotti */
 html[data-theme="dark"] .product-card,
 html[data-theme="dark"] .prodotto-card,
 html[data-theme="dark"] .card-prodotto,
@@ -1023,7 +937,6 @@ body.theme-dark .card-prodotto .card-title {
   color: #ffffff !important;
 }
 
-/* Immagini prodotto: sfondo bianco per PNG trasparenti */
 html[data-theme="dark"] .product-card .card-img-top,
 html[data-theme="dark"] .product-card img,
 html[data-theme="dark"] .prodotto-card img,
@@ -1040,7 +953,6 @@ body.theme-dark .horizontal-scroll-item img.card-img-top {
   border-radius: 0.75rem !important;
 }
 
-/* Descrizioni card categorie */
 html[data-theme="dark"] .card .card-body p,
 html[data-theme="dark"] .card .card-text,
 body.theme-dark .card .card-body p,
@@ -1048,7 +960,6 @@ body.theme-dark .card .card-text {
   color: var(--color-text-muted) !important;
 }
 
-/* Pannello Filtri */
 html[data-theme="dark"] .filtri,
 html[data-theme="dark"] .filters-panel,
 html[data-theme="dark"] .panel-filtri,
@@ -1062,7 +973,6 @@ body.theme-dark aside .filtri {
   color: var(--color-text) !important;
 }
 
-/* Categorie filtro */
 html[data-theme="dark"] .category-filter-card,
 body.theme-dark .category-filter-card {
   background: rgba(30, 41, 59, 0.8) !important;
@@ -1076,7 +986,6 @@ body.theme-dark .category-filter-card.active-filter {
   background-color: rgba(248, 109, 237, 0.1) !important;
 }
 
-/* Navbar */
 html[data-theme="dark"] .navbar,
 body.theme-dark .navbar {
   background: rgba(2, 6, 23, 0.95) !important;
@@ -1084,7 +993,6 @@ body.theme-dark .navbar {
   border-bottom: 1px solid rgba(148, 163, 184, 0.15);
 }
 
-/* Dropdown */
 html[data-theme="dark"] .dropdown-menu,
 body.theme-dark .dropdown-menu {
   background-color: #0f172a !important;
@@ -1103,7 +1011,6 @@ body.theme-dark .dropdown-item:hover {
   color: var(--main-color) !important;
 }
 
-/* Tabelle */
 html[data-theme="dark"] .table,
 body.theme-dark .table {
   color: var(--color-text);
@@ -1128,7 +1035,6 @@ body.theme-dark .table-striped tbody tr:nth-of-type(odd) {
   background-color: rgba(15, 23, 42, 0.5);
 }
 
-/* Paginazione */
 html[data-theme="dark"] .pagination .page-link,
 body.theme-dark .pagination .page-link {
   background-color: var(--color-surface);
@@ -1142,7 +1048,6 @@ body.theme-dark .pagination .page-item.active .page-link {
   border-color: var(--main-color);
 }
 
-/* Sidebar profilo in dark */
 html[data-theme="dark"] .sidebar-container,
 body.theme-dark .sidebar-container {
   background: linear-gradient(160deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
@@ -1161,7 +1066,6 @@ body.theme-dark .sidebar-container .nav-link:hover:not(.active) {
   color: var(--main-color);
 }
 
-/* Badge condizione in dark */
 html[data-theme="dark"] .badge-nuovo,
 body.theme-dark .badge-nuovo {
   background-color: rgba(34, 197, 94, 0.2);
@@ -1176,7 +1080,6 @@ body.theme-dark .badge-usato {
   border-color: rgba(245, 158, 11, 0.4);
 }
 
-/* Badge status */
 html[data-theme="dark"] .badge-pending,
 body.theme-dark .badge-pending {
   background: rgba(154, 52, 18, 0.3);
@@ -1191,29 +1094,17 @@ body.theme-dark .badge-success {
   border-color: rgba(22, 101, 52, 0.5);
 }
 
-/* Price scontato in dark */
 html[data-theme="dark"] .price-current.is-discount,
 body.theme-dark .price-current.is-discount {
   color: #f87171;
 }
 
-/* Cart preview in dark */
 html[data-theme="dark"] .cart-total-preview,
 body.theme-dark .cart-total-preview {
   background: var(--color-surface);
   border-color: var(--color-border);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
-
-/* =====================================================
-   FIX DARK MODE — PATCH CHIRURGICA
-   Aggiunge !important mirati + regole mancanti.
-   Nessun blocco rimosso, nessun stile preesistente
-   alterato fuori dal necessario.
-   ===================================================== */
-
-/* ── 1. btn-info SOLIDO — brand rosa in light e dark ──
-   Bootstrap sovrascrive con #0dcaf0; forziamo il brand.  */
 .btn-info {
   background-color: var(--main-color) !important;
   border-color: var(--main-color) !important;
@@ -1228,17 +1119,11 @@ body.theme-dark .cart-total-preview {
   box-shadow: 0 0 14px rgba(248, 109, 237, 0.45) !important;
 }
 
-/* ── 2. Navbar background in dark ──
-   Bootstrap .navbar { background-color } batte il nostro
-   selettore senza !important.                           */
 html[data-theme="dark"] .navbar,
 body.theme-dark .navbar {
   background: rgba(2, 6, 23, 0.95) !important;
 }
 
-/* ── 3. Tabelle — background + colore celle ──
-   Bootstrap usa --bs-table-bg con alta specificità;
-   serve !important su background-color e color.         */
 html[data-theme="dark"] .table,
 body.theme-dark .table {
   color: var(--color-text) !important;
@@ -1268,7 +1153,6 @@ body.theme-dark .table-striped > tbody > tr:nth-of-type(odd) > * {
   color: var(--color-text) !important;
 }
 
-/* ── 4. list-group-item in dark (regola mancante) ──     */
 html[data-theme="dark"] .list-group-item,
 body.theme-dark .list-group-item {
   background-color: var(--color-card) !important;
@@ -1281,9 +1165,6 @@ body.theme-dark .list-group-item:hover {
   color: var(--color-text) !important;
 }
 
-/* ── 5. Badge condizione — !important contro Angular
-   ViewEncapsulation emulated ([_ngcontent-xxx] batte
-   selettori semplici di specificità uguale)             */
 html[data-theme="dark"] .badge-nuovo,
 body.theme-dark .badge-nuovo {
   background-color: rgba(34, 197, 94, 0.2) !important;
@@ -1297,9 +1178,6 @@ body.theme-dark .badge-usato {
   border-color: rgba(245, 158, 11, 0.4) !important;
 }
 
-/* ── 6. Label h6 dentro .category-filter-card in dark ──
-   Bootstrap applica color: inherit su .text-info
-   quando filtroAttivo === sub.nome; forziamo il testo.  */
 html[data-theme="dark"] .category-filter-card h6,
 html[data-theme="dark"] .category-filter-card p,
 html[data-theme="dark"] .category-filter-card span,
@@ -1317,19 +1195,6 @@ body.theme-dark .category-filter-card.active-filter span {
   color: var(--main-color) !important;
 }
 
-/* =============================================================
-   DARK MODE — Navbar, Footer, Side Menu (classi pw-*)
-   Queste regole devono stare in styles.css (foglio globale)
-   e NON in app.css, perché Angular ViewEncapsulation scopa
-   i selettori dei component-styles aggiungendo [_ngcontent-xxx].
-   Un selettore come html[data-theme="dark"] .pw-navbar-wrapper
-   dentro app.css diventerebbe:
-   html[data-theme="dark"] .pw-navbar-wrapper[_ngcontent-xxx]
-   che non matcha mai perché l'attributo Angular è sull'host,
-   non sull'elemento target.
-   ============================================================= */
-
-/* ── Logo ── */
 html[data-theme="dark"] .pw-logo-main,
 body.theme-dark .pw-logo-main {
   color: #f0f0f0;
@@ -1353,7 +1218,6 @@ body.theme-dark .pw-nav-icon-btn:hover {
   background: rgba(248, 109, 237, 0.1);
 }
 
-/* ── Search bar ── */
 html[data-theme="dark"] .pw-search-bar,
 body.theme-dark .pw-search-bar {
   background: rgba(255, 255, 255, 0.05);
@@ -1393,7 +1257,6 @@ body.theme-dark .pw-search-input::placeholder {
   color: #555;
 }
 
-/* ── Chip Vendi ── */
 html[data-theme="dark"] .pw-chip-vendi,
 body.theme-dark .pw-chip-vendi {
   background: rgba(248, 109, 237, 0.1);
@@ -1404,20 +1267,17 @@ body.theme-dark .pw-chip-vendi:hover {
   background: rgba(248, 109, 237, 0.2);
 }
 
-/* ── Nav divider ── */
 html[data-theme="dark"] .pw-nav-divider,
 body.theme-dark .pw-nav-divider {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* ── Avatar pill ── */
 html[data-theme="dark"] .pw-avatar-pill,
 body.theme-dark .pw-avatar-pill {
   background: rgba(248, 109, 237, 0.1);
   border-color: rgba(248, 109, 237, 0.3);
 }
 
-/* ── Cart preview ── */
 html[data-theme="dark"] .pw-cart-preview,
 body.theme-dark .pw-cart-preview {
   background: rgba(15, 10, 30, 0.97);
@@ -1438,7 +1298,6 @@ body.theme-dark .pw-category-link:hover {
   color: #f86ded;
 }
 
-/* ── Side menu ── */
 html[data-theme="dark"] .pw-side-menu,
 body.theme-dark .pw-side-menu {
   background: rgba(10, 7, 22, 0.97);
@@ -1458,7 +1317,6 @@ body.theme-dark .pw-side-link:hover {
   background: rgba(248, 109, 237, 0.1);
 }
 
-/* Pulsante Punti Fedeltà (verde) */
 .pw-side-vendi-btn--fedelta {
   background: rgba(80, 211, 138, 0.15);
   border-color: rgba(80, 211, 138, 0.3);
@@ -1471,8 +1329,6 @@ body.theme-dark .pw-side-link:hover {
   border-color: rgba(80, 211, 138, 0.5);
 }
 
-
-/* ── Footer pw-* ── */
 html[data-theme="dark"] .pw-footer,
 body.theme-dark .pw-footer {
   background: #0d0b18 !important;

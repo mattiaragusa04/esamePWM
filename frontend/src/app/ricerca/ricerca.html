@@ -1,6 +1,5 @@
 <div class="ricerca-page">
 
-  <!-- ─── HEADER RICERCA ────────────────────────────────── -->
   <div class="ricerca-hero">
     <div class="ricerca-hero-orb orb-a"></div>
     <div class="ricerca-hero-orb orb-b"></div>
@@ -19,17 +18,17 @@
     </div>
   </div>
 
-  <!-- ─── LOADING ──────────────────────────────────────── -->
+
   <div *ngIf="isLoading" class="ricerca-loading">
     <div class="ricerca-spinner"></div>
     <p class="ricerca-loading-text">Ricerca in corso&hellip;</p>
-    <!-- Skeleton cards -->
+
     <div class="ricerca-grid">
       <div class="ricerca-skeleton" *ngFor="let s of [1,2,3,4,5,6,7,8]"></div>
     </div>
   </div>
 
-  <!-- ─── EMPTY STATE ───────────────────────────────────── -->
+
   <div *ngIf="!isLoading && prodottiTrovati.length === 0" class="ricerca-empty">
     <div class="ricerca-empty-icon"><i class="bi bi-box-seam"></i></div>
     <h3 class="ricerca-empty-title">Nessun prodotto trovato</h3>
@@ -37,7 +36,6 @@
     <a routerLink="/" class="ricerca-empty-cta"><i class="bi bi-house-heart-fill"></i> Torna alla Home</a>
   </div>
 
-  <!-- ─── GRIGLIA RISULTATI ─────────────────────────────── -->
   <div class="ricerca-grid" *ngIf="!isLoading && prodottiTrovati.length > 0">
     <a class="ricerca-card" *ngFor="let prodotto of prodottiTrovati; let i = index"
        [routerLink]="['/dettagli-prodotto', prodotto.id]"

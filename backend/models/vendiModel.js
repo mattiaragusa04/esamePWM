@@ -1,7 +1,6 @@
 const db = require("../db/database");
 
 const Vendi = {
-  // tipo_compenso: 'euro' | 'punti'
   create: (utente_id, prodotto_id, prezzo_stimato, condizione, allegati_foto, tipo_compenso) => {
     return new Promise((resolve, reject) => {
       const compenso = tipo_compenso === 'punti' ? 'punti' : 'euro';

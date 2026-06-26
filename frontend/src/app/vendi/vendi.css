@@ -1,12 +1,4 @@
-/* ══════════════════════════════════════════════════════════
-   VENDI PAGE — PAwerUP
-   Contiene:
-   1) Classi home-hero-* (replicate da home.css per
-      compatibilità con l'encapsulation Angular)
-   2) Classi specifiche della pagina Vendi
-   ══════════════════════════════════════════════════════════ */
 
-/* ── HERO WRAPPER (specifico vendi) ──────────────────────── */
 
 .vendi-hero-section {
   position: relative;
@@ -25,7 +17,7 @@ body.theme-dark .vendi-hero-section {
   box-shadow: 0 8px 40px rgba(248, 109, 237, 0.12), 0 2px 8px rgba(0,0,0,0.5);
 }
 
-/* ── CANVAS RETE NEURALE ─────────────────────────────────── */
+
 
 .particle-canvas {
   position: absolute;
@@ -35,7 +27,7 @@ body.theme-dark .vendi-hero-section {
   z-index: 0;
 }
 
-/* ── ORB DECORATIVI (classe base + varianti vendi) ───────── */
+
 
 .home-hero-orb {
   position: absolute;
@@ -66,7 +58,6 @@ body.theme-dark .vendi-hero-section {
   50%      { transform: translateY(-18px) scale(1.06); }
 }
 
-/* ── CONTENUTO HERO (home-hero-* replicati per encapsulation) */
 
 .home-hero-inner {
   position: relative;
@@ -163,7 +154,7 @@ body.theme-dark .vendi-hero-section {
   text-decoration: none;
 }
 
-/* ── SEZIONI (home-section-*, home-accent) ───────────────── */
+
 
 .home-section {
   padding: 0.25rem 0;
@@ -219,7 +210,7 @@ body.theme-dark .home-section-title { color: #f1f5f9; }
   background-clip: text;
 }
 
-/* ── STEPS "COME FUNZIONA" ────────────────────────────────── */
+
 
 .vendi-steps-grid {
   display: grid;
@@ -285,7 +276,7 @@ body.theme-dark .vendi-step-title { color: #f1f5f9; }
 }
 body.theme-dark .vendi-step-desc { color: #94a3b8; }
 
-/* ── SEARCH BAR ──────────────────────────────────────────── */
+
 
 .vendi-search-prepend {
   background: #fff;
@@ -339,7 +330,7 @@ body.theme-dark .vendi-search-input:focus {
   box-shadow: 0 0 0 0.2rem rgba(248,109,237,0.2) !important;
 }
 
-/* ── FILTRI CATEGORIA ────────────────────────────────────── */
+
 
 .vendi-filtri .btn-outline-info {
   border-color: rgba(248,109,237,0.4);
@@ -367,7 +358,7 @@ body.theme-dark .vendi-filtri .btn-outline-info:hover {
   color: #f86ded;
 }
 
-/* ── PRODUCT CARDS ───────────────────────────────────────── */
+
 
 .card.product-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -406,7 +397,7 @@ body.theme-dark .card.product-card .card-title { color: #f1f5f9; }
 body.theme-dark .card.product-card .text-secondary { color: #94a3b8 !important; }
 body.theme-dark .text-info { color: #f9a8d4 !important; }
 
-/* ── EMPTY STATE ─────────────────────────────────────────── */
+
 
 .vendi-empty-state { padding: 3.5rem 1rem; }
 .vendi-empty-icon {
@@ -415,11 +406,10 @@ body.theme-dark .text-info { color: #f9a8d4 !important; }
 }
 body.theme-dark .vendi-empty-icon { color: rgba(248,109,237,0.3); }
 
-/* ── SPINNER ─────────────────────────────────────────────── */
+
 
 .vendi-spinner { color: #f86ded !important; }
 
-/* ── PAGINAZIONE ─────────────────────────────────────────── */
 
 .pagination .page-link.pagination-dot {
   width: 38px;
@@ -462,7 +452,6 @@ body.theme-dark .pagination .page-item.active .page-link.pagination-dot {
   color: #fff !important;
 }
 
-/* ── RESPONSIVE ──────────────────────────────────────────── */
 
 @media (max-width: 768px) {
   .vendi-steps-grid { grid-template-columns: 1fr; }

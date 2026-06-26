@@ -175,7 +175,6 @@ function seedingProdotti() {
         if (row && row.count === 0) {
             console.log('Dati base inseriti. Avvio download cataloghi esterni...');
 
-            // Esegue l'inserimento statico di console e videogiochi
             await popolaDatabaseCategoriaConsole();
             await popolaDatabaseCategoriaVideogiochi();
             await popolaDatabaseCategoriaAccessori();
@@ -185,7 +184,6 @@ function seedingProdotti() {
         }
     });
 }
-// Funzione per popolare il database con dati di esempio
 function seedDatabase() {
     db.get("SELECT COUNT(*) AS count from categoria", (err, row) => {
         if (row && row.count === 0) {
@@ -194,11 +192,11 @@ function seedDatabase() {
                     console.error('Errore durante il popolamento del database:', err);
                 } else {
                     console.log('Tabella categoria popolata con successo');
-                    seedingProdotti(); // Avviamo i prodotti SOLO DOPO le categorie
+                    seedingProdotti(); 
                 }
             });
         } else {
-            seedingProdotti(); // Avviamo i prodotti se le categorie sono già esistenti
+            seedingProdotti();
         }
     });
 

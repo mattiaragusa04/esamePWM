@@ -2,7 +2,7 @@ const db = require('../db/database');
 
 const Recensione = {
 
-    // Crea una nuova recensione (una per utente, grazie al UNIQUE su utente_id)
+
     create: (utente_id, testo, voto) => {
         return new Promise((res, rej) => {
             const query = `
@@ -16,7 +16,7 @@ const Recensione = {
         });
     },
 
-    // Aggiorna la recensione esistente di un utente
+
     update: (utente_id, testo, voto) => {
         return new Promise((res, rej) => {
             const query = `
@@ -30,7 +30,7 @@ const Recensione = {
         });
     },
 
-    // Controlla se l'utente ha già una recensione
+
     findByUserId: (utente_id) => {
         return new Promise((res, rej) => {
             const query = `SELECT * FROM recensione WHERE utente_id = ?`;
@@ -41,7 +41,6 @@ const Recensione = {
         });
     },
 
-    // Recupera tutte le recensioni con nome e cognome dell'utente
     findAll: () => {
         return new Promise((res, rej) => {
             const query = `
@@ -58,7 +57,7 @@ const Recensione = {
         });
     },
 
-    // Elimina la recensione di un utente
+
     deleteByUserId: (utente_id) => {
         return new Promise((res, rej) => {
             const query = `DELETE FROM recensione WHERE utente_id = ?`;

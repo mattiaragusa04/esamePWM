@@ -57,7 +57,7 @@
   </div>
 </div>
 
-<!-- ── SEZIONE PRODOTTI ───────────────────────────────── -->
+
 <div class="home-section mt-4" id="vendi-prodotti">
 
   <div class="home-section-header">
@@ -67,7 +67,7 @@
     <h2 class="home-section-title">Scegli cosa <span class="home-accent">vendere</span></h2>
   </div>
 
-  <!-- Search bar -->
+
   <div class="vendi-search-wrapper mb-4">
     <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
       <div class="input-group">
@@ -88,7 +88,6 @@
     </div>
   </div>
 
-  <!-- Filtri categoria -->
   <div class="vendi-filtri d-flex justify-content-center flex-wrap gap-2 mb-5">
     <button
       class="btn rounded-pill px-4"
@@ -126,7 +125,7 @@
     </button>
   </div>
 
-  <!-- Spinner -->
+
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border vendi-spinner" role="status">
       <span class="visually-hidden">Caricamento...</span>
@@ -134,12 +133,11 @@
     <p class="mt-3 text-secondary">Caricamento prodotti...</p>
   </div>
 
-  <!-- Errore -->
   <div *ngIf="errorMessage" class="alert alert-danger text-center my-5 rounded-4">
     <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
   </div>
 
-  <!-- Nessun risultato -->
+
   <div *ngIf="!isLoading && !errorMessage && prodottiFiltrati.length === 0"
        class="vendi-empty-state text-center my-5">
     <i class="bi bi-box-seam vendi-empty-icon"></i>
@@ -147,7 +145,7 @@
     <p class="text-secondary">Prova a cambiare filtro o termine di ricerca.</p>
   </div>
 
-  <!-- Griglia prodotti -->
+
   <div
     class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4"
     *ngIf="!isLoading && prodottiFiltrati.length > 0"

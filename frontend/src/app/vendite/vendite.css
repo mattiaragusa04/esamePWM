@@ -1,7 +1,4 @@
-/* ═══════════════════════════════════════════════════════
-   PAGINA VENDITE — coerente con il tema ordini/profilo
-   Palette: #f86ded (rosa), gradient 135deg
-   ═══════════════════════════════════════════════════════ */
+
 
 .vendite-page {
   padding: 0.5rem 0 2rem;
@@ -13,7 +10,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── HERO SECTION ───────────────────────────────────────── */
+
 .vendite-hero {
   position: relative;
   overflow: hidden;
@@ -24,7 +21,6 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
-/* Gli orb sono azzerati: il canvas neurale gestisce già l'effetto di sfondo */
 .vendite-hero-orb {
   position: absolute;
   border-radius: 50%;
@@ -115,7 +111,7 @@
   color: #fff;
 }
 
-/* ─── VENDITA CARD ──────────────────────────────────────────── */
+
 .vendita-card {
   border-radius: 1.1rem;
   border: 1px solid rgba(248,109,237,0.12);
@@ -158,7 +154,7 @@
   color: #f86ded;
 }
 
-/* Badge stati vendita */
+
 .badge-stato {
   display: inline-flex;
   align-items: center;
@@ -173,7 +169,7 @@
 .badge-valutazione { background: #fef3c7; color: #92400e; }
 .badge-rifiutata   { background: #fee2e2; color: #991b1b; }
 
-/* ─── EMPTY STATE ─────────────────────────────────────────────── */
+
 .vendite-empty {
   display: flex;
   flex-direction: column;
@@ -192,12 +188,12 @@
 .vendite-empty h4 { color: #555; margin-bottom: 0.5rem; }
 .vendite-empty p  { color: #999; max-width: 36ch; margin-bottom: 1.5rem; }
 
-/* Loader spinner colore tema */
+
 .spinner-border.spinner-pink {
   color: #f86ded;
 }
 
-/* Dark mode */
+
 body.theme-dark .vendita-card {
   background: linear-gradient(160deg, #1e293b, #0f172a);
   border-color: rgba(148,163,184,0.15);

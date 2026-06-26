@@ -12,19 +12,17 @@
 
   <div *ngIf="!isLoading && !errorMessage && prodotto" class="card shadow-lg border-0 mb-5 overflow-hidden" style="border-radius: 2rem;">
     <div class="row g-0">
-      <!-- Colonna Sinistra: Immagine Prodotto -->
+  
       <div class="col-md-6 bg-light d-flex flex-column justify-content-center align-items-center p-4 p-lg-5 border-end">
         <img [src]="prodotto.immagine.includes('http') ? prodotto.immagine : 'http://localhost:3000/' + prodotto.immagine" class="img-fluid rounded-4 shadow-sm mb-4" alt="{{ prodotto.nome }}" (error)="handleImageError($event)" style="max-height: 500px; object-fit: contain;">
         <div class="badge bg-info text-white px-3 py-2 rounded-pill fs-6 shadow-sm">{{ prodotto.categoria_nome }}</div>
       </div>
 
-      <!-- Colonna Destra: Dettagli e Azioni -->
       <div class="col-md-6 p-4 p-lg-5">
         <h1 class="fw-bold mb-2">{{ prodotto.nome }}</h1>
         <p class="text-secondary mb-4">{{ prodotto.descrizione }}</p>
         <hr>
 
-        <!-- Condizione (label fissa, non modificabile dall'utente) + badge Esaurito -->
         <div class="mb-4">
           <label class="form-label text-muted small text-uppercase fw-bold ls-1">Condizione:</label>
           <div class="d-flex flex-wrap align-items-center gap-2">
@@ -42,7 +40,7 @@
           </div>
         </div>
 
-        <!-- Prezzo -->
+   
         <div class="mb-4">
           <p class="text-muted small text-uppercase mb-0 fw-bold ls-1">Prezzo:</p>
           <div class="d-flex align-items-baseline gap-3 flex-wrap">
@@ -58,7 +56,7 @@
           </div>
         </div>
 
-        <!-- Box Punti Fedeltà -->
+
         <div class="loyalty-points-wrapper" *ngIf="prodotto">
           <div class="points-icon-circle">
             <i class="bi bi-star-fill"></i>
@@ -73,7 +71,7 @@
         </div>
 
 
-        <!-- Messaggi di Disponibilità -->
+
         <div class="mb-4">
           <p class="text-muted small text-uppercase mb-0 fw-bold ls-1">Disponibilità:</p>
           <div *ngIf="prodotto.giacenza >= 10" class="text-success fw-bold fs-5 d-flex align-items-center">
@@ -83,16 +81,16 @@
             <i class="bi bi-exclamation-triangle-fill me-2"></i> Quasi Terminato ({{ prodotto.giacenza }} pezzi)
           </div>
 
-          <!-- Messaggio Consegna Disponibile -->
+
           <div *ngIf="prodotto.giacenza > 0" class="text-secondary small d-flex align-items-center mt-1">
             <i class="bi bi-truck me-2"></i> Consegna disponibile
           </div>
         </div>
 
-        <!-- Azioni: Carrello e Preferiti -->
+
         <div class="d-flex flex-column mb-4">
           <div class="product-actions-wrapper">
-            <!-- Pulsante Carrello -->
+
             <button class="btn-action-square btn-cart-premium shadow" 
                     [ngClass]="{'retro-slash': prodotto.giacenza <= 0}"
                     (click)="aggiungiAlCarrello(prodotto)" 
@@ -101,7 +99,7 @@
               <i class="bi bi-cart-plus"></i>
             </button>
 
-            <!-- Pulsante Preferiti -->
+
             <button class="btn-action-square" 
                     [class.active-favorite]="isPreferito(prodotto.id)" 
                     (click)="togglePreferito($event)" 
@@ -115,7 +113,7 @@
           </div>
         </div>
 
-        <!-- Opzione Permuta/Vendita -->
+
         <div class="mt-4 pt-4 border-top">
           <p class="text-muted small mb-2">Possiedi già questo articolo?</p>
           <button class="btn btn-outline-info rounded-pill w-100 py-2 d-flex align-items-center justify-content-center fw-bold shadow-sm" 

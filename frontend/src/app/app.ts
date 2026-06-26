@@ -27,8 +27,7 @@ export class App implements OnInit {
 
 
   constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object, public carrelloService: CarrelloService, private toast: ToastService, private themeService: ThemeService, private authInterceptor: AuthInterceptorService) {
-    // Questo permette alla navbar di aggiornarsi automaticamente
-    // ogni volta che si cambia pagina (ad esempio dopo la registrazione)
+
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.checkSession(event.urlAfterRedirects);
@@ -41,35 +40,34 @@ export class App implements OnInit {
   }
 
   checkSession(url?: string) {
-    // Controlla se il codice è in esecuzione nel browser prima di usare localStorage
+
     if (isPlatformBrowser(this.platformId)) {
       const userString = localStorage.getItem('user');
       if (userString) {
         this.utenteLoggato = JSON.parse(userString);
-        
-        // Controlla se c'è un redirect in sospeso
+
         const redirectUrl = localStorage.getItem('redirectDopoLogin');
         if (redirectUrl) {
           localStorage.removeItem('redirectDopoLogin');
           this.router.navigate([redirectUrl]);
         }
-        this.carrelloService.refreshCart(); // Aggiorna il carrello dopo il login
+        this.carrelloService.refreshCart(); 
       } else {
         this.utenteLoggato = null;
-        // Rimuove il redirect in sospeso se l'utente abbandona le pagine di autenticazione
+
         if (url && !url.includes('/login') && !url.includes('/register')) {
           localStorage.removeItem('redirectDopoLogin');
         }
       }
-      this.carrelloService.refreshCart(); // Caricamento iniziale per ospiti
+      this.carrelloService.refreshCart(); 
     }
   }
 
   logout() {
-    //pulisce la sessione
+
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    //Aggiorna lo stato locale e reindirizza alla home
+
     this.utenteLoggato = null;
     this.toast.success('Logout effettuato con successo!');
     this.router.navigate(['/']);

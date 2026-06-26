@@ -14,11 +14,11 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-// Interfaccia per il prodotto, riutilizzata dal componente Prodotti
+
 export interface Prodotto {
   id: number;
   categoria_id: number;
-  categoria_nome: string; // Nome derivato dalla tabella Categoria (denominazione)
+  categoria_nome: string; 
   nome: string;
   descrizione: string;
   giacenza: number;
@@ -57,13 +57,13 @@ export class Vendi implements OnInit, AfterViewInit, OnDestroy {
   searchTerm: string = '';
   categoriaSelezionata: string = 'Tutti';
 
-  // Proprietà per la paginazione
+ 
   paginaCorrente: number = 1;
   elementiPerPagina: number = 9;
 
   private routeSub: Subscription | undefined;
 
-  // ── Canvas / rete neurale ─────────────────────────────────
+
   private ctx!: CanvasRenderingContext2D;
   private particles: Particle[] = [];
   private animFrame!: number;
@@ -97,7 +97,7 @@ export class Vendi implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ── Canvas logic (replicata da home.ts) ──────────────────
+
   private setupCanvas(): void {
     const canvas = this.canvasRef?.nativeElement;
     const box = this.heroBoxRef?.nativeElement;
@@ -206,7 +206,7 @@ export class Vendi implements OnInit, AfterViewInit, OnDestroy {
     this.animFrame = requestAnimationFrame(() => this.animate());
   }
 
-  // ── Logica prodotti (invariata) ───────────────────────────
+
   async caricaProdotti() {
     this.isLoading = true;
     this.errorMessage = '';
@@ -219,8 +219,7 @@ export class Vendi implements OnInit, AfterViewInit, OnDestroy {
         const data = await response.json();
         const allowedCategories = ['Videogiochi', 'Console', 'Accessori', 'Elettronica'];
         
-        // Mostra tutte le righe del DB (sia Nuovo che Usato) senza deduplicare.
-        // Questo permette all'utente di scegliere la versione specifica da vendere.
+
         this.prodotti = data
           .filter((p: Prodotto) => allowedCategories.includes(p.categoria_nome))
           .map((p: Prodotto) => ({ ...p, condizione: p.condizione === 'Usata' ? 'Usato' : p.condizione }));

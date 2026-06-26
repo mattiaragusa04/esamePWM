@@ -19,7 +19,7 @@ const Indirizzo = {
             });
         });
     },
-    // Restituisce solo gli indirizzi visibili nel profilo (salvato = 1)
+
     findByUserId : (userId) => {
         return new Promise((res, rej) => {
             const query = `SELECT * FROM indirizzo WHERE utente_id = ? AND salvato = 1`;
@@ -29,7 +29,7 @@ const Indirizzo = {
             });
         });
     },
-    // Crea l'indirizzo. Il campo salvato determina se appare nel profilo.
+
     create : (indirizzo) => {
         return new Promise((res, rej) => {
             const salvato = indirizzo.salvato !== undefined ? indirizzo.salvato : 1;
@@ -58,21 +58,19 @@ const Indirizzo = {
             });
         });
     },
-    // Soft-delete: nasconde l'indirizzo dal profilo (salvato = 0).
-    // Se l'indirizzo non è usato in nessun ordine, lo elimina fisicamente.
+
     delete : (id) => {
         return new Promise((res, rej) => {
-            // Controlla se l'indirizzo è referenziato da almeno un ordine
+
             db.get(`SELECT COUNT(*) as cnt FROM ordine WHERE indirizzo_id = ?`, [id], (err, row) => {
                 if (err) return rej(err);
                 if (row.cnt > 0) {
-                    // Ha ordini collegati: soft-delete (nasconde dal profilo)
+
                     db.run(`UPDATE indirizzo SET salvato = 0 WHERE id = ?`, [id], function(err2) {
                         if (err2) rej(err2);
                         else res({ id, softDeleted: true });
                     });
                 } else {
-                    // Nessun ordine collegato: delete fisica
                     db.run(`DELETE FROM indirizzo WHERE id = ?`, [id], function(err2) {
                         if (err2) rej(err2);
                         else res({ id, softDeleted: false });

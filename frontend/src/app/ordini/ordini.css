@@ -1,9 +1,4 @@
-/* ════════════════════════════════════════════════════════════════════════
-   ORDINI — stili originali invariati + aggiunte per il sistema recensioni
-   Nota: le aggiunte sono marcate con [RECENSIONI]
-   ════════════════════════════════════════════════════════════════════════ */
 
-/* ── Hero ────────────────────────────────────────────────────────────── */
 .ordini-page {
   padding: 2rem 1.5rem;
   max-width: 900px;
@@ -101,7 +96,7 @@
   color: #fff;
 }
 
-/* ── Cards ordine ────────────────────────────────────────────────────── */
+
 .ordine-card {
   background: #ffffff;
   border-radius: 14px;
@@ -147,7 +142,6 @@
 .text-pink { color: #f86ded !important; }
 .testo-pink { color: #f86ded; }
 
-/* ── Badge stato ─────────────────────────────────────────────────────── */
 .badge-stato {
   display: inline-flex;
   align-items: center;
@@ -163,7 +157,6 @@
 .badge-spedito      { background: rgba(59,130,246,0.15); color: #3b82f6; }
 .badge-altro        { background: rgba(156,163,175,0.15); color: #9ca3af; }
 
-/* ── Bottone dettaglio ───────────────────────────────────────────────── */
 .btn-dettaglio {
   display: inline-flex;
   align-items: center;
@@ -184,12 +177,10 @@
   color: #fff;
 }
 
-/* ── Spinner ─────────────────────────────────────────────────────────── */
 .spinner-pink {
   color: #f86ded;
 }
 
-/* ── Modale ──────────────────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -251,9 +242,6 @@
   border: 1px solid rgba(251,191,36,0.2);
 }
 
-/* ════════════════════════════════════════════════════════════════════════
-   [RECENSIONI] Banner + popup recensione
-   ════════════════════════════════════════════════════════════════════════ */
 
 .recensione-banner {
   display: flex;
@@ -405,9 +393,6 @@
   color: #dc2626;
 }
 
-/* ════════════════════════════════════════════════════════════════════════
-   DARK MODE — tutte le regole dark centralizzate qui
-   ════════════════════════════════════════════════════════════════════════ */
 
 body.theme-dark .ordine-card {
   background: #1e1e2e;

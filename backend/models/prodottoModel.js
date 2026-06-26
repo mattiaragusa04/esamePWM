@@ -113,10 +113,6 @@ const Prodotto = {
     });
   },
 
-  /**
-   * Ripristina la giacenza di un prodotto sommando la quantità restituita.
-   * Usato quando un ordine viene annullato.
-   */
   ripristinaGiacenza: (prodottoId, quantita) => {
     return new Promise((resolve, reject) => {
       db.run(

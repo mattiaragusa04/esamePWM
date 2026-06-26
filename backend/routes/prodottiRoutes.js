@@ -5,10 +5,10 @@ const multer = require("multer");
 const path = require("path");
 const adminMiddleware = require("../middleware/adminMiddleware");
 const authMiddleware = require("../middleware/authMiddleware"); 
-// Configurazione Multer per il caricamento delle immagini
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/immagini/upload-admin'); // La cartella dove verranno salvate le immagini
+    cb(null, './public/immagini/upload-admin');
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -18,13 +18,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
-// Rotta per ottenere tutti i prodotti
+
 router.get("/", prodottoController.getAllProdotti);
-// Rotta per la ricerca dei prodotti
+
 router.get("/ricerca", prodottoController.cercaProdotti);
-// Rotta per ottenere tutti i prodotti di una categoria
+
 router.get("/categoria/:categoriaId", prodottoController.getProdottobyCategoria);
-// Rotta per ottenere un singolo prodotto
+
 router.get("/:id", prodottoController.getProdottoById);
 
 router.delete("/:id", authMiddleware, adminMiddleware, prodottoController.deleteProdotto);

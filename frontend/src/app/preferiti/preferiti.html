@@ -4,14 +4,14 @@
     <h2 class="text-center font-weight-bold m-0">I miei <span class="text-info">preferiti</span></h2>
   </div>
 
-  <!-- Animazione di Caricamento -->
+
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border text-info" role="status">
       <span class="visually-hidden">Caricamento...</span>
     </div>
   </div>
 
-  <!-- Stato: Lista Vuota -->
+
   <div *ngIf="!isLoading && prodottiPreferiti.length === 0">
     <p class="text-center text-muted fs-5">La tua lista dei preferiti è attualmente vuota. Inizia a esplorare i nostri prodotti e aggiungi i tuoi preferiti!</p>
     <div class="text-center mt-4">
@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <!-- Lista dei Prodotti Preferiti (Stile Carrello orizzontale) -->
+
   <div *ngIf="!isLoading && prodottiPreferiti.length > 0" class="row justify-content-center">
     <div class="col-lg-10">
       <div class="card mb-3 shadow-sm" *ngFor="let prodotto of prodottiPreferiti">
@@ -38,7 +38,7 @@
             <a class="btn btn-sm btn-info rounded-pill px-4 fw-bold text-dark shadow-sm" [routerLink]="['/dettagli-prodotto', prodotto.id]">Vedi Dettagli</a>
           </div>
 
-          <!-- Tasto Aggiungi al Carrello -->
+    
           <div class="col-md-1 text-center mt-3 mt-md-0">
             <button
               class="btn btn-success rounded-circle shadow-sm d-inline-flex justify-content-center align-items-center p-0"
@@ -49,7 +49,7 @@
             </button>
           </div>
 
-          <!-- Tasto Rimozione -->
+   
           <div class="col-md-1 text-center text-md-end mt-3 mt-md-0">
             <button class="btn btn-danger rounded-circle shadow-sm d-inline-flex justify-content-center align-items-center p-0" style="width: 36px; height: 36px;" (click)="prodottoDaRimuovere = prodotto.id" title="Rimuovi dai preferiti">
               <i class="bi bi-trash"></i>
@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <!-- Modal di Conferma Svuotamento (Gestito da Angular) -->
+
   <div class="modal fade" tabindex="-1" [class.show]="mostraModaleSvuota" [style.display]="mostraModaleSvuota ? 'block' : 'none'" [style.background-color]="mostraModaleSvuota ? 'rgba(0,0,0,0.5)' : ''">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content shadow-lg border-0" style="border-radius: 1.5rem;">
@@ -85,7 +85,7 @@
     </div>
   </div>
 
-  <!-- Modal di Conferma Singola Rimozione (Gestito da Angular) -->
+
   <div class="modal fade" tabindex="-1" [class.show]="prodottoDaRimuovere !== null" [style.display]="prodottoDaRimuovere !== null ? 'block' : 'none'" [style.background-color]="prodottoDaRimuovere !== null ? 'rgba(0,0,0,0.5)' : ''">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content shadow-lg border-0" style="border-radius: 1.5rem;">

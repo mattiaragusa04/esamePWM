@@ -19,7 +19,7 @@ export class AdminCoupon implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
 
-  // Modale creazione
+
   mostraModale: boolean = false;
   isSaving: boolean = false;
 
@@ -33,7 +33,7 @@ export class AdminCoupon implements OnInit {
     costoInPunti: null
   };
 
-  // Modale modifica
+
   mostraModaleModifica: boolean = false;
   couponInModifica: any = null;
 
@@ -113,7 +113,7 @@ export class AdminCoupon implements OnInit {
     }
   }
 
-  // ─── Modale creazione ───────────────────────────────────────────────────────
+
 
   apriModale() {
     this.nuovoCoupon = {
@@ -195,12 +195,11 @@ export class AdminCoupon implements OnInit {
     }
   }
 
-  // ─── Modale modifica ────────────────────────────────────────────────────────
 
   apriModifica(coupon: any) {
     this.couponInModifica = {
       ...coupon,
-      costoInPunti: coupon.costo_punti // Mappa da snake_case a camelCase per il form
+      costoInPunti: coupon.costo_punti 
     };
     if (this.couponInModifica.data_scadenza) {
       this.couponInModifica.data_scadenza = this.couponInModifica.data_scadenza.split('T')[0];
@@ -269,7 +268,8 @@ export class AdminCoupon implements OnInit {
     }
   }
 
-  // ─── Helpers ────────────────────────────────────────────────────────────────
+
+
 
   isScaduto(coupon: any): boolean {
     if (!coupon.data_scadenza) return false;

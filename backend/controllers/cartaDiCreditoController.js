@@ -36,8 +36,6 @@ exports.createCarta = async (req, res) => {
     try {
         const userId = req.user.id;
         const numCarta = req.body.numeroCarta || req.body.numero_carta;
-        // Il frontend passa salvaCarta (true/false), lo convertiamo in 0/1 per SQLite
-        // Default 1 (salvata) se il campo non viene inviato (es. da altre parti dell'app)
         const salvato = req.body.salvaCarta === false || req.body.salvato === 0 ? 0 : 1;
         const cartaData = {
             utente_id: userId,

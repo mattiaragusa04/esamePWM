@@ -16,9 +16,7 @@
 	background: transparent;
 }
 
-/* ─── Badge angolo in alto a sinistra ─────────────────────────────────────── */
 
-/* Badge sconto -25% (prodotti usati disponibili) */
 .discount-corner-badge {
   position: absolute;
   top: 0;
@@ -36,7 +34,7 @@
   user-select: none;
 }
 
-/* Badge ESAURITO (prodotti con giacenza = 0) */
+
 .out-of-stock-corner-badge {
   position: absolute;
   top: 0;
@@ -54,9 +52,7 @@
   user-select: none;
 }
 
-/* ─── Dark mode ────────────────────────────────────────────────────────────── */
 
-/* Entrambi i selettori dark per compatibilità con ThemeService */
 html[data-theme="dark"] .discount-corner-badge,
 body.theme-dark .discount-corner-badge {
   background-color: #ff4d5e;

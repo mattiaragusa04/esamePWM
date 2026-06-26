@@ -1,4 +1,4 @@
-/* Stili per l'header della sezione, uniformati con home.css */
+
 .home-section-header {
   text-align: center;
   margin-bottom: 3.5rem;
@@ -33,7 +33,6 @@
 
 .home-section-title .home-accent {
   color: var(--main-color);
-  /* Effetto gradiente sul testo */
   background: linear-gradient(45deg, var(--main-color), var(--accent-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -93,7 +92,7 @@
   font-weight: 600;
 }
 
-/* Photo Upload Area */
+
 .upload-area {
   border: 2px dashed #cbd5e1;
   background: #f8fafc;
@@ -117,7 +116,7 @@
   display: block;
 }
 
-/* Effetto zoom sull'immagine del prodotto principale */
+
 .img-fluid {
   transition: transform 0.4s ease !important;
 }
@@ -127,7 +126,7 @@
 }
 
 
-/* Anteprima immagini caricate */
+
 .image-previews-container {
   display: flex;
   flex-wrap: wrap;
@@ -169,10 +168,9 @@
 }
 
 .btn-remove-preview:hover {
-  color: #dc3545; /* Rosso Bootstrap per pericolo */
+  color: #dc3545; 
 }
 
-/* Valuation Box */
 .valuation-summary {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border-radius: 1.5rem;
@@ -200,7 +198,7 @@
   letter-spacing: 0.5px;
 }
 
-/* ══════════ SEZIONE COMPENSO ══════════ */
+
 .compenso-section {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -208,7 +206,7 @@
   padding: 1.25rem 1.5rem;
 }
 
-/* Avviso nessuna carta */
+
 .compenso-avviso-carta {
   display: flex;
   align-items: flex-start;
@@ -239,7 +237,7 @@
   color: #92400e;
 }
 
-/* Card opzione compenso */
+
 .compenso-card {
   flex: 1;
   min-width: 200px;
@@ -280,7 +278,7 @@
   pointer-events: none;
 }
 
-/* Icona compenso */
+
 .compenso-icon {
   width: 44px;
   height: 44px;
@@ -302,7 +300,7 @@
   color: #d97706;
 }
 
-/* Testo compenso */
+
 .compenso-info {
   display: flex;
   flex-direction: column;
@@ -345,7 +343,7 @@
   font-weight: 600;
 }
 
-/* Responsive */
+
 @media (max-width: 767.98px) {
   .condition-option {
     min-width: 100%;

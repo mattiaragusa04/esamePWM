@@ -6,7 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const adminMiddleware = require('../middleware/adminMiddleware');
-// Assicurati che la cartella esista
+
 const uploadDir = 'public/uploads/vendi/';
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -26,10 +26,9 @@ router.post('/offerta', upload.array('images', 5), vendiController.submitSellOff
 
 router.get('/inviati', vendiController.getAllProdottiInviati);
 
-// Route dedicata accettazione: logica completa (giacenza + punti)
 router.put('/:id/accetta', adminMiddleware,  vendiController.accettaOfferta);
 
-// Route generica aggiornamento stato (Rifiuta, In attesa)
+
 router.put('/:id', adminMiddleware,vendiController.update);
 
 router.get('/:id', vendiController.getProdottoForSellingById);

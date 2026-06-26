@@ -4,8 +4,6 @@ import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CarrelloService } from '../carrello.service';
 import { ToastService } from '../shared/toast.service';
-
-// Validatore Custom scadenza carta
 export function scadenzaValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   if (!value) return null;
@@ -21,7 +19,7 @@ export function scadenzaValidator(control: AbstractControl): ValidationErrors | 
   return null;
 }
 
-// Validatore Luhn (lunghezza 16 cifre)
+
 export function luhnValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   if (!value) return null;
@@ -47,7 +45,7 @@ export class Pagamento implements OnInit {
   selectedCartaId: number = 0;
   selectedIndirizzoId: number = 0;
 
-  // ─── COUPON ────────────────────────────────────────────────────────────────────────────
+
 codiceCoupon: string = '';
   couponApplicato: any = null;
   couponErrore: string = '';
@@ -60,7 +58,7 @@ codiceCoupon: string = '';
   get totaleScontato(): number {
     return this.couponApplicato ? this.couponApplicato.totale_finale : this.totale;
   }
-  // ──────────────────────────────────────────────────────────────────────────────
+
 
   checkoutForm: FormGroup;
   mostraCvv: boolean = false;
@@ -196,7 +194,6 @@ codiceCoupon: string = '';
     this.mostraCvv = !this.mostraCvv;
   }
 
-  // ─── METODI COUPON ────────────────────────────────────────────────────────────────────────
 
   async applicaCoupon(silenzioso = false) {
     const codice = this.codiceCoupon.trim();
@@ -245,7 +242,8 @@ codiceCoupon: string = '';
     this.codiceCoupon = '';
     this.couponErrore = '';
   }
-  // ──────────────────────────────────────────────────────────────────────────────
+
+
 
   async confermaEPaga() {
     this.submitted = true;
@@ -267,11 +265,11 @@ codiceCoupon: string = '';
     this.cdr.detectChanges();
 
     try {
-      // 1. Gestione carta
+
       let cartaId = Number(this.selectedCartaId);
       if (cartaId === 0) {
         const formPagamento = this.checkoutForm.getRawValue().pagamento;
-        // Passiamo salvaCarta al backend: se false -> salvato=0 (invisibile nel profilo)
+
         const resCarta = await fetch('http://localhost:3000/api/carta/create', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -285,11 +283,10 @@ codiceCoupon: string = '';
         }
       }
 
-      // 2. Gestione indirizzo
+
       let indirizzoId = Number(this.selectedIndirizzoId);
       if (indirizzoId === 0) {
         const formSpedizione = this.checkoutForm.getRawValue().spedizione;
-        // Passiamo salvaIndirizzo al backend: se false -> salvato=0 (invisibile nel profilo)
         const resIndirizzo = await fetch('http://localhost:3000/api/indirizzo/create', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -303,7 +300,7 @@ codiceCoupon: string = '';
         }
       }
 
-      // 3. Creazione ordine
+
       const payloadOrdine: any = {
         carta_id: cartaId,
         indirizzo_id: indirizzoId,
